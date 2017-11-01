@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Guid>1b8fb28c-9435-4c10-902b-314829ed9108</Guid>
+    <Name>XCOM 2 RPG Overhaul</Name>
+    <Description>XCOM 2 Overhaul for more freedom in character developement.
+
+tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
+    <SteamPublishID>0</SteamPublishID>
+    <AssemblyName>RPG</AssemblyName>
+    <RootNamespace>RPG</RootNamespace>
+    <ProjectGuid>{b887d41d-cc1d-44a1-9884-e228ff827c02}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
+    <Folder Include="Config\ExtendedUpgrades" />
+    <Folder Include="Content\" />
+    <Folder Include="Localization\" />
+    <Folder Include="Content" />
+    <Folder Include="Localization\ExtendedUpgrades" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\ExtendedUpgrades\Classes" />
+    <Folder Include="Src\LW_Tuple" />
+    <Folder Include="Src\LW_Tuple\Classes" />
+    <Folder Include="Src\ExtendedUpgrades" />
+    <Folder Include="Src\XModBase_Interfaces" />
+    <Folder Include="Src\XModBase_Interfaces\Classes" />
+    <Folder Include="Src\XModBase_Core_2_0_0" />
+    <Folder Include="Src\XModBase_Core_2_0_0\Classes" />
+    <Folder Include="Src\XModBase_Lib" />
+    <Folder Include="Src\XModBase_Lib\Classes" />
+    <Folder Include="Src\XCOM2RPGOverhaul\" />
+    <Folder Include="Src\XCOM2RPGOverhaul\Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\ExtendedUpgrades\XComExtendedUpgrades.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComClassData.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComGameCore.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComGameData.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComRPG.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\AutoFire_ANIM.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\AutoPistol_ANIM.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\UILibrary_RPG.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\ExtendedUpgrades\XComGame.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="ReadMe.txt" />
+    <Content Include="ModPreview.jpg" />
+    <Content Include="Config\XComEditor.ini" />
+    <Content Include="Config\XComEngine.ini" />
+    <Content Include="Config\XComGame.ini" />
+    <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\ExtendedUpgrades\Classes\TemplateHelper.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Ability_UpgradeAbilitySet.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2DownloadableContentInfo_ExtendedUpgrades.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_EU_ModifyNonReactionFire.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_EU_ModifyReactionFire.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_ScopeRange.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Item_MeleeUpgrades.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ExtendedUpgrades\Classes\XMBEffect_AbilityCostRefundChance.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\LW_Tuple\Classes\*.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotConcealed.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierRange.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_StealthTactics.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_Interference.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_LongWar.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_Patches.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_RPGOverhaul.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_WeaponProficiencies.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_WeaponCategory.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2DownloadableContentInfo_XCOM2RPGOverhaul.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Cutthroat.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Interference.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LockdownDamage.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_QuickFeet.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RevealUnit.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TargetingMethod_AreaSuppression.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NoReactionFire.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBValue_Ammo.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Interfaces\Classes\*.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Lib\Classes\*.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_0\Classes\*.uc">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
+</Project>
