@@ -8,52 +8,52 @@
 //---------------------------------------------------------------------------------------
 class Examples extends XMBAbility;
 
-//static function array<X2DataTemplate> CreateTemplates()
-//{
-//	local array<X2DataTemplate> Templates;
-//
-//	Templates.AddItem(AbsolutelyCritical());
-//	Templates.AddItem(AdrenalineSurge());
-//	Templates.AddItem(AgainstTheOdds());
-//	Templates.AddItem(ArcticWarrior());
-//	Templates.AddItem(Assassin());
-//	Templates.AddItem(BulletSwarm());
-//	Templates.AddItem(BullRush());
-//	Templates.AddItem(CloseAndPersonal());
-//	Templates.AddItem(CloseCombatSpecialist());
-//	Templates.AddItem(CoverMe());
-//	Templates.AddItem(DamnGoodGround());
-//	Templates.AddItem(DangerZone());
-//	Templates.AddItem(DeepCover());
-//	Templates.AddItem(EspritDeCorps());
-//	Templates.AddItem(Fastball());
-//	Templates.AddItem(Focus());
-//	Templates.AddItem(HitAndRun());
-//	Templates.AddItem(Inspiration());
-//	Templates.AddItem(InspireAgility());
-//	Templates.AddItem(LightningHands());
-//	Templates.AddItem(Liquidator());
-//	Templates.AddItem(Magnum());
-//	Templates.AddItem(MovingTarget());
-//	Templates.AddItem(Packmaster());
-//	Templates.AddItem(PowerShot());
-//	Templates.AddItem(Precision());
-//	Templates.AddItem(Pyromaniac());
-//	Templates.AddItem(ReverseEngineering());
-//	Templates.AddItem(Rocketeer());
-//	Templates.AddItem(Saboteur());
-//	Templates.AddItem(Scout());
-//	Templates.AddItem(SlamFire());
-//	Templates.AddItem(SmokeAndMirrors());
-//	Templates.AddItem(Sprint());
-//	Templates.AddItem(Stalker());
-//	Templates.AddItem(SurvivalInstinct());
-//	Templates.AddItem(TacticalSense());
-//	Templates.AddItem(Weaponmaster());
-//	Templates.AddItem(ZeroIn());
-//
-//	return Templates;
-//}
+static function array<X2DataTemplate> CreateTemplates()
+{
+	local array<X2DataTemplate> Templates;
+
+	Templates.AddItem(AbsolutelyCritical());
+	Templates.AddItem(AdrenalineSurge());
+	Templates.AddItem(AgainstTheOdds());
+	Templates.AddItem(ArcticWarrior());
+	Templates.AddItem(Assassin());
+	Templates.AddItem(BulletSwarm());
+	Templates.AddItem(BullRush());
+	Templates.AddItem(CloseAndPersonal());
+	Templates.AddItem(CloseCombatSpecialist());
+	Templates.AddItem(CoverMe());
+	Templates.AddItem(DamnGoodGround());
+	Templates.AddItem(DangerZone());
+	Templates.AddItem(DeepCover());
+	Templates.AddItem(EspritDeCorps());
+	Templates.AddItem(Fastball());
+	Templates.AddItem(Focus());
+	Templates.AddItem(HitAndRun());
+	Templates.AddItem(Inspiration());
+	Templates.AddItem(InspireAgility());
+	Templates.AddItem(LightningHands());
+	Templates.AddItem(Liquidator());
+	Templates.AddItem(Magnum());
+	Templates.AddItem(MovingTarget());
+	Templates.AddItem(Packmaster());
+	Templates.AddItem(PowerShot());
+	Templates.AddItem(Precision());
+	Templates.AddItem(Pyromaniac());
+	Templates.AddItem(ReverseEngineering());
+	Templates.AddItem(Rocketeer());
+	Templates.AddItem(Saboteur());
+	Templates.AddItem(Scout());
+	Templates.AddItem(SlamFire());
+	Templates.AddItem(SmokeAndMirrors());
+	Templates.AddItem(Sprint());
+	Templates.AddItem(Stalker());
+	Templates.AddItem(SurvivalInstinct());
+	Templates.AddItem(TacticalSense());
+	Templates.AddItem(Weaponmaster());
+	Templates.AddItem(ZeroIn());
+
+	return Templates;
+}
 
 // Perk name:		Absolutely Critical
 // Perk effect:		You get an additional +50 Crit chance against flanked targets.
@@ -302,7 +302,7 @@ static function X2AbilityTemplate BullRushTrigger()
 	Effect.ReduceAll = true;
 
 	// Create a triggered ability that activates when the unit takes damage
-	return SelfTargetTrigger('XMBExample_BullRushTrigger', "img:///UILibrary_PerkIcons.UIPerk_command", false, Effect, 'UnitTakeEffectA');
+	return SelfTargetTrigger('XMBExample_BullRushTrigger', "img:///UILibrary_PerkIcons.UIPerk_command", false, Effect, 'UnitTakeEffectDamage');
 }
 
 // Perk name:		Close and Personal

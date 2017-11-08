@@ -587,8 +587,9 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
 
 	WeaponCondition = new class'X2Condition_WeaponCategory';
-	WeaponCondition.MatchWeaponCategories.AddItem('bullpup');
-	WeaponCondition.MatchWeaponCategories.AddItem('rifle');
+	WeaponCondition.IncludeWeaponCategories.AddItem('bullpup');
+	WeaponCondition.IncludeWeaponCategories.AddItem('rifle');
+	WeaponCondition.IncludeWeaponCategories.AddItem('cannon');
 
 	AbilityCondition = new class'XMBCondition_AbilityName';
 	AbilityCondition.IncludeAbilityNames.AddItem('FullAutoFire');

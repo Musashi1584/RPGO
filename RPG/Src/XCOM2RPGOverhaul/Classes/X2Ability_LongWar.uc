@@ -172,11 +172,16 @@ static function X2AbilityTemplate AddCutthroatAbility()
 
 static function X2AbilityTemplate AddLightEmUpAbility()
 {
-	local X2AbilityTemplate                 Template;
+	local X2AbilityTemplate					Template;
+	local X2Condition_WeaponCategory		WeaponCondition;
 
 	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('LightEmUp');
 	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityLightEmUp";
 	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).bConsumeAllPoints = false;
+
+	WeaponCondition = new class'X2Condition_WeaponCategory';
+	WeaponCondition.ExcludeWeaponCategories.AddItem('sniper_rifle');
+	Template.AbilityTargetConditions.AddItem(WeaponCondition);
 
 	Template.OverrideAbilities.AddItem('StandardShot');
 

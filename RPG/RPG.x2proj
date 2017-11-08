@@ -14,19 +14,27 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Config\ExtendedUpgrades" />
+    <Folder Include="Config\StatUpgradeUI" />
+    <Folder Include="Config\NewPromotionScreenbyDefault" />
     <Folder Include="Content\" />
+    <Folder Include="Content\StatUpgradeUI" />
     <Folder Include="Localization\" />
     <Folder Include="Content" />
     <Folder Include="Localization\ExtendedUpgrades" />
+    <Folder Include="Localization\NewPromotionScreenbyDefault" />
     <Folder Include="Src\" />
     <Folder Include="Src\ExtendedUpgrades\Classes" />
     <Folder Include="Src\LW_Tuple" />
     <Folder Include="Src\LW_Tuple\Classes" />
     <Folder Include="Src\ExtendedUpgrades" />
+    <Folder Include="Src\StatUpgradeUI" />
+    <Folder Include="Src\NewPromotionScreenbyDefault" />
+    <Folder Include="Src\NewPromotionScreenbyDefault\Classes" />
+    <Folder Include="Src\StatUpgradeUI\Classes" />
     <Folder Include="Src\XModBase_Interfaces" />
     <Folder Include="Src\XModBase_Interfaces\Classes" />
-    <Folder Include="Src\XModBase_Core_2_0_0" />
-    <Folder Include="Src\XModBase_Core_2_0_0\Classes" />
+    <Folder Include="Src\XModBase_Core_2_0_1" />
+    <Folder Include="Src\XModBase_Core_2_0_1\Classes" />
     <Folder Include="Src\XModBase_Lib" />
     <Folder Include="Src\XModBase_Lib\Classes" />
     <Folder Include="Src\XCOM2RPGOverhaul\" />
@@ -34,6 +42,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\ExtendedUpgrades\XComExtendedUpgrades.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\NewPromotionScreenbyDefault\XComPromotionUIMod.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\StatUpgradeUI\XComUI.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComClassData.ini">
@@ -45,7 +59,13 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComGameData.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComGameData_SoldierSkills.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComRPG.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComStealthOverhaul.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\AutoFire_ANIM.upk">
@@ -54,10 +74,16 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Content\AutoPistol_ANIM.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\StatUpgradeUI\StatUpgradeUI_Library.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\UILibrary_RPG.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\NewPromotionScreenbyDefault\XComGame.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="ReadMe.txt" />
@@ -91,6 +117,24 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\LW_Tuple\Classes\*.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NewPromotionScreenByDefault_PromotionScreenListener.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NPSBDP_UIArmory_PromotionHero.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NPSBDP_UIArmory_PromotionHeroColumn.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\NewPromotionScreenbyDefault\Classes\X2DownloadableContentInfo_NewPromotionScreenbyDefault.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\StatUpgradeUI\Classes\UIPanel_StatUI_StatLine.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\StatUpgradeUI\Classes\UIScreen_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
@@ -162,7 +206,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XModBase_Lib\Classes\*.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XModBase_Core_2_0_0\Classes\*.uc">
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBTargetingMethod_Grenade.uc">
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>

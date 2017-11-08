@@ -1,6 +1,7 @@
 class X2Condition_WeaponCategory extends X2Condition;
 
-var() array<name> MatchWeaponCategories;
+var() array<name> IncludeWeaponCategories;
+var() array<name> ExcludeWeaponCategories;
 
 event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameState_BaseObject kTarget)
 {
@@ -11,9 +12,14 @@ event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameSta
 	if (SourceWeapon != none)
 	{
 		WeaponTemplate = X2WeaponTemplate(SourceWeapon.GetMyTemplate());
-		if (MatchWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
+		if (IncludeWeaponCategories.Length > 0 && IncludeWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
 		{
 			return 'AA_Success';
+		}
+
+		if (ExcludeWeaponCategories.Length > 0 && ExcludeWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
+		{
+			return 'AA_WeaponIncompatible';
 		}
 	}
 

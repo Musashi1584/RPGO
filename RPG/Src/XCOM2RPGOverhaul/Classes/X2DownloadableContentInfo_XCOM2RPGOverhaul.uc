@@ -12,8 +12,99 @@ var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 
+static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
+{
+	local X2Condition_WeaponCategory WeaponCondition;
+	local int Index, CategoryIndex;
+	local name WeaponCategory;
+	local EInventorySlot InvSlot;
+	local array<XComGameState_Item> CurrentInventory;
+	local XComGameState_Item InventoryItem;
+
+	if (!UnitState.IsSoldier())
+		return;
+
+	`LOG(GetFuncName() @ UnitState.GetFullName(),, 'RPG');
+
+	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
+
+	for(Index = 0; Index < SetupData.Length; Index++)
+	{
+		// Deactivate all ranged abilities
+		if (IsPrimaryMelee(UnitState) && SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon)
+		{
+			WeaponCondition = new class'X2Condition_WeaponCategory';
+			WeaponCondition.ExcludeWeaponCategories.AddItem('sword');
+			SetupData[Index].Template.AbilityTargetConditions.AddItem(WeaponCondition);
+		}
+
+		//`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
+
+		//if (SetupData[Index].Template.DefaultSourceItemSlot != eInvSlot_Unknown)
+		//{
+			CategoryIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
+			//`LOG(GetFuncName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot @ Index,, 'RPG');
+			if (CategoryIndex != INDEX_NONE)
+			{
+				foreach default.AbilityWeaponCategoryRestrictions[CategoryIndex].WeaponCategories(WeaponCategory)
+				{
+					InvSlot = FindInventorySlotForItemCategory(UnitState, WeaponCategory, InventoryItem, StartState);
+					if (InvSlot != eInvSlot_Unknown)
+					{
+						SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
+						SetupData[Index].SourceWeaponRef = InventoryItem.GetReference();
+						`LOG(GetFuncName() @ "Patching" @ SetupData[Index].TemplateName @ "setting DefaultSourceItemSlot to" @ InvSlot @ SetupData[Index].SourceWeaponRef.ObjectID,, 'RPG');
+					}
+				}
+			}
+		//}
+
+		// Do this here again because the launch grenade ability is now on the grenade lanucher itself and not in earned soldier abilities
+		if (SetupData[Index].Template.bUseLaunchedGrenadeEffects)
+		{
+			//  populate a version of the ability for every grenade in the inventory
+			foreach CurrentInventory(InventoryItem)
+			{
+				if (InventoryItem.bMergedOut) 
+					continue;
+
+				if (X2GrenadeTemplate(InventoryItem.GetMyTemplate()) != none)
+				{ 
+					SetupData[Index].SourceAmmoRef = InventoryItem.GetReference();
+				}
+			}
+		}
+	}
+}
+
+static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
+{
+	// @TODO externalize in config
+	return (X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate()).WeaponCat == 'sword');
+}
+
+static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Unit UnitState, name WeaponCategory, out XComGameState_Item FoundItemState, optional XComGameState StartState)
+{
+	local array<XComGameState_Item> CurrentInventory;
+	local XComGameState_Item InventoryItem;
+	local X2WeaponTemplate WeaponTemplate;
+
+	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
+	foreach CurrentInventory(InventoryItem)
+	{
+		WeaponTemplate = X2WeaponTemplate(InventoryItem.GetMyTemplate());
+		if (WeaponTemplate != none && WeaponTemplate.WeaponCat == WeaponCategory)
+		{
+			FoundItemState = InventoryItem;
+			return InventoryItem.InventorySlot;
+		}
+	}
+	return eInvSlot_Unknown;
+}
+
 static event OnPostTemplatesCreated()
 {
+	`LOG(GetFuncName(),, 'RPG');
 	PatchAbilitiesWeaponCondition();
 	PatchWeapons();
 	PatchSquadSight();
@@ -22,6 +113,8 @@ static event OnPostTemplatesCreated()
 	PatchSuppression();
 	PatchSkirmisherGrapple();
 	PatchThrowClaymore();
+	PatchSwordSlice();
+	PatchCombatProtocol();
 }
 
 static function PatchAbilitiesWeaponCondition()
@@ -39,7 +132,7 @@ static function PatchAbilitiesWeaponCondition()
 		if (Template != none)
 		{
 			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.MatchWeaponCategories = Restriction.WeaponCategories;
+			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
 			Template.AbilityTargetConditions.AddItem(WeaponCondition);
 		}
 	}
@@ -71,16 +164,19 @@ static function PatchWeapons()
 				switch (WeaponTemplate.WeaponCat)
 				{
 					case 'rifle':
-						WeaponTemplate.Abilities.AddItem('FullAutoFire');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
 						if (InStr(string(WeaponTemplate.DataName), "MG") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
 						if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'bullpup':
-						WeaponTemplate.Abilities.AddItem('FullAutoFire');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
 						WeaponTemplate.iClipSize += 1;
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
@@ -88,46 +184,84 @@ static function PatchWeapons()
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
 						if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'sniper_rifle':
-						WeaponTemplate.Abilities.AddItem('Squadsight');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight');
+
+						WeaponTemplate.NumUpgradeSlots = 3;
+						break;
+					case 'vektor_rifle':
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'shotgun':
-						WeaponTemplate.Abilities.AddItem('ShotgunDamageModifierCoverType');
-						WeaponTemplate.Abilities.AddItem('ShotgunDamageModifierRange');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
+						
 						WeaponTemplate.CritChance += default.ShotgunCritBonus;
 						WeaponTemplate.Aim += default.ShotgunAimBonus;
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'cannon':
-						WeaponTemplate.Abilities.AddItem('FullAutoFire');
-						WeaponTemplate.Abilities.AddItem('Suppression');
-						WeaponTemplate.Abilities.AddItem('AutoFireShot');
-						WeaponTemplate.Abilities.AddItem('AutoFireOverwatch');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
+						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireShot');
+						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireOverwatch');
+						
 						WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
+						WeaponTemplate.iClipSize += 2;
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'pistol':
-						WeaponTemplate.Abilities.AddItem('PistolStandardShot');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot');
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'sword':
-						WeaponTemplate.Abilities.AddItem('SwordSlice');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice');
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'gremlin':
-						WeaponTemplate.Abilities.AddItem('IntrusionProtocol');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'IntrusionProtocol');
 						break;
 					case 'grenade_launcher':
-						WeaponTemplate.Abilities.AddItem('LaunchGrenade');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade');
 						break;
 					case 'wristblade':
-						WeaponTemplate.Abilities.AddItem('SkirmisherGrapple');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple');
 						break;
 					case 'claymore':
-						WeaponTemplate.Abilities.AddItem('ThrowClaymore');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore');
 						break;
 				}
 			}
 		}
 	}
 }
+
+static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability)
+{
+	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	{
+		`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+		Template.Abilities.AddItem(Ability);
+	}
+}
+
+static function PatchSwordSlice()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('SwordSlice');
+	Template.bUniqueSource = true;
+}
+
 
 static function PatchThrowClaymore()
 {
@@ -186,6 +320,17 @@ static function PatchSuppression()
 	Template.AdditionalAbilities.AddItem('LockdownBonuses');
 }
 
+static function PatchCombatProtocol()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('CombatProtocol');
+	Template.AdditionalAbilities.AddItem('CombatProtocolHackingBonus');
+}
+
 
 static function PatchSquadSight()
 {
@@ -201,6 +346,7 @@ static function PatchSquadSight()
 
 	Template.AbilityTriggers.Length = 0;
 	Template.AbilityTargetEffects.Length = 0;
+	Template.Hostility = eHostility_Neutral;
 
 	EventTrigger = new class'X2AbilityTrigger_EventListener';
 	EventTrigger.ListenerData.Deferral = ELD_OnStateSubmitted;
