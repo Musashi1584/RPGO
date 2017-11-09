@@ -3,14 +3,24 @@ class UIScreen_StatUI extends UIArmory config(UI);
 var UIPanel Container;
 var UIBGBox PanelBG;
 var UIBGBox FullBG;
-var array<UIPanel> StatLines;
+var UIButton SaveButton, AbortButton;
+var UIText AbilityPointsText;
+var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
-var XComGameState_Unit ThisUnitState;
+var XComGameState_Unit UnitState;
+var int AbilityPointCostSum;
+
+simulated function InitArmory(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false, optional XComGameState InitCheckGameState)
+{
+	super.InitArmory(UnitRef, DispEvent, SoldSpawnEvent, NavBackEvent, HideEvent, RemoveEvent, bInstant, InitCheckGameState);
+	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
+	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
+}
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
-	local UIPanel StatLine;
+	local UIPanel_StatUI_StatLine StatLine;
 	local int Index, OffsetX, OffsetY;
 	//local string color;
 
@@ -27,6 +37,22 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	PanelBG = Spawn(class'UIBGBox', Container);
 	PanelBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
 	PanelBG.InitBG('theBG', 0, 0, Container.Width, Container.Height);
+
+	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
+	AbilityPointsText.SetPosition(40, 40);
+	UIIUpdateSoldierAP();
+
+	AbortButton = Spawn(class'UIButton', Container).InitButton('AbortButton', "CANCEL", Abort);
+	AbortButton.SetFontSize(48);
+	AbortButton.SetResizeToText(true);
+	AbortButton.SetWidth(150);
+	AbortButton.SetPosition(Width / 2 - AbortButton.Width - 10, Height - AbortButton.Height - 80);
+
+	SaveButton = Spawn(class'UIButton', Container).InitButton('SaveButton', "SAVE", Save);
+	SaveButton.SetFontSize(48);
+	SaveButton.SetResizeToText(true);
+	SaveButton.SetWidth(150);
+	SaveButton.SetPosition(Width / 2 + 10, Height - SaveButton.Height - 80);
 	
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, 10, OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
@@ -34,7 +60,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Mobility, 10, OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 	
-	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Offense, 10, OnClickedIncrease, OnClickedDecrease);
+	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Offense, 100, OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 	
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Will, 10, OnClickedIncrease, OnClickedDecrease);
@@ -59,12 +85,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	{
 		OffsetX = 40;
 		OffsetY = 36;
-		StatLine.SetPosition(OffsetX, OffsetX + (OffsetY * Index));
-		//StatLine.SetSize(Container.Width * 0.8, Container.Height * 0.8 / StatLines.Length);
-
-		//color = "0x" $ rand(10) $ "A" $ rand(10) $ "B" $ rand(10) $ "F";
-		//StatLine.SetColor(color);
-
+		StatLine.SetPosition(OffsetX, 80 + (OffsetY * Index));
 		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName @ "SetPosition", bLog, 'RPG');
 		Index++;
 	}
@@ -72,24 +93,98 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	`LOG(self.class.name @ GetFuncName() @ "finished", bLog, 'RPG');
 }
 
-
-function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue)
+function UIPanel_StatUI_StatLine GetStatLine(ECharStatType StatType)
 {
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
+	local UIPanel_StatUI_StatLine StatLine;
 
-	return true;
+	foreach StatLines(StatLine)
+	{
+		if (StatLine.MCName == name(string(StatType)))
+		{
+			`LOG(self.class.name @ GetFuncName() @ StatLine.MCName, bLog, 'RPG');
+			return StatLine;
+		}
+	}
+
+	return none;
 }
 
-function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue)
+function UIIUpdateSoldierAP()
 {
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
+	local int CurrentAP;
 
-	return (NewStatValue >= 10);
+	CurrentAP = GetSoldierAP() - AbilityPointCostSum;
+
+	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, 48));
+}
+
+function int GetSoldierAP()
+{
+	return 100;
+}
+
+function Save(UIButton Button)
+{
+	`LOG(self.Class.name @ GetFuncName(), bLog, 'RPG');
+	OnAccept();
+}
+
+function Abort(UIButton Button)
+{
+	`LOG(self.Class.name @ GetFuncName(), bLog, 'RPG');
+	OnCancel();
+}
+
+simulated function OnCancel()
+{
+	super.OnCancel();
+}
+
+simulated function OnAccept()
+{
+	
+}
+
+function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int StatCost)
+{
+	local bool bCanIncrease;
+	local int AbilityPointsLeft;
+	
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
+	
+	AbilityPointsLeft = GetSoldierAP() - AbilityPointCostSum - StatCost;
+	bCanIncrease = (AbilityPointsLeft) >= 0;
+	if (bCanIncrease)
+	{
+		AbilityPointCostSum += StatCost;
+		UIIUpdateSoldierAP();
+	}
+
+	`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ AbilityPointsLeft @ bCanIncrease, bLog, 'RPG');
+
+	return bCanIncrease;
+}
+
+function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int StatCost)
+{
+	local bool bCanDecrease;
+	
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ StatCost, bLog, 'RPG');
+
+	bCanDecrease = (NewStatValue >= 10);
+
+	if (bCanDecrease)
+	{
+		AbilityPointCostSum -= StatCost;
+		UIIUpdateSoldierAP();
+	}
+
+	return bCanDecrease;
 }
 
 defaultproperties
 {
-	Width=1200
-	Height=800
+	Width=1400
+	Height=1000
 	bLog=true
 }

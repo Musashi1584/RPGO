@@ -26,18 +26,18 @@ var array<StatLocaleBind> StatLocales;
 var ArtifactCost TotalCost, CurrentCost;
 var UIButton MinusSign, PlusSign;
 var UIImage Image;
-var UIText StatName, StatValueText, UpgradeCost;
+var UIText StatName, StatValueText, UpgradeCostSum, StatCostText;
 var ECharStatType StatType;
-var int IconSize;
+var int IconSize, Padding;
 var int InitStatValue, StatValue;
 var bool bLog;
 
 var delegate<OnStatUpdateDelegate> CustomOnClickedIncreaseFn;
 var delegate<OnStatUpdateDelegate> CustomOnClickedDecreaseFn;
 
-delegate bool OnStatUpdateDelegate(ECharStatType StatType, int NewStatValue);
+delegate bool OnStatUpdateDelegate(ECharStatType StatType, int NewStatValue, int StatCost);
 
-simulated function UIPanel InitStatLine(
+simulated function UIPanel_StatUI_StatLine InitStatLine(
 	ECharStatType InitStatType,
 	int InitialStatValue,
 	delegate<OnStatUpdateDelegate> OnClickedIncreaseFn,
@@ -66,99 +66,72 @@ simulated function UIPanel InitStatLine(
 
 	StatName = Spawn(class'UIText', self).InitText(PanelName);
 	StatName.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(GetStatLocale(), eUIState_Normal, 48));
-	StatName.SetX(RunningOffsetX += 80);
+	StatName.SetX(RunningOffsetX += Image.Width + Padding);
+	StatName.SetWidth(260);
 
 	StatValueText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatValue"));
-	StatValueText.SetX(RunningOffsetX += 260);
-	UpdateStatValue(StatValue);
+	StatValueText.SetX(RunningOffsetX += StatName.Width + Padding);
+	StatValueText.SetWidth(100);
 
 	MinusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
 	MinusSign.SetFontSize(48);
 	MinusSign.SetResizeToText(true);
-	MinusSign.SetX(RunningOffsetX += 100);
+	MinusSign.SetWidth(150);
+	MinusSign.SetX(RunningOffsetX += StatValueText.Width + Padding);
 
 	PlusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
 	PlusSign.SetFontSize(48);
 	PlusSign.SetResizeToText(true);
-	PlusSign.SetX(RunningOffsetX += 155);
+	PlusSign.SetWidth(150);
+	PlusSign.SetX(RunningOffsetX += MinusSign.Width + Padding);
 
-	UpgradeCost = Spawn(class'UIText', self).InitText(name(PanelName $ "UpgradeCost"));
-	UpgradeCost.SetX(RunningOffsetX += 180);
-	UpdateUpgradeCost();
+	StatCostText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatCost"));
+	StatCostText.SetX(RunningOffsetX += PlusSign.Width + Padding);
+	StatCostText.SetWidth(200);
 	
+	UpgradeCostSum = Spawn(class'UIText', self).InitText(name(PanelName $ "UpgradeCostSum"));
+	UpgradeCostSum.SetX(RunningOffsetX += StatCostText.Width + Padding);
+	UpgradeCostSum.SetWidth(140);
 
+	UpdateStatValue(StatValue);
+	UpdateUpgradeCostSum();
+	
 	`LOG(self.class.name @ GetFuncName() @ PanelName @ "finished", bLog, 'RPG');
 
 	return self;
 }
 
-function UpdateUpgradeCost()
+function UpdateUpgradeCostSum()
 {
-	UpgradeCost.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(String(GetUpgradeCost()), eUIState_Warning, 48));
+	local string StatCostString, UpgradeCostSumString;
+
+	StatCostString = string(StatValue - InitStatValue) $ " * " $ GetStatCost();
+	StatCostText.SetHtmlText(class'UIUtilities_Text'.static.AlignLeft(class'UIUtilities_Text'.static.GetColoredText(StatCostString, eUIState_Normal, 48)));
+
+	UpgradeCostSumString = String(GetUpgradeCostSum()) @ "AP";
+	UpgradeCostSum.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(UpgradeCostSumString, eUIState_Normal, 48)));
 }
 
 function UpdateStatValue(int NewValue)
 {
 	local EUIState UIState;
+	local string FormattedText;
 
 	UIState = eUIState_Normal;
 
 	if (NewValue > InitStatValue)
 		UIState = eUIState_Good;
 
-	StatValueText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(String(NewValue), UIState, 48));
+	FormattedText = class'UIUtilities_Text'.static.GetColoredText(String(NewValue), UIState, 48);
+
+	StatValueText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(FormattedText));
 }
 
-function string GetStatLocale()
-{
-	local int Index;
 
-	Index = StatLocales.Find('Stat', StatType);
-
-	if (Index != INDEX_NONE)
-	{
-		`LOG(self.class.name @ GetFuncName() @ StatLocales[Index].LocalString, bLog, 'RPG');
-		return StatLocales[Index].LocalString;
-	}
-
-	return "";
-}
-
-function string GetStatIcon()
-{
-	local int Index;
-
-	Index = default.StatIcons.Find('Stat', StatType);
-
-	if (Index != INDEX_NONE)
-	{
-		`LOG(self.class.name @ GetFuncName() @ default.StatIcons[Index].Icon, bLog, 'RPG');
-		return default.StatIcons[Index].Icon;
-	}
-
-	return "";
-}
-
-function int GetUpgradeCost()
+function int GetUpgradeCostSum()
 {
 	return (StatValue - InitStatValue) * GetStatCost();
 }
-
-function int GetStatCost()
-{
-	local int Index;
-
-	Index = default.StatCosts.Find('Stat', StatType);
-
-	if (Index != INDEX_NONE)
-	{
-		`LOG(self.class.name @ GetFuncName() @ default.StatCosts[Index].AbilityPointCost, bLog, 'RPG');
-		return default.StatCosts[Index].AbilityPointCost;
-	}
-
-	return 0;
-}
-
 
 function OnClickedIncrease(UIButton Button)
 {
@@ -166,13 +139,13 @@ function OnClickedIncrease(UIButton Button)
 
 	NewStatValue = StatValue + 1;
 
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(), bLog, 'RPG');
 
-	if (CustomOnClickedIncreaseFn(StatType, NewStatValue))
+	if (CustomOnClickedIncreaseFn(StatType, NewStatValue, GetStatCost()))
 	{
 		StatValue = NewStatValue;
 		UpdateStatValue(NewStatValue);
-		UpdateUpgradeCost();
+		UpdateUpgradeCostSum();
 	}
 }
 
@@ -182,13 +155,13 @@ function OnClickedDecrease(UIButton Button)
 
 	NewStatValue = StatValue - 1;
 
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(), bLog, 'RPG');
 
-	if (CustomOnClickedDecreaseFn(StatType, NewStatValue))
+	if (CustomOnClickedDecreaseFn(StatType, NewStatValue, GetStatCost()))
 	{
 		StatValue = NewStatValue;
 		UpdateStatValue(StatValue);
-		UpdateUpgradeCost();
+		UpdateUpgradeCostSum();
 	}
 }
 
@@ -198,9 +171,10 @@ simulated function UIPanel SetPosition(float NewX, float NewY)
 	Image.SetY(NewY);
 	StatName.SetY(NewY);
 	StatValueText.SetY(NewY);
+	StatCostText.SetY(NewY);
 	MinusSign.SetY(NewY);
 	PlusSign.SetY(NewY);
-	UpgradeCost.SetY(NewY);
+	UpgradeCostSum.SetY(NewY);
 	return super.SetPosition(NewX, NewY);
 }
 
@@ -245,10 +219,56 @@ function InitStatLocales()
 	StatLocales.AddItem(StatLocale);
 }
 
+function int GetStatCost()
+{
+	local int Index;
+
+	Index = default.StatCosts.Find('Stat', StatType);
+
+	if (Index != INDEX_NONE)
+	{
+		`LOG(self.class.name @ GetFuncName() @ default.StatCosts[Index].AbilityPointCost, bLog, 'RPG');
+		return default.StatCosts[Index].AbilityPointCost;
+	}
+
+	return 0;
+}
+
+function string GetStatLocale()
+{
+	local int Index;
+
+	Index = StatLocales.Find('Stat', StatType);
+
+	if (Index != INDEX_NONE)
+	{
+		`LOG(self.class.name @ GetFuncName() @ StatLocales[Index].LocalString, bLog, 'RPG');
+		return StatLocales[Index].LocalString;
+	}
+
+	return "";
+}
+
+function string GetStatIcon()
+{
+	local int Index;
+
+	Index = default.StatIcons.Find('Stat', StatType);
+
+	if (Index != INDEX_NONE)
+	{
+		`LOG(self.class.name @ GetFuncName() @ default.StatIcons[Index].Icon, bLog, 'RPG');
+		return default.StatIcons[Index].Icon;
+	}
+
+	return "";
+}
+
 defaultproperties
 {
-	Width=1000
+	Width=1400
 	Height=80
+	Padding=20
 	IconSize=64
-	bLog=true
+	bLog=false
 }

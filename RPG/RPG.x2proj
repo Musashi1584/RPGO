@@ -137,6 +137,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\StatUpgradeUI\Classes\UIScreen_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI_MainMenu.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
       <SubType>Content</SubType>
     </Content>
