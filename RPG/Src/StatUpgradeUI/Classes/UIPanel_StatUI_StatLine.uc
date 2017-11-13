@@ -28,14 +28,14 @@ var UIButton MinusSign, PlusSign;
 var UIImage Image;
 var UIText StatName, StatValueText, UpgradeCostSum, StatCostText;
 var ECharStatType StatType;
-var int IconSize, Padding;
+var int IconSize, Padding, FontSize;
 var int InitStatValue, StatValue;
 var bool bLog;
 
 var delegate<OnStatUpdateDelegate> CustomOnClickedIncreaseFn;
 var delegate<OnStatUpdateDelegate> CustomOnClickedDecreaseFn;
 
-delegate bool OnStatUpdateDelegate(ECharStatType StatType, int NewStatValue, int StatCost);
+delegate bool OnStatUpdateDelegate(ECharStatType UpdateStatType, int NewStatValue, int StatCost);
 
 simulated function UIPanel_StatUI_StatLine InitStatLine(
 	ECharStatType InitStatType,
@@ -45,7 +45,6 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 )
 {
 	local name PanelName;
-	local int RunningOffsetX;
 
 	PanelName = name(string(InitStatType));
 	InitPanel(PanelName);
@@ -59,39 +58,7 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 	CustomOnClickedIncreaseFn = OnClickedIncreaseFn;
 	CustomOnClickedDecreaseFn = OnClickedDecreaseFn;
 
-	Image = Spawn(class'UIImage', self).InitImage(name(PanelName $ '_Image'), GetStatIcon());
-	Image.SetSize(IconSize, IconSize);
-	Image.SetColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
-	Image.SetX(RunningOffsetX += 20);
-
-	StatName = Spawn(class'UIText', self).InitText(PanelName);
-	StatName.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(GetStatLocale(), eUIState_Normal, 48));
-	StatName.SetX(RunningOffsetX += Image.Width + Padding);
-	StatName.SetWidth(260);
-
-	StatValueText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatValue"));
-	StatValueText.SetX(RunningOffsetX += StatName.Width + Padding);
-	StatValueText.SetWidth(100);
-
-	MinusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
-	MinusSign.SetFontSize(48);
-	MinusSign.SetResizeToText(true);
-	MinusSign.SetWidth(150);
-	MinusSign.SetX(RunningOffsetX += StatValueText.Width + Padding);
-
-	PlusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
-	PlusSign.SetFontSize(48);
-	PlusSign.SetResizeToText(true);
-	PlusSign.SetWidth(150);
-	PlusSign.SetX(RunningOffsetX += MinusSign.Width + Padding);
-
-	StatCostText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatCost"));
-	StatCostText.SetX(RunningOffsetX += PlusSign.Width + Padding);
-	StatCostText.SetWidth(200);
-	
-	UpgradeCostSum = Spawn(class'UIText', self).InitText(name(PanelName $ "UpgradeCostSum"));
-	UpgradeCostSum.SetX(RunningOffsetX += StatCostText.Width + Padding);
-	UpgradeCostSum.SetWidth(140);
+	InitChildPanels(PanelName, 200, 80, 150, 180, 120);
 
 	UpdateStatValue(StatValue);
 	UpdateUpgradeCostSum();
@@ -101,15 +68,62 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 	return self;
 }
 
+function InitChildPanels(
+	name PanelName,
+	int StatNameWidth,
+	int StatValueTextWidth,
+	int ButtonWidth,
+	int StatCostTextWidth,
+	int UpgradeCostSumWidth)
+{
+	local int RunningOffsetX;
+
+	RunningOffsetX = 0;
+
+	Image = Spawn(class'UIImage', self).InitImage(name(PanelName $ '_Image'), GetStatIcon());
+	Image.SetSize(IconSize, IconSize);
+	Image.SetColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
+	Image.SetX(RunningOffsetX);
+
+	StatName = Spawn(class'UIText', self).InitText(PanelName);
+	StatName.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(GetStatLocale(), eUIState_Normal, FontSize));
+	StatName.SetX(RunningOffsetX += Image.Width + Padding);
+	StatName.SetWidth(StatNameWidth);
+
+	StatValueText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatValue"));
+	StatValueText.SetX(RunningOffsetX += StatName.Width + Padding);
+	StatValueText.SetWidth(StatValueTextWidth);
+
+	MinusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
+	MinusSign.SetFontSize(FontSize);
+	MinusSign.SetResizeToText(true);
+	MinusSign.SetWidth(ButtonWidth);
+	MinusSign.SetX(RunningOffsetX += StatValueText.Width + Padding);
+
+	PlusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
+	PlusSign.SetFontSize(FontSize);
+	PlusSign.SetResizeToText(true);
+	PlusSign.SetWidth(ButtonWidth);
+	PlusSign.SetX(RunningOffsetX += MinusSign.Width + Padding);
+
+	StatCostText = Spawn(class'UIText', self).InitText(name(PanelName $ "StatCost"));
+	StatCostText.SetX(RunningOffsetX += PlusSign.Width + Padding);
+	StatCostText.SetWidth(StatCostTextWidth);
+	
+	UpgradeCostSum = Spawn(class'UIText', self).InitText(name(PanelName $ "UpgradeCostSum"));
+	UpgradeCostSum.SetX(RunningOffsetX += StatCostText.Width + Padding);
+	UpgradeCostSum.SetWidth(UpgradeCostSumWidth);
+}
+
 function UpdateUpgradeCostSum()
 {
 	local string StatCostString, UpgradeCostSumString;
 
 	StatCostString = string(StatValue - InitStatValue) $ " * " $ GetStatCost();
-	StatCostText.SetHtmlText(class'UIUtilities_Text'.static.AlignLeft(class'UIUtilities_Text'.static.GetColoredText(StatCostString, eUIState_Normal, 48)));
+	StatCostText.SetHtmlText(class'UIUtilities_Text'.static.AlignLeft(class'UIUtilities_Text'.static.GetColoredText(StatCostString, eUIState_Normal, FontSize)));
 
 	UpgradeCostSumString = String(GetUpgradeCostSum()) @ "AP";
-	UpgradeCostSum.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(UpgradeCostSumString, eUIState_Normal, 48)));
+	UpgradeCostSum.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(UpgradeCostSumString, eUIState_Normal, FontSize)));
 }
 
 function UpdateStatValue(int NewValue)
@@ -122,7 +136,7 @@ function UpdateStatValue(int NewValue)
 	if (NewValue > InitStatValue)
 		UIState = eUIState_Good;
 
-	FormattedText = class'UIUtilities_Text'.static.GetColoredText(String(NewValue), UIState, 48);
+	FormattedText = class'UIUtilities_Text'.static.GetColoredText(String(NewValue), UIState, FontSize);
 
 	StatValueText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(FormattedText));
 }
@@ -168,7 +182,9 @@ function OnClickedDecrease(UIButton Button)
 simulated function UIPanel SetPosition(float NewX, float NewY)
 {
 	`LOG(self.Class.name @ GetFuncName() @ NewX @ NewY, bLog, 'RPG');
+	
 	Image.SetY(NewY);
+
 	StatName.SetY(NewY);
 	StatValueText.SetY(NewY);
 	StatCostText.SetY(NewY);
@@ -269,6 +285,7 @@ defaultproperties
 	Width=1400
 	Height=80
 	Padding=20
-	IconSize=64
+	IconSize=32
+	FontSize=32
 	bLog=false
 }

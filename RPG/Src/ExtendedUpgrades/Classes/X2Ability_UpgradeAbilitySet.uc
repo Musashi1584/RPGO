@@ -21,6 +21,10 @@ var config int AUTO_LOADER_CHANCE_BSC;
 var config int AUTO_LOADER_CHANCE_ADV;
 var config int AUTO_LOADER_CHANCE_SUP;
 
+var config int AUTO_LOADER_MAX_AMMO_BSC;
+var config int AUTO_LOADER_MAX_AMMO_ADV;
+var config int AUTO_LOADER_MAX_AMMO_SUP;
+
 var name BasicScopeAbilityName;
 var name AdvancedScopeAbilityName;
 var name SuperiorScopeAbilityName;
@@ -94,6 +98,141 @@ static function X2AbilityTemplate StockAttachment(name TemplateName, int Bonus)
 }
 
 static function X2AbilityTemplate AutoLoaderAttachment(name TemplateName)
+{
+	local X2AbilityTemplate                 Template;	
+	local X2Condition_UnitProperty          ShooterPropertyCondition;
+	local X2Condition_AbilitySourceWeapon   WeaponCondition;
+	local X2AbilityTrigger_EventListener	EventTrigger;
+	local array<name>                       SkipExclusions;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, TemplateName);
+	
+	Template.bDontDisplayInAbilitySummary = false;
+	
+	ShooterPropertyCondition = new class'X2Condition_UnitProperty';	
+	ShooterPropertyCondition.ExcludeDead = true;                    //Can't reload while dead
+	Template.AbilityShooterConditions.AddItem(ShooterPropertyCondition);
+	WeaponCondition = new class'X2Condition_AbilitySourceWeapon';
+	WeaponCondition.WantsReload = true;
+	Template.AbilityShooterConditions.AddItem(WeaponCondition);
+	
+	EventTrigger = new class'X2AbilityTrigger_EventListener';
+	EventTrigger.ListenerData.Deferral = ELD_OnStateSubmitted;
+	EventTrigger.ListenerData.EventID = 'PlayerTurnBegun';
+	EventTrigger.ListenerData.Filter = eFilter_Player;
+	EventTrigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
+	Template.AbilityTriggers.AddItem(EventTrigger);
+	
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	
+	Template.AbilitySourceName = 'eAbilitySource_Standard';
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_reload";
+	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.RELOAD_PRIORITY;
+	Template.bNoConfirmationWithHotKey = true;
+	Template.bDisplayInUITooltip = false;
+	Template.bDisplayInUITacticalText = false;
+	Template.DisplayTargetHitChance = false;
+
+	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
+	Template.BuildNewGameStateFn = AutoloaderAbility_BuildGameState;
+	Template.BuildVisualizationFn = AutoloaderAbility_BuildVisualization;
+
+	Template.Hostility = eHostility_Neutral;
+
+	Template.CinescriptCameraType="GenericAccentCam";
+
+	return Template;	
+}
+
+simulated function XComGameState AutoloaderAbility_BuildGameState(XComGameStateContext Context)
+{
+	local XComGameState NewGameState;
+	local XComGameState_Unit UnitState;
+	local XComGameStateContext_Ability AbilityContext;
+	local XComGameState_Ability AbilityState;
+	local XComGameState_Item WeaponState, NewWeaponState;
+	local UnitValue Reloads;
+	local int MaxReloads;
+
+	`LOG(GetFuncName(),, 'ExtendedUpgrades');
+
+	NewGameState = `XCOMHISTORY.CreateNewGameState(true, Context);	
+	AbilityContext = XComGameStateContext_Ability(Context);	
+	AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID( AbilityContext.InputContext.AbilityRef.ObjectID ));
+
+	WeaponState = AbilityState.GetSourceWeapon();
+	NewWeaponState = XComGameState_Item(NewGameState.CreateStateObject(class'XComGameState_Item', WeaponState.ObjectID));
+
+	UnitState = XComGameState_Unit(NewGameState.CreateStateObject(class'XComGameState_Unit', AbilityContext.InputContext.SourceObject.ObjectID));	
+	UnitState.GetUnitValue('AutoLoaderReloads', Reloads);
+
+	if (AbilityState.GetMyTemplateName() == default.SuperiorAutoLoaderAbilityName)
+	{
+		MaxReloads = default.AUTO_LOADER_MAX_AMMO_SUP;
+	}
+
+	if (AbilityState.GetMyTemplateName() == default.AdvancedAutoLoaderAbilityName)
+	{
+		MaxReloads = default.AUTO_LOADER_MAX_AMMO_ADV;
+	}
+
+	if (AbilityState.GetMyTemplateName() == default.BasicAutoLoaderAbilityName)
+	{
+		MaxReloads = default.AUTO_LOADER_MAX_AMMO_BSC;
+	}
+
+	`LOG(GetFuncName() @ AbilityState.GetMyTemplateName() @ "MaxReloads" @ MaxReloads,, 'ExtendedUpgrades');
+
+	if (NewWeaponState.Ammo < NewWeaponState.GetClipSize() && Reloads.fValue < MaxReloads)
+	{
+		NewWeaponState.Ammo += 1;
+		UnitState.SetUnitFloatValue('AutoLoaderReloads', Reloads.fValue += 1.0, eCleanup_BeginTactical);
+	}
+	
+	NewGameState.AddStateObject(UnitState);
+	NewGameState.AddStateObject(NewWeaponState);
+
+	return NewGameState;	
+}
+
+simulated function AutoloaderAbility_BuildVisualization(XComGameState VisualizeGameState)
+{
+	local XComGameStateHistory History;
+	local XComGameStateContext_Ability  Context;
+	local StateObjectReference          ShootingUnitRef;	
+	local X2Action_PlayAnimation		PlayAnimation;
+
+	local VisualizationActionMetadata   InitData;
+	local VisualizationActionMetadata   BuildData;
+
+	local XComGameState_Ability Ability;
+	local X2Action_PlaySoundAndFlyOver SoundAndFlyover;
+
+	History = `XCOMHISTORY;
+
+	Context = XComGameStateContext_Ability(VisualizeGameState.GetContext());
+	ShootingUnitRef = Context.InputContext.SourceObject;
+
+	//Configure the visualization track for the shooter
+	//****************************************************************************************
+	BuildData = InitData;
+	BuildData.StateObject_OldState = History.GetGameStateForObjectID(ShootingUnitRef.ObjectID, eReturnType_Reference, VisualizeGameState.HistoryIndex - 1);
+	BuildData.StateObject_NewState = VisualizeGameState.GetGameStateForObjectID(ShootingUnitRef.ObjectID);
+	BuildData.VisualizeActor = History.GetVisualizer(ShootingUnitRef.ObjectID);
+					
+	PlayAnimation = X2Action_PlayAnimation(class'X2Action_PlayAnimation'.static.AddToVisualizationTree(BuildData, Context));
+	PlayAnimation.Params.AnimName = 'HL_Reload';
+
+	Ability = XComGameState_Ability(History.GetGameStateForObjectID(Context.InputContext.AbilityRef.ObjectID));
+	SoundAndFlyOver = X2Action_PlaySoundAndFlyOver(class'X2Action_PlaySoundAndFlyOver'.static.AddToVisualizationTree(BuildData, Context));
+	SoundAndFlyOver.SetSoundAndFlyOverParameters(None, Ability.GetMyTemplate().LocFriendlyName, Ability.GetMyTemplate().ActivationSpeech, eColor_Good);
+	//****************************************************************************************
+}
+
+
+static function X2AbilityTemplate AutoLoaderAttachmentOld(name TemplateName)
 {
 	local X2AbilityTemplate Template;
 	local X2AbilityTrigger_EventListener Trigger;

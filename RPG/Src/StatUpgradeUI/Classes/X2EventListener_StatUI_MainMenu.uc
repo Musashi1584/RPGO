@@ -33,15 +33,18 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	local UIList List;
 	local UIArmory_MainMenu MainMenu;
 	local UIListItemString StatUIButton;
+	local XComGameState_Unit UnitState;
 
 	`LOG(GetFuncName(),, 'RPG');
 	
 	List = UIList(EventData);
-	MainMenu = UIArmory_MainMenu(EventSource);
+	MainMenu = UIArmory_MainMenu(EventSource);	
+	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(MainMenu.GetUnitRef().ObjectID));
 
 	StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
 	StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
 	StatUIButton.ButtonBG.OnClickedDelegate = OnSoldierStats;
+	StatUIButton.NeedsAttention(UnitState.AbilityPoints > 0);
 
 	//if(NextOnSelectionChanged == none)
 	//{
@@ -77,6 +80,12 @@ simulated function OnSoldierStats(UIButton kButton)
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("Play_MenuSelect");
 }
 
+simulated static function UIListItemString FindDismissListItem(UIList List)
+{
+	return UIListItemString(List.GetChildByName('ArmoryMainMenu_DismissButton', false));
+}
+
+
 simulated function OnSelectionChanged(UIList ContainerList, int ItemIndex)
 {
 	local UIArmory_MainMenu MainMenu;
@@ -91,8 +100,3 @@ simulated function OnSelectionChanged(UIList ContainerList, int ItemIndex)
 	NextOnSelectionChanged(ContainerList, ItemIndex);
 }
 
-simulated static function UIListItemString FindDismissListItem(UIList List)
-{
-
-	return UIListItemString(List.GetChildByName('ArmoryMainMenu_DismissButton', false));
-}

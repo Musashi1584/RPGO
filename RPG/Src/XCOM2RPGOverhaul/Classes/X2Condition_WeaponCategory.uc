@@ -14,13 +14,19 @@ event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameSta
 		WeaponTemplate = X2WeaponTemplate(SourceWeapon.GetMyTemplate());
 		if (IncludeWeaponCategories.Length > 0 && IncludeWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
 		{
+			`LOG(self.Class.Name @ GetFuncName() @ kAbility.GetMyTemplateName() @ "IncludeWeaponCategories matches" @ WeaponTemplate.WeaponCat,, 'RPG');
 			return 'AA_Success';
 		}
 
 		if (ExcludeWeaponCategories.Length > 0 && ExcludeWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
 		{
+			`LOG(self.Class.Name @ GetFuncName() @ kAbility.GetMyTemplateName() @ "ExcludeWeaponCategories matches" @ WeaponTemplate.WeaponCat,, 'RPG');
 			return 'AA_WeaponIncompatible';
 		}
+	}
+	else
+	{
+		`LOG(self.Class.Name @ GetFuncName() @ kAbility.GetMyTemplateName() @ "no source weapon found",, 'RPG');
 	}
 
 	return 'AA_WeaponIncompatible';

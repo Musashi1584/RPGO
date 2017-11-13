@@ -137,6 +137,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\StatUpgradeUI\Classes\UIScreen_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\StatUpgradeUI\Classes\X2DownloadableContentInfo_StatUpgradeUI.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI_MainMenu.uc">
       <SubType>Content</SubType>
     </Content>
@@ -147,6 +150,15 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseandPersonal.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseEncounters.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LWHoloTarget.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">

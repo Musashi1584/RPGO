@@ -55,6 +55,7 @@ function array<int> GetRangeTableDiff(XComGameState_Item SourceWeapon)
 
 	CurrentRangeTable = X2WeaponTemplate(SourceWeapon.GetMyTemplate()).RangeAccuracy;
 	RangeTables = GetRangeTables();
+	EmptyArray.Length = 0;
 
 	foreach RangeTables(Table)
 	{

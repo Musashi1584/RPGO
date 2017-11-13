@@ -52,6 +52,8 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Rocketeer());
 	Templates.AddItem(FullAutoFire());
 	Templates.AddItem(AutoFireModifications());
+	Templates.AddItem(SurgicalPrecision());
+	Templates.AddItem(PurePassive('Gunner', "img:///UILibrary_RPG.UIPerk_Gunner"));
 
 	return Templates;
 }
@@ -637,4 +639,20 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(DamageBonus);
 
 	return Template;
+}
+
+
+static function X2AbilityTemplate SurgicalPrecision()
+{
+	local XMBEffect_ConditionalBonus Effect;
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.AbilityTargetConditions.AddItem(default.FullCoverCondition);
+	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.HIGH_COVER_BONUS / 2);
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.AbilityTargetConditions.AddItem(default.HalfCoverCondition);
+	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.LOW_COVER_BONUS / 2);
+
+	return Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
 }

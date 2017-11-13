@@ -3,18 +3,19 @@ class UIScreen_StatUI extends UIArmory config(UI);
 var UIPanel Container;
 var UIBGBox PanelBG;
 var UIBGBox FullBG;
+var UIX2PanelHeader TitleHeader;
+var UIImage SCImage;
 var UIButton SaveButton;
-var UIText AbilityPointsText, SoldierNameText;
+var UIText AbilityPointsText;
 var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
 var XComGameState_Unit UnitState;
-var int AbilityPointCostSum;
+var int AbilityPointCostSum, FontSize;
 
 simulated function InitArmory(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false, optional XComGameState InitCheckGameState)
 {
-	local UIPanel_StatUI_StatLine StatLine;
-	local int Index, OffsetX, OffsetY, RunningHeaderOffsetX;
+	local int RunningHeaderOffsetX;
 
 	super.InitArmory(UnitRef, DispEvent, SoldSpawnEvent, NavBackEvent, HideEvent, RemoveEvent, bInstant, InitCheckGameState);
 	
@@ -32,20 +33,40 @@ simulated function InitArmory(StateObjectReference UnitRef, optional name DispEv
 	PanelBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
 	PanelBG.InitBG('theBG', 0, 0, Container.Width, Container.Height);
 
-	SoldierNameText = Spawn(class'UIText', Container).InitText('SoldierNameText');
-	SoldierNameText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(UnitState.GetFullName(), eUIState_Normal, 48));
-	SoldierNameText.SetWidth(400);
-	SoldierNameText.SetPosition(RunningHeaderOffsetX += 40, 40);
+	RunningHeaderOffsetX = 40;
+
+	SCImage = Spawn(class'UIImage', Container).InitImage();
+	SCImage.SetSize(80, 80);
+	SCImage.SetPosition(RunningHeaderOffsetX, RunningHeaderOffsetX);
+
+	TitleHeader = Spawn(class'UIX2PanelHeader', Container);
+	TitleHeader.InitPanelHeader('', "", "");
+	TitleHeader.SetPosition(SCImage.Width + RunningHeaderOffsetX + 10, 40);
+	TitleHeader.SetWidth(Container.Width - TitleHeader.X - RunningHeaderOffsetX);
+	TitleHeader.SetHeaderWidth(Container.Width - TitleHeader.X - RunningHeaderOffsetX);
 
 	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
-	AbilityPointsText.SetPosition(RunningHeaderOffsetX += SoldierNameText.Width, 40);
+	AbilityPointsText.SetPosition(RunningHeaderOffsetX, 130);
 
 	SaveButton = Spawn(class'UIButton', Container).InitButton('SaveButton', "SAVE", Save);
-	SaveButton.SetFontSize(48);
+	SaveButton.SetFontSize(FontSize);
 	SaveButton.SetResizeToText(true);
 	SaveButton.SetWidth(150);
-	SaveButton.SetPosition(Width / 2 - SaveButton.Width / 2, Height - SaveButton.Height - 50);
-	
+	SaveButton.SetPosition(Width / 2 - SaveButton.Width / 2, Height - SaveButton.Height - 30);
+
+	InitStatLines();
+
+	PopulateHeaderData();
+	PopulateSoldierAP();
+
+	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
+}
+
+function InitStatLines()
+{
+	local UIPanel_StatUI_StatLine StatLine;
+	local int Index, OffsetX, OffsetY;
+
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, int(UnitState.GetMaxStat(eStat_HP)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 	
@@ -73,43 +94,41 @@ simulated function InitArmory(StateObjectReference UnitRef, optional name DispEv
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_PsiOffense, int(UnitState.GetMaxStat(eStat_PsiOffense)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 
+	Index = 0;
 	foreach StatLines(StatLine)
 	{
 		OffsetX = 40;
-		OffsetY = 36;
-		StatLine.SetPosition(OffsetX, 80 + (OffsetY * Index));
-		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName @ "SetPosition", bLog, 'RPG');
+		OffsetY = 30;
+		StatLine.SetPosition(OffsetX, 100 + (OffsetY * Index));
+		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName @ FontSize, bLog, 'RPG');
 		Index++;
 	}
-
-	UIIUpdateSoldierAP();
-
-	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
 }
 
-function UIPanel_StatUI_StatLine GetStatLine(ECharStatType StatType)
-{
-	local UIPanel_StatUI_StatLine StatLine;
 
-	foreach StatLines(StatLine)
+function PopulateHeaderData()
+{
+	local X2SoldierClassTemplate SoldierClass;
+
+	SoldierClass = UnitState.GetSoldierClassTemplate();
+
+	if (SoldierClass != none)
 	{
-		if (StatLine.MCName == name(string(StatType)))
-		{
-			`LOG(self.class.name @ GetFuncName() @ StatLine.MCName, bLog, 'RPG');
-			return StatLine;
-		}
+		SCImage.LoadImage(SoldierClass.IconImage);
+		SCImage.Show();
 	}
 
-	return none;
+	TitleHeader.SetText(UnitState.GetName(eNameType_FullNick), Caps(SoldierClass != None ? SoldierClass.DisplayName : ""));
+	TitleHeader.MC.FunctionVoid("realize");
 }
 
-function UIIUpdateSoldierAP()
+function PopulateSoldierAP()
 {
 	local int CurrentAP;
 
 	CurrentAP = GetSoldierAP() - AbilityPointCostSum;
 
-	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, 48));
+	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, FontSize));
 }
 
 function int GetSoldierAP()
@@ -202,7 +221,7 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 	if (bCanIncrease)
 	{
 		AbilityPointCostSum += StatCost;
-		UIIUpdateSoldierAP();
+		PopulateSoldierAP();
 	}
 
 	`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ AbilityPointsLeft @ bCanIncrease, bLog, 'RPG');
@@ -221,15 +240,32 @@ function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int St
 	if (bCanDecrease)
 	{
 		AbilityPointCostSum -= StatCost;
-		UIIUpdateSoldierAP();
+		PopulateSoldierAP();
 	}
 
 	return bCanDecrease;
 }
 
+simulated static function CycleToSoldier(StateObjectReference NewRef)
+{
+	local UIScreen_StatUI StatUIScreen;
+	local UIScreenStack ScreenStack;
+
+	ScreenStack = `SCREENSTACK;
+	StatUIScreen = UIScreen_StatUI(ScreenStack.GetScreen(class'UIScreen_StatUI'));
+
+	if(StatUIScreen != none)
+	{
+		StatUIScreen.InitArmory(NewRef);
+	}
+	
+	super.CycleToSoldier(NewRef);
+}
+
 defaultproperties
 {
-	Width=1400
-	Height=900
+	FontSize=32
+	Width=1120
+	Height=800
 	bLog=true
 }

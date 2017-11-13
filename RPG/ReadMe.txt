@@ -1,9 +1,39 @@
 ﻿[h1]ALPHA VERSION. TESTING PURPOSES ONLY[/h1]
 
+[h1]About this overhaul[/h1]
+The idea of this mod was born out of my passion for rpg games.
+I thought it would be cool to develope every single soldier in every way you want and give it every weapon or item you want. 
+
+So here it is. The mod replaces the vanilla class by one class simply named "Soldier".
+
+The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Secondary Weapons and Utility Slot Sidearms) and has 14 (currently) 13 rows of abilities to choose from.
+On squaddie your soldier will get random 2 abilities from a pool to give each soldier an idea to where he/she could be deveveloped.
+So any combination of abilities and weapons are possible. For example you can create a cannon wielding medic, a gunslinger/grenadier, overwatch/skirmisher or whatever you can imagine.
+
+Most abilities work with each weapon, the secondary weapon abilities work with their associated secondary regardless if it is in the primary, secondary or utility slot (if you are using Utility Slot Sidearms WOTC)
+
+Another big change is the possibility to upgrade the soldiers stats with ability points. Therefor i designed a completely new ui screen.
+The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission.
+
+For overall balance and because i wanted to i overhauled how most weapon attachements work.
+
+I recommend to play this mod with the following mods:
+
+- WotC Primary Secondaries
+- WotC SpecOps Combat Knives
+- WotC Katana Mod Reloaded
+- Musashis Stealth Overhaul
+- WotC Tactical Suppressors
+- [WOTC] Point-Based Not Created Equal
+- Utility Slot Sidearms WOTC
+- [WOTC] LW2 Secondary Weapons
+
+More to come!
+
 [h1]Changes to weapons[/h1]
 - All weapons get 3 upgrade slots
 - Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
-- Sniper Rifles give Squadsight ability.
+- Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
 - Cannons get Autofire and Supression ability, have increased damage and clip size but get a -3 mobility penalty.
 - Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 - Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending.

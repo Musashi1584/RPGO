@@ -12,6 +12,26 @@ var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 
+// -----------------------------------------------
+// --------------- DLCINFO Hooks -----------------
+// -----------------------------------------------
+
+// Double tactical ability points
+static event InstallNewCampaign(XComGameState StartState)
+{
+	local XComGameState_HeadquartersXCom XComHQ;
+
+	XComHQ = GetNewXComHQState(StartState);
+
+	XComHQ.BonusAbilityPointScalar *= 2.0;
+}
+
+static event OnLoadedSavedGameToStrategy()
+{
+	UpdateStorage();
+}
+
+
 static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
 {
 	local X2Condition_WeaponCategory WeaponCondition;
@@ -51,7 +71,7 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 					InvSlot = FindInventorySlotForItemCategory(UnitState, WeaponCategory, InventoryItem, StartState);
 					if (InvSlot != eInvSlot_Unknown)
 					{
-						SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
+						//SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
 						SetupData[Index].SourceWeaponRef = InventoryItem.GetReference();
 						`LOG(GetFuncName() @ "Patching" @ SetupData[Index].TemplateName @ "setting DefaultSourceItemSlot to" @ InvSlot @ SetupData[Index].SourceWeaponRef.ObjectID,, 'RPG');
 					}
@@ -77,6 +97,43 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 	}
 }
 
+static event OnPostTemplatesCreated()
+{
+	`LOG(GetFuncName(),, 'RPG');
+	PatchAbilitiesWeaponCondition();
+	PatchWeapons();
+	PatchSquadSight();
+	PatchSniperStandardFire();
+	PatchStandardShot();
+	PatchLongWatch();
+	PatchSuppression();
+	PatchSkirmisherGrapple();
+	PatchThrowClaymore();
+	PatchSwordSlice();
+	PatchCombatProtocol();
+}
+
+// -----------------------------------------------
+// -------------- Helper functions ---------------
+// -----------------------------------------------
+static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)
+{
+	local XComGameState_HeadquartersXCom NewXComHQ;
+
+	foreach NewGameState.IterateByClassType(class'XComGameState_HeadquartersXCom', NewXComHQ)
+	{
+		break;
+	}
+
+	if(NewXComHQ == none)
+	{
+		NewXComHQ = XComGameState_HeadquartersXCom(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+		NewXComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', NewXComHQ.ObjectID));
+	}
+
+	return NewXComHQ;
+}
+
 static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
 {
 	// @TODO externalize in config
@@ -100,21 +157,6 @@ static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Un
 		}
 	}
 	return eInvSlot_Unknown;
-}
-
-static event OnPostTemplatesCreated()
-{
-	`LOG(GetFuncName(),, 'RPG');
-	PatchAbilitiesWeaponCondition();
-	PatchWeapons();
-	PatchSquadSight();
-	PatchSniperStandardFire();
-	PatchLongWatch();
-	PatchSuppression();
-	PatchSkirmisherGrapple();
-	PatchThrowClaymore();
-	PatchSwordSlice();
-	PatchCombatProtocol();
 }
 
 static function PatchAbilitiesWeaponCondition()
@@ -238,6 +280,67 @@ static function PatchWeapons()
 						break;
 				}
 			}
+
+			// Patch enviromental damage
+			if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)
+			{
+				//WeaponTemplate.BaseDamage
+			}
+
+			// Patch hero weapons
+			if (WeaponTemplate.DataName == 'WristBlade_CV' ||
+				WeaponTemplate.DataName == 'ShardGauntlet_CV' ||
+				WeaponTemplate.DataName == 'VektorRifle_CV' ||
+				WeaponTemplate.DataName == 'Bullpup_CV' ||
+				WeaponTemplate.DataName == 'Reaper_Claymore' ||
+				WeaponTemplate.DataName == 'Sidearm_CV')
+			{
+				WeaponTemplate.StartingItem = true;
+				`LOG("Unlock" @ WeaponTemplate.DataName,, 'RPG');
+			}
+		}
+	}
+}
+
+static function UpdateStorage()
+{
+	local XComGameState NewGameState;
+	local XComGameStateHistory History;
+	local XComGameState_HeadquartersXCom XComHQ;
+	local X2ItemTemplateManager ItemTemplateMgr;
+	local array<X2ItemTemplate> ItemTemplates;
+	local XComGameState_Item NewItemState;
+	local int i;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Musashi: Updating HQ Storage to add Axes");
+	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+	XComHQ = XComGameState_HeadquartersXCom(NewGameState.CreateStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+	NewGameState.AddStateObject(XComHQ);
+	ItemTemplateMgr = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
+
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('WristBlade_CV'));
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('ShardGauntlet_CV'));
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('VektorRifle_CV'));
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('Bullpup_CV'));
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('Reaper_Claymore'));
+	ItemTemplates.AddItem(ItemTemplateMgr.FindItemTemplate('Sidearm_CV'));
+
+	for (i = 0; i < ItemTemplates.Length; ++i)
+	{
+		if(ItemTemplates[i] != none)
+		{
+			if (!XComHQ.HasItem(ItemTemplates[i]))
+			{
+				`Log(ItemTemplates[i].GetItemFriendlyName() @ " not found, adding to inventory",, 'RPG');
+				NewItemState = ItemTemplates[i].CreateInstanceFromTemplate(NewGameState);
+				NewGameState.AddStateObject(NewItemState);
+				XComHQ.AddItemToHQInventory(NewItemState);
+				History.AddGameStateToHistory(NewGameState);
+			} else {
+				`Log(ItemTemplates[i].GetItemFriendlyName() @ " found, skipping inventory add",, 'RPG');
+				History.CleanupPendingGameState(NewGameState);
+			}
 		}
 	}
 }
@@ -246,7 +349,7 @@ static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name A
 {
 	if (Template.Abilities.Find(Ability) == INDEX_NONE)
 	{
-		`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
 		Template.Abilities.AddItem(Ability);
 	}
 }
@@ -284,6 +387,17 @@ static function PatchSkirmisherGrapple()
 
 	Template = TemplateManager.FindAbilityTemplate('SkirmisherGrapple');
 	Template.bUniqueSource = true;
+}
+
+static function PatchStandardShot()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('StandardShot');
+	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('LightEmUp');
 }
 
 static function PatchSniperStandardFire()
@@ -442,24 +556,28 @@ private static function string ConvertToCamelCase(string StringToConvert)
 
 static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameState_Unit UnitState, XComUnitPawn Pawn)
 {
-	local X2WeaponTemplate PrimaryWeaponTemplate, WeaponTemplate;
+	local X2WeaponTemplate PrimaryWeaponTemplate, SecondaryWeaponTemplate;
 	local AnimSet AnimSetIter;
 	local int i;
+
 	if (!UnitState.IsSoldier() || UnitState.GetSoldierClassTemplateName() == 'Templar')
 	{
 		return;
 	}
 
-	WeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
+	SecondaryWeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
 	PrimaryWeaponTemplate = X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate());
 
-	if (WeaponTemplate.WeaponCat == 'sidearm' &&
+	`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype),, 'RPG');
+
+	if (SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
 		InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
 	{
 		for (i = 0; i < Pawn.Mesh.AnimSets.Length; i++)
 		{
 			if (string(Pawn.Mesh.AnimSets[i]) == "AS_TemplarAutoPistol")
 			{
+				`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
 				Pawn.Mesh.AnimSets.Remove(i, 1);
 				break;
 			}
@@ -469,6 +587,11 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 		Pawn.Mesh.UpdateAnimations();
 	}
 
+	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_SkirmisherGauntlet") != INDEX_NONE)
+	{
+		AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("skirmisher.Anims.AS_Skirmisher")));
+	}
+
 	if (PrimaryWeaponTemplate.WeaponCat == 'rifle' || PrimaryWeaponTemplate.WeaponCat == 'bullpup')
 	{
 		AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("AutoFire_ANIM.Anims.AS_AssaultRifleAutoFire")));
@@ -476,11 +599,11 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 	}
 
 	
-	//foreach Pawn.Mesh.AnimSets(AnimSetIter)
-	//{
-	//	`LOG(GetFuncName() @ UnitState.GetFullName() @ "current animsets: " @ AnimSetIter,, 'RPG');
-	//}
-	//`LOG(GetFuncName() @ UnitState.GetFullName() @ "------------------",, 'RPG');
+	foreach Pawn.Mesh.AnimSets(AnimSetIter)
+	{
+		`LOG(GetFuncName() @ UnitState.GetFullName() @ "current animsets: " @ AnimSetIter,, 'RPG');
+	}
+	`LOG(GetFuncName() @ UnitState.GetFullName() @ "------------------",, 'RPG');
 }
 
 static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
@@ -488,6 +611,6 @@ static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
 	if (Pawn.Mesh.AnimSets.Find(AnimSetToAdd) == INDEX_NONE)
 	{
 		Pawn.Mesh.AnimSets.AddItem(AnimSetToAdd);
-		//`LOG(GetFuncName() @ "adding" @ AnimSetToAdd,, 'RPG');
+		`LOG(GetFuncName() @ "adding" @ AnimSetToAdd,, 'RPG');
 	}
 }
