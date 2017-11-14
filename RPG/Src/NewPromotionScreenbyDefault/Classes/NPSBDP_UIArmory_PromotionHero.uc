@@ -25,94 +25,20 @@ var int Position, MaxPosition, AdjustXOffset;
 
 simulated function OnInit()
 {
-	local UIArmory_PromotionHeroColumn Column;
-	local int ColumnXDiff;
-
 	super.OnInit();
 
-	Width = int(MC.GetNum("_width"));
-	// Fix width and position of elements to make space for the 8th column
-	//
-	ColumnXDiff = MC.GetNum("rankColumn6._x") - MC.GetNum("rankColumn5._x"); // 152
-	AdjustXOffset = ColumnXDiff;
-	SetWidth(Width + AdjustXOffset);
-	`LOG("ColumnXDiff" @ ColumnXDiff @ "AdjustXOffset" @ AdjustXOffset,, 'PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'PromotionScreen');
 
-	//foreach Columns(Column)
-	//{
-	//	Column.SetWidth(ColumnXDiff);
-	//}
-	
-	MC.ChildSetNum("bg",				"_width", MC.GetNum("bg._width") + AdjustXOffset);
-	MC.ChildSetNum("topDivider",		"_width", MC.GetNum("topDivider._width") + AdjustXOffset);
-	MC.ChildSetNum("bottomDivider",		"_width", MC.GetNum("bottomDivider._width") + AdjustXOffset);
-	MC.ChildSetNum("headerLines",		"_width", MC.GetNum("headerLines._width") + AdjustXOffset);
-	MC.ChildSetNum("columnGradients",	"_width", MC.GetNum("columnGradients._width") + AdjustXOffset);
+	if (HasBrigadierRank())
+	{
+		ResizeScreenForBrigadierRank();
+		AnimatIn();
+	}
+	else
+	{
+		MC.FunctionVoid("AnimateIn");
+	}
 
-	
-	//MC.ChildSetNum("bg", "_x", X - AdjustXOffset);
-	MC.SetNum("_x", MC.GetNum("_x") + 50);
-	MC.ChildSetNum("topDivider",		"_x", MC.GetNum("topDivider._x") - AdjustXOffset);
-	MC.ChildSetNum("bottomDivider",		"_x", MC.GetNum("bottomDivider._x") - AdjustXOffset);
-	MC.ChildSetNum("headerLines",		"_x", MC.GetNum("headerLines._x") - AdjustXOffset);
-	MC.ChildSetNum("columnGradients",	"_x", MC.GetNum("columnGradients._x") - AdjustXOffset);
-	MC.ChildSetNum("factionLogoLarge",	"_x", MC.GetNum("factionLogoLarge._x") - AdjustXOffset);
-	MC.ChildSetNum("factionLogo",		"_x", MC.GetNum("factionLogo._x") - AdjustXOffset);
-	MC.ChildSetNum("classIcon",			"_x", MC.GetNum("classIcon._x") - AdjustXOffset);
-	MC.ChildSetNum("rankIcon",			"_x", MC.GetNum("rankIcon._x") - AdjustXOffset);
-	MC.ChildSetNum("factionName",		"_x", MC.GetNum("factionName._x") - AdjustXOffset);
-	MC.ChildSetNum("abilityLabel",		"_x", MC.GetNum("abilityLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("soldierAPLabel",	"_x", MC.GetNum("soldierAPLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("soldierAPValue",	"_x", MC.GetNum("soldierAPValue._x") - AdjustXOffset);
-	MC.ChildSetNum("teamAPLabel",		"_x", MC.GetNum("teamAPLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("teamAPValue",		"_x", MC.GetNum("teamAPValue._x") - AdjustXOffset);
-	MC.ChildSetNum("combatIntelLabel",	"_x", MC.GetNum("combatIntelLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("combatIntelValue",	"_x", MC.GetNum("combatIntelValue._x") - AdjustXOffset);
-	MC.ChildSetNum("unitName",			"_x", MC.GetNum("unitName._x") - AdjustXOffset);
-	MC.ChildSetNum("descriptionTitle",	"_x", MC.GetNum("descriptionTitle._x") - AdjustXOffset);
-	MC.ChildSetNum("descriptionBody",	"_x", MC.GetNum("descriptionBody._x") - AdjustXOffset);
-	MC.ChildSetNum("descriptionDetail",	"_x", MC.GetNum("descriptionDetail._x") - AdjustXOffset);
-	MC.ChildSetNum("descriptionIcon",	"_x", MC.GetNum("descriptionIcon._x") - AdjustXOffset);
-	MC.ChildSetNum("costLabel",			"_x", MC.GetNum("costLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("costValue",			"_x", MC.GetNum("costValue._x") - AdjustXOffset);
-	MC.ChildSetNum("apLabel",			"_x", MC.GetNum("apLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("abilityPathHeader",	"_x", MC.GetNum("abilityPathHeader._x") - AdjustXOffset);
-	MC.ChildSetNum("pathLabel0",		"_x", MC.GetNum("pathLabel0._x") - AdjustXOffset);
-	MC.ChildSetNum("pathLabel1",		"_x", MC.GetNum("pathLabel1._x") - AdjustXOffset);
-	MC.ChildSetNum("pathLabel2",		"_x", MC.GetNum("pathLabel2._x") - AdjustXOffset);
-	MC.ChildSetNum("pathLabel3",		"_x", MC.GetNum("pathLabel3._x") - AdjustXOffset);
-	//MC.ChildSetNum("abilityPathHeader.theLabel","_x", MC.GetNum("abilityPathHeader.theLabel._x") - AdjustXOffset);
-	//MC.ChildSetNum("pathLabel0.theLabel",		"_x", MC.GetNum("pathLabel0.theLabel._x") - AdjustXOffset);
-	//MC.ChildSetNum("pathLabel1.theLabel",		"_x", MC.GetNum("pathLabel1.theLabel._x") - AdjustXOffset);
-	//MC.ChildSetNum("pathLabel2.theLabel",		"_x", MC.GetNum("pathLabel2.theLabel._x") - AdjustXOffset);
-	//MC.ChildSetNum("pathLabel3.theLabel",		"_x", MC.GetNum("pathLabel3.theLabel._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn0",		"_x", MC.GetNum("rankColumn0._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn1",		"_x", MC.GetNum("rankColumn1._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn2",		"_x", MC.GetNum("rankColumn2._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn3",		"_x", MC.GetNum("rankColumn3._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn4",		"_x", MC.GetNum("rankColumn4._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn5",		"_x", MC.GetNum("rankColumn5._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn6",		"_x", MC.GetNum("rankColumn6._x") - AdjustXOffset);
-	MC.ChildSetNum("rankColumn7",		"_x", MC.GetNum("rankColumn6._x"));
-	MC.ChildSetNum("rankColumn7",		"_y", MC.GetNum("rankColumn6._y"));
-
-	// -465, 310
-	Scrollbar.SetPosition(-465, 310);
-	//Scrollbar.SetPosition(MC.GetNum("rankColumn6._x") + ColumnXDiff, MC.GetNum("rankColumn6._y"));
-
-	`LOG(self.Class.name @ GetFuncName() @ "_width" @ MC.GetNum("_width"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "bg._width" @ MC.GetNum("bg._width"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "bottomDivider._width" @ MC.GetNum("bottomDivider._width"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "headerLines._width" @ MC.GetNum("headerLines._width"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn0._width" @ MC.GetNum("rankColumn0._width") @ "x" @ MC.GetNum("rankColumn0._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn1._width" @ MC.GetNum("rankColumn1._width") @ "x" @ MC.GetNum("rankColumn1._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn2._width" @ MC.GetNum("rankColumn2._width") @ "x" @ MC.GetNum("rankColumn2._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn3._width" @ MC.GetNum("rankColumn3._width") @ "x" @ MC.GetNum("rankColumn3._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn4._width" @ MC.GetNum("rankColumn4._width") @ "x" @ MC.GetNum("rankColumn4._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn5._width" @ MC.GetNum("rankColumn5._width") @ "x" @ MC.GetNum("rankColumn5._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn6._width" @ MC.GetNum("rankColumn6._width") @ "x" @ MC.GetNum("rankColumn6._x"),, 'PromotionScreen');
-	`LOG(self.Class.name @ GetFuncName() @ "rankColumn7._width" @ MC.GetNum("rankColumn7._width") @ "x" @ MC.GetNum("rankColumn7._x"),, 'PromotionScreen');
-	
 	Show();
 }
 
@@ -120,6 +46,8 @@ simulated function OnInit()
 simulated function InitPromotion(StateObjectReference UnitRef, optional bool bInstantTransition)
 {
 	local XComGameState_Unit Unit; // bsg-nlong (1.25.17): Used to determine which column we should start highlighting
+
+	`LOG(self.Class.name @ GetFuncName(),, 'PromotionScreen');
 
 	Position = 0;
 
@@ -147,6 +75,8 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
 	
+	HasBrigadierRank();
+
 	InitColumns();
 
 	PopulateData();
@@ -154,8 +84,6 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 	RealizeScrollbar();
 
 	DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
-
-	//MC.FunctionVoid("AnimateIn");
 
 	// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
 	if( `ISCONTROLLERACTIVE )
@@ -173,47 +101,6 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 		Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
 	}
 	// bsg-nlong (1.25.17): end
-}
-
-
-simulated function bool OnUnrealCommand(int cmd, int arg)
-{
-	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
-	{
-		return false;
-	}
-
-	switch(Cmd)
-	{
-		case class'UIUtilities_Input'.const.FXS_ARROW_UP:
-		case class'UIUtilities_Input'.const.FXS_DPAD_UP:
-		//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
-		//	if (Page > 1)
-		//	{
-		//		Page -= 1;
-		//		PopulateData();
-		//	}
-		//	break;
-		//case class'UIUtilities_Input'.const.FXS_ARROW_DOWN:
-		//case class'UIUtilities_Input'.const.FXS_DPAD_DOWN:
-		//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_DOWN:
-		//	if (Page < MaxPages)
-		//	{
-		//		Page += 1;
-		//		PopulateData();
-		//	}
-		//	break;
-		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_DOWN:
-			if( Scrollbar != none )
-				Scrollbar.OnMouseScrollEvent(-1);
-			break;
-		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_UP:
-			if( Scrollbar != none )
-				Scrollbar.OnMouseScrollEvent(1);
-			break;
-	}
-
-	super.OnUnrealCommand(cmd, arg);
 }
 
 simulated function PopulateData()
@@ -297,7 +184,7 @@ simulated function PopulateData()
 
 	maxRank = class'X2ExperienceConfig'.static.GetMaxRank();
 
-	for (iRank = 0; iRank < (maxRank - 1); ++iRank)
+	for (iRank = 0; iRank < maxRank; iRank++)
 	{
 		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);
 		Column.Offset = Position;
@@ -308,6 +195,17 @@ simulated function PopulateData()
 	}
 
 	HidePreview();
+}
+
+function bool HasBrigadierRank()
+{
+	local XComGameState_Unit Unit;
+	
+	Unit = GetUnit();
+	
+	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'PromotionScreen');
+
+	return Unit.AbilityTree.Length > 7;
 }
 
 function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColumn Column)
@@ -333,10 +231,10 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 	//`LOG("MaxPosition" @ MaxPosition,, 'PromotionScreen');
 	Column.AbilityNames.Length = 0;
 	
-	for (iAbility = 0; iAbility < AbilityTree.Length; iAbility++)
-	{
-		//`LOG("Create Column" @ Column.Rank @ AbilityTree[iAbility].AbilityName,, 'PromotionScreen');
-	}
+	//for (iAbility = 0; iAbility < AbilityTree.Length; iAbility++)
+	//{
+	//	`LOG("Create Column" @ Column.Rank @ AbilityTree[iAbility].AbilityName,, 'PromotionScreen');
+	//}
 
 
 	for (iAbility = Position; iAbility < Position + NUM_ABILITIES_PER_COLUMN; iAbility++)
@@ -412,6 +310,7 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 			Column.AbilityNames.AddItem(''); // Make sure we add empty spots to the name array for getting ability info
 			Column.AbilityIcons[iAbility - Position].Hide();
 			Column.InfoButtons[iAbility - Position].Hide();
+			Column.MC.ChildSetBool("EquippedAbility" $ (iAbility - Position), "_visible", false);
 		}
 	}
 
@@ -442,6 +341,46 @@ simulated function RealizeScrollbar()
 		
 		Scrollbar.NotifyValueChange(OnScrollBarChange, 0.0, float(MaxPosition) + 0.5);
 	}
+}
+
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
+	{
+		return false;
+	}
+
+	switch(Cmd)
+	{
+		case class'UIUtilities_Input'.const.FXS_ARROW_UP:
+		case class'UIUtilities_Input'.const.FXS_DPAD_UP:
+		//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
+		//	if (Page > 1)
+		//	{
+		//		Page -= 1;
+		//		PopulateData();
+		//	}
+		//	break;
+		//case class'UIUtilities_Input'.const.FXS_ARROW_DOWN:
+		//case class'UIUtilities_Input'.const.FXS_DPAD_DOWN:
+		//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_DOWN:
+		//	if (Page < MaxPages)
+		//	{
+		//		Page += 1;
+		//		PopulateData();
+		//	}
+		//	break;
+		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_DOWN:
+			if( Scrollbar != none )
+				Scrollbar.OnMouseScrollEvent(-1);
+			break;
+		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_UP:
+			if( Scrollbar != none )
+				Scrollbar.OnMouseScrollEvent(1);
+			break;
+	}
+
+	super.OnUnrealCommand(cmd, arg);
 }
 
 function OnScrollBarChange(float newValue)
@@ -496,12 +435,13 @@ function InitColumns()
 	Column.InitPromotionHeroColumn(6);
 	Columns.AddItem(Column);
 
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn7';
-	Column.InitPromotionHeroColumn(7);
-	//Column.SetPosition(1347 - AdjustXOffset, 200);
-	//Column.SetPosition(1360 - AdjustXOffset, 200);
-	Columns.AddItem(Column);
+	if (HasBrigadierRank())
+	{
+		Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
+		Column.MCName = 'rankColumn7';
+		Column.InitPromotionHeroColumn(7);
+		Columns.AddItem(Column);
+	}
 }
 
 function bool CanPurchaseAbility(int Rank, int Branch, name AbilityName)
@@ -583,13 +523,13 @@ function int GetAbilityPointCost(int Rank, int Branch)
 	}
 
 	// All Colonel level abilities for emulated Faction Heroes and any powerful XCOM abilities have increased cost for Faction Heroes
-	if (AbilityRanks == 0 && (bPowerfulAbility || (Rank >= 6 && Branch < 3)))
+	if (AbilityRanks == 0 && (bPowerfulAbility || (Rank >= 6 && Branch < 3)) && !HasBrigadierRank())
 	{
 		return class'X2StrategyGameRulesetDataStructures'.default.PowerfulAbilityPointCost;
 	}
 
 	// All Colonel level abilities for Faction Heroes and any powerful XCOM abilities have increased cost for Faction Heroes
-	if (UnitState.IsResistanceHero() && (bPowerfulAbility || (Rank >= 6 && Branch < 3)))
+	if (UnitState.IsResistanceHero() && (bPowerfulAbility || (Rank >= 6 && Branch < 3)) && !HasBrigadierRank())
 	{
 		return class'X2StrategyGameRulesetDataStructures'.default.PowerfulAbilityPointCost;
 	}
@@ -865,7 +805,236 @@ function int GetCustomAbilityCost(name ClassName, name AbilityName)
 	return 10;
 }
 
-defaultproperties
+function ResizeScreenForBrigadierRank()
 {
-	AdjustXOffset = 130
+	
+	// Fix width and position of elements to make space for the 8th column
+	//
+	Width = int(MC.GetNum("_width"));
+	AdjustXOffset = MC.GetNum("rankColumn6._x") - MC.GetNum("rankColumn5._x");
+	SetWidth(Width + AdjustXOffset);
+
+	// Widths
+	MC.ChildSetNum("bg",				"_width", MC.GetNum("bg._width") + AdjustXOffset);
+	MC.ChildSetNum("topDivider",		"_width", MC.GetNum("topDivider._width") + AdjustXOffset);
+	MC.ChildSetNum("bottomDivider",		"_width", MC.GetNum("bottomDivider._width") + AdjustXOffset);
+	MC.ChildSetNum("headerLines",		"_width", MC.GetNum("headerLines._width") + AdjustXOffset);
+	MC.ChildSetNum("columnGradients",	"_width", MC.GetNum("columnGradients._width") + AdjustXOffset);
+
+	// X Positions
+	MC.SetNum("_x", MC.GetNum("_x") + 50);
+	MC.ChildSetNum("topDivider",		"_x", MC.GetNum("topDivider._x") - AdjustXOffset);
+	MC.ChildSetNum("bottomDivider",		"_x", MC.GetNum("bottomDivider._x") - AdjustXOffset);
+	MC.ChildSetNum("headerLines",		"_x", MC.GetNum("headerLines._x") - AdjustXOffset);
+	MC.ChildSetNum("columnGradients",	"_x", MC.GetNum("columnGradients._x") - AdjustXOffset);
+	MC.ChildSetNum("factionLogoLarge",	"_x", MC.GetNum("factionLogoLarge._x") - AdjustXOffset);
+	MC.ChildSetNum("factionLogo",		"_x", MC.GetNum("factionLogo._x") - AdjustXOffset);
+	MC.ChildSetNum("classIcon",			"_x", MC.GetNum("classIcon._x") - AdjustXOffset);
+	MC.ChildSetNum("rankIcon",			"_x", MC.GetNum("rankIcon._x") - AdjustXOffset);
+	MC.ChildSetNum("factionName",		"_x", MC.GetNum("factionName._x") - AdjustXOffset);
+	MC.ChildSetNum("abilityLabel",		"_x", MC.GetNum("abilityLabel._x") - AdjustXOffset);
+	//MC.ChildSetNum("soldierAPLabel",	"_x", MC.GetNum("soldierAPLabel._x") - AdjustXOffset);
+	//MC.ChildSetNum("soldierAPValue",	"_x", MC.GetNum("soldierAPValue._x") - AdjustXOffset);
+	//MC.ChildSetNum("teamAPLabel",		"_x", MC.GetNum("teamAPLabel._x") - AdjustXOffset);
+	//MC.ChildSetNum("teamAPValue",		"_x", MC.GetNum("teamAPValue._x") - AdjustXOffset);
+	//MC.ChildSetNum("combatIntelLabel",	"_x", MC.GetNum("combatIntelLabel._x") - AdjustXOffset);
+	//MC.ChildSetNum("combatIntelValue",	"_x", MC.GetNum("combatIntelValue._x") - AdjustXOffset);
+	MC.ChildSetNum("unitName",			"_x", MC.GetNum("unitName._x") - AdjustXOffset);
+	MC.ChildSetNum("descriptionTitle",	"_x", MC.GetNum("descriptionTitle._x") - AdjustXOffset);
+	MC.ChildSetNum("descriptionBody",	"_x", MC.GetNum("descriptionBody._x") - AdjustXOffset);
+	MC.ChildSetNum("descriptionDetail",	"_x", MC.GetNum("descriptionDetail._x") - AdjustXOffset);
+	MC.ChildSetNum("descriptionIcon",	"_x", MC.GetNum("descriptionIcon._x") - AdjustXOffset);
+	MC.ChildSetNum("costLabel",			"_x", MC.GetNum("costLabel._x") - AdjustXOffset);
+	MC.ChildSetNum("costValue",			"_x", MC.GetNum("costValue._x") - AdjustXOffset);
+	MC.ChildSetNum("apLabel",			"_x", MC.GetNum("apLabel._x") - AdjustXOffset);
+	MC.ChildSetNum("abilityPathHeader",	"_x", MC.GetNum("abilityPathHeader._x") - AdjustXOffset);
+	MC.ChildSetNum("pathLabel0",		"_x", MC.GetNum("pathLabel0._x") - AdjustXOffset);
+	MC.ChildSetNum("pathLabel1",		"_x", MC.GetNum("pathLabel1._x") - AdjustXOffset);
+	MC.ChildSetNum("pathLabel2",		"_x", MC.GetNum("pathLabel2._x") - AdjustXOffset);
+	MC.ChildSetNum("pathLabel3",		"_x", MC.GetNum("pathLabel3._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn0",		"_x", MC.GetNum("rankColumn0._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn1",		"_x", MC.GetNum("rankColumn1._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn2",		"_x", MC.GetNum("rankColumn2._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn3",		"_x", MC.GetNum("rankColumn3._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn4",		"_x", MC.GetNum("rankColumn4._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn5",		"_x", MC.GetNum("rankColumn5._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn6",		"_x", MC.GetNum("rankColumn6._x") - AdjustXOffset);
+	MC.ChildSetNum("rankColumn7",		"_x", MC.GetNum("rankColumn6._x"));
+	MC.ChildSetNum("rankColumn7",		"_y", MC.GetNum("rankColumn6._y"));
+
+	Scrollbar.SetPosition(-465, 310);
+}
+
+
+function AnimatIn()
+{
+	local int i;
+
+	MC.ChildSetNum("bg", "_alpha", 0);
+	AddChildTweenBetween("bg", "_alpha", 0, 100, 0.3f);
+	//AddChildTween("bg", "_y", 68, 0.3f , 0, "easeoutquad");
+
+	MC.ChildSetNum("factionLogo", "_alpha", 0);
+	AddChildTweenBetween("factionLogo", "_alpha", 0, 100, 0.3f);
+
+	MC.ChildSetNum("rankIcon", "_alpha", 0);
+	AddChildTweenBetween("rankIcon", "_alpha", 0, 100, 0.3f);
+
+	MC.ChildSetNum("classIcon", "_alpha", 0);
+	AddChildTweenBetween("classIcon", "_alpha", 0, 100, 0.3f);
+
+	MC.ChildSetNum("factionLogoLarge", "_alpha", 0);
+	AddChildTweenBetween("factionLogoLarge", "_alpha", 0, 100, 0.3f, 0.5f);
+
+	MC.ChildSetNum("columnGradients", "_alpha", 0);
+	AddChildTweenBetween("columnGradients", "_alpha", 0, 100, 0.3f, 0.4f);
+
+	MC.ChildSetNum("factionName", "_alpha", 0);
+	AddChildTweenBetween("factionName", "_alpha", 0, 100, 0.2f, 0.2f);
+	//AddChildTween("factionName", "_x", 280, 0.2f , 0.2f, "easeoutquad");
+
+	MC.ChildSetNum("unitName", "_alpha", 0);
+	AddChildTweenBetween("unitName", "_alpha", 0, 100, 0.2f, 0.2f);
+	//AddChildTween("unitName", "_x", 280, 0.2f , 0.2f, "easeoutquad");
+
+	for (i = 0; i < Columns.Length; i++)
+	{
+		MC.ChildSetNum("rankColumn" $ i, "_alpha", 0);
+		AddChildTweenBetween("rankColumn" $ i, "_alpha", 0, 100, 0.2f, 0.3f);
+		AddChildTween("rankColumn" $ i, "_y", 200, 0.2f , 0.3f, "easeoutquad");
+	}
+
+	MC.ChildSetNum("combatIntelLabel", "_alpha", 0);
+	AddChildTweenBetween("combatIntelLabel", "_alpha", 0, 67, 0.2f, 0.2f);
+
+	MC.ChildSetNum("combatIntelValue", "_alpha", 0);
+	AddChildTweenBetween("combatIntelValue", "_alpha", 0, 100, 0.2f, 0.3f);
+
+	Scrollbar.MC.SetNum("_alpha", 0);
+	Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+
+	// Commented out because it cause the elements to disappear
+	// Don't know why this happens
+	// Left this in for later analysis
+
+	//AddChildTween("combatIntelValue", "_y", 123, 0.2f , 0.2f, "easeoutquad");
+
+	//MC.ChildSetNum("teamAPLabel", "_alpha", 0);
+	//AddChildTweenBetween("teamAPLabel", "_alpha", 0, 67, 0.2f, 0.2f);
+	
+	//MC.ChildSetNum("teamAPValue", "_alpha", 0);
+	//AddChildTweenBetween("teamAPValue", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("teamAPValue", "_y", 112, 0.2f , 0.2f, "easeoutquad");
+	
+	//MC.ChildSetNum("soldierAPLabel", "_alpha", 0);
+	//AddChildTweenBetween("soldierAPLabel", "_alpha", 0, 67, 0.2f, 0.2f);
+
+	//MC.ChildSetNum("soldierAPValue", "_alpha", 0);
+	//AddChildTweenBetween("soldierAPValue", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("soldierAPValue", "_y", 112, 0.2f , 0.2f, "easeoutquad");
+
+	//MC.ChildSetNum("headerLines", "_alpha", 0);
+	//AddChildTweenBetween("headerLines", "_alpha", 0, 100, 0.4f, 0.3f);
+	//AddChildTween("headerLines", "_x", 500, 0.4f , 0.3f, "easeoutquad");
+
+	//MC.ChildSetNum("topDivider", "_xscale", 0.1);
+	//AddChildTweenBetween("topDivider", "_xscale", 0.1, 100, 0.4f, 0.4f);
+	
+	//MC.ChildSetNum("bottomDivider", "_xscale", 0.1);
+	//AddChildTweenBetween("bottomDivider", "_xscale", 0.1, 100, 0.4f, 0.4f);
+	
+	//MC.ChildSetNum("abilityLabel", "_alpha", 0);
+	//AddChildTweenBetween("abilityLabel", "_alpha", 0, 100, 0.2f, 0.3f);
+	
+	//MC.ChildSetNum("abilityPathHeader", "_alpha", 0);
+	//AddChildTweenBetween("abilityPathHeader", "_alpha", 0, 100, 0.2f, 0.3f);
+	
+	//MC.ChildSetNum("pathLabel0", "_alpha", 0);
+	//AddChildTweenBetween("pathLabel0", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("pathLabel0", "_x", 30, 0.2f , 0.35f, "easeoutquad");
+	//
+	//MC.ChildSetNum("pathLabel1", "_alpha", 0);
+	//AddChildTweenBetween("pathLabel1", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("pathLabel1", "_x", 30, 0.2f , 0.35f, "easeoutquad");
+	//
+	//MC.ChildSetNum("pathLabel2", "_alpha", 0);
+	//AddChildTweenBetween("pathLabel2", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("pathLabel2", "_x", 30, 0.2f , 0.35f, "easeoutquad");
+	//
+	//MC.ChildSetNum("pathLabel3", "_alpha", 0);
+	//AddChildTweenBetween("pathLabel3", "_alpha", 0, 100, 0.2f, 0.3f);
+	//AddChildTween("pathLabel3", "_x", 30, 0.2f , 0.35f, "easeoutquad");
+	
+	//MC.ChildSetNum("descriptionIcon", "_alpha", 0);
+	//AddChildTweenBetween("descriptionIcon", "_alpha", 0, 100, 0.2f, 0.6f);
+
+	//MC.ChildSetNum("descriptionTitle", "_alpha", 0);
+	//AddChildTweenBetween("descriptionTitle", "_alpha", 0, 100, 0.2f, 0.6f);
+	//AddChildTween("descriptionTitle", "_x", 283, 0.2f , 0.6f, "easeoutquad");
+		
+	//MC.ChildSetNum("descriptionDetail", "_alpha", 0);
+	//AddChildTweenBetween("descriptionDetail", "_alpha", 0, 100, 0.2f, 0.65f);
+	
+	//MC.ChildSetNum("costLabel", "_alpha", 0);
+	//AddChildTweenBetween("costLabel", "_alpha", 0, 100, 0.2f, 0.65f);
+	//AddChildTween("costLabel", "_x", 975, 0.2f , 0.65f, "easeoutquad");
+	
+	//MC.ChildSetNum("costValue", "_alpha", 0);
+	//AddChildTweenBetween("costValue", "_alpha", 0, 100, 0.2f, 0.65f);
+	//AddChildTween("costValue", "_y", 785, 0.2f , 0.65f, "easeoutquad");
+	
+	//MC.ChildSetNum("apLabel", "_alpha", 0);
+	//AddChildTweenBetween("apLabel", "_alpha", 0, 97, 0.2f, 0.7f);
+}
+
+
+simulated function AddChildTween(string ChildPath, String Prop, float Value, float Time, optional float Delay = 0.0, optional String Ease = "linear" )
+{
+	MC.BeginChildFunctionOp(ChildPath, "addTween"); 
+
+	MC.QueueString(Prop);   
+	MC.QueueNumber(Value);  
+	
+	MC.QueueString("time");  
+	MC.QueueNumber(Time);  
+
+	if( Delay != 0.0 )
+	{
+		MC.QueueString("delay");  
+		MC.QueueNumber(Delay);
+	}
+
+	if( Ease != "linear" )
+	{
+		MC.QueueString("ease");  
+		MC.QueueString(Ease); 
+	}
+
+	MC.EndOp();
+}
+
+simulated function AddChildTweenBetween(string ChildPath, String Prop, float StartValue, float EndValue, float Time, optional float Delay = 0.0, optional String Ease = "linear" )
+{
+	MC.BeginChildFunctionOp(ChildPath, "addTweenBetween");
+
+	MC.QueueString(Prop);
+	MC.QueueNumber(StartValue);
+	MC.QueueNumber(EndValue);
+
+	MC.QueueString("time");
+	MC.QueueNumber(Time);
+
+	if( Delay != 0.0 )
+	{
+		MC.QueueString("delay");
+		MC.QueueNumber(Delay);
+	}
+
+	if( Ease != "linear" )
+	{
+		MC.QueueString("ease");
+		MC.QueueString(Ease);
+	}
+
+	MC.EndOp();
 }
