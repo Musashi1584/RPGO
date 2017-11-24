@@ -32,7 +32,7 @@ simulated function OnInit()
 	if (HasBrigadierRank())
 	{
 		ResizeScreenForBrigadierRank();
-		AnimatIn();
+		BrigadierRankAnimateIn();
 	}
 	else
 	{
@@ -74,8 +74,6 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 	bUseNavHelp = class'XComGameState_HeadquartersXCom'.static.IsObjectiveCompleted('T0_M2_WelcomeToArmory') || Movie.Pres.ScreenStack.IsInStack(class'UIAfterAction');
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
-	
-	HasBrigadierRank();
 
 	InitColumns();
 
@@ -124,7 +122,7 @@ simulated function PopulateData()
 	FactionState = Unit.GetResistanceFaction();
 	
 	rankIcon = class'UIUtilities_Image'.static.GetRankIcon(Unit.GetRank(), ClassTemplate.DataName);
-	classIcon = ClassTemplate.IconImage;
+	classIcon = Unit.GetSoldierClassIcon();
 
 	HeaderString = m_strAbilityHeader;
 	if (Unit.GetRank() != 1 && Unit.HasAvailablePerksToAssign())
@@ -345,15 +343,19 @@ simulated function RealizeScrollbar()
 
 simulated function bool OnUnrealCommand(int cmd, int arg)
 {
+	local bool bHandled;
+
 	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
 	{
 		return false;
 	}
 
+	bHandled = true;
+
 	switch(Cmd)
-	{
-		case class'UIUtilities_Input'.const.FXS_ARROW_UP:
-		case class'UIUtilities_Input'.const.FXS_DPAD_UP:
+	{				
+		//case class'UIUtilities_Input'.const.FXS_ARROW_UP:
+		//case class'UIUtilities_Input'.const.FXS_DPAD_UP:
 		//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
 		//	if (Page > 1)
 		//	{
@@ -371,16 +373,19 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 		//	}
 		//	break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_DOWN:
-			if( Scrollbar != none )
+			if(Scrollbar != none)
 				Scrollbar.OnMouseScrollEvent(-1);
 			break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_UP:
-			if( Scrollbar != none )
+			if(Scrollbar != none)
 				Scrollbar.OnMouseScrollEvent(1);
+			break;
+		default:
+			bHandled = false;
 			break;
 	}
 
-	super.OnUnrealCommand(cmd, arg);
+	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
 
 function OnScrollBarChange(float newValue)
@@ -866,7 +871,7 @@ function ResizeScreenForBrigadierRank()
 }
 
 
-function AnimatIn()
+function BrigadierRankAnimateIn()
 {
 	local int i;
 

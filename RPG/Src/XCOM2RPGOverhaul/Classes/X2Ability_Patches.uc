@@ -6,6 +6,7 @@ static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 	
+	Templates.AddItem(BlueMoveSlash());
 	Templates.AddItem(HeavyWeaponMobilityPenalty());
 	Templates.AddItem(CombatProtocolHackingBonus());
 	Templates.AddItem(ShotgunDamageModifierRange());
@@ -16,6 +17,40 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	return Templates;
 }
+
+static function X2AbilityTemplate BlueMoveSlash()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_BlueMoveSlash		BlueMoveSlash;
+	local XMBCondition_SourceAbilities	RequiredAbilitiesCondition;
+	
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'BlueMoveSlash');
+
+	Template.IconImage = "";
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.bIsPassive = true;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+
+	Template.bCrossClassEligible = false;
+
+	RequiredAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	RequiredAbilitiesCondition.AddRequireAbility('Kenjutsu', 'AA_AbilityRequired');
+	
+	BlueMoveSlash = new class'X2Effect_BlueMoveSlash';
+	BlueMoveSlash.BuildPersistentEffect(1, true, false, true);
+	BlueMoveSlash.TargetConditions.AddItem(RequiredAbilitiesCondition);
+	Template.AddTargetEffect(BlueMoveSlash);
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
+}
+
 
 static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 {
@@ -42,7 +77,7 @@ static function X2AbilityTemplate CombatProtocolHackingBonus()
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Hacking, 50);
 	
-	Template = Passive('CombatProtocolHackingBonus', "img:///Texture2D'UILibrary_RPG.UIPerk_HackingBonus'", true, Effect);
+	Template = Passive('CombatProtocolHackingBonus', "img:///Texture2D'UILibrary_RPG.UIPerk_HackingBonus'", false, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, 50);
 	
 	return Template;
@@ -133,6 +168,7 @@ static function X2AbilityTemplate RemoveSquadSightOnMove()
 	local X2AbilityTemplate Template;
 	local X2AbilityTrigger_EventListener EventTrigger;
 	local X2Effect_RemoveEffects RemoveEffect;
+	local XMBCondition_SourceAbilities ExcludeAbilities;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RemoveSquadSightOnMove');
 
@@ -150,8 +186,12 @@ static function X2AbilityTemplate RemoveSquadSightOnMove()
 	EventTrigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
 	Template.AbilityTriggers.AddItem(EventTrigger);
 
+	ExcludeAbilities = new class'XMBCondition_SourceAbilities';
+	ExcludeAbilities.AddExcludeAbility('SniperElite', 'AA_ExcludeAbility');
+
 	RemoveEffect = new class'X2Effect_RemoveEffects';
 	RemoveEffect.EffectNamesToRemove.AddItem('Squadsight');
+	RemoveEffect.TargetConditions.AddItem(ExcludeAbilities);
 	Template.AddTargetEffect(RemoveEffect);
 
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;

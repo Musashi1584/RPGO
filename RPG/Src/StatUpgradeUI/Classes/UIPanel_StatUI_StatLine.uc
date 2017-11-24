@@ -4,6 +4,7 @@ struct StatCostBind
 {
 	var ECharStatType Stat;
 	var int AbilityPointCost;
+	var int NonLinearProgressionCostLamda;
 };
 
 struct StatIconBind
@@ -26,7 +27,7 @@ var array<StatLocaleBind> StatLocales;
 var ArtifactCost TotalCost, CurrentCost;
 var UIButton MinusSign, PlusSign;
 var UIImage Image;
-var UIText StatName, StatValueText, UpgradeCostSum, StatCostText;
+var UIText StatName, StatValueText, UpgradeCostSum, StatCostText, UpgradePontsText;
 var ECharStatType StatType;
 var int IconSize, Padding, FontSize;
 var int InitStatValue, StatValue;
@@ -34,6 +35,8 @@ var bool bLog;
 
 var delegate<OnStatUpdateDelegate> CustomOnClickedIncreaseFn;
 var delegate<OnStatUpdateDelegate> CustomOnClickedDecreaseFn;
+
+var localized string PsiOffenseLabel;
 
 delegate bool OnStatUpdateDelegate(ECharStatType UpdateStatType, int NewStatValue, int StatCost);
 
@@ -58,7 +61,7 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 	CustomOnClickedIncreaseFn = OnClickedIncreaseFn;
 	CustomOnClickedDecreaseFn = OnClickedDecreaseFn;
 
-	InitChildPanels(PanelName, 200, 80, 150, 180, 120);
+	InitChildPanels(PanelName, 150, 80, 60, 150, 100, 120);
 
 	UpdateStatValue(StatValue);
 	UpdateUpgradeCostSum();
@@ -72,6 +75,7 @@ function InitChildPanels(
 	name PanelName,
 	int StatNameWidth,
 	int StatValueTextWidth,
+	int UpgradePontsTextWidth,
 	int ButtonWidth,
 	int StatCostTextWidth,
 	int UpgradeCostSumWidth)
@@ -94,11 +98,15 @@ function InitChildPanels(
 	StatValueText.SetX(RunningOffsetX += StatName.Width + Padding);
 	StatValueText.SetWidth(StatValueTextWidth);
 
+	UpgradePontsText = Spawn(class'UIText', self).InitText(name(PanelName $ "UpgradePonts"));
+	UpgradePontsText.SetX(RunningOffsetX += StatValueText.Width + Padding);
+	UpgradePontsText.SetWidth(UpgradePontsTextWidth);
+
 	MinusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
 	MinusSign.SetFontSize(FontSize);
 	MinusSign.SetResizeToText(true);
 	MinusSign.SetWidth(ButtonWidth);
-	MinusSign.SetX(RunningOffsetX += StatValueText.Width + Padding);
+	MinusSign.SetX(RunningOffsetX += UpgradePontsText.Width + Padding + 20);
 
 	PlusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
 	PlusSign.SetFontSize(FontSize);
@@ -117,10 +125,13 @@ function InitChildPanels(
 
 function UpdateUpgradeCostSum()
 {
-	local string StatCostString, UpgradeCostSumString;
+	local string StatCostString, UpgradeCostSumString, UpgradePoints;
 
-	StatCostString = string(StatValue - InitStatValue) $ " * " $ GetStatCost();
-	StatCostText.SetHtmlText(class'UIUtilities_Text'.static.AlignLeft(class'UIUtilities_Text'.static.GetColoredText(StatCostString, eUIState_Normal, FontSize)));
+	StatCostString = string(GetStatCost(StatValue + 1)) @ "AP";
+	StatCostText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(StatCostString, eUIState_Normal, FontSize)));
+
+	UpgradePoints = string(StatValue - InitStatValue);
+	UpgradePontsText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(UpgradePoints, eUIState_Normal, FontSize)));
 
 	UpgradeCostSumString = String(GetUpgradeCostSum()) @ "AP";
 	UpgradeCostSum.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(UpgradeCostSumString, eUIState_Normal, FontSize)));
@@ -144,7 +155,17 @@ function UpdateStatValue(int NewValue)
 
 function int GetUpgradeCostSum()
 {
-	return (StatValue - InitStatValue) * GetStatCost();
+	local int StatValueIncrement, Sum;
+
+	if ((StatValue - InitStatValue) > 0)
+	{
+		for (StatValueIncrement = InitStatValue + 1; StatValueIncrement <= StatValue; StatValueIncrement++)
+		{
+			Sum += GetStatCost(StatValueIncrement);
+		}
+	}
+
+	return Sum;
 }
 
 function OnClickedIncrease(UIButton Button)
@@ -153,9 +174,9 @@ function OnClickedIncrease(UIButton Button)
 
 	NewStatValue = StatValue + 1;
 
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(), bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(NewStatValue), bLog, 'RPG');
 
-	if (CustomOnClickedIncreaseFn(StatType, NewStatValue, GetStatCost()))
+	if (CustomOnClickedIncreaseFn(StatType, NewStatValue, GetStatCost(NewStatValue)))
 	{
 		StatValue = NewStatValue;
 		UpdateStatValue(NewStatValue);
@@ -169,9 +190,9 @@ function OnClickedDecrease(UIButton Button)
 
 	NewStatValue = StatValue - 1;
 
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(), bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(NewStatValue), bLog, 'RPG');
 
-	if (CustomOnClickedDecreaseFn(StatType, NewStatValue, GetStatCost()))
+	if (CustomOnClickedDecreaseFn(StatType, NewStatValue, GetStatCost(NewStatValue)))
 	{
 		StatValue = NewStatValue;
 		UpdateStatValue(StatValue);
@@ -187,6 +208,7 @@ simulated function UIPanel SetPosition(float NewX, float NewY)
 
 	StatName.SetY(NewY);
 	StatValueText.SetY(NewY);
+	UpgradePontsText.SetY(NewY);
 	StatCostText.SetY(NewY);
 	MinusSign.SetY(NewY);
 	PlusSign.SetY(NewY);
@@ -231,23 +253,46 @@ function InitStatLocales()
 	StatLocales.AddItem(StatLocale);
 
 	StatLocale.Stat = eStat_PsiOffense;
-	StatLocale.LocalString = class'XLocalizedData'.default.PsiOffenseLabel;
+	StatLocale.LocalString = PsiOffenseLabel;
 	StatLocales.AddItem(StatLocale);
 }
 
-function int GetStatCost()
+function int GetStatCost(int NewStatValue)
 {
 	local int Index;
+	local float Div, Cost;
 
 	Index = default.StatCosts.Find('Stat', StatType);
 
 	if (Index != INDEX_NONE)
 	{
-		`LOG(self.class.name @ GetFuncName() @ default.StatCosts[Index].AbilityPointCost, bLog, 'RPG');
+		`LOG(self.class.name @ GetFuncName() @ "NewStatValue" @ NewStatValue @ "AbilityPointCost" @ default.StatCosts[Index].AbilityPointCost @ "NonLinearProgressionCostLamda" @ default.StatCosts[Index].NonLinearProgressionCostLamda, bLog, 'RPG');
+
+		if (default.StatCosts[Index].NonLinearProgressionCostLamda > 0)
+		{
+			Div = float(NewStatValue) / float(default.StatCosts[Index].NonLinearProgressionCostLamda);
+			Cost = FMin(Exp(Pow(Div, 6)) * default.StatCosts[Index].AbilityPointCost, 50.0f);
+			`LOG(self.class.name @ GetFuncName() @ "Cost" @ Cost, bLog, 'RPG');
+			return int(Cost + 0.5f);
+		}
+
 		return default.StatCosts[Index].AbilityPointCost;
 	}
 
 	return 0;
+}
+
+function float Pow(Float Base, int Exponent)
+{
+	local int i;
+	local float Result;
+
+	Result = Base;
+	for(i=1; i <= Exponent; i++)
+	{
+		Result *= Base;
+	}
+	return Result;
 }
 
 function string GetStatLocale()
@@ -287,5 +332,5 @@ defaultproperties
 	Padding=20
 	IconSize=32
 	FontSize=32
-	bLog=false
+	bLog=true
 }

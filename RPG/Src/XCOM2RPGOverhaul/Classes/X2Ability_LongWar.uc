@@ -1,5 +1,9 @@
 class X2Ability_LongWar extends XMBAbility config(RPG);
 
+var config int BOMBARD_BONUS_RANGE_TILES;
+
+var config int FAILSAFE_PCT_CHANCE;
+
 var config int INTERFERENCE_CV_CHARGES;
 var config int INTERFERENCE_MG_CHARGES;
 var config int INTERFERENCE_BM_CHARGES;
@@ -12,13 +16,13 @@ var config int RESCUE_CV_CHARGES;
 var config int RESCUE_MG_CHARGES;
 var config int RESCUE_BM_CHARGES;
 
-var config int RAPID_TARGETING_COOLDOWN;
-var config int MULTI_TARGETING_COOLDOWN;
-
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
-	
+
+	Templates.AddItem(FieldSurgeon());
+	Templates.AddItem(Bombard());
+	Templates.AddItem(Failsafe());
 	Templates.AddItem(Lethal());
 	Templates.AddItem(CloseCombatSpecialist());
 	Templates.AddItem(BringEmOn());
@@ -32,16 +36,86 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Aggression());
 	Templates.AddItem(TacticalSense());
 	Templates.AddItem(AddRescueProtocol());
-	Templates.AddItem(AddRapidTargeting());
-	Templates.AddItem(AddMultiTargeting());
-	Templates.AddItem(PurePassive('HDHolo', "img:///UILibrary_RPG.LW_AbilityHDHolo", true));
-	Templates.AddItem(PurePassive('IndependentTracking', "img:///UILibrary_RPG.LW_AbilityIndependentTracking", true));
-	Templates.AddItem(PurePassive('VitalPointTargeting', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", true));
-	Templates.AddItem(PurePassive('RapidTargeting_Passive', "img:///UILibrary_RPG.LW_AbilityRapidTargeting", true));
-
+	Templates.AddItem(HitAndRun());
 
 	return Templates;
 }
+
+static function X2AbilityTemplate FieldSurgeon()
+{
+	local X2AbilityTemplate						Template;
+	local X2Effect_ReducedRecoveryTime			FieldSurgeonEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'FieldSurgeon');
+	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityFieldSurgeon";
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityMultiTargetStyle = new class'X2AbilityMultiTarget_AllAllies';
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.bIsPassive = true;
+	FieldSurgeonEffect = new class 'X2Effect_ReducedRecoveryTime';
+	FieldSurgeonEffect.BuildPersistentEffect (1, true, false);
+	FieldSurgeonEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
+	Template.AddMultiTargetEffect(FieldSurgeonEffect);
+	Template.bCrossClassEligible = true;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
+}
+
+static function X2AbilityTemplate Bombard()
+{
+	local X2AbilityTemplate				Template;
+	local X2Effect_Bombard				BombardEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'Bombard');
+	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityBombard"; 
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.bIsPassive = true;
+
+	BombardEffect = new class 'X2Effect_Bombard';
+	BombardEffect.BuildPersistentEffect (1, true, false);
+	BombardEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
+	Template.AddTargetEffect (BombardEffect);
+	
+	Template.bCrossClassEligible = false;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
+}
+
+static function X2AbilityTemplate Failsafe()
+{
+	local X2AbilityTemplate			Template;
+	local X2Effect_Failsafe			FailsafeEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'Failsafe');
+	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityFailsafe";
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.bIsPassive = true;
+	FailsafeEffect = new class 'X2Effect_Failsafe';
+	FailsafeEffect.BuildPersistentEffect (1, true, false);
+	FailsafeEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
+	Template.AddTargetEffect (FailsafeEffect);
+	Template.bCrossClassEligible = false;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
+}
+
 
 static function X2AbilityTemplate Lethal()
 {
@@ -49,7 +123,7 @@ static function X2AbilityTemplate Lethal()
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AddDamageModifier(2);
-	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+	//Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
 	return Passive('Lethal', "img:///Texture2D'UILibrary_RPG.LW_AbilityKinetic'", true, Effect);
 }
@@ -469,165 +543,27 @@ static function X2AbilityTemplate AddRescueProtocol()
 	return Template;
 }
 
-
-static function X2AbilityTemplate AddRapidTargeting()
+static function X2AbilityTemplate HitandRun()
 {
-	local X2AbilityTemplate                 Template;
-	local X2Effect_LWHoloTarget				Effect;
-	local X2AbilityCooldown                 Cooldown;
-	local X2Condition_Visibility			TargetVisibilityCondition;
-	local X2Condition_UnitEffects			SuppressedCondition;
+	local X2AbilityTemplate					Template;
+	local X2Effect_HitandRun				HitandRunEffect;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'Rapidtargeting');
-
-	Template.AbilitySourceName = 'eAbilitySource_Standard';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_AlwaysShow;
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityRapidTargeting";
-	Template.bHideOnClassUnlock = false;
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY;
+	`CREATE_X2ABILITY_TEMPLATE (Template, 'HitandRun');
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
-	//Template.AbilityConfirmSound = "TacticalUI_SwordConfirm";
-
-	Template.bDisplayInUITooltip = true;
-    Template.bDisplayInUITacticalText = true;
-    Template.DisplayTargetHitChance = true;
-	Template.bShowActivation = false;
-	Template.bSkipFireAction = false;
-	Template.ConcealmentRule = eConceal_Always;
-
-	Template.AbilityCosts.AddItem(default.FreeActionCost);
-	
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.RAPID_TARGETING_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
+	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityHitandRun";
 	Template.AbilityToHitCalc = default.DeadEye;
-
-	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
-
-	// Targeting Details
-	// Can only shoot visible enemies
-	TargetVisibilityCondition = new class'X2Condition_Visibility';
-    TargetVisibilityCondition.bRequireGameplayVisible = true;
-    TargetVisibilityCondition.bAllowSquadsight = true;
-	Template.AbilityTargetConditions.AddItem(TargetVisibilityCondition);
-
-	
-	SuppressedCondition = new class'X2Condition_UnitEffects';
-	SuppressedCondition.AddExcludeEffect(class'X2Effect_Suppression'.default.EffectName, 'AA_UnitIsSuppressed');
-	Template.AbilityShooterConditions.AddItem(SuppressedCondition);
-
-
-	// Can't target dead; Can't target friendlies, can't target inanimate objects
-	Template.AbilityTargetConditions.AddItem(default.LivingHostileUnitOnlyProperty);
-	// Can't shoot while dead
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	// Only at single targets that are in range.
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
-	
-	Template.AddShooterEffectExclusions();
-
-	// Holotarget Effect
-	Effect = new class'X2Effect_LWHoloTarget';
-	Effect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, class'X2Effect_LWHolotarget'.default.HoloTargetEffectName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
-	Effect.bRemoveWhenTargetDies = true;
-	Effect.bUseSourcePlayerState = true;
-	Effect.bApplyOnHit = true;
-	Effect.bApplyOnMiss = true;
-	Template.AddTargetEffect(Effect);
-
-	Template.AdditionalAbilities.AddItem('RapidTargeting_Passive');
-
-    Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-
-	return Template;
-}
-
-static function X2AbilityTemplate AddMultiTargeting()
-{
-	local X2AbilityTemplate                 Template;
-	local X2AbilityCost_ActionPoints        ActionPointCost;
-	local X2AbilityMultiTarget_Radius		RadiusMultiTarget;
-	local X2Effect_LWHoloTarget				Effect;
-	local X2Condition_Visibility			TargetVisibilityCondition;
-	local X2AbilityCooldown                 Cooldown;
-	local X2Condition_UnitEffects			SuppressedCondition;
-
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'Multitargeting');
-
-	Template.AbilitySourceName = 'eAbilitySource_Standard';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_AlwaysShow;
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityMultiTargeting";
-	Template.bHideOnClassUnlock = false;
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY;
-	//Template.AbilityConfirmSound = "TacticalUI_SwordConfirm";
-	Template.Hostility = eHostility_Neutral;
-
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.MULTI_TARGETING_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
-	Template.bDisplayInUITooltip = true;
-    Template.bDisplayInUITacticalText = true;
-    Template.DisplayTargetHitChance = true;
-	Template.bShowActivation = false;
-	Template.bSkipFireAction = false;
-	Template.ConcealmentRule = eConceal_Always;
-
-	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = 1;
-	ActionPointCost.bConsumeAllPoints = false;
-	Template.AbilityCosts.AddItem(ActionPointCost);
-	
-	Template.AbilityToHitCalc = default.DeadEye;
-
-	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
-	
-	SuppressedCondition = new class'X2Condition_UnitEffects';
-	SuppressedCondition.AddExcludeEffect(class'X2Effect_Suppression'.default.EffectName, 'AA_UnitIsSuppressed');
-	Template.AbilityShooterConditions.AddItem(SuppressedCondition);
-
-	// Can only shoot visible enemies
-	TargetVisibilityCondition = new class'X2Condition_Visibility';
-    TargetVisibilityCondition.bRequireGameplayVisible = true;
-    TargetVisibilityCondition.bAllowSquadsight = true;
-	Template.AbilityTargetConditions.AddItem(TargetVisibilityCondition);
-
-	// Can't target dead; Can't target friendlies, can't target inanimate objects
-	Template.AbilityTargetConditions.AddItem(default.LivingHostileUnitOnlyProperty);
-	// Can't shoot while dead
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	// Only at single targets that are in range.
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
-	Template.AddShooterEffectExclusions();
-
-	RadiusMultiTarget = new class'X2AbilityMultiTarget_Radius';
-	//RadiusMultiTarget.NumTargetsRequired = 1; 
-	RadiusMultiTarget.bIgnoreBlockingCover = true; 
-	RadiusMultiTarget.bAllowDeadMultiTargetUnits = false; 
-	RadiusMultiTarget.bExcludeSelfAsTargetIfWithinRadius = true;
-	RadiusMultiTarget.bUseWeaponRadius = true; 
-	Template.AbilityMultiTargetStyle = RadiusMultiTarget;
-
-	// Holotarget Effect
-	Effect = new class'X2Effect_LWHoloTarget';
-	Effect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, class'X2Effect_LWHolotarget'.default.HoloTargetEffectName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
-	Effect.bRemoveWhenTargetDies = true;
-	Effect.bUseSourcePlayerState = true;
-	Effect.bApplyOnHit = true;
-	Effect.bApplyOnMiss = true;
-	Template.AddTargetEffect(Effect);
-	Template.AddMultiTargetEffect(Effect);
-
-    Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-
-	//Template.OverrideAbilities.AddItem('Holotarget'); // add the multi-targeting as a separate ability, so as not to render RapidTargeting useless
-
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	HitandRunEffect = new class'X2Effect_HitandRun';
+	HitandRunEffect.BuildPersistentEffect(1, true, false, false);
+	HitandRunEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	HitandRunEffect.DuplicateResponse = eDupe_Ignore;
+	HitandRunEffect.HITANDRUN_FULLACTION = true;
+	Template.AddTargetEffect(HitandRunEffect);
+	Template.bCrossClassEligible = false;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	//  NOTE: Visualization handled in X2Effect_HitandRun
 	return Template;
 }

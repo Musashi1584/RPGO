@@ -102,15 +102,19 @@ static event OnPostTemplatesCreated()
 	`LOG(GetFuncName(),, 'RPG');
 	PatchAbilitiesWeaponCondition();
 	PatchWeapons();
+	PatchHolotargeting();
 	PatchSquadSight();
 	PatchSniperStandardFire();
 	PatchStandardShot();
+	PatchRemoteStart();
 	PatchLongWatch();
 	PatchSuppression();
 	PatchSkirmisherGrapple();
 	PatchThrowClaymore();
 	PatchSwordSlice();
+	PatchBladestormAttack();
 	PatchCombatProtocol();
+	PatchMedicalProtocol();
 }
 
 // -----------------------------------------------
@@ -278,6 +282,9 @@ static function PatchWeapons()
 					case 'claymore':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore');
 						break;
+					case 'gremlin':
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'AidProtocol');
+						break;
 				}
 			}
 
@@ -354,6 +361,58 @@ static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name A
 	}
 }
 
+static function PatchMedicalProtocol()
+{
+	local X2AbilityTemplateManager				TemplateManager;
+	local X2AbilityTemplate						Template;
+	local X2AbilityCost_ActionPointsExtended	ActionPointCost;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	ActionPointCost = new class'X2AbilityCost_ActionPointsExtended';
+	ActionPointCost.iNumPoints = 1;	
+	ActionPointCost.FreeCostAbilities.AddItem('EmergencyProtocol');
+
+	Template = TemplateManager.FindAbilityTemplate('GremlinHeal');
+	Template.AbilityCosts[0] = ActionPointCost;
+
+	Template = TemplateManager.FindAbilityTemplate('GremlinStabilize');
+	Template.AbilityCosts[0] = ActionPointCost;
+}
+
+
+static function PatchHolotargeting()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+	local X2Effect_TargetDefinition		Effect;
+	local XMBCondition_SourceAbilities	RequiredAbilitiesCondition;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	RequiredAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	RequiredAbilitiesCondition.AddRequireAbility('PermanentTracking', 'AA_AbilityRequired');
+
+	Effect = new class'X2Effect_TargetDefinition';
+	Effect.BuildPersistentEffect(1, true, false, false);
+	//Effect.TargetConditions.AddItem(class'X2Ability'.default.LivingHostileUnitDisallowMindControlProperty);
+	Effect.TargetConditions.AddItem(RequiredAbilitiesCondition);
+	Template.AddTargetEffect(Effect);
+
+	Template = TemplateManager.FindAbilityTemplate('Holotarget');
+	Template.AddTargetEffect(Effect);
+
+	Template = TemplateManager.FindAbilityTemplate('Rapidtargeting');
+	Template.AddTargetEffect(Effect);
+
+	Template = TemplateManager.FindAbilityTemplate('Multitargeting');
+	Template.AddTargetEffect(Effect);
+	Template.AddMultiTargetEffect(Effect);
+	
+	Template = TemplateManager.FindAbilityTemplate('BattleScanner');
+	Template.AddMultiTargetEffect(Effect);
+}
+
 static function PatchSwordSlice()
 {
 	local X2AbilityTemplateManager		TemplateManager;
@@ -362,9 +421,23 @@ static function PatchSwordSlice()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('SwordSlice');
+	Template.AdditionalAbilities.AddItem('BlueMoveSlash');
 	Template.bUniqueSource = true;
 }
 
+static function PatchBladestormAttack()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('BladestormAttack');
+	X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire = false;
+
+	Template = TemplateManager.FindAbilityTemplate('RetributionAttack');
+	X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire = false;
+}
 
 static function PatchThrowClaymore()
 {
@@ -389,6 +462,19 @@ static function PatchSkirmisherGrapple()
 	Template.bUniqueSource = true;
 }
 
+
+static function PatchKillZone()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('KillZone');
+	Template.IconImage = "img:///UILibrary_RPG.UIPerk_killzone";
+}
+
+
 static function PatchStandardShot()
 {
 	local X2AbilityTemplateManager		TemplateManager;
@@ -398,6 +484,17 @@ static function PatchStandardShot()
 
 	Template = TemplateManager.FindAbilityTemplate('StandardShot');
 	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('LightEmUp');
+}
+
+static function PatchRemoteStart()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('RemoteStart');
+	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('AsymmetricWarfare');
 }
 
 static function PatchSniperStandardFire()

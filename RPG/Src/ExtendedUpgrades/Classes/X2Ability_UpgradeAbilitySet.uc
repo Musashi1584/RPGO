@@ -5,10 +5,6 @@ var config int STOCK_UPGRADE_BSC;
 var config int STOCK_UPGRADE_ADV;
 var config int STOCK_UPGRADE_SUP;
 
-var config int AIM_UPGRADE_BSC;
-var config int AIM_UPGRADE_ADV;
-var config int AIM_UPGRADE_SUP;
-
 var config int HAIR_TRIGGER_CHANCE_BSC;
 var config int HAIR_TRIGGER_CHANCE_ADV;
 var config int HAIR_TRIGGER_CHANCE_SUP;
@@ -17,13 +13,17 @@ var config int HAIR_TRIGGER_AIM_BSC;
 var config int HAIR_TRIGGER_AIM_ADV;
 var config int HAIR_TRIGGER_AIM_SUP;
 
-var config int AUTO_LOADER_CHANCE_BSC;
-var config int AUTO_LOADER_CHANCE_ADV;
-var config int AUTO_LOADER_CHANCE_SUP;
-
 var config int AUTO_LOADER_MAX_AMMO_BSC;
 var config int AUTO_LOADER_MAX_AMMO_ADV;
 var config int AUTO_LOADER_MAX_AMMO_SUP;
+
+var config array<int> SCOPE_RANGE_CHANGE_BSC;
+var config array<int> SCOPE_RANGE_CHANGE_ADV;
+var config array<int> SCOPE_RANGE_CHANGE_SUP;
+
+var config array<int> LASER_SIGHT_CHANGE_BSC;
+var config array<int> LASER_SIGHT_CHANGE_ADV;
+var config array<int> LASER_SIGHT_CHANGE_SUP;
 
 var name BasicScopeAbilityName;
 var name AdvancedScopeAbilityName;
@@ -41,6 +41,10 @@ var name BasicStockAbilityName;
 var name AdvancedStockAbilityName;
 var name SuperiorStockAbilityName;
 
+var name BasicLaserSightAbilityName;
+var name AdvancedLaserSightAbilityName;
+var name SuperiorLaserSightAbilityName;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -49,9 +53,13 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(StockAttachment(default.AdvancedStockAbilityName, default.STOCK_UPGRADE_ADV));
 	Templates.AddItem(StockAttachment(default.SuperiorStockAbilityName, default.STOCK_UPGRADE_SUP));
 
-	Templates.AddItem(ScopeAttachment(default.BasicScopeAbilityName, default.AIM_UPGRADE_BSC));
-	Templates.AddItem(ScopeAttachment(default.AdvancedScopeAbilityName, default.AIM_UPGRADE_ADV));
-	Templates.AddItem(ScopeAttachment(default.SuperiorScopeAbilityName, default.AIM_UPGRADE_SUP));
+	Templates.AddItem(ScopeAttachment(default.BasicLaserSightAbilityName, default.LASER_SIGHT_CHANGE_BSC));
+	Templates.AddItem(ScopeAttachment(default.AdvancedLaserSightAbilityName, default.LASER_SIGHT_CHANGE_ADV));
+	Templates.AddItem(ScopeAttachment(default.SuperiorLaserSightAbilityName, default.LASER_SIGHT_CHANGE_SUP));
+
+	Templates.AddItem(ScopeAttachment(default.BasicScopeAbilityName, default.SCOPE_RANGE_CHANGE_BSC));
+	Templates.AddItem(ScopeAttachment(default.AdvancedScopeAbilityName, default.SCOPE_RANGE_CHANGE_ADV));
+	Templates.AddItem(ScopeAttachment(default.SuperiorScopeAbilityName, default.SCOPE_RANGE_CHANGE_SUP));
 	
 	Templates.AddItem(TriggerAttachment(default.BasicHairTriggerAbilityName, default.HAIR_TRIGGER_AIM_BSC));
 	Templates.AddItem(TriggerAttachment(default.AdvancedHairTriggerAbilityName, default.HAIR_TRIGGER_AIM_ADV));
@@ -64,8 +72,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(EleriumCoating_Bsc_EU_Ability());
 	Templates.AddItem(EleriumCoating_Adv_EU_Ability());
 	Templates.AddItem(EleriumCoating_Sup_EU_Ability());
-
-	Templates.AddItem(OpticScopeRangeModifier());
 	
 	return Templates;
 }
@@ -103,7 +109,6 @@ static function X2AbilityTemplate AutoLoaderAttachment(name TemplateName)
 	local X2Condition_UnitProperty          ShooterPropertyCondition;
 	local X2Condition_AbilitySourceWeapon   WeaponCondition;
 	local X2AbilityTrigger_EventListener	EventTrigger;
-	local array<name>                       SkipExclusions;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, TemplateName);
 	
@@ -135,7 +140,6 @@ static function X2AbilityTemplate AutoLoaderAttachment(name TemplateName)
 	Template.bDisplayInUITacticalText = false;
 	Template.DisplayTargetHitChance = false;
 
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
 	Template.BuildNewGameStateFn = AutoloaderAbility_BuildGameState;
 	Template.BuildVisualizationFn = AutoloaderAbility_BuildVisualization;
 
@@ -229,88 +233,6 @@ simulated function AutoloaderAbility_BuildVisualization(XComGameState VisualizeG
 	SoundAndFlyOver = X2Action_PlaySoundAndFlyOver(class'X2Action_PlaySoundAndFlyOver'.static.AddToVisualizationTree(BuildData, Context));
 	SoundAndFlyOver.SetSoundAndFlyOverParameters(None, Ability.GetMyTemplate().LocFriendlyName, Ability.GetMyTemplate().ActivationSpeech, eColor_Good);
 	//****************************************************************************************
-}
-
-
-static function X2AbilityTemplate AutoLoaderAttachmentOld(name TemplateName)
-{
-	local X2AbilityTemplate Template;
-	local X2AbilityTrigger_EventListener Trigger;
-
-	Template = PurePassive(TemplateName, "", false, 'eAbilitySource_Item', false);
-
-	Trigger = new class'X2AbilityTrigger_EventListener';
-	Trigger.ListenerData.Deferral = ELD_OnStateSubmitted;
-	Trigger.ListenerData.EventID = 'Reload';
-	Trigger.ListenerData.Filter = eFilter_Unit;
-	Trigger.ListenerData.EventFn = class'X2Ability_UpgradeAbilitySet'.static.ReloadListener;
-	Template.AbilityTriggers.AddItem(Trigger);
-
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	Template.bShowActivation = true;
-	Template.bSkipFireAction = true;
-	
-	return Template;
-}
-
-static function EventListenerReturn ReloadListener(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
-{
-	local XComGameStateContext_Ability AbilityContext;
-	local XComGameState_Ability SourceAbilityState, AutoloaderAbilityState;
-	local XComGameState_Unit SourceUnit;
-	local StateObjectReference AutoLoaderAbilityRef;
-	local int Chance, Random;
-
-	AbilityContext = XComGameStateContext_Ability(GameState.GetContext());
-	SourceAbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
-	SourceUnit = XComGameState_Unit(EventSource);
-
-	if (SourceUnit != none)
-	{
-		AutoLoaderAbilityRef = SourceUnit.FindAbility(default.SuperiorAutoLoaderAbilityName, SourceAbilityState.SourceWeapon);
-		if (AutoLoaderAbilityRef.ObjectID > 0)
-		{
-			Chance = default.AUTO_LOADER_CHANCE_SUP;
-		}
-
-		if (AutoLoaderAbilityRef.ObjectID == 0)
-		{
-			AutoLoaderAbilityRef = SourceUnit.FindAbility(default.AdvancedAutoLoaderAbilityName, SourceAbilityState.SourceWeapon);
-			if (AutoLoaderAbilityRef.ObjectID > 0)
-			{
-				Chance = default.AUTO_LOADER_CHANCE_ADV;
-			}
-		}
-
-		if (AutoLoaderAbilityRef.ObjectID == 0)
-		{
-			AutoLoaderAbilityRef = SourceUnit.FindAbility(default.BasicAutoLoaderAbilityName, SourceAbilityState.SourceWeapon);
-			if (AutoLoaderAbilityRef.ObjectID > 0)
-			{
-				Chance = default.AUTO_LOADER_CHANCE_BSC;
-			}
-		}
-	}
-	
-	`LOG(SourceUnit.GetMyTemplateName() @ SourceAbilityState.GetMyTemplateName() @ SourceAbilityState.GetSourceWeapon().GetMyTemplateName() @ AutoLoaderAbilityRef.ObjectID @ Chance,, 'ExtendedUpgrades');
-	
-	if (SourceAbilityState != none &&
-		AbilityContext != none &&
-		AutoLoaderAbilityRef.ObjectID > 0)
-	{
-		Random = Rand(101) + 1; // 1-100
-		if (Chance == 0 || Random >= Chance)
-		{
-			`LOG(GetFuncName() @ Chance @ "% failed, rolled" @ Random,, 'ExtendedUpgrades');
-			return ELR_NoInterrupt;
-		}
-
-		SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);
-		AutoloaderAbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AutoLoaderAbilityRef.ObjectID));
-		AutoloaderAbilityState.AbilityTriggerAgainstSingleTarget(AbilityContext.InputContext.SourceObject, false);
-		`LOG("Refund ActionPoint for" @ SourceAbilityState.GetMyTemplateName() @ "rolled" @ Random @ "chance" @ Chance,, 'ExtendedUpgrades');
-	}
-	return ELR_NoInterrupt;
 }
 
 static function X2AbilityTemplate TriggerAttachment(name TemplateName, int HitBonus)
@@ -461,42 +383,12 @@ static function EventListenerReturn HairTriggerShotListener(Object EventData, Ob
 	return ELR_NoInterrupt;
 }
 
-static function X2AbilityTemplate ScopeAttachment(name TemplateName, int Bonus)
-{
-	local X2AbilityTemplate                 Template;	
-	local X2Effect_EU_ModifyNonReactionFire	ScopeEffect;
-
-	`CREATE_X2ABILITY_TEMPLATE(Template, TemplateName);
-	
-	Template.AbilitySourceName = 'eAbilitySource_Item';
-
-	Template.Hostility = eHostility_Neutral;
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.bIsPassive = true;
-	Template.bCrossClassEligible = false;
-	
-	ScopeEffect=new class'X2Effect_EU_ModifyNonReactionFire';
-	ScopeEffect.BuildPersistentEffect(1,true,false,false);
-	ScopeEffect.To_Hit_Modifier = Bonus;
-	ScopeEffect.FriendlyName = Template.LocFriendlyName;
-	Template.AddTargetEffect(ScopeEffect);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-
-	Template.AdditionalAbilities.AddItem('OpticScopeRangeModifier');
-
-	return Template;
-}
-
-static function X2AbilityTemplate OpticScopeRangeModifier()
+static function X2AbilityTemplate ScopeAttachment(name TemplateName, array<int> BonusRange)
 {
 	local X2AbilityTemplate						Template;
-	local X2Effect_ScopeRange					AimModifier;
+	local X2Effect_Scope						AimModifier;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'OpticScopeRangeModifier');
+	`CREATE_X2ABILITY_TEMPLATE(Template, TemplateName);
 	Template.AbilitySourceName = 'eAbilitySource_Item';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -505,7 +397,8 @@ static function X2AbilityTemplate OpticScopeRangeModifier()
 	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
 	Template.bIsPassive = true;
 	
-	AimModifier = new class 'X2Effect_ScopeRange';
+	AimModifier = new class 'X2Effect_Scope';
+	AimModifier.SCOPE_RANGE_CHANGE = BonusRange;
 	AimModifier.BuildPersistentEffect (1, true, false);
 	//AimModifier.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
 	
@@ -536,6 +429,10 @@ defaultproperties
 	BasicScopeAbilityName = "Scope_EU_Bsc_Ability"
 	AdvancedScopeAbilityName = "Scope_EU_Adv_Ability"
 	SuperiorScopeAbilityName = "Scope_EU_Sup_Ability"
+
+	BasicLaserSightAbilityName = "LaserSight_EU_Bsc_Ability"
+	AdvancedLaserSightAbilityName = "LaserSight_EU_Adv_Ability"
+	SuperiorLaserSightAbilityName = "LaserSight_EU_Sup_Ability"
 
 	BasicHairTriggerAbilityName = "Hair_Trigger_EU_Bsc_Ability"
 	AdvancedHairTriggerAbilityName = "Hair_Trigger_EU_Adv_Ability"

@@ -6,19 +6,26 @@ var UIBGBox FullBG;
 var UIX2PanelHeader TitleHeader;
 var UIImage SCImage;
 var UIButton SaveButton;
-var UIText AbilityPointsText;
+var UIText AbilityPointsText, StatNameHeader, StatValueHeader, UpgradePointsHeader, StatCostHeader, UpgradeCostHeader;
 var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
 var XComGameState_Unit UnitState;
-var int AbilityPointCostSum, FontSize;
+var int AbilityPointCostSum, FontSize, Padding, LeftPadding, StatOffsetY;
+
+var localized string m_StatNameHeader, m_StatValueHeader, m_UpgradePointsHeader, m_StatCostHeader, m_UpgradeCostHeader;
 
 simulated function InitArmory(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false, optional XComGameState InitCheckGameState)
 {
-	local int RunningHeaderOffsetX;
-
 	super.InitArmory(UnitRef, DispEvent, SoldSpawnEvent, NavBackEvent, HideEvent, RemoveEvent, bInstant, InitCheckGameState);
-	
+	InitPanels();
+
+	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
+}
+
+function InitPanels()
+{
+	local int RunningHeaderOffsetX;
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
 
 	Container = Spawn(class'UIPanel', self).InitPanel('theContainer');
@@ -33,20 +40,21 @@ simulated function InitArmory(StateObjectReference UnitRef, optional name DispEv
 	PanelBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
 	PanelBG.InitBG('theBG', 0, 0, Container.Width, Container.Height);
 
-	RunningHeaderOffsetX = 40;
+	RunningHeaderOffsetX = LeftPadding;
 
 	SCImage = Spawn(class'UIImage', Container).InitImage();
 	SCImage.SetSize(80, 80);
 	SCImage.SetPosition(RunningHeaderOffsetX, RunningHeaderOffsetX);
 
+	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
+	AbilityPointsText.SetWidth(200);
+	AbilityPointsText.SetPosition(Container.Width - AbilityPointsText.Width - LeftPadding, LeftPadding);
+
 	TitleHeader = Spawn(class'UIX2PanelHeader', Container);
 	TitleHeader.InitPanelHeader('', "", "");
-	TitleHeader.SetPosition(SCImage.Width + RunningHeaderOffsetX + 10, 40);
-	TitleHeader.SetWidth(Container.Width - TitleHeader.X - RunningHeaderOffsetX);
-	TitleHeader.SetHeaderWidth(Container.Width - TitleHeader.X - RunningHeaderOffsetX);
-
-	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
-	AbilityPointsText.SetPosition(RunningHeaderOffsetX, 130);
+	TitleHeader.SetPosition(SCImage.Width + RunningHeaderOffsetX + 10, LeftPadding);
+	TitleHeader.SetWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
+	TitleHeader.SetHeaderWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
 
 	SaveButton = Spawn(class'UIButton', Container).InitButton('SaveButton', "SAVE", Save);
 	SaveButton.SetFontSize(FontSize);
@@ -54,12 +62,50 @@ simulated function InitArmory(StateObjectReference UnitRef, optional name DispEv
 	SaveButton.SetWidth(150);
 	SaveButton.SetPosition(Width / 2 - SaveButton.Width / 2, Height - SaveButton.Height - 30);
 
+	InitStatHeaders(250, 60, 80, 100, 120);
 	InitStatLines();
 
 	PopulateHeaderData();
 	PopulateSoldierAP();
+}
 
-	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
+function InitStatHeaders(
+	int StatNameHeaderWidth,
+	int StatValueHeaderWidth,
+	int UpgradePointsHeaderWidth,
+	int StatCostHeaderWidth,
+	int UpgradeCostHeaderWidth)
+{
+	local int RunningOffsetX, OffsetY;
+
+	RunningOffsetX = LeftPadding;
+	OffsetY = StatOffsetY + 50;
+
+	StatNameHeader = Spawn(class'UIText', Container).InitText('StatNameHeader');
+	StatNameHeader.SetWidth(StatNameHeaderWidth);
+	StatNameHeader.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_StatNameHeader, eUIState_Header));
+
+	StatValueHeader = Spawn(class'UIText', Container).InitText('StatValueHeader');
+	StatValueHeader.SetWidth(StatValueHeaderWidth);
+	StatValueHeader.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_StatValueHeader, eUIState_Header));
+
+	UpgradePointsHeader = Spawn(class'UIText', Container).InitText('UpgradePointsHeader');
+	UpgradePointsHeader.SetWidth(UpgradePointsHeaderWidth);
+	UpgradePointsHeader.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_UpgradePointsHeader, eUIState_Header));
+
+	StatCostHeader = Spawn(class'UIText', Container).InitText('StatCostHeader');
+	StatCostHeader.SetWidth(StatCostHeaderWidth);
+	StatCostHeader.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_StatCostHeader, eUIState_Header));
+
+	UpgradeCostHeader = Spawn(class'UIText', Container).InitText('UpgradeCostHeader');
+	UpgradeCostHeader.SetWidth(UpgradeCostHeaderWidth);
+	UpgradeCostHeader.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_UpgradeCostHeader, eUIState_Header));
+	
+	StatNameHeader.SetPosition(RunningOffsetX, OffsetY);
+	StatValueHeader.SetPosition(RunningOffsetX += StatNameHeader.Width + Padding, OffsetY);
+	UpgradePointsHeader.SetPosition(RunningOffsetX += StatValueHeader.Width + Padding, OffsetY);
+	StatCostHeader.SetPosition(RunningOffsetX += 350 + UpgradePointsHeader.Width + Padding, OffsetY);
+	UpgradeCostHeader.SetPosition(RunningOffsetX += UpgradeCostHeader.Width + Padding, OffsetY);
 }
 
 function InitStatLines()
@@ -99,7 +145,7 @@ function InitStatLines()
 	{
 		OffsetX = 40;
 		OffsetY = 30;
-		StatLine.SetPosition(OffsetX, 100 + (OffsetY * Index));
+		StatLine.SetPosition(OffsetX, StatOffsetY + (OffsetY * Index));
 		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName @ FontSize, bLog, 'RPG');
 		Index++;
 	}
@@ -108,17 +154,13 @@ function InitStatLines()
 
 function PopulateHeaderData()
 {
-	local X2SoldierClassTemplate SoldierClass;
-
-	SoldierClass = UnitState.GetSoldierClassTemplate();
-
-	if (SoldierClass != none)
+	if (UnitState.GetSoldierClassTemplate() != none)
 	{
-		SCImage.LoadImage(SoldierClass.IconImage);
+		SCImage.LoadImage(UnitState.GetSoldierClassIcon());
 		SCImage.Show();
 	}
 
-	TitleHeader.SetText(UnitState.GetName(eNameType_FullNick), Caps(SoldierClass != None ? SoldierClass.DisplayName : ""));
+	TitleHeader.SetText(UnitState.GetName(eNameType_FullNick), Caps(UnitState.IsSoldier() ? UnitState.GetSoldierClassDisplayName() : ""));
 	TitleHeader.MC.FunctionVoid("realize");
 }
 
@@ -246,26 +288,35 @@ function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int St
 	return bCanDecrease;
 }
 
-simulated static function CycleToSoldier(StateObjectReference NewRef)
+//simulated static function CycleToSoldier(StateObjectReference NewRef)
+//{
+//	local UIScreen_StatUI StatUIScreen;
+//	local UIScreenStack ScreenStack;
+//
+//	super.CycleToSoldier(NewRef);
+//
+//	ScreenStack = `SCREENSTACK;
+//	StatUIScreen = UIScreen_StatUI(ScreenStack.GetScreen(class'UIScreen_StatUI'));
+//
+//	if(StatUIScreen != none)
+//	{
+//		StatUIScreen.InitPanels();
+//	}
+//}
+
+simulated function bool IsAllowedToCycleSoldiers()
 {
-	local UIScreen_StatUI StatUIScreen;
-	local UIScreenStack ScreenStack;
-
-	ScreenStack = `SCREENSTACK;
-	StatUIScreen = UIScreen_StatUI(ScreenStack.GetScreen(class'UIScreen_StatUI'));
-
-	if(StatUIScreen != none)
-	{
-		StatUIScreen.InitArmory(NewRef);
-	}
-	
-	super.CycleToSoldier(NewRef);
+	return false;
 }
+
 
 defaultproperties
 {
+	StatOffsetY=70
+	LeftPadding=40
+	Padding=20
 	FontSize=32
 	Width=1120
-	Height=800
+	Height=750
 	bLog=true
 }

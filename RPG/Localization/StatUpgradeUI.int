@@ -1,0 +1,9 @@
+[UIScreen_StatUI]
+m_StatNameHeader="STAT"
+m_StatValueHeader="VALUE"
+m_UpgradePointsHeader="POINTS"
+m_StatCostHeader="NEXT LEVEL"
+m_UpgradeCostHeader="SUM COSTS"
+
+[UIPanel_StatUI_StatLine]
+PsiOffenseLabel="PSI"

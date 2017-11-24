@@ -104,6 +104,19 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		if (default.bReconfigureVanillaAttachements)
 		{
 			//specific alterations
+			if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Bsc')
+			{
+				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.BasicLaserSightAbilityName);
+			}
+			if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Adv')
+			{
+				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.AdvancedLaserSightAbilityName);
+			}
+			if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Sup')
+			{
+				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.SuperiorLaserSightAbilityName);
+			}
+
 			if (WeaponUpgradeTemplate.DataName == 'AimUpgrade_Bsc')
 			{
 				WeaponUpgradeTemplate.AimBonus = 0;
@@ -215,6 +228,8 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 			//	WeaponUpgradeTemplate.GetBonusAmountFn = none;
 			//	//Abilities are added by supressor mechanic
 			//}
+
+			`LOG("Patch" @ WeaponUpgradeTemplate.DataName,, 'ExtendedUpgrades');
 		}
 		WeaponUpgradeTemplate.CanApplyUpgradeToWeaponFn = CanApplyUpgradeToWeaponEU;
 	}

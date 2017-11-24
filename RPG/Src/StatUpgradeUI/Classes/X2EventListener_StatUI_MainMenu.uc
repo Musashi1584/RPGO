@@ -16,7 +16,7 @@ static function CHEventListenerTemplate CreateMainMenuListenerTemplate()
 {
 	local CHEventListenerTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'StealthOverhaulOnTacticalBeginPlay');
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'StatsUIOnArmoryMainMenuUpdate');
 
 	Template.RegisterInTactical = false;
 	Template.RegisterInStrategy = true;

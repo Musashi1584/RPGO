@@ -14,19 +14,25 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Config\ExtendedUpgrades" />
+    <Folder Include="Config\DetailedSoldierListWOTC" />
     <Folder Include="Config\StatUpgradeUI" />
     <Folder Include="Config\NewPromotionScreenbyDefault" />
     <Folder Include="Content\" />
+    <Folder Include="Content\DetailedSoldierListWOTC" />
     <Folder Include="Content\StatUpgradeUI" />
     <Folder Include="Localization\" />
     <Folder Include="Content" />
     <Folder Include="Localization\ExtendedUpgrades" />
     <Folder Include="Localization\NewPromotionScreenbyDefault" />
     <Folder Include="Src\" />
+    <Folder Include="Src\Debug\Classes" />
+    <Folder Include="Src\DetailedSoldierListWOTC\Classes" />
     <Folder Include="Src\ExtendedUpgrades\Classes" />
     <Folder Include="Src\LW_Tuple" />
     <Folder Include="Src\LW_Tuple\Classes" />
     <Folder Include="Src\ExtendedUpgrades" />
+    <Folder Include="Src\Debug" />
+    <Folder Include="Src\DetailedSoldierListWOTC" />
     <Folder Include="Src\StatUpgradeUI" />
     <Folder Include="Src\NewPromotionScreenbyDefault" />
     <Folder Include="Src\NewPromotionScreenbyDefault\Classes" />
@@ -41,6 +47,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\XCOM2RPGOverhaul\Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\DetailedSoldierListWOTC\XComEngine.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\DetailedSoldierListWOTC\XComGame.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\ExtendedUpgrades\XComExtendedUpgrades.ini">
       <SubType>Content</SubType>
     </Content>
@@ -77,6 +89,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Content\AutoPistol_ANIM.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\DetailedSoldierListWOTC\UILibrary_LWToolbox.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\StatUpgradeUI\StatUpgradeUI_Library.upk">
       <SubType>Content</SubType>
     </Content>
@@ -89,12 +104,27 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Localization\NewPromotionScreenbyDefault\XComGame.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\StatUpgradeUI.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\XCOM2RPGOverhaul.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="ReadMe.txt" />
     <Content Include="ModPreview.jpg" />
     <Content Include="Config\XComEditor.ini" />
     <Content Include="Config\XComEngine.ini" />
     <Content Include="Config\XComGame.ini" />
     <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\Debug\Classes\UISL_UITacticalQuickLaunch_SquadLoadout.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\DetailedSoldierListWOTC\Classes\UIPersonnel_SoldierListItemDetailed.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\DetailedSoldierListWOTC\Classes\X2DownloadableContentInfo_DetailedSoldierListWOTC.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\ExtendedUpgrades\Classes\TemplateHelper.uc">
       <SubType>Content</SubType>
     </Content>
@@ -110,7 +140,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_EU_ModifyReactionFire.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_ScopeRange.uc">
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_Scope.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\ExtendedUpgrades\Classes\X2Item_MeleeUpgrades.uc">
@@ -149,10 +179,25 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCost_ActionPointsExtended.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotFlankable.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotConcealed.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ActivateOverwatch.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_BlueMoveSlash.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Bombard.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseandPersonal.uc">
@@ -161,7 +206,16 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseEncounters.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LWHoloTarget.uc">
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_HitandRun.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_NoSquadsightPenalities.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ReducedRecoveryTime.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">
@@ -209,13 +263,49 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RevealUnit.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_StrategyListener.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_TacticalListener.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TargetingMethod_AreaSuppression.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NoReactionFire.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2UniversalSoldierClassInfo.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XComGameState_Effect_Bombard.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XComGameState_Effect_Failsafe.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBGameState_EventProxy.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBValue_Ammo.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBAbilityCost_ActionPoints.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBAbilityMultiTarget_Radius.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBAbilityTag.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBAbilityToHitCalc_StandardAim.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBConfig.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBDownloadableContentInfo_XModBase.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XModBase_Interfaces\Classes\*.uc">
