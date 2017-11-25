@@ -21,7 +21,11 @@ var config bool RevealAllAbilities;
 var config array<CustomClassAbilitiesPerRank> ClassAbilitiesPerRank;
 var config array<CustomClassAbilityCost> ClassCustomAbilityCost;
 
-var int Position, MaxPosition, AdjustXOffset;
+// Position is the number by which we offset all ability indices.
+// 0 <= Position <= MaxPosition
+var int Position, MaxPosition;
+
+var int AdjustXOffset;
 
 simulated function OnInit()
 {
@@ -32,7 +36,7 @@ simulated function OnInit()
 	if (HasBrigadierRank())
 	{
 		ResizeScreenForBrigadierRank();
-		BrigadierRankAnimateIn();
+		AnimatIn();
 	}
 	else
 	{
@@ -79,8 +83,6 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	PopulateData();
 
-	RealizeScrollbar();
-
 	DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
 
 	// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
@@ -99,6 +101,15 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 		Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
 	}
 	// bsg-nlong (1.25.17): end
+}
+
+
+simulated function SetUnitReference(StateObjectReference NewUnitRef)
+{
+	super.SetUnitReference(NewUnitRef);
+	// Reset these values when we cycle to another soldier
+	Position = 0;
+	MaxPosition = 0;
 }
 
 simulated function PopulateData()
@@ -180,8 +191,8 @@ simulated function PopulateData()
 		ClassTemplate.AbilityTreeTitles[3 + Position]
 	);
 
-	maxRank = class'X2ExperienceConfig'.static.GetMaxRank();
-
+	// Fix None-context
+	maxRank = Columns.Length; //class'X2ExperienceConfig'.static.GetMaxRank();
 	for (iRank = 0; iRank < maxRank; iRank++)
 	{
 		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);
@@ -191,7 +202,7 @@ simulated function PopulateData()
 
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
-
+	RealizeScrollbar();
 	HidePreview();
 }
 
@@ -216,15 +227,18 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 	local int iAbility;
 	local bool bHasColumnAbility, bConnectToNextAbility;
 	local string AbilityName, AbilityIcon, BGColor, FGColor;
-	local int NewMaxPosition;
+//	local int NewMaxPosition;
 
 	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 	Unit = GetUnit();
 	AbilityTree = Unit.GetRankAbilities(Column.Rank);
 
-	NewMaxPosition = Max(AbilityTree.Length - NUM_ABILITIES_PER_COLUMN, NUM_ABILITIES_PER_COLUMN);
-	if (NewMaxPosition > MaxPosition)
-		MaxPosition = NewMaxPosition;
+//	NewMaxPosition = Max(AbilityTree.Length - NUM_ABILITIES_PER_COLUMN, NUM_ABILITIES_PER_COLUMN);
+//	if (NewMaxPosition > MaxPosition)
+//		MaxPosition = NewMaxPosition;
+
+	// MaxPosition is the maximum value for Position
+	MaxPosition = Max(AbilityTree.Length - NUM_ABILITIES_PER_COLUMN, MaxPosition);
 
 	//`LOG("MaxPosition" @ MaxPosition,, 'PromotionScreen');
 	Column.AbilityNames.Length = 0;
@@ -313,7 +327,9 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 	}
 
 	// bsg-nlong (1.25.17): Select the first available/visible ability in the column
-	while(`ISCONTROLLERACTIVE && !Column.AbilityIcons[Column.m_iPanelIndex].bIsVisible)
+	// NPSBDP: It is possible for ranks to have no abilities if we offset them in a way that hides all ability icons
+	// So only do this if we have visible ability icons
+	while(`ISCONTROLLERACTIVE && !AllAbilityIconsHidden(Column) && !Column.AbilityIcons[Column.m_iPanelIndex].bIsVisible)
 	{
 		Column.m_iPanelIndex +=1;
 		if( Column.m_iPanelIndex >= Column.AbilityIcons.Length )
@@ -326,18 +342,37 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 	return bHasColumnAbility;
 }
 
+simulated function bool AllAbilityIconsHidden(UIArmory_PromotionHeroColumn Column)
+{
+	local int i;
+	for (i = 0; i < Column.AbilityIcons.Length; i++)
+	{
+		if (Column.AbilityIcons[i].bIsVisible)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 simulated function RealizeScrollbar()
 {
-	if(MaxPosition > NUM_ABILITIES_PER_COLUMN)
+	// We only need a scrollbar when we can actually scroll
+	if(MaxPosition > 0)
 	{
 		if(Scrollbar == none)
+		{
 			Scrollbar = Spawn(class'UIScrollbar', self).InitScrollbar();
-		Scrollbar.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
-		Scrollbar.SetHeight(450);
-		//Scrollbar.SetPosition(-555, 310);
-		
-		
-		Scrollbar.NotifyValueChange(OnScrollBarChange, 0.0, float(MaxPosition) + 0.5);
+			Scrollbar.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
+			Scrollbar.SetHeight(450);
+		}
+		Scrollbar.NotifyValueChange(OnScrollBarChange, 0.0, MaxPosition);
+	}
+	else if (Scrollbar != none)
+	{
+		// We need to handle removal too -- we may have switched soldiers
+		Scrollbar.Remove();
+		Scrollbar = none;
 	}
 }
 
@@ -373,11 +408,11 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 		//	}
 		//	break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_DOWN:
-			if(Scrollbar != none)
+			if( Scrollbar != none )
 				Scrollbar.OnMouseScrollEvent(-1);
 			break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_UP:
-			if(Scrollbar != none)
+			if( Scrollbar != none )
 				Scrollbar.OnMouseScrollEvent(1);
 			break;
 		default:
@@ -391,60 +426,74 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 function OnScrollBarChange(float newValue)
 {
 	local int OldPosition;
-	
 	OldPosition = Position;
-
-	Position = int(newValue);
-
+	Position = Clamp(int(newValue), 0, MaxPosition);
 	if (OldPosition != Position)
 		PopulateData();
+}
+
+// Attempt to scroll the selection.
+// Return false if the column needs to wrap around, true else
+// Called from Column Navigation code
+simulated function bool AttemptScroll(bool Up)
+{
+	local bool bWrapped;
+	local int TargetPosition;
+
+	if (Scrollbar == none)
+	{
+		// We don't scroll, so bail out early
+		return false;
+	}
+	// Scrollbars are awkward. They always use percentages, have delayed callbacks, and you can't specify a step size
+	// We'll calculate an appropriate percentage, because that yields better results than sending "scroll" commands
+	bWrapped = false;
+	TargetPosition = Position;
+	if (Up)
+	{
+		if (Position == 0)
+		{
+			TargetPosition = MaxPosition;
+			bWrapped = true;
+		}
+		else
+		{
+			TargetPosition--;
+		}
+	}
+	else
+	{
+		if (Position == MaxPosition)
+		{
+			TargetPosition = 0;
+			bWrapped = true;
+		}
+		else
+		{
+			TargetPosition++;
+		}
+	}
+	if (TargetPosition != Position)
+	{
+		Scrollbar.SetThumbAtPercent(float(TargetPosition) / float(MaxPosition));
+	}
+	return !bWrapped;
 }
 
 function InitColumns()
 {
 	local NPSBDP_UIArmory_PromotionHeroColumn Column;
+	local int i, numCols;
+
+	numCols = HasBrigadierRank() ? 8 : 7;
+
 	Columns.Length = 0;
 
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn0';
-	Column.InitPromotionHeroColumn(0);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn1';
-	Column.InitPromotionHeroColumn(1);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn2';
-	Column.InitPromotionHeroColumn(2);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn3';
-	Column.InitPromotionHeroColumn(3);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn4';
-	Column.InitPromotionHeroColumn(4);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn5';
-	Column.InitPromotionHeroColumn(5);
-	Columns.AddItem(Column);
-
-	Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-	Column.MCName = 'rankColumn6';
-	Column.InitPromotionHeroColumn(6);
-	Columns.AddItem(Column);
-
-	if (HasBrigadierRank())
+	for (i = 0; i < numCols; i++)
 	{
 		Column = Spawn(class'NPSBDP_UIArmory_PromotionHeroColumn', self);
-		Column.MCName = 'rankColumn7';
-		Column.InitPromotionHeroColumn(7);
+		Column.MCName = name("rankColumn"$i);
+		Column.InitPromotionHeroColumn(i);
 		Columns.AddItem(Column);
 	}
 }
@@ -871,7 +920,7 @@ function ResizeScreenForBrigadierRank()
 }
 
 
-function BrigadierRankAnimateIn()
+function AnimatIn()
 {
 	local int i;
 

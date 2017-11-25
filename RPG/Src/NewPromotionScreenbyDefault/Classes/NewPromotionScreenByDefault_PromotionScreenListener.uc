@@ -11,16 +11,17 @@ event OnInit(UIScreen Screen)
 	local StateObjectReference UnitBeingPromoted;
 	local UIAfterAction AfterActionUI;
 	local Name ClassName;
+
+	if (UIArmory_Promotion(Screen) == none)
+	{
+		return;
+	}
 	
 	foreach IgnoreClassNames(ClassName) { // Specific classes to ignore here so that we can do UIArmory_Promotion without ORs later
 		if (Screen.IsA(ClassName))
 		    return;
 	}
-	
-	if (UIArmory_Promotion(Screen) == none)
-	{
-		return;
-	}
+
 		
 	//Don't block the tutorial
 	if(!class'XComGameState_HeadquartersXCom'.static.IsObjectiveCompleted('T0_M2_WelcomeToArmory') )
