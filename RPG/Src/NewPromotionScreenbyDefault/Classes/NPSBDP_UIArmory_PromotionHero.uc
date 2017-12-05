@@ -83,6 +83,19 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	PopulateData();
 
+	//Only set position and animate in the scrollbar once after data population. Prevents scrollbar flicker on scrolling.
+	if (HasBrigadierRank())
+	{
+		Scrollbar.SetPosition(-465, 310);
+	}
+	else
+	{
+		Scrollbar.SetPosition(-550, 310);
+	}
+
+	Scrollbar.MC.SetNum("_alpha", 0);
+	Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+
 	DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
 
 	// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
@@ -132,8 +145,8 @@ simulated function PopulateData()
 
 	FactionState = Unit.GetResistanceFaction();
 	
-	rankIcon = class'UIUtilities_Image'.static.GetRankIcon(Unit.GetRank(), ClassTemplate.DataName);
-	classIcon = Unit.GetSoldierClassIcon();
+	rankIcon = class'UIUtilities_Image'.static.GetRankIcon(Unit.GetRank(), ClassTemplate.DataName);	
+	classIcon = GetClassIcon(Unit);
 
 	HeaderString = m_strAbilityHeader;
 	if (Unit.GetRank() != 1 && Unit.HasAvailablePerksToAssign())
@@ -195,15 +208,33 @@ simulated function PopulateData()
 	maxRank = Columns.Length; //class'X2ExperienceConfig'.static.GetMaxRank();
 	for (iRank = 0; iRank < maxRank; iRank++)
 	{
-		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);
+		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);		
 		Column.Offset = Position;
+
 		bHasColumnAbility = UpdateAbilityIcons_Override(Column);
 		bHighlightColumn = (!bHasColumnAbility && (iRank+1) == Unit.GetRank());
 
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
+	
 	RealizeScrollbar();
 	HidePreview();
+}
+
+function HidePreview()
+{
+	// Start Issue #106
+	local XComGameState_Unit Unit;
+	local string ClassName, ClassDesc;
+
+	Unit = GetUnit();
+
+	ClassName = Caps(GetClassDisplayName(Unit));
+	ClassDesc = GetClassSummary(Unit);
+	// End Issue #106
+
+	// By default when not previewing an ability, display class data
+	AS_SetDescriptionData("", ClassName, ClassDesc, "", "", "", "");
 }
 
 function bool HasBrigadierRank()
@@ -361,22 +392,10 @@ simulated function RealizeScrollbar()
 	if(MaxPosition > 0)
 	{
 		if(Scrollbar == none)
-		{
+		{			
 			Scrollbar = Spawn(class'UIScrollbar', self).InitScrollbar();
 			Scrollbar.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
-			Scrollbar.SetHeight(450);
-			
-			if (HasBrigadierRank())
-			{
-				Scrollbar.SetPosition(-465, 310);
-			}
-			else
-			{
-				Scrollbar.SetPosition(-550, 310);
-			}
-			
-			Scrollbar.MC.SetNum("_alpha", 0);
-			Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+			Scrollbar.SetHeight(450);						
 		}
 		Scrollbar.NotifyValueChange(OnScrollBarChange, 0.0, MaxPosition);
 	}
@@ -421,11 +440,11 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 		//	break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_DOWN:
 			if( Scrollbar != none )
-				Scrollbar.OnMouseScrollEvent(-1);
+				Scrollbar.OnMouseScrollEvent(-1);				
 			break;
 		case class'UIUtilities_Input'.const.FXS_MOUSE_SCROLL_UP:
 			if( Scrollbar != none )
-				Scrollbar.OnMouseScrollEvent(1);
+				Scrollbar.OnMouseScrollEvent(1);				
 			break;
 		default:
 			bHandled = false;
@@ -436,7 +455,7 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 }
 
 function OnScrollBarChange(float newValue)
-{
+{	
 	local int OldPosition;
 	OldPosition = Position;
 	Position = Clamp(int(newValue), 0, MaxPosition);
@@ -520,7 +539,7 @@ function bool CanPurchaseAbility(int Rank, int Branch, name AbilityName)
 
 	//Emulate Resistance Hero behaviour
 	if(AbilityRanks == 0)
-	{		
+	{				
 		return (Rank < UnitState.GetRank() && CanAffordAbility(Rank, Branch) && UnitState.MeetsAbilityPrerequisites(AbilityName));
 	}
 
@@ -802,11 +821,6 @@ function int GetAbilitiesPerRank(XComGameState_Unit UnitState)
 			AbilitiesPerRank = ClassTemplate.GetAbilitySlots(RankIndex).Length;
 		}
 	}
-	
-	if(bAWC && AbilitiesPerRank == 4)
-	{
-		return 3;
-	}
 
 	return AbilitiesPerRank;
 }
@@ -926,7 +940,7 @@ function ResizeScreenForBrigadierRank()
 	MC.ChildSetNum("rankColumn5",		"_x", MC.GetNum("rankColumn5._x") - AdjustXOffset);
 	MC.ChildSetNum("rankColumn6",		"_x", MC.GetNum("rankColumn6._x") - AdjustXOffset);
 	MC.ChildSetNum("rankColumn7",		"_x", MC.GetNum("rankColumn6._x"));
-	MC.ChildSetNum("rankColumn7",		"_y", MC.GetNum("rankColumn6._y"));
+	MC.ChildSetNum("rankColumn7",		"_y", MC.GetNum("rankColumn6._y"));	
 }
 
 
@@ -973,9 +987,6 @@ function AnimatIn()
 
 	MC.ChildSetNum("combatIntelValue", "_alpha", 0);
 	AddChildTweenBetween("combatIntelValue", "_alpha", 0, 100, 0.2f, 0.3f);
-
-	Scrollbar.MC.SetNum("_alpha", 0);
-	Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
 
 	// Commented out because it cause the elements to disappear
 	// Don't know why this happens
@@ -1101,4 +1112,54 @@ simulated function AddChildTweenBetween(string ChildPath, String Prop, float Sta
 	}
 
 	MC.EndOp();
+}
+
+
+//HL Helper methods to check installed Hl version and get class icon, name and rankicon through HL or do a fallback ot default if HL is not installed
+
+static function bool IsCHHLMinVersionInstalled(int iMajor, int iMinor)
+{
+	local X2StrategyElementTemplate VersionTemplate;
+
+	VersionTemplate = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager().FindStrategyElementTemplate('CHXComGameVersion');
+	if (VersionTemplate == none)
+	{
+		return false;
+	}
+	else
+	{
+		// DANGER TERRITORY
+		// if this runs without the CHHL or equivalent installed, it crashes
+		return CHXComGameVersionTemplate(VersionTemplate).MajorVersion > iMajor ||  (CHXComGameVersionTemplate(VersionTemplate).MajorVersion == iMajor && CHXComGameVersionTemplate(VersionTemplate).MinorVersion >= iMinor);
+	}
+}
+
+static function string GetClassIcon(XComGameState_Unit Unit)
+{
+	if (IsCHHLMinVersionInstalled(1, 5))
+	{
+		return Unit.GetSoldierClassIcon();
+	}
+
+	return Unit.GetSoldierClassTemplate().IconImage;
+}
+
+static function string GetClassDisplayName(XComGameState_Unit Unit)
+{
+	if (IsCHHLMinVersionInstalled(1, 5))
+	{
+		return Unit.GetSoldierClassDisplayName();
+	}
+
+	return Unit.GetSoldierClassTemplate().DisplayName;
+}
+
+static function string GetClassSummary(XComGameState_Unit Unit)
+{
+	if (IsCHHLMinVersionInstalled(1, 5))
+	{
+		return Unit.GetSoldierClassSummary();
+	}
+
+	return Unit.GetSoldierClassTemplate().ClassSummary;
 }

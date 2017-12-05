@@ -13,12 +13,12 @@ function OnAbilityInfoClicked(UIButton Button)
 	PromotionScreen = NPSBDP_UIArmory_PromotionHero(Screen);
 
 	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
+	
 	foreach InfoButtons(InfoButton, idx)
 	{
 		if (InfoButton == Button)
 		{
-			AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityNames[Offset + idx]);
+			AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityNames[idx]);
 			break;
 		}
 	}
@@ -28,6 +28,22 @@ function OnAbilityInfoClicked(UIButton Button)
 
 	if( InfoButton != none )
 		InfoButton.Hide();
+}
+
+function SelectAbility(int idx)
+{
+	local UIArmory_PromotionHero PromotionScreen;
+	
+	PromotionScreen = UIArmory_PromotionHero(Screen);
+
+	if( PromotionScreen.OwnsAbility(AbilityNames[idx]) )
+		OnInfoButtonMouseEvent(InfoButtons[idx], class'UIUtilities_Input'.const.FXS_L_MOUSE_UP);
+	else if (bEligibleForPurchase && PromotionScreen.CanPurchaseAbility(Rank, idx + Offset, AbilityNames[idx]))
+		PromotionScreen.ConfirmAbilitySelection(Rank, idx);
+	else if (!PromotionScreen.IsAbilityLocked(Rank))
+		OnInfoButtonMouseEvent(InfoButtons[idx], class'UIUtilities_Input'.const.FXS_L_MOUSE_UP);
+	else
+		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
 }
 
 // Override to handle Scrolling

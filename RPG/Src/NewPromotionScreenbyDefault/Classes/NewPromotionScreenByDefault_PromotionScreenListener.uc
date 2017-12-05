@@ -12,6 +12,12 @@ event OnInit(UIScreen Screen)
 	local UIAfterAction AfterActionUI;
 	local Name ClassName;
 
+	//Don't block the tutorial
+	if(!class'XComGameState_HeadquartersXCom'.static.IsObjectiveCompleted('T0_M2_WelcomeToArmory') )
+	{
+		return;
+	}
+
 	if (UIArmory_Promotion(Screen) == none)
 	{
 		return;
@@ -21,14 +27,7 @@ event OnInit(UIScreen Screen)
 		if (Screen.IsA(ClassName))
 		    return;
 	}
-
-		
-	//Don't block the tutorial
-	if(!class'XComGameState_HeadquartersXCom'.static.IsObjectiveCompleted('T0_M2_WelcomeToArmory') )
-	{		
-		return;
-	}
-		
+	
 	//Remove original screen	
 	Screen.Movie.Stack.Pop(Screen);	
 
@@ -65,14 +64,13 @@ function MovePawns(UIAfterAction AfterActionUI,StateObjectReference UnitBeingPro
 			UnitPawn = AfterActionUI.UnitPawns[i];
 
 			if(UnitPawn != none && PlacementActor != none)
-			{						
+			{
 				UnitPawn.SetLocation(PlacementActor.Location);
 				GremlinPawn = `HQPRES.GetUIPawnMgr().GetCosmeticPawn(eInvSlot_SecondaryWeapon, UnitPawn.ObjectID);
 				if(GremlinPawn != none)
-				{					
+				{
 					GremlinPawn.SetLocation(PlacementActor.Location);
 				}
-					
 			}
 
 			continue;
@@ -110,7 +108,7 @@ simulated function string GetPromotionBlueprintTag(UIAfterAction AfterActionScre
 			else
 			{
 				return AfterActionScreen.UIBlueprint_PrefixHero $ i;
-			}						
+			}
 		}
 	}
 
