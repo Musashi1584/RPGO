@@ -1022,7 +1022,7 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	local X2AbilityToHitCalc_StandardAim    StandardAim;
 	local X2Condition_UnitProperty          ShooterCondition;
 	local X2AbilityTarget_Single            SingleTarget;
-	local X2AbilityTrigger_EventListener	Trigger;
+	//local X2AbilityTrigger_EventListener	Trigger;
 	local X2Effect_Knockback				KnockbackEffect;
 	local X2Condition_Visibility			TargetVisibilityCondition;
 	local array<name>                       SkipExclusions;

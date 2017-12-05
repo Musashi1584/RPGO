@@ -3,7 +3,7 @@ class UISL_UITacticalQuickLaunch_SquadLoadout extends UIScreenListener;
 
 event OnInit(UIScreen Screen)
 {
-	local UIPanel Panel;
+	//local UIPanel Panel;
 
 	if (UITacticalQuickLaunch_SquadLoadout(Screen) == none)
 	{

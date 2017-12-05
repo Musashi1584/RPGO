@@ -4,7 +4,6 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 {
 	local XComGameState_Ability AbilityState;
 	local UnitValue BlueMoveSlashUnitValue;
-	local name AP;
 
 	SourceUnit.GetUnitValue('BlueMoveSlash', BlueMoveSlashUnitValue);
 

@@ -1,4 +1,7 @@
-class X2EventListener_RPG_TacticalListener extends X2EventListener;
+class X2EventListener_RPG_TacticalListener extends X2EventListener config (RPG);
+
+var config int BOMBARD_BONUS_RANGE_TILES;
+var config int FAILSAFE_PCT_CHANCE;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -6,6 +9,8 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	Templates.AddItem(CreateListenerTemplate());
 	Templates.AddItem(CreateListenerTemplate_OnCleanupTacticalMission());
+	Templates.AddItem(CreateListenerTemplateBombard());
+	Templates.AddItem(CreateListenerTemplateFailsafe());
 
 	return Templates;
 }
@@ -36,6 +41,36 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCleanupTactical
 
 	Template.AddCHEvent('CleanupTacticalMission', OnCleanupTacticalMission, ELD_OnStateSubmitted);
 	`LOG("Register Event CleanupTacticalMission",, 'RPG');
+
+	return Template;
+}
+
+static function CHEventListenerTemplate CreateListenerTemplateBombard()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGGetItemRange');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = false;
+
+	Template.AddCHEvent('GetItemRange', OnGetItemRange, ELD_OnStateSubmitted);
+	`LOG("Register Event GetItemRange",, 'RPG');
+
+	return Template;
+}
+
+static function CHEventListenerTemplate CreateListenerTemplateFailsafe()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGPreAcquiredHackReward');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = false;
+
+	Template.AddCHEvent('PreAcquiredHackReward', OnPreAcquiredHackReward, ELD_OnStateSubmitted);
+	`LOG("Register Event PreAcquiredHackReward",, 'RPG');
 
 	return Template;
 }
@@ -146,3 +181,103 @@ static function EventListenerReturn OnCleanupTacticalMission(Object EventData, O
 	return ELR_NoInterrupt;
 }
 
+static function EventListenerReturn OnGetItemRange(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComLWTuple				OverrideTuple;
+	local XComGameState_Item		Item;
+	//local int						Range;  // in tiles -- either bonus or override
+	local XComGameState_Ability		Ability;
+	//local bool						bOverride; // if true, replace the range, if false, just add to it
+	local XComGameState_Item		SourceWeapon;
+	local X2WeaponTemplate			WeaponTemplate;
+	local XComGameState_Unit		UnitState;
+
+	OverrideTuple = XComLWTuple(EventData);
+	if(OverrideTuple == none)
+	{
+		`REDSCREEN("OnGetItemRange event triggered with invalid event data.");
+		return ELR_NoInterrupt;
+	}
+
+	Item = XComGameState_Item(EventSource);
+	if(Item == none)
+		return ELR_NoInterrupt;
+
+	if(OverrideTuple.Id != 'GetItemRange')
+		return ELR_NoInterrupt;
+
+	Ability = XComGameState_Ability(OverrideTuple.Data[2].o);  // optional ability
+
+	//verify the owner has bombard
+	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(Item.OwnerStateObject.ObjectID));
+	if(!UnitState.HasSoldierAbility('Bombard'))
+		return ELR_NoInterrupt;
+
+	if(Ability == none)
+		return ELR_NoInterrupt;
+
+	//get the source weapon and weapon template
+	SourceWeapon = Ability.GetSourceWeapon();
+	WeaponTemplate = X2WeaponTemplate(SourceWeapon.GetMyTemplate());
+	
+	if(WeaponTemplate == none)
+		return ELR_NoInterrupt;
+
+	// make sure the weapon is either a grenade or a grenade launcher
+	if(X2GrenadeTemplate(WeaponTemplate) != none || X2GrenadeLauncherTemplate(WeaponTemplate) != none || WeaponTemplate.DataName == 'Battlescanner')
+	{
+		OverrideTuple.Data[1].i += default.BOMBARD_BONUS_RANGE_TILES;
+	}
+
+	return ELR_NoInterrupt;
+}
+
+static function EventListenerReturn OnPreAcquiredHackReward(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComLWTuple				OverrideHackRewardTuple;
+	local XComGameState_Unit		Hacker;
+	local XComGameState_BaseObject	HackTarget;
+	local X2HackRewardTemplate		HackTemplate;
+	local XComGameState_Ability		AbilityState;
+	local StateObjectReference		AbilityRef;
+
+	OverrideHackRewardTuple = XComLWTuple(EventData);
+	if(OverrideHackRewardTuple == none)
+	{
+		`REDSCREEN("OnPreAcquiredHackReward event triggered with invalid event data.");
+		return ELR_NoInterrupt;
+	}
+
+	HackTemplate = X2HackRewardTemplate(EventSource);
+	if(HackTemplate == none)
+		return ELR_NoInterrupt;
+
+	if(OverrideHackRewardTuple.Id != 'OverrideHackRewards')
+		return ELR_NoInterrupt;
+
+	Hacker = XComGameState_Unit(OverrideHackRewardTuple.Data[1].o);
+	HackTarget = XComGameState_BaseObject(OverrideHackRewardTuple.Data[2].o); // not necessarily a unit, could be a Hackable environmental object
+
+	if(Hacker == none || HackTarget == none)
+		return ELR_NoInterrupt;
+
+	if(Hacker == none || !Hacker.HasSoldierAbility('Failsafe'))
+		return ELR_NoInterrupt;
+
+	if(HackTemplate.bBadThing)
+	{
+		if(Rand(100) < default.FAILSAFE_PCT_CHANCE)
+		{
+			OverrideHackRewardTuple.Data[0].b = true;
+			//AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(GetOwningEffect().ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
+			AbilityRef = Hacker.FindAbility('Failsafe');
+			if(AbilityRef.ObjectID > 0)
+			{
+				AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityRef.ObjectID));
+				`XEVENTMGR.TriggerEvent('FailsafeTriggered', AbilityState, Hacker, GameState);
+			}
+		}
+	}
+
+	return ELR_NoInterrupt;
+}

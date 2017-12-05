@@ -14,3 +14,18 @@ ClassSpecializationSummaries[11]="Nothing like a Ripjack to ruin an Xray's day. 
 ClassSpecializationSummaries[12]="Sometimes its not enough to just bring a rocket launcher to the field. No you need a specialist who can properly calibrate a proximity mine or mix up X4 in a basement chemlab. Call in the Saboteur when a grenade just won't cut it."
 ClassSpecializationSummaries[13]="Every group of dedicated insurgents needs someone to watch their back. Traps, Tricks, and Treats are the name of their game, find it, mark it, and make sure the Op goes smooth."
 
+[XGLocalizedData_RPG]
+UtilityCatPistol="(Auto-)Pistol"
+UtilityCatSidearm="(Auto-)Pistol"
+UtilityCatSword="Melee Weapon"
+UtilityCatGremlin="Gremlin"
+UtilityCatPsiamp="PsiAmp"
+UtilityCatGrenadeLauncher="Grenade Launcher"
+UtilityCatClaymore="Claymore"
+UtilityCatWristblade="Ripjack"
+UtilityCatArcthrower="Arc Thrower"
+UtilityCatCombatknife="Melee Weapon"
+UtilityCatHolotargeter="Holotargeter"
+UtilityCatSawedoffshotgun="Sawed-Off Shotgun"
+m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
+m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED

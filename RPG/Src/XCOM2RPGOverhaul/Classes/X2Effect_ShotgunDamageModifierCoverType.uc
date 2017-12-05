@@ -15,13 +15,15 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 	History = `XCOMHISTORY;
 	HistoryIndex = History.GetCurrentHistoryIndex();
 
+	//`LOG(Class.Name @ GetFuncName() @ AppliedData.AbilityResultContext.HitResult @ "bCanTakeCover" @ TargetUnit.GetMyTemplate().bCanTakeCover,, 'RPG');
+
 	if (!class'XComGameStateContext_Ability'.static.IsHitResultHit(AppliedData.AbilityResultContext.HitResult))
 		return 0;
 
 	TargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(AppliedData.AbilityInputContext.PrimaryTarget.ObjectID));
 	WeaponState = XComGameState_Item(History.GetGameStateForObjectID(AppliedData.ItemStateObjectRef.ObjectID));
 
-	if (TargetUnit != none && WeaponState != none)
+	if (TargetUnit != none && WeaponState != none && TargetUnit.GetMyTemplate().bCanTakeCover)
 	{
 		if (X2WeaponTemplate(WeaponState.GetMyTemplate()).WeaponCat != 'shotgun')
 			return 0;
@@ -52,4 +54,10 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 	}
 
 	return 0;
+}
+
+defaultproperties
+{
+	EffectName=ShotgunDamageModifierCoverType
+	//DuplicateResponse=eDupe_Refresh
 }

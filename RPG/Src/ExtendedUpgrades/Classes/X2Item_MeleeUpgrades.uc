@@ -1,6 +1,5 @@
 class X2Item_MeleeUpgrades extends X2Item config (ExtendedUpgrades);
 
-var config array<name> MeleeWeaponCategories;
 var config array<name> MutuallyExclusiveUpgradesCategory1;
 
 var config int MELEE_CRIT_UPGRADE_BSC;
@@ -35,7 +34,7 @@ static function X2DataTemplate CreateBasicMeleeCritUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeCritUpgrade_Bsc');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'EleriumCoating_Bsc');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier1Upgrade(Template);
 	SetUpCritUpgrade(Template);
@@ -51,7 +50,7 @@ static function X2DataTemplate CreateAdvancedMeleeCritUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeCritUpgrade_Adv');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'EleriumCoating_Adv');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier2Upgrade(Template);
 	SetUpCritUpgrade(Template);
@@ -68,7 +67,7 @@ static function X2DataTemplate CreateSuperiorMeleeCritUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeCritUpgrade_Sup');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'EleriumCoating_Sup');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier3Upgrade(Template);
 	SetUpCritUpgrade(Template);
@@ -105,7 +104,7 @@ static function X2DataTemplate CreateBasicMeleeAimUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeAimUpgrade_Bsc');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'AlloyBlade_Bsc');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier1Upgrade(Template);
 	SetUpAimBonusUpgrade(Template);
@@ -120,7 +119,7 @@ static function X2DataTemplate CreateAdvancedMeleeAimUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeAimUpgrade_Adv');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'AlloyBlade_Adv');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier2Upgrade(Template);
 	SetUpAimBonusUpgrade(Template);
@@ -135,7 +134,7 @@ static function X2DataTemplate CreateSuperiorMeleeAimUpgrade()
 {
 	local X2WeaponUpgradeTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'MeleeAimUpgrade_Sup');
+	`CREATE_X2TEMPLATE(class'X2WeaponUpgradeTemplate', Template, 'AlloyBlade_Sup');
 
 	class'X2Item_DefaultUpgrades'.static.SetUpTier3Upgrade(Template);
 	SetUpAimBonusUpgrade(Template);
@@ -168,8 +167,9 @@ static function SetUpAimBonusUpgrade(out X2WeaponUpgradeTemplate Template)
 
 static function SetUpMeleeWeaponUpgrade(out X2WeaponUpgradeTemplate Template)
 {
-	Template.CanApplyUpgradeToWeaponFn = CanApplyMeleeUpgradeToWeapon;
-	
+	Template.CanApplyUpgradeToWeaponFn = class'X2Item_MeleeUpgrades'.static.CanApplyMeleeUpgradeToWeapon;
+	`LOG(GetFuncName() @ "Set CanApplyUpgradeToWeaponFn to" @ Template.DataName @ class'X2Item_MeleeUpgrades'.static.CanApplyMeleeUpgradeToWeapon,, 'ExtendedUpgrades');
+
 	Template.CanBeBuilt = false;
 	Template.MaxQuantity = 1;
 
@@ -182,6 +182,11 @@ static function bool CanApplyMeleeUpgradeToWeapon(X2WeaponUpgradeTemplate Upgrad
 	local array<X2WeaponUpgradeTemplate> AttachedUpgradeTemplates;
 	local X2WeaponUpgradeTemplate AttachedUpgrade; 
 	local int iSlot;
+	local X2WeaponTemplate WeaponTemplate;
+
+	WeaponTemplate = X2WeaponTemplate(Weapon.GetMyTemplate());
+
+	`LOG(GetFuncName() @ UpgradeTemplate @ WeaponTemplate.WeaponCat,, 'ExtendedUpgrades');
 		
 	AttachedUpgradeTemplates = Weapon.GetMyWeaponUpgradeTemplates();
 
@@ -204,8 +209,9 @@ static function bool CanApplyMeleeUpgradeToWeapon(X2WeaponUpgradeTemplate Upgrad
 		}
 	}
 
-	if (default.MeleeWeaponCategories.Find(X2WeaponTemplate(Weapon.GetMyTemplate()).WeaponCat) == INDEX_NONE)
+	if (WeaponTemplate != none && WeaponTemplate.iRange == INDEX_NONE)
 	{
+		`LOG(GetFuncName() @ UpgradeTemplate @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "no melee template",, '');
 		return false;
 	}
 

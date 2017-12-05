@@ -228,9 +228,9 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 			//	WeaponUpgradeTemplate.GetBonusAmountFn = none;
 			//	//Abilities are added by supressor mechanic
 			//}
-
-			`LOG("Patch" @ WeaponUpgradeTemplate.DataName,, 'ExtendedUpgrades');
 		}
+		`LOG("Patch" @ WeaponUpgradeTemplate.DataName,, 'ExtendedUpgrades');
+
 		WeaponUpgradeTemplate.CanApplyUpgradeToWeaponFn = CanApplyUpgradeToWeaponEU;
 	}
 }
@@ -238,34 +238,17 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 static function bool CanApplyUpgradeToWeaponEU(X2WeaponUpgradeTemplate UpgradeTemplate, XComGameState_Item Weapon, int SlotIndex)
 {
 	local name WeaponCat;
+	local X2WeaponTemplate WeaponTemplate;
 
 	WeaponCat = X2WeaponTemplate(Weapon.GetMyTemplate()).WeaponCat;
+	WeaponTemplate = X2WeaponTemplate(Weapon.GetMyTemplate());
 
-	//`LOG(default.Class.Name @ GetFuncName() @ WeaponCat @ class'X2Item_MeleeUpgrades'.default.MeleeWeaponCategories.Length,, 'ExtendedUpgrades');
+	`LOG(GetFuncName() @ UpgradeTemplate.DataName @ WeaponTemplate.WeaponCat,, 'ExtendedUpgrades');
 
-	if (class'X2Item_MeleeUpgrades'.default.MeleeWeaponCategories.Find(WeaponCat) != INDEX_NONE)
-	{
-		//`LOG(default.Class.Name @ GetFuncName() @ " bail melee weapon" @ class'X2Item_MeleeUpgrades'.default.MeleeWeaponCategories.Length,, 'ExtendedUpgrades');
-		return false;
-	}
-
-	if ((UpgradeTemplate.DataName == 'AimUpgrade_Bsc' ||
-		UpgradeTemplate.DataName == 'AimUpgrade_Adv' ||
-		UpgradeTemplate.DataName == 'AimUpgrade_Sup') &&
-		WeaponCat == 'shotgun'
-		)
+	if (WeaponTemplate != none && WeaponTemplate.iRange != INDEX_NONE)
 	{
 		return false;
 	}
-
-	//if ((UpgradeTemplate.DataName == 'FreeFireUpgrade_Bsc' ||
-	//	UpgradeTemplate.DataName == 'FreeFireUpgrade_Adv' ||
-	//	UpgradeTemplate.DataName == 'FreeFireUpgrade_Sup') &&
-	//	WeaponCat == 'cannon'
-	//	)
-	//{
-	//	return false;
-	//}
 
 	return class'X2Item_DefaultUpgrades'.static.CanApplyUpgradeToWeapon(UpgradeTemplate, Weapon, SlotIndex);
 }
@@ -276,23 +259,24 @@ static function AddLootTables()
 	local LootTableEntry Entry;
 	local X2LootTableManager LootManager;
 	local int Index;
+	local bool bLog;
 
-	`LOG("AddLootTables LootTables.Length" @ default.LootTables.Length,, 'ExtendedUpgrades');
+	`LOG("AddLootTables LootTables.Length" @ default.LootTables.Length, bLog, 'ExtendedUpgrades');
 
 	foreach default.LootTables(Loot)
 	{
 		foreach Loot.Loots(Entry)
 		{
-			`LOG("Adding" @ Entry.TemplateName @ "(" $ Entry.TableRef $ ")"  @ "Table" @ Loot.TableName,, 'ExtendedUpgrades');
+			`LOG("Adding" @ Entry.TemplateName @ "(" $ Entry.TableRef $ ")"  @ "Table" @ Loot.TableName, bLog, 'ExtendedUpgrades');
 			class'X2LootTableManager'.static.AddEntryStatic(Loot.TableName, Entry);
 		}
 
 		LootManager = X2LootTableManager(class'Engine'.static.FindClassDefaultObject("X2LootTableManager"));
 		Index = LootManager.default.LootTables.Find('TableName', Loot.TableName);
-		`LOG("New Loot Table" @ Loot.TableName,, 'ExtendedUpgrades');
+		`LOG("New Loot Table" @ Loot.TableName, bLog, 'ExtendedUpgrades');
 		foreach LootManager.LootTables[Index].Loots(Entry)
 		{
-			`LOG("	->" $ Entry.TemplateName @ Entry.TableRef @ Entry.RollGroup @ Entry.Chance,, 'ExtendedUpgrades');
+			`LOG("	->" $ Entry.TemplateName @ Entry.TableRef @ Entry.RollGroup @ Entry.Chance, bLog, 'ExtendedUpgrades');
 		}
 	}
 }

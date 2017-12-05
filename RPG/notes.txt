@@ -1,0 +1,31 @@
+HL Hook for X2WeaponTemplate.GetLocalizedCategory
+
+
+tracer rounds - holo target and starting ammo
+fix hero abilities (copy)
+shotty tree?
+Remove stat gains from levelups?
+- Medium (Better Psi Offense (?))
+- Spotter (Better Sightradius)
+- Packmaster (+ 1 Utility Slot)
+
+changelog
+psi, dodge, hack cost base 2ap/lvl 
+moving target provide 20 dodge
+added cyberadept (+10 hack) back to random starting abilities (got lost somehow)
+made Reckoning a prequisite for the ripjack
+
+XComGameData.ini:
+
+[XComGame.X2StrategyGameRulesetDataStructures]
+HealSoldierProject_TimeScalar[0]=1.5 ;Easy
+HealSoldierProject_TimeScalar[1]=1.5 ;Normal
+HealSoldierProject_TimeScalar[2]=1.5 ;Classic
+HealSoldierProject_TimeScalar[3]=2.5 ;Impossible
+
+[XComGame.XComGameState_HeadquartersXCom]
+XComHeadquarters_BaseHealRates[0]=80 ;Quick
+XComHeadquarters_BaseHealRates[1]=80 ;Normal
+XComHeadquarters_BaseHealRates[2]=80 ;Long
+XComHeadquarters_BaseHealRates[3]=80 ;Epic
+

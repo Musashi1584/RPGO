@@ -74,6 +74,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComGameData_SoldierSkills.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComGameData_WeaponData.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComGameData_XpData.ini">
       <SubType>Content</SubType>
     </Content>
@@ -108,6 +111,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\XCOM2RPGOverhaul.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="notes.txt">
       <SubType>Content</SubType>
     </Content>
     <Content Include="ReadMe.txt" />
@@ -197,13 +203,13 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_BlueMoveSlash.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Bombard.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseandPersonal.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseEncounters.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DamageModifierCoverType.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">
@@ -275,13 +281,13 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NoReactionFire.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TemplateHelper_RPGOverhaul.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2UniversalSoldierClassInfo.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\XComGameState_Effect_Bombard.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\XComGameState_Effect_Failsafe.uc">
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XGLocalizedData_RPG.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBGameState_EventProxy.uc">

@@ -11,6 +11,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CombatProtocolHackingBonus());
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
+	Templates.AddItem(DamageModifierCoverType());
 	Templates.AddItem(AutoFireOverwatch());
 	Templates.AddItem(AutoFireShot());
 	Templates.AddItem(RemoveSquadSightOnMove());
@@ -117,6 +118,26 @@ static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 
 	Template.bDisplayInUITacticalText = false;
 	Template.bDisplayInUITooltip = false;
+
+	return Template;
+}
+
+static function X2AbilityTemplate DamageModifierCoverType()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_DamageModifierCoverType DamageModifierCoverType;
+	
+	Template = PurePassive('DamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
+
+	DamageModifierCoverType = new class'X2Effect_DamageModifierCoverType';
+	DamageModifierCoverType.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	DamageModifierCoverType.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+
+	Template.AddTargetEffect(DamageModifierCoverType);
+
+	Template.bDisplayInUITacticalText = false;
+	Template.bDisplayInUITooltip = false;
+	Template.bUniqueSource = true;
 
 	return Template;
 }

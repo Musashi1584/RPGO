@@ -190,9 +190,9 @@ function OnClickedDecrease(UIButton Button)
 
 	NewStatValue = StatValue - 1;
 
-	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(NewStatValue), bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ GetStatCost(StatValue), bLog, 'RPG');
 
-	if (CustomOnClickedDecreaseFn(StatType, NewStatValue, GetStatCost(NewStatValue)))
+	if (CustomOnClickedDecreaseFn(StatType, NewStatValue, GetStatCost(StatValue)))
 	{
 		StatValue = NewStatValue;
 		UpdateStatValue(StatValue);
@@ -282,15 +282,15 @@ function int GetStatCost(int NewStatValue)
 	return 0;
 }
 
-function float Pow(Float Base, int Exponent)
+function float Pow(Float fBase, int Exponent)
 {
 	local int i;
 	local float Result;
 
-	Result = Base;
+	Result = fBase;
 	for(i=1; i <= Exponent; i++)
 	{
-		Result *= Base;
+		Result *= fBase;
 	}
 	return Result;
 }

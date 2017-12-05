@@ -365,6 +365,18 @@ simulated function RealizeScrollbar()
 			Scrollbar = Spawn(class'UIScrollbar', self).InitScrollbar();
 			Scrollbar.SetAnchor(class'UIUtilities'.const.ANCHOR_TOP_RIGHT);
 			Scrollbar.SetHeight(450);
+			
+			if (HasBrigadierRank())
+			{
+				Scrollbar.SetPosition(-465, 310);
+			}
+			else
+			{
+				Scrollbar.SetPosition(-550, 310);
+			}
+			
+			Scrollbar.MC.SetNum("_alpha", 0);
+			Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
 		}
 		Scrollbar.NotifyValueChange(OnScrollBarChange, 0.0, MaxPosition);
 	}
@@ -915,8 +927,6 @@ function ResizeScreenForBrigadierRank()
 	MC.ChildSetNum("rankColumn6",		"_x", MC.GetNum("rankColumn6._x") - AdjustXOffset);
 	MC.ChildSetNum("rankColumn7",		"_x", MC.GetNum("rankColumn6._x"));
 	MC.ChildSetNum("rankColumn7",		"_y", MC.GetNum("rankColumn6._y"));
-
-	Scrollbar.SetPosition(-465, 310);
 }
 
 

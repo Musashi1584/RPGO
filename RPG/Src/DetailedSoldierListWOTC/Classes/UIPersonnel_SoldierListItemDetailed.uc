@@ -522,7 +522,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	{
 		PrimaryWeaponIcon = Spawn(class'UIImage', self);
 		PrimaryWeaponIcon.bAnimateOnInit = false;
-		PrimaryWeaponIcon.InitImage('PrimaryLoadoutImage_ListItem', PrimaryLoadoutImage).SetScale(IconScale).SetPosition(IconXPos - (IconToValueOffsetX * 0.1), -9.0f);
+		PrimaryWeaponIcon.InitImage('PrimaryLoadoutImage_ListItem', PrimaryLoadoutImage).SetScale(IconScale).SetPosition(IconXPos += 35, -9.0f);
 	}
 
 	if (SecondaryWeaponIcon == none && Unit.GetSecondaryWeapon() != none)
@@ -607,7 +607,7 @@ simulated function UpdateItemsForFocus(bool Focussed)
 	local int iUIState;
 	local XComGameState_Unit Unit;
 	local bool bReverse;
-	local string Aim, Defense, Health, Mobility, Will, Hack, Dodge, Psi;
+	local string Aim, Health, Mobility, Will, Hack, Dodge, Psi; // Defense
 	local UIIcon traitIcon;
 
 	iUIState = (IsDisabled ? eUIState_Disabled : eUIState_Normal);

@@ -1,9 +1,5 @@
 class X2Ability_LongWar extends XMBAbility config(RPG);
 
-var config int BOMBARD_BONUS_RANGE_TILES;
-
-var config int FAILSAFE_PCT_CHANCE;
-
 var config int INTERFERENCE_CV_CHARGES;
 var config int INTERFERENCE_MG_CHARGES;
 var config int INTERFERENCE_BM_CHARGES;
@@ -69,7 +65,6 @@ static function X2AbilityTemplate FieldSurgeon()
 static function X2AbilityTemplate Bombard()
 {
 	local X2AbilityTemplate				Template;
-	local X2Effect_Bombard				BombardEffect;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'Bombard');
 	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityBombard"; 
@@ -80,11 +75,6 @@ static function X2AbilityTemplate Bombard()
 	Template.AbilityTargetStyle = default.SelfTarget;
 	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
 	Template.bIsPassive = true;
-
-	BombardEffect = new class 'X2Effect_Bombard';
-	BombardEffect.BuildPersistentEffect (1, true, false);
-	BombardEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
-	Template.AddTargetEffect (BombardEffect);
 	
 	Template.bCrossClassEligible = false;
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
@@ -159,7 +149,8 @@ static function X2AbilityTemplate BringEmOn()
 	Value.bSquadsight = true;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(1);
+	
+	Effect.AddDamageModifier(1, eHit_Crit);
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = 8;
 
