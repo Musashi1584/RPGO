@@ -1,11 +1,12 @@
 class X2Ability_Patches extends XMBAbility config (RPG);
 
-var config int HEAVY_WEAPON_MOBILITY_PENALTY;
+var config float HEAVY_WEAPON_MOBILITY_SCALAR;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 	
+	Templates.AddItem(RpgDeathFromAbove());
 	Templates.AddItem(BlueMoveSlash());
 	Templates.AddItem(HeavyWeaponMobilityPenalty());
 	Templates.AddItem(CombatProtocolHackingBonus());
@@ -17,6 +18,18 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(RemoveSquadSightOnMove());
 
 	return Templates;
+}
+
+static function X2AbilityTemplate RpgDeathFromAbove()
+{
+	local X2Effect_DeathFromAboveRPG Effect;
+	
+	// Create an effect that will refund the cost of attacks
+	Effect = new class'X2Effect_DeathFromAboveRPG';
+	Effect.EffectName = 'RpgDeathFromAbove';
+
+	// Create the template using a helper function
+	return Passive('RpgDeathFromAbove', "img:///UILibrary_PerkIcons.UIPerk_DeathFromAbove", false, Effect);
 }
 
 static function X2AbilityTemplate BlueMoveSlash()
@@ -61,10 +74,10 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_PENALTY);
+	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR, MODOP_PostMultiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
 
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_PENALTY);
+	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
 	Template.AddTargetEffect(Effect);
 
 	return Template;

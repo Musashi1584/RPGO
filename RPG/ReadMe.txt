@@ -72,7 +72,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 - All weapons get 3 upgrade slots
 - Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
 - Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
-- Cannons get Autofire and Supression ability, have increased damage and clip size but get a -3 mobility penalty.
+- Cannons get Autofire and Supression ability, have increased damage and clip size but get a -25% mobility penalty.
 - Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 - Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 - Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
@@ -99,8 +99,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 - Soldier Healing Times are drastically reduced.
 
 [h1]New/Modified Items[/h1]
-- Tracer Ammo - adds HoloTargeting (not yet)
-- Walker Servos - add mobility and jump (not yet)
+- Tracer Ammo - give HoloTargeting instead of aim and can be build from campaign start
 
 [h1]Specializations[/h1]
 - Assault
@@ -118,7 +117,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 - Saboteur
 - Spotter
 
-A full documentation of all abilities can be found [url=https://docs.google.com/spreadsheets/d/1ioRBDf4cwplUiYjzW4i4VjcIBqlE1R73rOI9Yj4Z-JU/edit?usp=sharing]here[/url].
+A full documentation of all abilities can be found [url=https://docs.google.com/spreadsheets/d/12QgqB_rPZ5NaH3tep2a_JJTutkK-xvdR9KDmhg97ix8/edit#gid=0]here[/url].
 
 [h1]Random Starting Abilities[/h1]
 - LightningReflexes

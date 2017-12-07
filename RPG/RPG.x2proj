@@ -95,6 +95,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Content\DetailedSoldierListWOTC\UILibrary_LWToolbox.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\NewPromotionScreenbyDefault.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\StatUpgradeUI\StatUpgradeUI_Library.upk">
       <SubType>Content</SubType>
     </Content>
@@ -210,6 +213,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DamageModifierCoverType.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DeathFromAboveRPG.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">

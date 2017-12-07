@@ -40,6 +40,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchBladestormAttack();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchCombatProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
 }
 
 // <summary>

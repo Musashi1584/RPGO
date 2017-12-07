@@ -11,6 +11,12 @@ struct AbilityPrerequisite
 	var array<name> PrerequisiteTree;
 };
 
+struct MutuallyExclusiveAbilityPool
+{
+	var array<name> Abilities;
+};
+
+
 struct UniqueItemCategories
 {
 	var array<name> Categories;
@@ -24,6 +30,7 @@ struct WeaponProficiency
 
 var config array<AbilityWeaponCategoryRestriction> AbilityWeaponCategoryRestrictions;
 var config array<AbilityPrerequisite> AbilityPrerequisites;
+var config array<MutuallyExclusiveAbilityPool> MutuallyExclusiveAbilities;
 var config array<UniqueItemCategories> LoadoutUniqueItemCategories;
 var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
@@ -31,7 +38,7 @@ var config array<int> VERY_SHORT_RANGE;
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
-var config int AutoPistolDamageBonus;
+var config int AutoPistolCritChanceBonus;
 
 static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)
 {
@@ -112,39 +119,6 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 			}
 		}
 	}
-}
-
-static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
-{
-	// @TODO externalize in config
-	return (X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate()).WeaponCat == 'sword');
-}
-
-static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Unit UnitState, name WeaponCategory, out XComGameState_Item FoundItemState, optional XComGameState StartState)
-{
-	local array<XComGameState_Item> CurrentInventory;
-	local XComGameState_Item InventoryItem;
-	local X2WeaponTemplate WeaponTemplate;
-	local X2PairedWeaponTemplate PairedWeaponTemplate;
-
-	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
-	foreach CurrentInventory(InventoryItem)
-	{
-		`LOG(GetFuncName() @ InventoryItem.GetMyTemplate().DataName @ InventoryItem.GetMyTemplate().Class.Name @ X2WeaponTemplate(InventoryItem.GetMyTemplate()).WeaponCat @ WeaponCategory,, 'RPG');
-		PairedWeaponTemplate = X2PairedWeaponTemplate(InventoryItem.GetMyTemplate());
-		if (PairedWeaponTemplate != none  && InStr(string(PairedWeaponTemplate.DataName), "Paired") != INDEX_NONE)
-		{
-			continue;
-		}
-
-		WeaponTemplate = X2WeaponTemplate(InventoryItem.GetMyTemplate());
-		if (WeaponTemplate != none && WeaponTemplate.WeaponCat == WeaponCategory)
-		{
-			FoundItemState = InventoryItem;
-			return InventoryItem.InventorySlot;
-		}
-	}
-	return eInvSlot_Unknown;
 }
 
 static function PatchAbilitiesWeaponCondition()
@@ -271,7 +245,7 @@ static function PatchWeapons()
 						break;
 					case 'sidearm':
 						WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
-						WeaponTemplate.BaseDamage.Damage += default.AutoPistolDamageBonus;
+						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
 						break;
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice');
@@ -310,23 +284,7 @@ static function PatchWeapons()
 	}
 }
 
-static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability)
-{
-	if (Template.Abilities.Find(Ability) == INDEX_NONE)
-	{
-		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
-		Template.Abilities.AddItem(Ability);
-	}
-}
 
-static function AddAbilityToGremlinTemplate(out X2GremlinTemplate Template, name Ability)
-{
-	if (Template.Abilities.Find(Ability) == INDEX_NONE)
-	{
-		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
-		Template.Abilities.AddItem(Ability);
-	}
-}
 
 
 static function UpdateStorage()
@@ -378,7 +336,9 @@ static function PatchAbilityPrerequisites()
 	local X2AbilityTemplateManager				TemplateManager;
 	local X2AbilityTemplate						Template;
 	local AbilityPrerequisite					Prerequisite;
+	local MutuallyExclusiveAbilityPool			Exclusive;
 	local int									Index;
+	local name									Ability;
 	
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
@@ -388,9 +348,43 @@ static function PatchAbilityPrerequisites()
 		{
 			Template = TemplateManager.FindAbilityTemplate(Prerequisite.PrerequisiteTree[Index]);
 			Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
+			`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+		}
+	}
+
+	foreach default.MutuallyExclusiveAbilities(Exclusive)
+	{
+		for (Index = 0; Index < Exclusive.Abilities.Length; Index++)
+		{
+			Template = TemplateManager.FindAbilityTemplate(Exclusive.Abilities[Index]);
+			foreach Exclusive.Abilities(Ability)
+			{
+				if (Template.DataName != Ability)
+				{
+					Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
+					`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+				}
+			}
 		}
 	}
 }
+
+static function PatchTraceRounds()
+{
+	local X2ItemTemplateManager					TemplateManager;
+	local X2AmmoTemplate						Template;
+
+	TemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
+
+	Template = X2AmmoTemplate(TemplateManager.FindItemTemplate('TracerRounds'));
+	Template.Abilities.Length = 0;
+	Template.Abilities.AddItem('Holotargeting');
+
+	Template.RewardDecks.Length = 0;
+	Template.StartingItem = true;
+	Template.CanBeBuilt = true;
+}
+
 
 static function PatchMedicalProtocol()
 {
@@ -750,5 +744,55 @@ static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
 	{
 		Pawn.Mesh.AnimSets.AddItem(AnimSetToAdd);
 		`LOG(GetFuncName() @ "adding" @ AnimSetToAdd,, 'RPG');
+	}
+}
+
+static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Unit UnitState, name WeaponCategory, out XComGameState_Item FoundItemState, optional XComGameState StartState)
+{
+	local array<XComGameState_Item> CurrentInventory;
+	local XComGameState_Item InventoryItem;
+	local X2WeaponTemplate WeaponTemplate;
+	local X2PairedWeaponTemplate PairedWeaponTemplate;
+
+	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
+	foreach CurrentInventory(InventoryItem)
+	{
+		`LOG(GetFuncName() @ InventoryItem.GetMyTemplate().DataName @ InventoryItem.GetMyTemplate().Class.Name @ X2WeaponTemplate(InventoryItem.GetMyTemplate()).WeaponCat @ WeaponCategory,, 'RPG');
+		PairedWeaponTemplate = X2PairedWeaponTemplate(InventoryItem.GetMyTemplate());
+		if (PairedWeaponTemplate != none  && InStr(string(PairedWeaponTemplate.DataName), "Paired") != INDEX_NONE)
+		{
+			continue;
+		}
+
+		WeaponTemplate = X2WeaponTemplate(InventoryItem.GetMyTemplate());
+		if (WeaponTemplate != none && WeaponTemplate.WeaponCat == WeaponCategory)
+		{
+			FoundItemState = InventoryItem;
+			return InventoryItem.InventorySlot;
+		}
+	}
+	return eInvSlot_Unknown;
+}
+
+static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
+{
+	return (X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate()).iRange == 0);
+}
+
+static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability)
+{
+	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	{
+		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+		Template.Abilities.AddItem(Ability);
+	}
+}
+
+static function AddAbilityToGremlinTemplate(out X2GremlinTemplate Template, name Ability)
+{
+	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	{
+		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+		Template.Abilities.AddItem(Ability);
 	}
 }

@@ -15,6 +15,8 @@ struct CustomClassAbilityCost
 	var int AbilityCost;
 };
 
+var localized string m_strMutuallyExclusive;
+
 var config bool APRequiresTrainingCenter;
 var config bool RevealAllAbilities;
 
@@ -258,27 +260,15 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 	local int iAbility;
 	local bool bHasColumnAbility, bConnectToNextAbility;
 	local string AbilityName, AbilityIcon, BGColor, FGColor;
-//	local int NewMaxPosition;
 
 	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 	Unit = GetUnit();
 	AbilityTree = Unit.GetRankAbilities(Column.Rank);
 
-//	NewMaxPosition = Max(AbilityTree.Length - NUM_ABILITIES_PER_COLUMN, NUM_ABILITIES_PER_COLUMN);
-//	if (NewMaxPosition > MaxPosition)
-//		MaxPosition = NewMaxPosition;
-
 	// MaxPosition is the maximum value for Position
 	MaxPosition = Max(AbilityTree.Length - NUM_ABILITIES_PER_COLUMN, MaxPosition);
 
-	//`LOG("MaxPosition" @ MaxPosition,, 'PromotionScreen');
 	Column.AbilityNames.Length = 0;
-	
-	//for (iAbility = 0; iAbility < AbilityTree.Length; iAbility++)
-	//{
-	//	`LOG("Create Column" @ Column.Rank @ AbilityTree[iAbility].AbilityName,, 'PromotionScreen');
-	//}
-
 
 	for (iAbility = Position; iAbility < Position + NUM_ABILITIES_PER_COLUMN; iAbility++)
 	{
@@ -556,7 +546,10 @@ function bool CanPurchaseAbility(int Rank, int Branch, name AbilityName)
 	}
 
 	//Normal behaviour
-	return (Rank < UnitState.GetRank() && CanAffordAbility(Rank, Branch) && UnitState.MeetsAbilityPrerequisites(AbilityName));
+	// Musashi 11-05-17 do not check ability prerequisites for resistance heroes
+	return (Rank < UnitState.GetRank() &&
+		CanAffordAbility(Rank, Branch) &&
+		(UnitState.MeetsAbilityPrerequisites(AbilityName) || UnitState.IsResistanceHero()));
 }
 
 function int GetAbilityPointCost(int Rank, int Branch)
@@ -630,6 +623,8 @@ function PreviewAbility(int Rank, int Branch)
 	local array<SoldierClassAbilityType> AbilityTree;
 	local string AbilityIcon, AbilityName, AbilityDesc, AbilityHint, AbilityCost, CostLabel, APLabel, PrereqAbilityNames;
 	local name PrereqAbilityName;
+	// Variable for Issue #128
+	local string MutuallyExclusiveNames;
 
 	// NPSBDP Patch
 	Branch += Position;
@@ -676,28 +671,53 @@ function PreviewAbility(int Rank, int Branch)
 				AbilityCost = "";
 				APLabel = "";
 			}
-			else if (AbilityTemplate.PrerequisiteAbilities.Length > 0)
+			// Musashi ignore ability prerquisites for heroes
+			else if (AbilityTemplate.PrerequisiteAbilities.Length > 0 && !Unit.IsResistanceHero())
 			{
 				// Look back to the previous rank and check to see if that ability is a prereq for this one
 				// If so, display a message warning the player that there is a prereq
+				// Start Issue #128
 				foreach AbilityTemplate.PrerequisiteAbilities(PrereqAbilityName)
 				{
-					PreviousAbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(PrereqAbilityName);
-					if (PreviousAbilityTemplate != none && !Unit.HasSoldierAbility(PrereqAbilityName))
+					if (InStr(PrereqAbilityName, "NOT_") == 0)
 					{
-						if (PrereqAbilityNames != "")
+						PreviousAbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(name(Repl(PrereqAbilityName, "NOT_", "")));
+						if (PreviousAbilityTemplate != none )
 						{
-							PrereqAbilityNames $= ", ";
+							if (MutuallyExclusiveNames != "")
+							{
+								MutuallyExclusiveNames $= ", ";
+							}
+							MutuallyExclusiveNames $= PreviousAbilityTemplate.LocFriendlyName;
 						}
-						PrereqAbilityNames $= PreviousAbilityTemplate.LocFriendlyName;
 					}
+					else
+					{
+						PreviousAbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(PrereqAbilityName);
+						if (PreviousAbilityTemplate != none && !Unit.HasSoldierAbility(PrereqAbilityName))
+						{
+							if (PrereqAbilityNames != "")
+							{
+								PrereqAbilityNames $= ", ";
+							}
+							PrereqAbilityNames $= PreviousAbilityTemplate.LocFriendlyName;
+						}
+					}
+					
 				}
 				PrereqAbilityNames = class'UIUtilities_Text'.static.FormatCommaSeparatedNouns(PrereqAbilityNames);
+				MutuallyExclusiveNames = class'UIUtilities_Text'.static.FormatCommaSeparatedNouns(MutuallyExclusiveNames);
+
+				if (MutuallyExclusiveNames != "")
+				{
+					AbilityDesc = class'UIUtilities_Text'.static.GetColoredText(m_strMutuallyExclusive @ MutuallyExclusiveNames, eUIState_Warning) $ "\n" $ AbilityDesc;
+				}
 
 				if (PrereqAbilityNames != "")
 				{
 					AbilityDesc = class'UIUtilities_Text'.static.GetColoredText(m_strPrereqAbility @ PrereqAbilityNames, eUIState_Warning) $ "\n" $ AbilityDesc;
 				}
+				// End Issue #128
 			}
 		}
 		else
@@ -884,6 +904,7 @@ function int GetCustomAbilityCost(name ClassName, name AbilityName)
 	}
 	return 10;
 }
+
 
 function ResizeScreenForBrigadierRank()
 {

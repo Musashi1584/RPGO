@@ -41,7 +41,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnGetLocalizedCat
 {
 	local CHEventListenerTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGSoldierInfo');
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGetLocalizedCategory');
 
 	Template.RegisterInTactical = true;
 	Template.RegisterInStrategy = true;
