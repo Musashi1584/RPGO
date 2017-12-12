@@ -21,12 +21,21 @@ var config int DEADEYE_CRIT_BONUS;
 var config int DEADEYE_HIT_BONUS;
 var config int KILLEMALL_COOLDOWN;
 var config int KILLEMALL_TILE_WIDTH;
+var config int PANOPTIC_SIGHTRANGE_BONUS;
+var config int DAMN_GOOD_GROUND_AIM_BONUS;
+var config int DAMN_GOOD_GROUND_DEFENSE_BONUS;
+var config float SCOUT_BATTLESCANNER_RANGE_SCALAR;
+var config int XENO_BIOLOGIST_DMG_BONUS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 	
 	// Random Starting Abilities
+	Templates.AddItem(XenoBiologist());
+	Templates.AddItem(Scout());
+	Templates.AddItem(DamnGoodGround());
+	Templates.AddItem(Panoptic());
 	Templates.AddItem(Hitman());
 	Templates.AddItem(Prodigy());
 	Templates.AddItem(Bulletproof());
@@ -70,6 +79,57 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(TriggerHappyScamperShot());
 
 	return Templates;
+}
+
+static function X2AbilityTemplate XenoBiologist()
+{
+	local XMBEffect_ConditionalBonus Effect;
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.AddDamageModifier(default.XENO_BIOLOGIST_DMG_BONUS);
+	Effect.AbilityTargetConditions.AddItem(new class 'X2Condtion_TargetAutopsy');
+
+	return Passive('XenoBiologist', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
+}
+
+static function X2AbilityTemplate Scout()
+{
+	local XMBEffect_AddUtilityItem Effect;
+
+	Effect = new class'XMBEffect_AddUtilityItem';
+	Effect.DataName = 'BattleScanner';
+
+	return Passive('Scout', "img:///UILibrary_RPG.UIPerk_Scout", false, Effect);
+}
+
+static function X2AbilityTemplate DamnGoodGround()
+{
+	local XMBEffect_ConditionalBonus Effect;
+	local X2AbilityTemplate Template;
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.EffectName = 'DamnGoodGround';
+
+	Effect.AddToHitModifier(default.DAMN_GOOD_GROUND_AIM_BONUS);
+	Effect.AddToHitAsTargetModifier(default.DAMN_GOOD_GROUND_DEFENSE_BONUS * -1);
+
+	Effect.AbilityTargetConditions.AddItem(default.HeightDisadvantageCondition);
+	Effect.AbilityTargetConditionsAsTarget.AddItem(default.HeightAdvantageCondition);
+
+	Template = Passive('DamnGoodGround', "img:///UILibrary_RPG.UIPerk_damngoodground", false, Effect);
+
+	return Template;
+}
+
+
+static function X2AbilityTemplate Panoptic()
+{
+	local XMBEffect_ConditionalStatChange Effect;
+
+	Effect = new class'XMBEffect_ConditionalStatChange';
+	Effect.AddPersistentStatChange(eStat_SightRadius, default.PANOPTIC_SIGHTRANGE_BONUS);
+
+	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPG.UIPerk_Panoptic'", false, Effect);
 }
 
 static function X2AbilityTemplate Hitman()

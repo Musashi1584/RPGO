@@ -1,0 +1,2 @@
+class X2DownloadableContentInfo_Debug extends X2DownloadableContentInfo;
+

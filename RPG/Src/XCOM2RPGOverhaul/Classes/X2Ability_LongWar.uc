@@ -12,6 +12,9 @@ var config int RESCUE_CV_CHARGES;
 var config int RESCUE_MG_CHARGES;
 var config int RESCUE_BM_CHARGES;
 
+var config int BOMBARD_BONUS_RANGE_TILES;
+var config int FAILSAFE_PCT_CHANCE;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;

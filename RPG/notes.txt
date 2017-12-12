@@ -2,12 +2,9 @@ HL Hook for X2WeaponTemplate.GetLocalizedCategory
 
 shotty tree?
 - Medium (Better Psi Offense (?))
-- Spotter (Better Sightradius)
 - Packmaster (+ 1 Utility Slot)
 
-Changelog
-- Autopistol get +20% critical chance instead of +2 damage bonus (was op vs lost)
-
+heavy weapon slot
 
 
 XComGameData.ini:

@@ -1,0 +1,27 @@
+[XComGame.UIArmory_Loadout]
+[UIArmory_Loadout]
+
+m_strInventoryLabels[eInvSlot_AugmentationHead]=HEAD
+m_strInventoryLabels[eInvSlot_AugmentationTorso]=TORSO
+m_strInventoryLabels[eInvSlot_AugmentationArms]=ARMS
+m_strInventoryLabels[eInvSlot_AugmentationLegs]=LEGS
+
+[AugmentationHead X2EquipmentTemplate]
+FriendlyName="Cybernetic Skull"
+FriendlyNamePlural="Cybernetic Skull"
+BriefSummary="Cybernetic Skull"
+
+[AugmentationTorso X2EquipmentTemplate]
+FriendlyName="Cybernetic Torso"
+FriendlyNamePlural="Cybernetic Torsos"
+BriefSummary="Cybernetic Torso"
+
+[AugmentationArms X2EquipmentTemplate]
+FriendlyName="Cybernetic Arms"
+FriendlyNamePlural="Cybernetic Arms"
+BriefSummary="Cybernetic Arms"
+
+[AugmentationLegs X2EquipmentTemplate]
+FriendlyName="Cybernetic Legs"
+FriendlyNamePlural="Cybernetic Legs"
+BriefSummary="Cybernetic Legs"

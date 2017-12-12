@@ -2,13 +2,15 @@
 
 [h1]Features[/h1]
 - Gameplay overhaul that revamps various aspects of the game
-. Total freedom in developing your soldiers
 - Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
-- 2 random starting abilties on sqaddie
-- Stats can be upgrades with ability points
-- The new class can choose from all primary and all secondary weapons. Every combination is possible.
-- Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
+- The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
 - Dynamic class title / class icon based on your ability choices
+- 2 random starting abilties on squaddie
+- Stats can be upgraded with ability points
+- All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
+- Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
+- Full support of Primary Secondaries and Utility Slot Sidearm
+- Full support of weapon mods like Resistance Firearms
 
 [h1]PSA[/h1]
 
@@ -67,8 +69,6 @@ the ability cost for buying abilities is raised too however
 The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
 
 [h1]Changes to weapons[/h1]
-- Half cover reduces damage by 1/4 (except for critical hits)
-- Full cover reduces damgage by 1/2 (except for critical hits)
 - All weapons get 3 upgrade slots
 - Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
 - Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
@@ -135,6 +135,11 @@ A full documentation of all abilities can be found [url=https://docs.google.com/
 - EagleEye (Better Aim (non reaction fire))
 - Runner (Better Mobility)
 - Hitman (Better Crit on flanking shots)
+- Panoptical (+2 sightradius)
+- Damn Good Ground (You get an additional 10 Aim and 10 Defense against targets at lower elevation.)
+- Scout (You carry a free battle scanner. Increases throw range for battle scanners by 50%.)
+- Xeno Biologist (Confers 1 bonus damage, against targets who have been autopsied.)
+
 
 [h1]Credits[/h1]
 Pavonis Interactive for all long war 2 perks i used and initial Detailed Soldier Lists.

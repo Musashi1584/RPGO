@@ -166,13 +166,13 @@ static function PatchWeapons()
 			WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 			if (WeaponTemplate != none)
 			{
-				if (WeaponTemplate.BaseDamage.Damage > 0
-					&& WeaponTemplate.WeaponCat != 'shotgun'
-					&& WeaponTemplate.iRange == INDEX_NONE)
-				{
-					`LOG(GetFuncName() @ "Add DamageModifierCoverType to" @ WeaponTemplate.DataName,, 'RPG');
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'DamageModifierCoverType');
-				}
+				//if (WeaponTemplate.BaseDamage.Damage > 0
+				//	&& WeaponTemplate.WeaponCat != 'shotgun'
+				//	&& WeaponTemplate.iRange == INDEX_NONE)
+				//{
+				//	`LOG(GetFuncName() @ "Add DamageModifierCoverType to" @ WeaponTemplate.DataName,, 'RPG');
+				//	AddAbilityToWeaponTemplate(WeaponTemplate, 'DamageModifierCoverType');
+				//}
 
 				// @TODO Patch enviromental damage
 				if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)

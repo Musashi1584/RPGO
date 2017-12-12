@@ -15,16 +15,20 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Config\" />
     <Folder Include="Config\ExtendedUpgrades" />
     <Folder Include="Config\DetailedSoldierListWOTC" />
+    <Folder Include="Config\Augmentations" />
     <Folder Include="Config\StatUpgradeUI" />
     <Folder Include="Config\NewPromotionScreenbyDefault" />
     <Folder Include="Content\" />
     <Folder Include="Content\DetailedSoldierListWOTC" />
+    <Folder Include="Content\Augmentations" />
     <Folder Include="Content\StatUpgradeUI" />
     <Folder Include="Localization\" />
     <Folder Include="Content" />
     <Folder Include="Localization\ExtendedUpgrades" />
+    <Folder Include="Localization\Augmentations" />
     <Folder Include="Localization\NewPromotionScreenbyDefault" />
     <Folder Include="Src\" />
+    <Folder Include="Src\Augmentations\Classes" />
     <Folder Include="Src\Debug\Classes" />
     <Folder Include="Src\DetailedSoldierListWOTC\Classes" />
     <Folder Include="Src\ExtendedUpgrades\Classes" />
@@ -33,6 +37,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\ExtendedUpgrades" />
     <Folder Include="Src\Debug" />
     <Folder Include="Src\DetailedSoldierListWOTC" />
+    <Folder Include="Src\Augmentations" />
     <Folder Include="Src\StatUpgradeUI" />
     <Folder Include="Src\NewPromotionScreenbyDefault" />
     <Folder Include="Src\NewPromotionScreenbyDefault\Classes" />
@@ -47,6 +52,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\XCOM2RPGOverhaul\Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\Augmentations\XComGameData.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\DetailedSoldierListWOTC\XComEngine.ini">
       <SubType>Content</SubType>
     </Content>
@@ -86,6 +94,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComStealthOverhaul.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\Augmentations\UILibrary_Augmentations.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\AutoFire_ANIM.upk">
       <SubType>Content</SubType>
     </Content>
@@ -102,6 +113,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\UILibrary_RPG.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\Augmentations\Augmentations.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\Augmentations\XComGame.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
@@ -125,7 +142,25 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComEngine.ini" />
     <Content Include="Config\XComGame.ini" />
     <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\Augmentations\Classes\UIArmory_Augmentations.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_MainMenu.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2Item_Augmentations.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2StrategyElement_AugmentationSlots.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\Debug\Classes\UISL_UITacticalQuickLaunch_SquadLoadout.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Debug\Classes\X2DownloadableContentInfo_Debug.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Debug\Classes\X2EventListener_Debug.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\DetailedSoldierListWOTC\Classes\UIPersonnel_SoldierListItemDetailed.uc">
@@ -198,6 +233,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condtion_TargetAutopsy.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ActivateOverwatch.uc">
