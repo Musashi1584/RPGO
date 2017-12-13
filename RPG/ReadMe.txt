@@ -5,7 +5,7 @@
 - Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
 - The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
 - Dynamic class title / class icon based on your ability choices
-- 2 random starting abilties on squaddie
+- 2 random starting abilitieson squaddie
 - Stats can be upgraded with ability points
 - All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
 - Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
@@ -25,7 +25,7 @@ I recommend to play this mod with the following mods:
 
 [h1]About this overhaul[/h1]
 The idea of this mod was born out of my passion for oldschool rpg games.
-I thought it would be cool to develope every single soldier in every way you want and give it every weapon or item you want. 
+I thought it would be cool to develop every single soldier in every way you want and give it every weapon or item you want. 
 
 So here it is. The mod replaces the vanilla class by one class starting as "Soldier".
 
@@ -33,9 +33,9 @@ The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Seco
 
 This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from. I am planning to even expand on this.
 
-When your soldier evolves your class name and icon changes dynamicly to the specialization you have the most perks from.
+When your soldier evolves your class name and icon changes dynamicallyto the specialization you have the most perks from.
 
-On squaddie your soldier will get two random starting abilities from a pool to give each soldier an idea to where he/she could be deveveloped.
+On squaddie your soldier will get two random starting abilities from a pool to give each soldier an idea to where he/she could be developed.
 
 Any combination of abilities and weapons are possible. For example you can create a cannon wielding medic, a gunslinging grenadier, sniper with ripjack or whatever you can imagine.
 
@@ -43,7 +43,7 @@ Most abilities work with each weapon, the secondary weapon abilities work with t
 
 Another big change is the possibility to upgrade the soldiers stats with ability points. Therefor i designed a completely new ui screen.
 
-For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachements work.
+For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachments work.
 
 [h1]Soldier AP[/h1]
 Since you can raise stats with Soldier AP the rank up AP bonus is raised to 30
@@ -72,7 +72,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 - All weapons get 3 upgrade slots
 - Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
 - Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
-- Cannons get Autofire and Supression ability, have increased damage and clip size but get a -25% mobility penalty.
+- Cannons get Autofire and Suppression ability, have increased damage and clip size but get a -25% mobility penalty.
 - Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 - Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 - Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
@@ -143,7 +143,7 @@ A full documentation of all abilities can be found [url=https://docs.google.com/
 
 [h1]Credits[/h1]
 Pavonis Interactive for all long war 2 perks i used and initial Detailed Soldier Lists.
-Robojumper for the stats icons i used in the stats upgrade screen, some class icons, controller support and coding assistence when i was stuck.
+Robojumper for the stats icons i used in the stats upgrade screen, some class icons, controller support and coding assistance when i was stuck.
 xylthixlm for xmod base and the perk icon library. Fantastic work and a tremendous workload reduction.
 creative xenos for being that crazy chaotic creative bunch of great people that they are.
 bg for [WOTC] Detailed Soldier Lists

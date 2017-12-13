@@ -34,8 +34,14 @@ static function X2DataTemplate CreateAugmentationHeadSlotTemplate(name TemplateN
 	Template.ShowItemInLockerListFn = ShowAugmentationItemInLockerList;
 	Template.ValidateLoadoutFn = AugmentationValidateLoadout;
 	Template.UnitShowSlotFn = UnitShowAugmentationSlot;
+	Template.GetSlotUnequipBehaviorFn = AugmentationSlotGetUnequipBehavior;
 
 	return Template;
+}
+
+function ECHSlotUnequipBehavior AugmentationSlotGetUnequipBehavior(CHItemSlot Slot, ECHSlotUnequipBehavior DefaultBehavior, XComGameState_Unit Unit, XComGameState_Item ItemState, optional XComGameState CheckGameState)
+{
+	return eCHSUB_DontAllow;
 }
 
 static function bool UnitShowAugmentationSlot(CHItemSlot Slot, XComGameState_Unit UnitState, optional XComGameState CheckGameState)
@@ -46,17 +52,25 @@ static function bool UnitShowAugmentationSlot(CHItemSlot Slot, XComGameState_Uni
 static function bool CanAddItemToAugmentationSlot(CHItemSlot Slot, XComGameState_Unit Unit, X2ItemTemplate Template, optional XComGameState CheckGameState, optional int Quantity = 1, optional XComGameState_Item ItemState)
 {
 	local string strDummy;
+	local int Index;
+
 	`log(GetFuncName() @ "called" @ Template.DataName @ Template.ItemCat,, 'Augmentations');
 	if (!Slot.UnitHasSlot(Unit, strDummy, CheckGameState) || Unit.GetItemInSlot(Slot.InvSlot, CheckGameState) != none)
 	{
 		return false;
 	}
-	return Template.ItemCat == 'augmentation';
+
+	Index = class'X2Item_Augmentations'.default.SlotConfig.Find('InvSlot', Slot.InvSlot);
+	if (Index != INDEX_NONE)
+	{
+		return Template.ItemCat == class'X2Item_Augmentations'.default.SlotConfig[Index].Category;
+	}
+	return false;
 }
 
 static function bool HasAugmentationSlot(CHItemSlot Slot, XComGameState_Unit UnitState, out string LockedReason, optional XComGameState CheckGameState)
 {
-	`log(GetFuncName() @ "called",, 'Augmentations');
+	//`log(GetFuncName() @ "called",, 'Augmentations');
 	// @TODO check if soldier is augmented
 	return UnitState.IsSoldier() && !UnitState.IsRobotic();
 }
@@ -69,7 +83,14 @@ static function int AugmentationGetPriority(CHItemSlot Slot, XComGameState_Unit 
 
 static function bool ShowAugmentationItemInLockerList(CHItemSlot Slot, XComGameState_Unit Unit, XComGameState_Item ItemState, X2ItemTemplate ItemTemplate, XComGameState CheckGameState)
 {
-	return ItemTemplate.ItemCat == 'defense';
+	local int Index;
+	`log(GetFuncName() @ "called",, 'Augmentations');
+	Index = class'X2Item_Augmentations'.default.SlotConfig.Find('InvSlot', Slot.InvSlot);
+	if (Index != INDEX_NONE)
+	{
+		return ItemTemplate.ItemCat == class'X2Item_Augmentations'.default.SlotConfig[Index].Category;
+	}
+	return false;
 }
 
 static function string GetAugmentationDisplayLetter(CHItemSlot Slot)
@@ -85,7 +106,7 @@ static function AugmentationValidateLoadout(CHItemSlot Slot, XComGameState_Unit 
 	local bool HasSlot;
 	EquippedAugmentation = Unit.GetItemInSlot(Slot.InvSlot, NewGameState);
 	HasSlot = Slot.UnitHasSlot(Unit, strDummy, NewGameState);
-	`log(GetFuncName() @ "called",, 'Augmentations');
+	//`log(GetFuncName() @ "called",, 'Augmentations');
 	if(EquippedAugmentation == none && HasSlot)
 	{
 		//EquippedSecondaryWeapon = GetBestSecondaryWeapon(NewGameState);

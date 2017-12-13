@@ -1,7 +1,5 @@
 class UIArmory_Augmentations extends UIArmory_Loadout;
 
-var protected array<EInventorySlot> AugmentationSlots;
-
 simulated function UpdateEquippedList()
 {
 	local int i, numUtilityItems;
@@ -19,20 +17,14 @@ simulated function UpdateEquippedList()
 	// Clear out tooltips from removed list items
 	Movie.Pres.m_kTooltipMgr.RemoveTooltipsByPartialPath(string(EquippedList.MCPath));
 
-	AugmentationSlots.Length = 0;
-	AugmentationSlots.AddItem(eInvSlot_AugmentationHead);
-	AugmentationSlots.AddItem(eInvSlot_AugmentationTorso);
-	AugmentationSlots.AddItem(eInvSlot_AugmentationArms);
-	AugmentationSlots.AddItem(eInvSlot_AugmentationLegs);
-
-	En = class'CHUIItemSlotEnumerator'.static.CreateEnumerator(UpdatedUnit, CheckGameState,,,AugmentationSlots);
+	En = class'CHUIItemSlotEnumerator'.static.CreateEnumerator(UpdatedUnit, CheckGameState,,, class'X2Item_Augmentations'.default.AugmentationSlots);
 	while (En.HasNext())
 	{
 		En.Next();
 
 		`LOG(GetFuncName() @ En.Slot,, 'Augmentations');
 
-		if (AugmentationSlots.Find(En.Slot) == INDEX_NONE)
+		if (class'X2Item_Augmentations'.default.AugmentationSlots.Find(En.Slot) == INDEX_NONE)
 		{
 			continue;
 		}
@@ -53,12 +45,19 @@ simulated function UpdateEquippedList()
 simulated function bool ShowInLockerList(XComGameState_Item Item, EInventorySlot SelectedSlot)
 {
 	local X2ItemTemplate ItemTemplate;
+	local int Index;
 
 	ItemTemplate = Item.GetMyTemplate();
 	
 	if(MeetsAllStrategyRequirements(ItemTemplate.ArmoryDisplayRequirements) && MeetsDisplayRequirement(ItemTemplate))
 	{
-		return AugmentationSlots.Find(SelectedSlot) != INDEX_NONE && ItemTemplate.ItemCat == 'augmentation';
+		Index = class'X2Item_Augmentations'.default.SlotConfig.Find('InvSlot', SelectedSlot);
+
+		if (Index != INDEX_NONE)
+		{
+			`LOG(GetFuncName() @ ItemTemplate.DataName @ ItemTemplate.ItemCat @ ItemTemplate.ItemCat == class'X2Item_Augmentations'.default.SlotConfig[Index].Category,, 'Augmentation');
+			return ItemTemplate.ItemCat == class'X2Item_Augmentations'.default.SlotConfig[Index].Category;
+		}
 	}
 
 	return false;

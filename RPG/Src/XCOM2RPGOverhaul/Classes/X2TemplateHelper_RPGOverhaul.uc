@@ -187,6 +187,7 @@ static function PatchWeapons()
 						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol');
 						break;
 					case 'rifle':
+					case 'sparkrifle':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
@@ -785,6 +786,7 @@ static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name A
 	{
 		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
 		Template.Abilities.AddItem(Ability);
+		ShowInTacticalText(Ability);
 	}
 }
 
@@ -794,5 +796,16 @@ static function AddAbilityToGremlinTemplate(out X2GremlinTemplate Template, name
 	{
 		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
 		Template.Abilities.AddItem(Ability);
+		ShowInTacticalText(Ability);
 	}
+}
+
+static function ShowInTacticalText(name Ability)
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				AbilityTemplate;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	AbilityTemplate = TemplateManager.FindAbilityTemplate(Ability);
+	AbilityTemplate.bDisplayInUITacticalText = true;
 }

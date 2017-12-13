@@ -52,6 +52,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\XCOM2RPGOverhaul\Classes\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\Augmentations\XComAugmentations.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\Augmentations\XComGameData.ini">
       <SubType>Content</SubType>
     </Content>
@@ -92,6 +95,15 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComStealthOverhaul.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\Augmentations\AnimationsMaster_Augmentations.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\Augmentations\CyberClaws_Augmentations.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\Augmentations\Sockets_Augmentions.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\Augmentations\UILibrary_Augmentations.upk">
@@ -143,6 +155,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComGame.ini" />
     <Content Include="Localization\XComGame.int" />
     <Content Include="Src\Augmentations\Classes\UIArmory_Augmentations.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2Ability_Augmentations_Abilities.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2DownloadableContentInfo_Augmentations.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_MainMenu.uc">

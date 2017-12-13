@@ -311,7 +311,6 @@ static function X2AbilityTemplate TriggerAttachment(name TemplateName, int HitBo
 
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
 
 	Template.bDisplayInUITooltip = false;
 	Template.bDisplayInUITacticalText = false;

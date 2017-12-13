@@ -6,22 +6,47 @@ m_strInventoryLabels[eInvSlot_AugmentationTorso]=TORSO
 m_strInventoryLabels[eInvSlot_AugmentationArms]=ARMS
 m_strInventoryLabels[eInvSlot_AugmentationLegs]=LEGS
 
-[AugmentationHead X2EquipmentTemplate]
-FriendlyName="Cybernetic Skull"
-FriendlyNamePlural="Cybernetic Skull"
+[AugmentationHead_Base_CV X2EquipmentTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cybernetic Skull</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Skull</b></font>"
 BriefSummary="Cybernetic Skull"
+TacticalText="<Bullet/>"
 
-[AugmentationTorso X2EquipmentTemplate]
-FriendlyName="Cybernetic Torso"
-FriendlyNamePlural="Cybernetic Torsos"
+[AugmentationTorso_Base_CV X2EquipmentTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cybernetic Torso</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Torsos</b></font>"
 BriefSummary="Cybernetic Torso"
+TacticalText="<Bullet/>"
 
-[AugmentationArms X2EquipmentTemplate]
-FriendlyName="Cybernetic Arms"
-FriendlyNamePlural="Cybernetic Arms"
+[AugmentationArms_Base_CV X2EquipmentTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cybernetic Arms</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Arms</b></font>"
 BriefSummary="Cybernetic Arms"
+TacticalText="<Bullet/>"
 
-[AugmentationLegs X2EquipmentTemplate]
-FriendlyName="Cybernetic Legs"
-FriendlyNamePlural="Cybernetic Legs"
+[AugmentationLegs_Base_CV X2EquipmentTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cybernetic Legs</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Legs</b></font>"
 BriefSummary="Cybernetic Legs"
+TacticalText="<Bullet/>"
+
+[AugmentationArms_Grapple_MG X2EquipmentTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cybernetic Grapple</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Grapple</b></font>"
+BriefSummary="Cybernetic Grapple"
+TacticalText="<Bullet/>"
+
+[AugmentationArms_Claws_MG X2PairedWeaponTemplate]
+FriendlyName="<font color='#00e0d5'><b>Cyberclaws</b></font>"
+FriendlyNamePlural="<font color='#00e0d5'><b>Cyberclaws</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+AbilityDescName="Cyberclaws"
+
+
+[ClawsSlash X2AbilityTemplate]
+LocFriendlyName="Claw Slash"
+LocLongDescription="Melee slash that does not end turn if you have action points left."
+LocHelpText="Melee slash that does not end turn if you have action points left."
+LocFlyOverText="Claw Slash" 
+LocPromotionPopupText="Melee slash that does not end turn if you have action points left."

@@ -69,7 +69,7 @@ static function X2AbilityTemplate Bombard()
 {
 	local X2AbilityTemplate				Template;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'Bombard');
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgBombard');
 	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityBombard"; 
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;

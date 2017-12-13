@@ -210,7 +210,7 @@ static function EventListenerReturn OnGetItemRangeBombard(Object EventData, Obje
 
 	//verify the owner has bombard
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(Item.OwnerStateObject.ObjectID));
-	if(!UnitState.HasSoldierAbility('Bombard'))
+	if(!UnitState.HasSoldierAbility('RpgBombard'))
 		return ELR_NoInterrupt;
 
 	if(Ability == none)
