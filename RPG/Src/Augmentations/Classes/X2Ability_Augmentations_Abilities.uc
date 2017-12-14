@@ -1,11 +1,13 @@
 class X2Ability_Augmentations_Abilities extends X2Ability config (Augmentations);
 
 var config int AUGMENTATION_BASE_MITIGATION_AMOUNT;
+var config int AUGMENTED_STRIKE_DAMAGE;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
+	Templates.AddItem(ExMachina());
 	Templates.AddItem(CyberPunch());
 	Templates.AddItem(CyberPunchAnimSet());
 	Templates.AddItem(AugmentationBaseStats());
@@ -15,14 +17,50 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Templates;
 }
 
+static function X2AbilityTemplate ExMachina()
+{
+	local X2AbilityTemplate                 Template;
+	local X2Effect_PersistentStatChange		PersistentStatChangeEffect;
+	local X2Effect_DamageImmunity           DamageImmunity;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'ExMachina');
+	Template.IconImage = "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_divinearmor";
+
+	Template.AbilitySourceName = 'eAbilitySource_Item';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.bDisplayInUITacticalText = false;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	
+	DamageImmunity = new class'X2Effect_DamageImmunity';
+	DamageImmunity.EffectName = 'ExMachina';
+	DamageImmunity.DuplicateResponse = eDupe_Ignore;
+	DamageImmunity.ImmuneTypes.AddItem('Fire');
+	DamageImmunity.ImmuneTypes.AddItem('Poison');
+	DamageImmunity.ImmuneTypes.AddItem('Acid');
+	DamageImmunity.ImmuneTypes.AddItem(class'X2Item_DefaultDamageTypes'.default.ParthenogenicPoisonType);
+	DamageImmunity.BuildPersistentEffect(1, true, false, false);
+	DamageImmunity.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false, , Template.AbilitySourceName);
+	DamageImmunity.TargetConditions.AddItem(new class'X2Condition_Cyborg');
+	Template.AddTargetEffect(DamageImmunity);
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
+}
+
 static function X2AbilityTemplate CyberPunch()
 {
 	local X2AbilityTemplate					Template;
 	local X2Effect_Knockback				KnockbackEffect;
+	local X2Effect_ApplyWeaponDamage		DamageEffect;
 
 	Template = class'X2Ability_RangerAbilitySet'.static.AddSwordSliceAbility('CyberPunch');
 
-	Template.IconImage = "img:///CyberPunchIcon";
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_beserker_punch";
 	
 	Template.CustomFireAnim = 'FF_MeleeCyberPunchA';
 	Template.CustomFireKillAnim = 'FF_MeleeCyberPunchA';
@@ -33,12 +71,19 @@ static function X2AbilityTemplate CyberPunch()
 	Template.CustomMovingTurnRightFireAnim = 'MV_RunTurn90RightMeleeCyberPunchA';
 	Template.CustomMovingTurnRightFireKillAnim = 'MV_RunTurn90RightMeleeCyberPunchA';
 
+	Template.AbilityTargetEffects.Length = 0;
+
 	KnockbackEffect = new class'X2Effect_Knockback';
-	KnockbackEffect.KnockbackDistance = 10;
+	KnockbackEffect.KnockbackDistance = 20;
 	KnockbackEffect.bKnockbackDestroysNonFragile = true;
 	KnockbackEffect.OnlyOnDeath = false;
 	Template.AddTargetEffect(KnockbackEffect);
 	Template.bOverrideMeleeDeath = true;
+
+	DamageEffect = new class'X2Effect_ApplyWeaponDamage';
+	Template.AddTargetEffect(DamageEffect);
+
+	Template.AddTargetEffect(class'X2StatusEffects'.static.CreateDisorientedStatusEffect(true));
 	
 	Template.AdditionalAbilities.AddItem('CyberPunchAnimSet');
 

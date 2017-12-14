@@ -50,3 +50,10 @@ LocLongDescription="Melee slash that does not end turn if you have action points
 LocHelpText="Melee slash that does not end turn if you have action points left."
 LocFlyOverText="Claw Slash" 
 LocPromotionPopupText="Melee slash that does not end turn if you have action points left."
+
+[CyberPunch X2AbilityTemplate]
+LocFriendlyName="Augmented Strike"
+LocLongDescription="Cybernetically enhanced strike that disorients and knocks back targets."
+LocHelpText="Cybernetically enhanced strike"
+LocFlyOverText="Augmented Strike" 
+LocPromotionPopupText="Cybernetically enhanced strike that disorients and knocks back targets."

@@ -17,6 +17,8 @@ var config int					CLAWS_ISOUNDRANGE;
 var config int					CLAWS_IENVIRONMENTDAMAGE;
 var config int					CLAWS_UPGRADE_SLOTS;
 
+var config WeaponDamageValue	CYBER_ARM_BASEDAMAGE;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Items;
@@ -45,6 +47,7 @@ static function X2DataTemplate AugmentationHead_Base_CV()
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentations_Head";
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
@@ -82,6 +85,7 @@ static function X2DataTemplate AugmentationTorso_Base_CV()
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Torso";
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
@@ -109,20 +113,21 @@ static function X2DataTemplate AugmentationTorso_Base_CV()
 
 static function X2DataTemplate AugmentationArms_Base_CV()
 {
-	local X2EquipmentTemplate Template;
+	local X2WeaponTemplate Template;
 	local ArtifactCost Resources;
 	local ArtifactCost Artifacts;
 
-	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationArms_Base_CV');
+	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Base_CV');
 	Template.ItemCat = 'augmentation_arms';
 	Template.InventorySlot = eInvSlot_AugmentationArms;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Arm";
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
+	Template.BaseDamage = default.CYBER_ARM_BASEDAMAGE;
+	Template.Abilities.AddItem('CyberPunch');
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
-	Template.Abilities.AddItem('CyberPunch');
 
 	Template.CanBeBuilt = true;
 	Template.TradingPostValue = 12;
@@ -159,6 +164,7 @@ static function X2DataTemplate AugmentationLegs_Base_CV()
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
@@ -205,6 +211,7 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.GameArchetype = "CyberClaws_Augmentations.Archetypes.WP_Claws_LG";
 	Template.Tier = 2;
 
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('ClawsSlash');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
@@ -275,11 +282,11 @@ static function X2DataTemplate AugmentationArms_Grapple_MG()
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Arm";
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
+	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('CyberPunch');
 	Template.Abilities.AddItem('GrapplePowered');
+	Template.Abilities.AddItem('AugmentationBaseStats');
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
 	Template.CanBeBuilt = true;
 	Template.TradingPostValue = 12;
