@@ -76,7 +76,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 - Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 - Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 - Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
-- Autopistol get +20 crit change but have a significantly shorter range table than pistol.
+- Autopistol get +20% crit change but have a significantly shorter range table than pistol.
 - Swords get Slice ability.
 - Gremlins get Remote Hacking and Aid ability.
 - Pistols get Pistol Shot ability.
