@@ -5,7 +5,7 @@
 - Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
 - The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
 - Dynamic class title / class icon based on your ability choices
-- 2 random starting abilitieson squaddie
+- 2 random starting abilities on squaddie
 - Stats can be upgraded with ability points
 - All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
 - Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
@@ -21,6 +21,7 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 I recommend to play this mod with the following mods:
 - WotC SpecOps Combat Knives
 - WotC Katana Mod Reloaded
+- Wotc Primary Secondaries
 - [WOTC] Point-Based Not Created Equal
 
 [h1]About this overhaul[/h1]
@@ -33,7 +34,7 @@ The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Seco
 
 This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from. I am planning to even expand on this.
 
-When your soldier evolves your class name and icon changes dynamicallyto the specialization you have the most perks from.
+When your soldier evolves your class name and icon changes dynamically to the specialization you have the most perks from.
 
 On squaddie your soldier will get two random starting abilities from a pool to give each soldier an idea to where he/she could be developed.
 

@@ -617,38 +617,35 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	local XGParamTag				LocTag;
 	local WeaponProficiency			Proficiency;
 
-	If (UnitState.GetSoldierClassTemplateName() != 'UniversalSoldier')
-	{
-		return false;
-	}
+	//If (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	//{
+		WeaponTemplate = X2WeaponTemplate(ItemTemplate);
+		InventoryItems = UnitState.GetAllInventoryItems(CheckGameState, true);
+		LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
 
-	
-	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
-	InventoryItems = UnitState.GetAllInventoryItems(CheckGameState, true);
-	LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
-
-	foreach InventoryItems(Item)
-	{
-		LoadoutWeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
-		foreach default.LoadoutUniqueItemCategories(ItemCategories)
+		foreach InventoryItems(Item)
 		{
-			Categories = ItemCategories.Categories;
-			Index = Categories.Find(LoadoutWeaponTemplate.WeaponCat);
-			Index2 = Categories.Find(WeaponTemplate.WeaponCat);
-			if (Index != INDEX_NONE && Index2 != INDEX_NONE &&
-				LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot)
+			LoadoutWeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
+			foreach default.LoadoutUniqueItemCategories(ItemCategories)
 			{
-				bCanAddItem = 0;
-				LocTag.StrValue0 = WeaponTemplate.GetLocalizedCategory();
-				DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
-					`XEXPAND.ExpandString(
-						class'XGLocalizedData_RPG'.default.m_strCategoryRestricted
-					)
-				);
-				bEvaluate = true;
+				Categories = ItemCategories.Categories;
+				Index = Categories.Find(LoadoutWeaponTemplate.WeaponCat);
+				Index2 = Categories.Find(WeaponTemplate.WeaponCat);
+				if (Index != INDEX_NONE && Index2 != INDEX_NONE &&
+					LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot)
+				{
+					bCanAddItem = 0;
+					LocTag.StrValue0 = WeaponTemplate.GetLocalizedCategory();
+					DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
+						`XEXPAND.ExpandString(
+							class'XGLocalizedData_RPG'.default.m_strCategoryRestricted
+						)
+					);
+					bEvaluate = true;
+				}
 			}
 		}
-	}
+	//}
 
 	if (!bEvaluate)
 	{
