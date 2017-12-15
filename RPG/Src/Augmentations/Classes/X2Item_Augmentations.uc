@@ -168,6 +168,8 @@ static function X2DataTemplate AugmentationLegs_Base_CV()
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
+	Template.Abilities.AddItem('AugmentedSpeed');
+
 	Template.CanBeBuilt = true;
 	Template.TradingPostValue = 12;
 	Template.PointsToComplete = 0;

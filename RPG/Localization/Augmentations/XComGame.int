@@ -57,3 +57,10 @@ LocLongDescription="Cybernetically enhanced strike that disorients and knocks ba
 LocHelpText="Cybernetically enhanced strike"
 LocFlyOverText="Augmented Strike" 
 LocPromotionPopupText="Cybernetically enhanced strike that disorients and knocks back targets."
+
+[AugmentedSpeed X2AbilityTemplate]
+LocFriendlyName="Augmented Speed"
+LocLongDescription="Cybernetic legs allow your soldier to temporarily enhance your movement speed. On activation gain a additional action point that can be spend on movement. <Ability:SelfCooldown> Cooldown."
+LocHelpText="Temporarily enhance your movement speed."
+LocFlyOverText="Augmented Speed" 
+LocPromotionPopupText="On activation gain a additional action point that can be spend on movement. <Ability:SelfCooldown> Cooldown>"

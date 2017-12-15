@@ -149,6 +149,8 @@ xylthixlm for xmod base and the perk icon library. Fantastic work and a tremendo
 creative xenos for being that crazy chaotic creative bunch of great people that they are.
 bg for [WOTC] Detailed Soldier Lists
 MoonWolf for the initial [WOTC] New Promotion Screen by Default
+zamster for helping me turning my localization into proper english
+Chris the Thin Mint for help with balancing and localization
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters

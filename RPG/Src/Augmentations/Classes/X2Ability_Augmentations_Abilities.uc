@@ -1,12 +1,13 @@
 class X2Ability_Augmentations_Abilities extends X2Ability config (Augmentations);
 
 var config int AUGMENTATION_BASE_MITIGATION_AMOUNT;
-var config int AUGMENTED_STRIKE_DAMAGE;
+var config int AUGMENTED_SPEED_COOLDOWN;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
+	Templates.AddItem(AugmentedSpeed());
 	Templates.AddItem(ExMachina());
 	Templates.AddItem(CyberPunch());
 	Templates.AddItem(CyberPunchAnimSet());
@@ -15,6 +16,62 @@ static function array<X2DataTemplate> CreateTemplates()
 	
 
 	return Templates;
+}
+
+static function X2AbilityTemplate AugmentedSpeed()
+{
+	local X2AbilityTemplate							Template;
+	local X2Effect_Augmentations_GrantActionPoints	GrantActionPointEffect;
+	local X2Effect_RemoveEffects					RemoveEffects;
+	local X2AbilityCost_ActionPoints				ActionPointCost;
+	local X2Effect_Speed							SpeedEffect;
+	local X2AbilityCooldown							Cooldown;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'AugmentedSpeed');
+
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_ShowIfAvailable;	
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_deathblossom";
+	Template.Hostility = eHostility_Neutral;
+	Template.AbilityConfirmSound = "TacticalUI_Activate_Ability_Wraith_Armor";
+	
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
+
+	Cooldown = new class'X2AbilityCooldown';
+	Cooldown.iNumTurns = default.AUGMENTED_SPEED_COOLDOWN;
+	Template.AbilityCooldown = Cooldown;
+
+
+	ActionPointCost = new class'X2AbilityCost_ActionPoints';
+	ActionPointCost.iNumPoints = 1;
+	//ActionPointCost.bConsumeAllPoints = false;
+	ActionPointCost.bFreeCost = true;
+	Template.AbilityCosts.AddItem(ActionPointCost);
+
+	GrantActionPointEffect = new class 'X2Effect_Augmentations_GrantActionPoints';
+	GrantActionPointEffect.EffectName = 'GrantActionPointEffect';
+	GrantActionPointEffect.BuildPersistentEffect(1, false, true, , eGameRule_PlayerTurnBegin);
+	GrantActionPointEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyHelpText(), Template.IconImage,true,,Template.AbilitySourceName);
+	GrantActionPointEffect.bRemoveWhenTargetDies = true;
+	GrantActionPointEffect.DuplicateResponse = eDupe_Ignore;
+	GrantActionPointEffect.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.MoveActionPoint);
+	Template.AddTargetEffect(GrantActionPointEffect);
+
+	SpeedEffect = new class'X2Effect_Speed';
+	SpeedEffect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	SpeedEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.GetMyHelpText(), Template.IconImage, , , Template.AbilitySourceName);
+	Template.AddTargetEffect(SpeedEffect);
+
+ 	Template.bShowActivation = true;
+	Template.bSkipFireAction = true;
+	Template.CustomFireAnim = 'HL_Psi_SelfCast';
+	Template.CinescriptCameraType = "Psionic_FireAtUnit";
+	Template.ActivationSpeech = 'CombatStim';
+	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;
 }
 
 static function X2AbilityTemplate ExMachina()
