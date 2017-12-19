@@ -19,10 +19,10 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 - [WOTC] New Promotion Screen by Default
 
 I recommend to play this mod with the following mods:
-- WotC SpecOps Combat Knives
-- WotC Katana Mod Reloaded
-- Wotc Primary Secondaries
-- [WOTC] Point-Based Not Created Equal
+- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1135248412]WotC SpecOps Combat Knives[/url]
+- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1123865738]WotC Katana Mod Reloaded[/url]
+- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1142234205]Wotc Primary Secondaries[/url]
+- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1144463583][WOTC] Point-Based Not Created Equal[/url]
 
 [h1]About this overhaul[/h1]
 The idea of this mod was born out of my passion for oldschool rpg games.
@@ -47,16 +47,15 @@ Another big change is the possibility to upgrade the soldiers stats with ability
 For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachments work.
 
 [h1]Soldier AP[/h1]
-Since you can raise stats with Soldier AP the rank up AP bonus is raised to 30
-plus a bonus depending on the Combat Intelligence Level
+Since you can raise stats with Soldier AP the rank up AP bonus is raised to 30, plus a bonus depending on the Combat Intelligence Level:
 
-Standard=0
-AboveAverage=5
-Gifted=7
-Genius=10
-Savant=15
+Standard = 0
+AboveAverage = 5
+Gifted = 7
+Genius = 10
+Savant = 15
 
-the ability cost for buying abilities is raised too however
+The ability cost for buying abilities is raised too however:
 
 0 for Squaddie abilities
 10 for Corporal abilities
