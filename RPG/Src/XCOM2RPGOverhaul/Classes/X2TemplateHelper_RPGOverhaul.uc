@@ -84,24 +84,21 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 
 		`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
 
-		//if (SetupData[Index].Template.DefaultSourceItemSlot != eInvSlot_Unknown)
-		//{
-			CategoryIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
-			//`LOG(GetFuncName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot @ Index,, 'RPG');
-			if (CategoryIndex != INDEX_NONE)
+		CategoryIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
+		//`LOG(GetFuncName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot @ Index,, 'RPG');
+		if (CategoryIndex != INDEX_NONE)
+		{
+			foreach default.AbilityWeaponCategoryRestrictions[CategoryIndex].WeaponCategories(WeaponCategory)
 			{
-				foreach default.AbilityWeaponCategoryRestrictions[CategoryIndex].WeaponCategories(WeaponCategory)
+				InvSlot = FindInventorySlotForItemCategory(UnitState, WeaponCategory, InventoryItem, StartState);
+				if (InvSlot != eInvSlot_Unknown)
 				{
-					InvSlot = FindInventorySlotForItemCategory(UnitState, WeaponCategory, InventoryItem, StartState);
-					if (InvSlot != eInvSlot_Unknown)
-					{
-						//SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
-						SetupData[Index].SourceWeaponRef = InventoryItem.GetReference();
-						`LOG(GetFuncName()  @ UnitState.GetFullName() @ "Patching" @ SetupData[Index].TemplateName @ "setting DefaultSourceItemSlot to" @ InvSlot @ SetupData[Index].SourceWeaponRef.ObjectID,, 'RPG');
-					}
+					//SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
+					SetupData[Index].SourceWeaponRef = InventoryItem.GetReference();
+					`LOG(GetFuncName()  @ UnitState.GetFullName() @ "Patching" @ SetupData[Index].TemplateName @ "setting DefaultSourceItemSlot to" @ InvSlot @ SetupData[Index].SourceWeaponRef.ObjectID,, 'RPG');
 				}
 			}
-		//}
+		}
 
 		// Do this here again because the launch grenade ability is now on the grenade lanucher itself and not in earned soldier abilities
 		if (SetupData[Index].Template.bUseLaunchedGrenadeEffects)
@@ -118,6 +115,8 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 				}
 			}
 		}
+
+
 	}
 }
 
@@ -133,7 +132,7 @@ static function PatchAbilitiesWeaponCondition()
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		if (Template != none)
+		if (Template != none && !X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire)
 		{
 			WeaponCondition = new class'X2Condition_WeaponCategory';
 			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
@@ -184,11 +183,11 @@ static function PatchWeapons()
 				{
 					case 'Gremlin':
 						GremlinTemplate = X2GremlinTemplate(WeaponTemplate);
-						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol');
+						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol', true);
 						break;
 					case 'rifle':
 					case 'sparkrifle':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
 						if (InStr(string(WeaponTemplate.DataName), "MG") != INDEX_NONE)
@@ -199,8 +198,8 @@ static function PatchWeapons()
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'bullpup':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
 						WeaponTemplate.iClipSize += 1;
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
@@ -212,7 +211,7 @@ static function PatchWeapons()
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'sniper_rifle':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
 
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
@@ -230,9 +229,9 @@ static function PatchWeapons()
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'cannon':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire');
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression');
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
 						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireShot');
 						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireOverwatch');
 						
@@ -241,7 +240,7 @@ static function PatchWeapons()
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'pistol':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'sidearm':
@@ -249,20 +248,20 @@ static function PatchWeapons()
 						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
 						break;
 					case 'sword':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
 						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'gremlin':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'IntrusionProtocol');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'IntrusionProtocol', true);
 						break;
 					case 'grenade_launcher':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
 						break;
 					case 'wristblade':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
 						break;
 					case 'claymore':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore');
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
 						break;
 					default:
 						//`LOG(GetFuncName() @ WeaponTemplate.GetItemFriendlyName() @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "ignored",, 'RPG');
@@ -382,6 +381,7 @@ static function PatchTraceRounds()
 	Template.Abilities.AddItem('Holotargeting');
 
 	Template.RewardDecks.Length = 0;
+	Template.bInfiniteItem = false;
 	Template.StartingItem = true;
 	Template.CanBeBuilt = true;
 }
@@ -751,13 +751,30 @@ static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Un
 	local XComGameState_Item InventoryItem;
 	local X2WeaponTemplate WeaponTemplate;
 	local X2PairedWeaponTemplate PairedWeaponTemplate;
+	local array<name> PairedTemplates;
 
 	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
+
 	foreach CurrentInventory(InventoryItem)
 	{
-		`LOG(GetFuncName() @ InventoryItem.GetMyTemplate().DataName @ InventoryItem.GetMyTemplate().Class.Name @ X2WeaponTemplate(InventoryItem.GetMyTemplate()).WeaponCat @ WeaponCategory,, 'RPG');
 		PairedWeaponTemplate = X2PairedWeaponTemplate(InventoryItem.GetMyTemplate());
-		if (PairedWeaponTemplate != none  && InStr(string(PairedWeaponTemplate.DataName), "Paired") != INDEX_NONE)
+		if (PairedWeaponTemplate != none)
+		{
+			PairedTemplates.AddItem(PairedWeaponTemplate.PairedTemplateName);
+		}
+	}
+
+	foreach CurrentInventory(InventoryItem)
+	{
+		PairedWeaponTemplate = X2PairedWeaponTemplate(InventoryItem.GetMyTemplate());
+		// Ignore loot mod created paired templates
+		if (PairedWeaponTemplate != none && InStr(string(PairedWeaponTemplate.DataName), "Paired") != INDEX_NONE)
+		{
+			continue;
+		}
+
+		// ignore paired targets like WristBladeLeft_CV
+		if (PairedTemplates.Find(InventoryItem.GetMyTemplateName()) != INDEX_NONE)
 		{
 			continue;
 		}
@@ -765,6 +782,7 @@ static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Un
 		WeaponTemplate = X2WeaponTemplate(InventoryItem.GetMyTemplate());
 		if (WeaponTemplate != none && WeaponTemplate.WeaponCat == WeaponCategory)
 		{
+			`LOG(GetFuncName() @ InventoryItem.GetMyTemplate().DataName @ InventoryItem.GetMyTemplate().Class.Name @ X2WeaponTemplate(InventoryItem.GetMyTemplate()).WeaponCat @ WeaponCategory,, 'RPG');
 			FoundItemState = InventoryItem;
 			return InventoryItem.InventorySlot;
 		}
@@ -777,23 +795,25 @@ static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
 	return (X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate()).iRange == 0);
 }
 
-static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability)
+static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability, bool bShowInTactical = false)
 {
 	if (Template.Abilities.Find(Ability) == INDEX_NONE)
 	{
 		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
 		Template.Abilities.AddItem(Ability);
-		ShowInTacticalText(Ability);
+		if (bShowInTactical)
+			ShowInTacticalText(Ability);
 	}
 }
 
-static function AddAbilityToGremlinTemplate(out X2GremlinTemplate Template, name Ability)
+static function AddAbilityToGremlinTemplate(out X2GremlinTemplate Template, name Ability, bool bShowInTactical = false)
 {
 	if (Template.Abilities.Find(Ability) == INDEX_NONE)
 	{
 		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
 		Template.Abilities.AddItem(Ability);
-		ShowInTacticalText(Ability);
+		if (bShowInTactical)
+			ShowInTacticalText(Ability);
 	}
 }
 

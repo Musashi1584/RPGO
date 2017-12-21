@@ -1,21 +1,141 @@
-class X2Ability_Augmentations_Abilities extends X2Ability config (Augmentations);
+class X2Ability_Augmentations_Abilities extends XMBAbility config (Augmentations);
 
 var config int AUGMENTATION_BASE_MITIGATION_AMOUNT;
 var config int AUGMENTED_SPEED_COOLDOWN;
+var config int CYBER_SKULL_CRIT_DEFENSE;
+var config int AUGMENTATION_ARMS_SHIELD_HP;
+
+var config int NANO_COATING_SHIELD_HP;
+var config int NANO_COATING_SHIELD_REGEN_TURN;
+var config int NANO_COATING_SHIELD_REGEN_MAX;
+
+var config int WEAKPOINTANALYZER_ARMOR_PIERCE;
+var config int WEAKPOINTANALYZER_CRIT_CHANCE;
+var config int WEAKPOINTANALYZER_CRIT_DAMAGE;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
+	Templates.AddItem(SelfRepairingNanoCoating('NanoCoating', default.NANO_COATING_SHIELD_HP, default.NANO_COATING_SHIELD_REGEN_TURN, default.NANO_COATING_SHIELD_REGEN_MAX));
+	Templates.AddItem(WeakpointAnalyzer('WeakpointAnalyzer', default.WEAKPOINTANALYZER_ARMOR_PIERCE, default.WEAKPOINTANALYZER_CRIT_CHANCE, default.WEAKPOINTANALYZER_CRIT_DAMAGE));
+
+	Templates.AddItem(AugmentedHead());
+	Templates.AddItem(AugmentedShield());
 	Templates.AddItem(AugmentedSpeed());
 	Templates.AddItem(ExMachina());
 	Templates.AddItem(CyberPunch());
 	Templates.AddItem(CyberPunchAnimSet());
 	Templates.AddItem(AugmentationBaseStats());
 	Templates.AddItem(ClawsSlash());
-	
 
 	return Templates;
+}
+
+static function X2AbilityTemplate WeakpointAnalyzer(name AbilityName, int ArmorPierce, int CritChance, int CritDamage)
+{
+	local XMBEffect_ConditionalBonus Effect;
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.AddArmorPiercingModifier(ArmorPierce);
+	Effect.AddToHitModifier(CritChance, eHit_Crit);
+	Effect.AddDamageModifier(CritDamage, eHit_Crit);
+	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
+
+	return Passive('AbilityName', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
+}
+
+
+static function X2AbilityTemplate SelfRepairingNanoCoating(name AbilityName, int ShieldHP, int HealAmount, int MaxHealAmount)
+{
+	local X2AbilityTemplate						Template;
+	local X2Effect_PersistentStatChange			PersistentStatChangeEffect;
+	local X2Effect_Regeneration					RegenerationEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, AbilityName);
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_absorption_fields";
+
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+
+	//buff
+	PersistentStatChangeEffect = new class'X2Effect_PersistentStatChange';
+	PersistentStatChangeEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	PersistentStatChangeEffect.AddPersistentStatChange(eStat_ShieldHP, ShieldHP);
+	Template.AddTargetEffect(PersistentStatChangeEffect);
+	
+    //Build the regeneration effect
+	RegenerationEffect = new class'X2Effect_Regeneration';
+	RegenerationEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnBegin);
+	RegenerationEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false, , Template.AbilitySourceName);
+	RegenerationEffect.HealAmount = HealAmount;
+	RegenerationEffect.MaxHealAmount = MaxHealAmount;
+	RegenerationEffect.HealthRegeneratedName = name(AbilityName $ "Effect");
+	Template.AddTargetEffect(RegenerationEffect);
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	//  NOTE: No visualization on purpose!
+
+	return Template;
+}
+
+static function X2AbilityTemplate AugmentedHead()
+{
+	local X2AbilityTemplate					Template;
+	local X2Effect_Resilience				CritDefEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'AugmentedHead');
+	Template.IconImage = "img:///UILibrary_Augmentations.UIPerk_CyberSkull";
+
+	Template.AbilitySourceName = 'eAbilitySource_Item';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.bDisplayInUITacticalText = true;
+	
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+
+	CritDefEffect = new class'X2Effect_Resilience';
+	CritDefEffect.CritDef_Bonus = default.CYBER_SKULL_CRIT_DEFENSE;
+	CritDefEffect.BuildPersistentEffect (1, true, false, false);
+	Template.AddTargetEffect(CritDefEffect);
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;	
+}
+
+static function X2AbilityTemplate AugmentedShield()
+{
+	local X2AbilityTemplate					Template;
+	local X2Effect_PersistentStatChange		PersistentStatChangeEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'AugmentedShield');
+	Template.IconImage = "img:///UILibrary_Augmentations.UIPerk_AugmentedShield";
+
+	Template.AbilitySourceName = 'eAbilitySource_Item';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.bDisplayInUITacticalText = true;
+	
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+
+	PersistentStatChangeEffect = new class'X2Effect_PersistentStatChange';
+	PersistentStatChangeEffect.BuildPersistentEffect(1, true, false, false);
+	PersistentStatChangeEffect.AddPersistentStatChange(eStat_ShieldHP, default.AUGMENTATION_ARMS_SHIELD_HP);
+	Template.AddTargetEffect(PersistentStatChangeEffect);
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+
+	return Template;	
 }
 
 static function X2AbilityTemplate AugmentedSpeed()
@@ -30,9 +150,10 @@ static function X2AbilityTemplate AugmentedSpeed()
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'AugmentedSpeed');
 
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_ShowIfAvailable;	
-	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_deathblossom";
+	Template.IconImage = "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_parkour";
 	Template.Hostility = eHostility_Neutral;
 	Template.AbilityConfirmSound = "TacticalUI_Activate_Ability_Wraith_Armor";
+	Template.bDisplayInUITacticalText = true;
 	
 	Template.AbilityToHitCalc = default.DeadEye;
 	Template.AbilityTargetStyle = default.SelfTarget;

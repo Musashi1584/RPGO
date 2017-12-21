@@ -29,8 +29,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	Items.AddItem(AugmentationLegs_Base_CV());
 	
 	Items.AddItem(AugmentationArms_Claws_MG());
-	Items.AddItem(AugmentationClaws_Left_MG());
+	Items.AddItem(AugmentationArms_Claws_Left_MG());
 	Items.AddItem(AugmentationArms_Grapple_MG());
+
+	Items.AddItem(AugmentationTorso_NanoCoating_MG());
 
 	return Items;
 }
@@ -38,8 +40,6 @@ static function array<X2DataTemplate> CreateTemplates()
 static function X2DataTemplate AugmentationHead_Base_CV()
 {
 	local X2EquipmentTemplate Template;
-	local ArtifactCost Resources;
-	local ArtifactCost Artifacts;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationHead_Base_CV');
 	Template.ItemCat = 'augmentation_head';
@@ -51,24 +51,15 @@ static function X2DataTemplate AugmentationHead_Base_CV()
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
-	Template.CanBeBuilt = true;
-	Template.TradingPostValue = 12;
+	Template.Abilities.AddItem('AugmentedHead');
+
+	Template.CanBeBuilt = false;
+	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
 	Template.bShouldCreateDifficultyVariants = true;
-
-	//// Requirements
-	//Template.Requirements.RequiredTechs.AddItem('AutopsySectoid');
-	//
-	//// Cost
-	//Resources.ItemTemplateName = 'Supplies';
-	//Resources.Quantity = 45;
-	//Template.Cost.ResourceCosts.AddItem(Resources);
-	//
-	//Artifacts.ItemTemplateName = 'CorpseSectoid';
-	//Artifacts.Quantity = 1;
-	//Template.Cost.ArtifactCosts.AddItem(Artifacts);
 	
 	return Template;
 }
@@ -76,8 +67,6 @@ static function X2DataTemplate AugmentationHead_Base_CV()
 static function X2DataTemplate AugmentationTorso_Base_CV()
 {
 	local X2EquipmentTemplate Template;
-	local ArtifactCost Resources;
-	local ArtifactCost Artifacts;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationTorso_Base_CV');
 	Template.ItemCat = 'augmentation_torso';
@@ -89,24 +78,13 @@ static function X2DataTemplate AugmentationTorso_Base_CV()
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
-	Template.CanBeBuilt = true;
-	Template.TradingPostValue = 12;
+	Template.CanBeBuilt = false;
+	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
 	Template.bShouldCreateDifficultyVariants = true;
-
-	//// Requirements
-	//Template.Requirements.RequiredTechs.AddItem('AutopsySectoid');
-	//
-	//// Cost
-	//Resources.ItemTemplateName = 'Supplies';
-	//Resources.Quantity = 45;
-	//Template.Cost.ResourceCosts.AddItem(Resources);
-	//
-	//Artifacts.ItemTemplateName = 'CorpseSectoid';
-	//Artifacts.Quantity = 1;
-	//Template.Cost.ArtifactCosts.AddItem(Artifacts);
 	
 	return Template;
 }
@@ -114,8 +92,6 @@ static function X2DataTemplate AugmentationTorso_Base_CV()
 static function X2DataTemplate AugmentationArms_Base_CV()
 {
 	local X2WeaponTemplate Template;
-	local ArtifactCost Resources;
-	local ArtifactCost Artifacts;
 
 	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Base_CV');
 	Template.ItemCat = 'augmentation_arms';
@@ -124,29 +100,19 @@ static function X2DataTemplate AugmentationArms_Base_CV()
 	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 
 	Template.BaseDamage = default.CYBER_ARM_BASEDAMAGE;
+	Template.Abilities.AddItem('AugmentedShield');
 	Template.Abilities.AddItem('CyberPunch');
 	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
-	Template.CanBeBuilt = true;
-	Template.TradingPostValue = 12;
+	Template.CanBeBuilt = false;
+	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
 	Template.bShouldCreateDifficultyVariants = true;
-
-	//// Requirements
-	//Template.Requirements.RequiredTechs.AddItem('AutopsySectoid');
-	//
-	//// Cost
-	//Resources.ItemTemplateName = 'Supplies';
-	//Resources.Quantity = 45;
-	//Template.Cost.ResourceCosts.AddItem(Resources);
-	//
-	//Artifacts.ItemTemplateName = 'CorpseSectoid';
-	//Artifacts.Quantity = 1;
-	//Template.Cost.ArtifactCosts.AddItem(Artifacts);
 	
 	return Template;
 }
@@ -155,8 +121,6 @@ static function X2DataTemplate AugmentationArms_Base_CV()
 static function X2DataTemplate AugmentationLegs_Base_CV()
 {
 	local X2EquipmentTemplate Template;
-	local ArtifactCost Resources;
-	local ArtifactCost Artifacts;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_Base_CV');
 	Template.ItemCat = 'augmentation_legs';
@@ -171,23 +135,12 @@ static function X2DataTemplate AugmentationLegs_Base_CV()
 	Template.Abilities.AddItem('AugmentedSpeed');
 
 	Template.CanBeBuilt = true;
-	Template.TradingPostValue = 12;
+	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
 	Template.bShouldCreateDifficultyVariants = true;
-
-	//// Requirements
-	//Template.Requirements.RequiredTechs.AddItem('AutopsySectoid');
-	//
-	//// Cost
-	//Resources.ItemTemplateName = 'Supplies';
-	//Resources.Quantity = 45;
-	//Template.Cost.ResourceCosts.AddItem(Resources);
-	//
-	//Artifacts.ItemTemplateName = 'CorpseSectoid';
-	//Artifacts.Quantity = 1;
-	//Template.Cost.ArtifactCosts.AddItem(Artifacts);
 	
 	return Template;
 }
@@ -200,7 +153,7 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	`CREATE_X2TEMPLATE(class'X2PairedWeaponTemplate', Template, 'AugmentationArms_Claws_MG');
 	Template.WeaponPanelImage = "_Pistol";                       // used by the UI. Probably determines iconview of the weapon.
 	Template.PairedSlot = eInvSlot_TertiaryWeapon;
-	Template.PairedTemplateName = 'AugmentationClaws_Left_MG';
+	Template.PairedTemplateName = 'AugmentationArms_Claws_Left_MG';
 
 	Template.ItemCat = 'augmentation_arms';
 	Template.WeaponCat = 'cyberclaws';
@@ -213,11 +166,11 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.GameArchetype = "CyberClaws_Augmentations.Archetypes.WP_Claws_LG";
 	Template.Tier = 2;
 
+	Template.Abilities.AddItem('AugmentedShield');
 	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('ClawsSlash');
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
 
 	Template.iRadius = 1;
 	Template.NumUpgradeSlots = default.CLAWS_UPGRADE_SLOTS;
@@ -232,19 +185,20 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.iEnvironmentDamage = default.CLAWS_IENVIRONMENTDAMAGE;
 	Template.BaseDamage.DamageType='Melee';
 
-	Template.CanBeBuilt = true;
+	Template.CanBeBuilt = false;
 	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 35;
 
 	Template.DamageTypeTemplateName = 'Melee';
 
 	return Template;
 }
 
-static function X2DataTemplate AugmentationClaws_Left_MG()
+static function X2DataTemplate AugmentationArms_Claws_Left_MG()
 {
 	local X2WeaponTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationClaws_Left_MG');
+	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Claws_Left_MG');
 	Template.WeaponPanelImage = "_Pistol";                       // used by the UI. Probably determines iconview of the weapon.
 
 	Template.ItemCat = 'augmentation_arms';
@@ -290,24 +244,38 @@ static function X2DataTemplate AugmentationArms_Grapple_MG()
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
-	Template.CanBeBuilt = true;
-	Template.TradingPostValue = 12;
+	Template.bInfiniteItem = false;
+	Template.CanBeBuilt = false;
+	Template.TradingPostValue = 35;
 	Template.PointsToComplete = 0;
 	Template.Tier = 2;
 
 	Template.bShouldCreateDifficultyVariants = true;
+	
+	return Template;
+}
 
-	//// Requirements
-	//Template.Requirements.RequiredTechs.AddItem('AutopsySectoid');
-	//
-	//// Cost
-	//Resources.ItemTemplateName = 'Supplies';
-	//Resources.Quantity = 45;
-	//Template.Cost.ResourceCosts.AddItem(Resources);
-	//
-	//Artifacts.ItemTemplateName = 'CorpseSectoid';
-	//Artifacts.Quantity = 1;
-	//Template.Cost.ArtifactCosts.AddItem(Artifacts);
+static function X2DataTemplate AugmentationTorso_NanoCoating_MG()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationTorso_NanoCoating_MG');
+	Template.ItemCat = 'augmentation_torso';
+	Template.InventorySlot = eInvSlot_AugmentationTorso;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Torso";
+	Template.EquipSound = "StrategyUI_Mindshield_Equip";
+
+	Template.Abilities.AddItem('ExMachina');
+	Template.Abilities.AddItem('AugmentationBaseStats');
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
+	Template.Abilities.AddItem('NanoCoating');
+
+	Template.CanBeBuilt = false;
+	Template.bInfiniteItem = false;
+	Template.TradingPostValue = 35;
+	Template.Tier = 2;
+
+	Template.bShouldCreateDifficultyVariants = true;
 	
 	return Template;
 }

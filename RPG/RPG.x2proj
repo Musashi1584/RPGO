@@ -163,10 +163,16 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\Augmentations\Classes\X2Condition_Cyborg.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\Augmentations\Classes\X2Condition_TargetAutopsy.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\Augmentations\Classes\X2DownloadableContentInfo_Augmentations.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2Effect_Augmentations_GrantActionPoints.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2Effect_Resilience.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2Effect_Speed.uc">
@@ -179,6 +185,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2StrategyElement_AugmentationSlots.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2StrategyElement_AugmentationTechs.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Debug\Classes\UISL_UITacticalQuickLaunch_SquadLoadout.uc">
@@ -262,7 +271,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condtion_TargetAutopsy.uc">
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_TargetAutopsy.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ActivateOverwatch.uc">

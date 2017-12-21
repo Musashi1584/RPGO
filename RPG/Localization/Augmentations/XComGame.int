@@ -31,36 +31,96 @@ BriefSummary="Cybernetic Legs"
 TacticalText="<Bullet/>"
 
 [AugmentationArms_Grapple_MG X2EquipmentTemplate]
-FriendlyName="<font color='#00e0d5'><b>Cybernetic Grapple</b></font>"
-FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Grapple</b></font>"
+FriendlyName="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
+FriendlyNamePlural="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
 BriefSummary="Cybernetic Grapple"
 TacticalText="<Bullet/>"
 
 [AugmentationArms_Claws_MG X2PairedWeaponTemplate]
-FriendlyName="<font color='#00e0d5'><b>Cyberclaws</b></font>"
-FriendlyNamePlural="<font color='#00e0d5'><b>Cyberclaws</b></font>"
+FriendlyName="<font color='#0000e0'><b>Cyberclaws</b></font>"
+FriendlyNamePlural="<font color='#0000e0'><b>Cyberclaws</b></font>"
 BriefSummary=""
 TacticalText="<Bullet/>"
 AbilityDescName="Cyberclaws"
 
+[AugmentationTorso_NanoCoating_MG X2EquipmentTemplate]
+FriendlyName="<font color='#0000e0'><b>Nano-coated Torso</b></font>"
+FriendlyNamePlural="<font color='#0000e0'><b>Nano-coated Torso</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+
+; BM color #d142f4
 
 [ClawsSlash X2AbilityTemplate]
 LocFriendlyName="Claw Slash"
 LocLongDescription="Melee slash that does not end turn if you have action points left."
 LocHelpText="Melee slash that does not end turn if you have action points left."
 LocFlyOverText="Claw Slash" 
-LocPromotionPopupText="Melee slash that does not end turn if you have action points left."
 
 [CyberPunch X2AbilityTemplate]
 LocFriendlyName="Augmented Strike"
 LocLongDescription="Cybernetically enhanced strike that disorients and knocks back targets."
 LocHelpText="Cybernetically enhanced strike"
 LocFlyOverText="Augmented Strike" 
-LocPromotionPopupText="Cybernetically enhanced strike that disorients and knocks back targets."
 
 [AugmentedSpeed X2AbilityTemplate]
 LocFriendlyName="Augmented Speed"
 LocLongDescription="Cybernetic legs allow your soldier to temporarily enhance your movement speed. On activation gain a additional action point that can be spend on movement. <Ability:SelfCooldown> Cooldown."
 LocHelpText="Temporarily enhance your movement speed."
 LocFlyOverText="Augmented Speed" 
-LocPromotionPopupText="On activation gain a additional action point that can be spend on movement. <Ability:SelfCooldown> Cooldown>"
+
+[AugmentedHead X2AbilityTemplate]
+LocFriendlyName="Hard headed"
+LocFlyOverText="Hard headed"
+LocLongDescription="Enemies have a -50 to their critical chances against you."
+LocHelpText="Enemies have a -50 to their critical chances against you."
+
+[AugmentedShield X2AbilityTemplate]
+LocFriendlyName="Ablative Armmor"
+LocFlyOverText="Ablative Armmor"
+LocLongDescription="Ablative Armmor provides 2 shield hp."
+LocHelpText="Ablative Armmor provides 2 shield hp."
+
+[NanoCoating X2AbilityTemplate]
+LocFriendlyName="Self-repairing nano coating"
+LocFlyOverText="Self-repairing nano coating"
+LocLongDescription="Provides 3 shield hp that regenerates 1 hp per turn to a maximum of 3 hp."
+LocHelpText="Provides 3 shield hp that regenerates 1 hp per turn to a maximum of 3 hp."
+
+[WeakpointAnalyzer X2AbilityTemplate]
+LocFriendlyName="Weakpoint Analyzer"
+LocFlyOverText="Weakpoint Analyzer"
+LocLongDescription="Augmented headup display with autopsy data grant +1 armor pierce, +1 crit damage and +10% crit chance against autopsied targets"
+LocHelpText="Augmented headup display with autopsy data grant +1 armor pierce, +1 crit damage and +10% crit chance against autopsied targets"
+
+[Augmentations X2TechTemplate]
+DisplayName="Cybernetic"
+Summary=""
+CodeName="Leonardo"
+LongDescription=" R. Tygan."
+
+[AugmentationTorso X2TechTemplate]
+DisplayName="Cybernetic Torso"
+Summary="This is our first prototype of a complete biomechanical torso replacement. It should drastically increase the survivability of out soldiers in the field. Its unknown though what long term effects the cybernetic augmentation will have on the mental and physical health."
+LongDescription=" L. Shen."
+
+[AugmentationArms X2TechTemplate]
+DisplayName="Cybernetic Arms"
+Summary="This is our first prototype of a complete biomechanical arms replacement. This augmentation increases the test subjects strenght and protection. Its unknown though what long term effects the cybernetic augmentation will have on the mental and physical health."
+LongDescription=" L. Shen."
+
+[AugmentationLegs X2TechTemplate]
+DisplayName="Cybernetic Legs"
+Summary="This is our first prototype of a complete biomechanical legs replacement. It allows to move with superhuman speed for short periods of time.Its unknown though what long term effects the cybernetic augmentation will have on the mental and physical health."
+LongDescription=" L. Shen."
+
+[AugmentationHead X2TechTemplate]
+DisplayName="Cybernetic Head"
+Summary="This is our first prototype of a complete biomechanical head replacement. Its shield the test subjects brain in a elerium coated titanum skull that should be able to protect from otherwise lethal damage. Its unknown though what long term effects the cybernetic augmentation will have on the mental and physical health."
+LongDescription=" L. Shen."
+
+[AugmentationArmsClaw X2TechTemplate]
+DisplayName="Cyberclaws"
+Summary=""
+LongDescription=" L. Shen."

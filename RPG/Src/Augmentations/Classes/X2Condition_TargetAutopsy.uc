@@ -1,4 +1,4 @@
-class X2Condtion_TargetAutopsy extends X2Condition;
+class X2Condition_TargetAutopsy extends X2Condition;
 
 event name CallMeetsCondition(XComGameState_BaseObject kTarget)
 { 

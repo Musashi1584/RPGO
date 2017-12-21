@@ -87,7 +87,7 @@ static function X2AbilityTemplate XenoBiologist()
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AddDamageModifier(default.XENO_BIOLOGIST_DMG_BONUS);
-	Effect.AbilityTargetConditions.AddItem(new class 'X2Condtion_TargetAutopsy');
+	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
 
 	return Passive('XenoBiologist', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
 }
