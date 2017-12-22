@@ -37,29 +37,78 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Items;
 }
 
+static function X2EquipmentTemplate AugmentationBase(X2EquipmentTemplate Template)
+{
+	Template.EquipSound = "StrategyUI_Mindshield_Equip";
+	Template.CanBeBuilt = false;
+	Template.bInfiniteItem = false;
+	Template.bShouldCreateDifficultyVariants = true;
+	Template.Abilities.AddItem('ExMachina');
+	Template.OnEquippedFn = OnAugmentationEquipped;
+
+	return Template;
+}
+
+static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameState_Unit UnitState, XComGameState NewGameState)
+{
+	local UnitValue SeveredBodyPart;
+	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
+	local XComGameState_HeadquartersXCom XComHQ;
+
+	UnitState.ModifyCurrentStat(eStat_HP, UnitState.GetMaxStat(eStat_HP) - 2);
+
+	if (UnitState.IsGravelyInjured() && UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
+	{
+		if ((int(SeveredBodyPart.fValue) == eHead && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationHead) ||
+			(int(SeveredBodyPart.fValue) == eTorso && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationTorso) ||
+			(int(SeveredBodyPart.fValue) == eArms && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationArms) ||
+			(int(SeveredBodyPart.fValue) == eLegs && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationLegs))
+		{
+			UnitState.ClearUnitValue('SeveredBodyPart');
+			XComHQ = GetAndAddXComHQ(NewGameState);
+			ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.CreateNewStateObject(class'XComGameState_HeadquartersProjectHealSoldier'));
+			ProjectState.SetProjectFocus(UnitState.GetReference(), NewGameState);
+			XComHQ.Projects.AddItem(ProjectState.GetReference());
+		}
+	}
+}
+
+private static function XComGameState_HeadquartersXCom GetAndAddXComHQ(XComGameState NewGameState)
+{
+	local XComGameState_HeadquartersXCom XComHQ;
+
+	foreach NewGameState.IterateByClassType(class'XComGameState_HeadquartersXCom', XComHQ)
+	{
+		break;
+	}
+
+	if (XComHQ == none)
+	{
+		XComHQ = XComGameState_HeadquartersXCom(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+	}
+
+	return XComHQ;
+}
+
 static function X2DataTemplate AugmentationHead_Base_CV()
 {
 	local X2EquipmentTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationHead_Base_CV');
+	Template = AugmentationBase(Template);
+
 	Template.ItemCat = 'augmentation_head';
 	Template.InventorySlot = eInvSlot_AugmentationHead;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentations_Head";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
-	Template.Abilities.AddItem('ExMachina');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
+	
 	Template.Abilities.AddItem('AugmentedHead');
-
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
+	
 	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
-	Template.bShouldCreateDifficultyVariants = true;
+	
 	
 	return Template;
 }
@@ -69,22 +118,18 @@ static function X2DataTemplate AugmentationTorso_Base_CV()
 	local X2EquipmentTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationTorso_Base_CV');
+	Template = AugmentationBase(Template);
+
 	Template.ItemCat = 'augmentation_torso';
 	Template.InventorySlot = eInvSlot_AugmentationTorso;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Torso";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
-	Template.Abilities.AddItem('ExMachina');
+	
 	Template.Abilities.AddItem('AugmentationBaseStats');
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
 
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
 	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
-
-	Template.bShouldCreateDifficultyVariants = true;
 	
 	return Template;
 }
@@ -94,26 +139,20 @@ static function X2DataTemplate AugmentationArms_Base_CV()
 	local X2WeaponTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Base_CV');
+	Template = X2WeaponTemplate(AugmentationBase(Template));
+
 	Template.ItemCat = 'augmentation_arms';
 	Template.InventorySlot = eInvSlot_AugmentationArms;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Arm";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
+	
 	Template.BaseDamage = default.CYBER_ARM_BASEDAMAGE;
 	Template.Abilities.AddItem('AugmentedShield');
 	Template.Abilities.AddItem('CyberPunch');
-	Template.Abilities.AddItem('ExMachina');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
+	
 	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
-	Template.bShouldCreateDifficultyVariants = true;
-	
 	return Template;
 }
 
@@ -123,25 +162,18 @@ static function X2DataTemplate AugmentationLegs_Base_CV()
 	local X2EquipmentTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_Base_CV');
+	Template = AugmentationBase(Template);
+
 	Template.ItemCat = 'augmentation_legs';
 	Template.InventorySlot = eInvSlot_AugmentationLegs;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
-	Template.Abilities.AddItem('ExMachina');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
+	
 	Template.Abilities.AddItem('AugmentedSpeed');
 
-	Template.CanBeBuilt = true;
-	Template.bInfiniteItem = false;
 	Template.TradingPostValue = 25;
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
-	Template.bShouldCreateDifficultyVariants = true;
-	
 	return Template;
 }
 
@@ -151,6 +183,8 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	local X2PairedWeaponTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2PairedWeaponTemplate', Template, 'AugmentationArms_Claws_MG');
+	Template = X2PairedWeaponTemplate(AugmentationBase(Template));
+	
 	Template.WeaponPanelImage = "_Pistol";                       // used by the UI. Probably determines iconview of the weapon.
 	Template.PairedSlot = eInvSlot_TertiaryWeapon;
 	Template.PairedTemplateName = 'AugmentationArms_Claws_Left_MG';
@@ -159,7 +193,6 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.WeaponCat = 'cyberclaws';
 	Template.WeaponTech = 'magnetic';
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_CyberClaws";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 	Template.InventorySlot = eInvSlot_AugmentationArms;
 	Template.StowedLocation = eSlot_Claw_R;
 
@@ -167,11 +200,8 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.Tier = 2;
 
 	Template.Abilities.AddItem('AugmentedShield');
-	Template.Abilities.AddItem('ExMachina');
 	Template.Abilities.AddItem('ClawsSlash');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
+	
 	Template.iRadius = 1;
 	Template.NumUpgradeSlots = default.CLAWS_UPGRADE_SLOTS;
 	Template.InfiniteAmmo = true;
@@ -185,8 +215,6 @@ static function X2DataTemplate AugmentationArms_Claws_MG()
 	Template.iEnvironmentDamage = default.CLAWS_IENVIRONMENTDAMAGE;
 	Template.BaseDamage.DamageType='Melee';
 
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
 	Template.TradingPostValue = 35;
 
 	Template.DamageTypeTemplateName = 'Melee';
@@ -199,13 +227,14 @@ static function X2DataTemplate AugmentationArms_Claws_Left_MG()
 	local X2WeaponTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Claws_Left_MG');
+	Template = X2WeaponTemplate(AugmentationBase(Template));
+
 	Template.WeaponPanelImage = "_Pistol";                       // used by the UI. Probably determines iconview of the weapon.
 
 	Template.ItemCat = 'augmentation_arms';
 	Template.WeaponCat = 'cyberclaws';
 	Template.WeaponTech = 'magnetic';
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_CyberClaws";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
 	Template.InventorySlot = eInvSlot_TertiaryWeapon;
 	Template.StowedLocation = eSlot_Claw_L;
 	// This all the resources; sounds, animations, models, physics, the works.
@@ -217,9 +246,6 @@ static function X2DataTemplate AugmentationArms_Claws_Left_MG()
 
 	Template.iRange = 0;
 	Template.BaseDamage.DamageType='Melee';
-
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
 
 	Template.DamageTypeTemplateName = 'Melee';
 
@@ -233,25 +259,19 @@ static function X2DataTemplate AugmentationArms_Grapple_MG()
 	local ArtifactCost Artifacts;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationArms_Grapple_MG');
+	Template = AugmentationBase(Template);
+
 	Template.ItemCat = 'augmentation_arms';
 	Template.InventorySlot = eInvSlot_AugmentationArms;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Arm";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
-	Template.Abilities.AddItem('ExMachina');
+	
 	Template.Abilities.AddItem('CyberPunch');
 	Template.Abilities.AddItem('GrapplePowered');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
-
-	Template.bInfiniteItem = false;
-	Template.CanBeBuilt = false;
+	
 	Template.TradingPostValue = 35;
 	Template.PointsToComplete = 0;
 	Template.Tier = 2;
 
-	Template.bShouldCreateDifficultyVariants = true;
-	
 	return Template;
 }
 
@@ -260,23 +280,17 @@ static function X2DataTemplate AugmentationTorso_NanoCoating_MG()
 	local X2EquipmentTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationTorso_NanoCoating_MG');
+	Template = AugmentationBase(Template);
+
 	Template.ItemCat = 'augmentation_torso';
 	Template.InventorySlot = eInvSlot_AugmentationTorso;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Torso";
-	Template.EquipSound = "StrategyUI_Mindshield_Equip";
-
-	Template.Abilities.AddItem('ExMachina');
-	Template.Abilities.AddItem('AugmentationBaseStats');
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.ArmorLabel, eStat_ArmorMitigation, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_MITIGATION_AMOUNT);
+	
 	Template.Abilities.AddItem('NanoCoating');
 
-	Template.CanBeBuilt = false;
-	Template.bInfiniteItem = false;
 	Template.TradingPostValue = 35;
 	Template.Tier = 2;
 
-	Template.bShouldCreateDifficultyVariants = true;
-	
 	return Template;
 }
 

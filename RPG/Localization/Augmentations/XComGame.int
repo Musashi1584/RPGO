@@ -96,9 +96,9 @@ LocHelpText="Augmented headup display with autopsy data grant +1 armor pierce, +
 
 [Augmentations X2TechTemplate]
 DisplayName="Cybernetic"
-Summary=""
+Summary="Autopsies of Advent personnel recovered from the field indicate extensive surgical modification. We believe that given time and enough material to study we can come to understand their functions and perhaps replicate them for use in our own agents."
 CodeName="Leonardo"
-LongDescription=" R. Tygan."
+LongDescription="Every Advent soldier we recover and autopsy has undergone significant modification. Some of it is biological, some of it involves implantation of mechanical devices. The end result is that most Advent troopers often have a variety of useful combat enhancements. Thankfully at this point we've figured out a variety of avenues that will allow us to continue research without having to butcher more Advent corpses. Still, we're going to need volunteers who are willing to undergo elective surgery or people who have had limbs or sensory organs amputated for the initial run. From there we should be able to produce tangible improvements on human anatomy. The late Dr. Shen managed to encrypt and store some files in the mainframe that I believe will prove to be of use when it comes to making sure our soldiers can be all they can be. R. Tygan."
 
 [AugmentationTorso X2TechTemplate]
 DisplayName="Cybernetic Torso"

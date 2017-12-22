@@ -142,14 +142,22 @@ A full documentation of all abilities can be found [url=https://docs.google.com/
 
 
 [h1]Credits[/h1]
+*Standing on the shoulders of giants*
+
+A huge thanks to everone involved in this mods. So many great people helped me along the way.
+I could not have done it without you guys!
+
 Pavonis Interactive for all long war 2 perks i used and initial Detailed Soldier Lists.
-Robojumper for the stats icons i used in the stats upgrade screen, some class icons, controller support and coding assistance when i was stuck.
+Robojumper for the stats icons i used in the stats upgrade screen, some class icons, controller support and coding assistance on countless occasions.
 xylthixlm for xmod base and the perk icon library. Fantastic work and a tremendous workload reduction.
+MalucoMarinero - there can only be one (community highlander)
 creative xenos for being that crazy chaotic creative bunch of great people that they are.
 bg for [WOTC] Detailed Soldier Lists
 MoonWolf for the initial [WOTC] New Promotion Screen by Default
 zamster for helping me turning my localization into proper english
 Chris the Thin Mint for help with balancing and localization
+FelineKnave for a lot of great localization
+Zyxpsilon for most of the cybenetic tech images
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters

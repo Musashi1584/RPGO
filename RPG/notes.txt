@@ -6,6 +6,7 @@ shotty tree?
 
 heavy weapon slot
 
+XCGS_Unit.IsGravelyInjured
 
 XComGameData.ini:
 

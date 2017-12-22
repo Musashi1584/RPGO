@@ -160,6 +160,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\Augmentations\Classes\X2Ability_Augmentations_Abilities.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\Augmentations\Classes\X2AugmentationsGameRulesetDataStructures.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\Augmentations\Classes\X2Condition_Cyborg.uc">
       <SubType>Content</SubType>
     </Content>
@@ -179,6 +182,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_MainMenu.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_Strategy.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2Item_Augmentations.uc">

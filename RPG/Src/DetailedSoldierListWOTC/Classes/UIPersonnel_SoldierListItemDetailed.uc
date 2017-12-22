@@ -57,12 +57,36 @@ static function GetStatusStringsSeparate(XComGameState_Unit Unit, out string Sta
 {
 	local bool bProjectExists;
 	local int iHours;
+	local UnitValue SeveredBodyPart;
 	
 	if( Unit.IsInjured() )
 	{
 		Status = Unit.GetWoundStatus(iHours);
 		if (Status != "")
 			bProjectExists = true;
+
+		if (Unit.IsGravelyInjured())
+		{
+			bProjectExists = false;
+			if (Unit.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
+			{
+				switch (int(SeveredBodyPart.fValue))
+				{
+					case eHead:
+						Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredHead $ ")";
+						break;
+					case eTorso:
+						Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredTorso $ ")";
+						break;
+					case eArms:
+						Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredArms $ ")";
+						break;
+					case eLegs:
+						Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredLegs $ ")";
+						break;
+				}
+			}
+		}
 	}
 	else if (Unit.IsOnCovertAction())
 	{
