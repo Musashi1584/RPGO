@@ -44,7 +44,7 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIArmory_Augmentations'.default.m_strInventoryTitle);
 	StatUIButton.MCName = 'ArmoryMainMenu_AugmentationsUIButton';
 	StatUIButton.ButtonBG.OnClickedDelegate = OnAugmentations;
-	StatUIButton.NeedsAttention(UnitState.AbilityPoints > 0);
+	StatUIButton.NeedsAttention(UnitState.IsGravelyInjured());
 
 	//if(NextOnSelectionChanged == none)
 	//{

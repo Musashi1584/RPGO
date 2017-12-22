@@ -65,11 +65,13 @@ static function GetStatusStringsSeparate(XComGameState_Unit Unit, out string Sta
 		if (Status != "")
 			bProjectExists = true;
 
+		`LOG(GetFuncName() @ Unit.GetFullName() @ Unit.IsGravelyInjured(),,'Augmentations');
 		if (Unit.IsGravelyInjured())
 		{
 			bProjectExists = false;
 			if (Unit.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
 			{
+				`LOG(GetFuncName() @ "SeveredBodyPart" @ GetEnum(Enum'ESeveredBodyPart', int(SeveredBodyPart.fValue)),,'Augmentations');
 				switch (int(SeveredBodyPart.fValue))
 				{
 					case eHead:

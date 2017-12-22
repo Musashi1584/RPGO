@@ -18,7 +18,7 @@ FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Torsos</b></font>"
 BriefSummary="Cybernetic Torso"
 TacticalText="<Bullet/>"
 
-[AugmentationArms_Base_CV X2EquipmentTemplate]
+[AugmentationArms_Base_CV X2WeaponTemplate]
 FriendlyName="<font color='#00e0d5'><b>Cybernetic Arms</b></font>"
 FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Arms</b></font>"
 BriefSummary="Cybernetic Arms"
@@ -30,7 +30,7 @@ FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Legs</b></font>"
 BriefSummary="Cybernetic Legs"
 TacticalText="<Bullet/>"
 
-[AugmentationArms_Grapple_MG X2EquipmentTemplate]
+[AugmentationArms_Grapple_MG X2WeaponTemplate]
 FriendlyName="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
 FriendlyNamePlural="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
 BriefSummary="Cybernetic Grapple"

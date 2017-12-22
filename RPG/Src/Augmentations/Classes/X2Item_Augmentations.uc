@@ -55,8 +55,6 @@ static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameSta
 	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
 	local XComGameState_HeadquartersXCom XComHQ;
 
-	UnitState.ModifyCurrentStat(eStat_HP, UnitState.GetMaxStat(eStat_HP) - 2);
-
 	if (UnitState.IsGravelyInjured() && UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
 	{
 		if ((int(SeveredBodyPart.fValue) == eHead && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationHead) ||
@@ -64,6 +62,7 @@ static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameSta
 			(int(SeveredBodyPart.fValue) == eArms && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationArms) ||
 			(int(SeveredBodyPart.fValue) == eLegs && X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot == eInvSlot_AugmentationLegs))
 		{
+			`LOG(GetFuncName() @ "SeveredBodyPart" @ GetEnum(Enum'ESeveredBodyPart', SeveredBodyPart.fValue),,'Augmentations');
 			UnitState.ClearUnitValue('SeveredBodyPart');
 			XComHQ = GetAndAddXComHQ(NewGameState);
 			ProjectState = XComGameState_HeadquartersProjectHealSoldier(NewGameState.CreateNewStateObject(class'XComGameState_HeadquartersProjectHealSoldier'));
@@ -71,6 +70,7 @@ static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameSta
 			XComHQ.Projects.AddItem(ProjectState.GetReference());
 		}
 	}
+	UnitState.ModifyCurrentStat(eStat_HP, UnitState.GetMaxStat(eStat_HP) / 3 * 2);
 }
 
 private static function XComGameState_HeadquartersXCom GetAndAddXComHQ(XComGameState NewGameState)

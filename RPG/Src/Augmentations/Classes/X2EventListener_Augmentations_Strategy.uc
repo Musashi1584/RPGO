@@ -19,7 +19,7 @@ static function CHEventListenerTemplate CreatePostMissionUpdateSoldierHealingLis
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('PostMissionUpdateSoldierHealing', OnPostMissionUpdateSoldierHealing, ELD_Immediate);
-	`LOG("Register EventOn PostMissionUpdateSoldierHealing",, 'RPG');
+	`LOG("Register Event OnPostMissionUpdateSoldierHealing",, 'RPG');
 
 	return Template;
 }
@@ -50,7 +50,10 @@ static function EventListenerReturn OnPostMissionUpdateSoldierHealing(Object Eve
 			(Random == eLegs && UnitState.GetItemInSlot(eInvSlot_AugmentationLegs) == none))
 		{
 			OverrideTuple.Data[0].b = false;
+			`LOG(GetFuncName() @ "SeveredBodyPart" @ GetEnum(Enum'ESeveredBodyPart', Random),,'Augmentations');
+			UnitState = XComGameState_Unit(GameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 			UnitState.SetUnitFloatValue('SeveredBodyPart', float(Random), eCleanup_Never);
+			
 		}
 	}
 

@@ -194,12 +194,12 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 				DistributionIndex = RowsDistribution.Find('Row', RowIndex);
 				if (DistributionIndex != INDEX_NONE)
 				{
-					RowsDistribution[DistributionIndex].Count += 1;
+					RowsDistribution[DistributionIndex].Count += 7 + RankIndex;
 				}
 				else
 				{
 					NewRowDistribution.Row = RowIndex;
-					NewRowDistribution.Count = 1;
+					NewRowDistribution.Count = RankIndex;
 					RowsDistribution.AddItem(NewRowDistribution);
 				}
 			}
