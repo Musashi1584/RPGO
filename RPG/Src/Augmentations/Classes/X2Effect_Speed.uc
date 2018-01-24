@@ -1,4 +1,4 @@
-class X2Effect_Speed extends X2Effect_Persistent config (SamuraiClass);
+class X2Effect_Speed extends X2Effect_Persistent config (Augmentations);
 
 var config float SpeedGameSpeedMutliplier;
 

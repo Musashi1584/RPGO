@@ -237,10 +237,8 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 static function bool CanApplyUpgradeToWeaponEU(X2WeaponUpgradeTemplate UpgradeTemplate, XComGameState_Item Weapon, int SlotIndex)
 {
-	local name WeaponCat;
 	local X2WeaponTemplate WeaponTemplate;
 
-	WeaponCat = X2WeaponTemplate(Weapon.GetMyTemplate()).WeaponCat;
 	WeaponTemplate = X2WeaponTemplate(Weapon.GetMyTemplate());
 
 	`LOG(GetFuncName() @ UpgradeTemplate.DataName @ WeaponTemplate.WeaponCat,, 'ExtendedUpgrades');
@@ -261,6 +259,8 @@ static function AddLootTables()
 	local int Index;
 	local bool bLog;
 
+	bLog = false;
+
 	`LOG("AddLootTables LootTables.Length" @ default.LootTables.Length, bLog, 'ExtendedUpgrades');
 
 	foreach default.LootTables(Loot)
@@ -268,8 +268,9 @@ static function AddLootTables()
 		foreach Loot.Loots(Entry)
 		{
 			`LOG("Adding" @ Entry.TemplateName @ "(" $ Entry.TableRef $ ")"  @ "Table" @ Loot.TableName, bLog, 'ExtendedUpgrades');
-			class'X2LootTableManager'.static.AddEntryStatic(Loot.TableName, Entry);
+			class'X2LootTableManager'.static.AddEntryStatic(Loot.TableName, Entry, false);
 		}
+		class'X2LootTableManager'.static.RecalculateLootTableChanceStatic(Loot.TableName);
 
 		LootManager = X2LootTableManager(class'Engine'.static.FindClassDefaultObject("X2LootTableManager"));
 		Index = LootManager.default.LootTables.Find('TableName', Loot.TableName);

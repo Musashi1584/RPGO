@@ -3,7 +3,7 @@ class X2Effect_Failsafe extends X2Effect_Persistent;
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	local X2EventManager EventMgr;
-	local Object								ListenerObj, EffectObj;
+	local Object								EffectObj;
 	local XComGameState_Unit					UnitState;
 
 	EventMgr = `XEVENTMGR;

@@ -381,7 +381,7 @@ static function PatchTraceRounds()
 	Template.Abilities.AddItem('Holotargeting');
 
 	Template.RewardDecks.Length = 0;
-	Template.bInfiniteItem = false;
+	Template.bInfiniteItem = true;
 	Template.StartingItem = true;
 	Template.CanBeBuilt = true;
 }
@@ -651,7 +651,7 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	{
 		foreach default.WeaponProficiencies(Proficiency)
 		{
-			if (MissesWeaponProficiency(UnitState, WeaponTemplate, Proficiency))
+			if (MissesWeaponProficiency(UnitState, WeaponTemplate, Proficiency) && !UnitState.IsResistanceHero())
 			{
 				TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 				Template = TemplateManager.FindAbilityTemplate(Proficiency.AbilityName);
@@ -700,8 +700,8 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 
 	`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');
 
-	if (SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
-		InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
+	// SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
+	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
 	{
 		for (i = 0; i < Pawn.Mesh.AnimSets.Length; i++)
 		{

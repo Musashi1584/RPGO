@@ -28,4 +28,5 @@ static function EventListenerReturn OnTacticalBeginPlay(Object EventData, Object
 {
 	`LOG(GetFuncName() @ "FirstSeenVODisabled",, 'RPG');
 	`CHEATMGR.SetFirstSeenVODisabled(true);
+	return ELR_NoInterrupt;
 }

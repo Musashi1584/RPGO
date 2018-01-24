@@ -2,9 +2,7 @@ class UIArmory_Augmentations extends UIArmory_Loadout;
 
 simulated function UpdateEquippedList()
 {
-	local int i, numUtilityItems;
 	local UIArmory_LoadoutItem Item;
-	local array<XComGameState_Item> UtilityItems;
 	local XComGameState_Unit UpdatedUnit;
 	local int prevIndex;
 	local CHUIItemSlotEnumerator En;
@@ -61,4 +59,12 @@ simulated function bool ShowInLockerList(XComGameState_Item Item, EInventorySlot
 	}
 
 	return false;
+}
+
+
+simulated function OnItemClicked(UIList ContainerList, int ItemIndex)
+{
+	super.OnItemClicked(ContainerList, ItemIndex);
+	`LOG(GetFuncName(),, 'Augmentations');
+	UpdateData(true);
 }

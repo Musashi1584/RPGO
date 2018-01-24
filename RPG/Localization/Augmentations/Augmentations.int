@@ -6,3 +6,6 @@ m_strServeredHead="Needs Head Augmentation"
 m_strServeredTorso="Needs Torso Augmentation"
 m_strServeredArms="Needs Arm Augmention"
 m_strServeredLegs"Needs Legs Augmentation"
+
+[X2EventListener_Augmentations_Tactical]
+CyborgBerserk="Cyborg Rage"

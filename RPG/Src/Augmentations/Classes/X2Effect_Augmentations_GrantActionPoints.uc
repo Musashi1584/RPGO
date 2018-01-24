@@ -4,8 +4,6 @@ var array<name> ActionPoints;
 
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
-	local XComGameState_Ability			AbilityState;
-	local StateObjectReference			AbilityRef;
 	local XComGameState_Unit			UnitState;
 	local name							ActionPoint;
 	

@@ -55,6 +55,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\Augmentations\XComAugmentations.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\Augmentations\XComContent.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\Augmentations\XComGameData.ini">
       <SubType>Content</SubType>
     </Content>
@@ -103,6 +106,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Content\Augmentations\CyberClaws_Augmentations.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\Augmentations\CyberLegsAugmentations.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\Augmentations\MusashiAndroids.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\Augmentations\Sockets_Augmentions.upk">
       <SubType>Content</SubType>
     </Content>
@@ -125,6 +134,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\UILibrary_RPG.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Features.txt">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\Augmentations\Augmentations.int">
@@ -175,6 +187,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\Augmentations\Classes\X2Effect_Augmentations_GrantActionPoints.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\Augmentations\Classes\X2Effect_Hardened.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2Effect_NeuralTacticalProcessor.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\Augmentations\Classes\X2Effect_Resilience.uc">
       <SubType>Content</SubType>
     </Content>
@@ -185,6 +203,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_Strategy.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\Augmentations\Classes\X2EventListener_Augmentations_Tactical.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\Augmentations\Classes\X2Item_Augmentations.uc">

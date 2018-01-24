@@ -1,0 +1,95 @@
+
+[h1]Soldier AP[/h1]
+Since you can raise stats with Soldier AP the rank up AP bonus is raised to 30, plus a bonus depending on the Combat Intelligence Level:
+
+Standard = 0
+AboveAverage = 5
+Gifted = 7
+Genius = 10
+Savant = 15
+
+The ability cost for buying abilities is raised too however:
+
+0 for Squaddie abilities
+10 for Corporal abilities
+15 for Sergeant abilities
+15 for Lieutenant abilities
+20 for Captain abilities
+20 for Major abilities
+25 for Colonel abilities
+50 for Brigadier abilities
+
+The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
+
+[h1]Changes to weapons[/h1]
+- All weapons get 3 upgrade slots
+- Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
+- Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
+- Cannons get Autofire and Suppression ability, have increased damage and clip size but get a -25% mobility penalty.
+- Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
+- Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
+- Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
+- Autopistol get +20% crit change but have a significantly shorter range table than pistol.
+- Swords get Slice ability.
+- Gremlins get Remote Hacking and Aid ability.
+- Pistols get Pistol Shot ability.
+- Grenade Launchers get Launch Grenade ability.
+- Gremlins get AidProtocol ability.
+- Grenades get 1 tile bonus radius.
+- Grenade Launcher get -1 tile radius.
+
+[h1]Changes to attachments[/h1]
+- Scope	(Aim penalty for close range, aim bonus mid to long range.)
+- Laser Sight (Crit Bonus (5/10/15) but aim penalties for mid to long range.)
+- Hair Trigger (30/50/70)% chance to trigger a second shot if the first one misses
+- Repeater (get replaced by Tactical Suppressors (Uses WotC Tactical Suppressors))
+- Stock	(Reaction Fire Bonus (5/10/15))
+- Autoloader (Auto reload 1 ammo per turn (max 4/6/8))
+- more attachments to come
+
+[h1]Miscellaneous Changes[/h1]
+- Squadsight only applies if the unit has not moved this turn.
+- Soldier Healing Times are drastically reduced.
+
+[h1]New/Modified Items[/h1]
+- Tracer Ammo - give HoloTargeting instead of aim and can be build from campaign start
+
+[h1]Specializations[/h1]
+- Assault
+- Infantry
+- Sentinel
+- Gunner
+- Grenadier
+- Sniper
+- Ranger
+- Hacker
+- Scout
+- Medic
+- Gunslinger
+- Skirmisher
+- Saboteur
+- Spotter
+
+A full documentation of all abilities can be found [url=https://docs.google.com/spreadsheets/d/12QgqB_rPZ5NaH3tep2a_JJTutkK-xvdR9KDmhg97ix8/edit#gid=0]here[/url].
+
+[h1]Random Starting Abilities[/h1]
+- LightningReflexes
+- DeepCover
+- Prodigy (Better ComInt)
+- Nimble Fingers (Free reload)
+- Bulletproof (Better Defence)
+- Juggernaut (Better Health)
+- Stalker (Reduce Detection Radius)
+- IronWill (Better Will)
+- CyberAdept (Better Hack)
+- MovingTarget (Better dodge)
+- Praetorian (Better Aim (Melee))
+- HotShot (Better Aim (reaction fire))
+- EagleEye (Better Aim (non reaction fire))
+- Runner (Better Mobility)
+- Hitman (Better Crit on flanking shots)
+- Panoptical (+2 sightradius)
+- Damn Good Ground (You get an additional 10 Aim and 10 Defense against targets at lower elevation.)
+- Scout (You carry a free battle scanner. Increases throw range for battle scanners by 50%.)
+- Xeno Biologist (Confers 1 bonus damage, against targets who have been autopsied.)
+

@@ -3,7 +3,6 @@ class X2Condition_Cyborg extends X2Condition;
 event name CallMeetsCondition(XComGameState_BaseObject kTarget)
 { 
 	local XComGameState_Unit TargetUnit;
-	local name AutopsyName;
 
 	TargetUnit = XComGameState_Unit(kTarget);
 
@@ -18,7 +17,6 @@ event name CallMeetsCondition(XComGameState_BaseObject kTarget)
 static function bool IsCyborg(XComGameState_Unit TargetUnit)
 {
 	local EInventorySlot InvSlot;
-	local XComGameState_Item ItemState;
 
 	foreach class'X2Item_Augmentations'.default.AugmentationSlots(InvSlot)
 	{

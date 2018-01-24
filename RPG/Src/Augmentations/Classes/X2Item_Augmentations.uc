@@ -5,6 +5,7 @@ struct SlotConfigMap
 	var EInventorySlot InvSlot;
 	var name Category;
 };
+var config bool bAddCosmeticOnAugmentation;
 
 var config array<EInventorySlot> AugmentationSlots;
 var config array<SlotConfigMap> SlotConfig;
@@ -28,11 +29,20 @@ static function array<X2DataTemplate> CreateTemplates()
 	Items.AddItem(AugmentationArms_Base_CV());
 	Items.AddItem(AugmentationLegs_Base_CV());
 	
+	Items.AddItem(AugmentationHead_NeuralGunlink_MG());
+	Items.AddItem(AugmentationHead_NeuralTacticalProcessor_BM());
+
 	Items.AddItem(AugmentationArms_Claws_MG());
 	Items.AddItem(AugmentationArms_Claws_Left_MG());
 	Items.AddItem(AugmentationArms_Grapple_MG());
 
 	Items.AddItem(AugmentationTorso_NanoCoating_MG());
+	
+	Items.AddItem(AugmentationLegs_JumpModule_MG());
+	Items.AddItem(AugmentationLegs_Muscles_MG());
+	Items.AddItem(AugmentationLegs_SilentRunners_BM());
+	Items.AddItem(AugmentationLegs_JumpModule_BM());
+	
 
 	return Items;
 }
@@ -44,6 +54,8 @@ static function X2EquipmentTemplate AugmentationBase(X2EquipmentTemplate Templat
 	Template.bInfiniteItem = false;
 	Template.bShouldCreateDifficultyVariants = true;
 	Template.Abilities.AddItem('ExMachina');
+	Template.Abilities.AddItem('AugmentationBaseWillLoss');
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'X2Ability_Augmentations_Abilities'.default.AUGMENTATION_BASE_WILL_LOSS);
 	Template.OnEquippedFn = OnAugmentationEquipped;
 
 	return Template;
@@ -54,6 +66,9 @@ static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameSta
 	local UnitValue SeveredBodyPart;
 	local XComGameState_HeadquartersProjectHealSoldier ProjectState;
 	local XComGameState_HeadquartersXCom XComHQ;
+
+	if (!UnitState.IsSoldier())
+		return;
 
 	if (UnitState.IsGravelyInjured() && UnitState.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
 	{
@@ -71,6 +86,28 @@ static function OnAugmentationEquipped(XComGameState_Item ItemState, XComGameSta
 		}
 	}
 	UnitState.ModifyCurrentStat(eStat_HP, UnitState.GetMaxStat(eStat_HP) / 3 * 2);
+
+	if (default.bAddCosmeticOnAugmentation)
+	{
+		switch (X2EquipmentTemplate(ItemState.GetMyTemplate()).InventorySlot)
+		{
+			case eInvSlot_AugmentationHead:
+				UnitState.kAppearance.nmHead = 'HS_Invisible_CAU_M';
+				UnitState.kAppearance.nmHelmet = 'Augmentations_Head';
+				break;
+			case eInvSlot_AugmentationTorso:
+				UnitState.kAppearance.nmTorso = 'Augmentations_Torso_KV';
+				break;
+			case eInvSlot_AugmentationArms:
+				UnitState.kAppearance.nmArms = '';
+				UnitState.kAppearance.nmLeftArm = 'Augmentations_ArmL_KV';
+				UnitState.kAppearance.nmRightArm = 'Augmentations_ArmR_KV';
+				break;
+			case eInvSlot_AugmentationLegs:
+				UnitState.kAppearance.nmLegs = 'Augmentations_Legs_KV';
+				break;
+		}
+	}
 }
 
 private static function XComGameState_HeadquartersXCom GetAndAddXComHQ(XComGameState NewGameState)
@@ -108,8 +145,6 @@ static function X2DataTemplate AugmentationHead_Base_CV()
 	Template.PointsToComplete = 0;
 	Template.Tier = 1;
 
-	
-	
 	return Template;
 }
 
@@ -254,17 +289,17 @@ static function X2DataTemplate AugmentationArms_Claws_Left_MG()
 
 static function X2DataTemplate AugmentationArms_Grapple_MG()
 {
-	local X2EquipmentTemplate Template;
-	local ArtifactCost Resources;
-	local ArtifactCost Artifacts;
+	local X2WeaponTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationArms_Grapple_MG');
-	Template = AugmentationBase(Template);
+	`CREATE_X2TEMPLATE(class'X2WeaponTemplate', Template, 'AugmentationArms_Grapple_MG');
+	Template = X2WeaponTemplate(AugmentationBase(Template));
 
 	Template.ItemCat = 'augmentation_arms';
 	Template.InventorySlot = eInvSlot_AugmentationArms;
 	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Arm";
 	
+	Template.BaseDamage = default.CYBER_ARM_BASEDAMAGE;
+	Template.Abilities.AddItem('AugmentedShield');
 	Template.Abilities.AddItem('CyberPunch');
 	Template.Abilities.AddItem('GrapplePowered');
 	
@@ -293,6 +328,130 @@ static function X2DataTemplate AugmentationTorso_NanoCoating_MG()
 
 	return Template;
 }
+
+static function X2DataTemplate AugmentationLegs_JumpModule_MG()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_JumpModule_MG');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_legs';
+	Template.InventorySlot = eInvSlot_AugmentationLegs;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
+	
+	Template.Abilities.AddItem('AugmentedSpeed');
+	Template.Abilities.AddItem('CyberJumpLegsMK1');
+
+	Template.TradingPostValue = 35;
+	Template.Tier = 2;
+
+	return Template;
+}
+
+static function X2DataTemplate AugmentationLegs_JumpModule_BM()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_JumpModule_BM');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_legs';
+	Template.InventorySlot = eInvSlot_AugmentationLegs;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
+	
+	Template.Abilities.AddItem('AugmentedSpeed');
+	Template.Abilities.AddItem('CyberJumpLegsMK2');
+
+	Template.TradingPostValue = 50;
+	Template.Tier = 3;
+
+	return Template;
+}
+
+static function X2DataTemplate AugmentationHead_NeuralGunlink_MG()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationHead_NeuralGunlink_MG');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_head';
+	Template.InventorySlot = eInvSlot_AugmentationHead;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentations_Head";
+	
+	Template.Abilities.AddItem('AugmentedHead');
+	Template.Abilities.AddItem('NeuralGunLink');
+	
+	Template.TradingPostValue = 35;
+	Template.PointsToComplete = 0;
+	Template.Tier = 2;
+
+	return Template;
+}
+
+static function X2DataTemplate AugmentationHead_NeuralTacticalProcessor_BM()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationHead_NeuralTacticalProcessor_BM');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_head';
+	Template.InventorySlot = eInvSlot_AugmentationHead;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentations_Head";
+	
+	Template.Abilities.AddItem('AugmentedHead');
+	Template.Abilities.AddItem('NeuralTacticalProcessor');
+	
+	Template.TradingPostValue = 50;
+	Template.PointsToComplete = 0;
+	Template.Tier = 3;
+
+	return Template;
+}
+
+static function X2DataTemplate AugmentationLegs_Muscles_MG()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_Muscles_MG');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_legs';
+	Template.InventorySlot = eInvSlot_AugmentationLegs;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
+	
+	Template.Abilities.AddItem('AugmentedSpeed');
+	Template.Abilities.AddItem('CarryHeavyWeapons');
+
+	Template.TradingPostValue = 35;
+	Template.Tier = 2;
+
+	return Template;
+}
+
+static function X2DataTemplate AugmentationLegs_SilentRunners_BM()
+{
+	local X2EquipmentTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'X2EquipmentTemplate', Template, 'AugmentationLegs_SilentRunners_BM');
+	Template = AugmentationBase(Template);
+
+	Template.ItemCat = 'augmentation_legs';
+	Template.InventorySlot = eInvSlot_AugmentationLegs;
+	Template.strImage = "img:///UILibrary_Augmentations.Inv_Augmentation_Leg";
+	
+	Template.Abilities.AddItem('AugmentedSpeed');
+	Template.Abilities.AddItem('Shadow');
+
+	Template.TradingPostValue = 50;
+	Template.Tier = 3;
+
+	return Template;
+}
+
+
 
 defaultproperties
 {

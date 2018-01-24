@@ -6,6 +6,9 @@ m_strInventoryLabels[eInvSlot_AugmentationTorso]=TORSO
 m_strInventoryLabels[eInvSlot_AugmentationArms]=ARMS
 m_strInventoryLabels[eInvSlot_AugmentationLegs]=LEGS
 
+;--------------------------------------------------
+;----------------- Item Templates -----------------
+;--------------------------------------------------
 [AugmentationHead_Base_CV X2EquipmentTemplate]
 FriendlyName="<font color='#00e0d5'><b>Cybernetic Skull</b></font>"
 FriendlyNamePlural="<font color='#00e0d5'><b>Cybernetic Skull</b></font>"
@@ -31,26 +34,77 @@ BriefSummary="Cybernetic Legs"
 TacticalText="<Bullet/>"
 
 [AugmentationArms_Grapple_MG X2WeaponTemplate]
-FriendlyName="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
-FriendlyNamePlural="<font color='#0000e0'><b>Cybernetic Grapple</b></font>"
+FriendlyName="<font color='#0064e0'><b>Cybernetic Grapple Module</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Cybernetic Grapple Module</b></font>"
 BriefSummary="Cybernetic Grapple"
 TacticalText="<Bullet/>"
 
 [AugmentationArms_Claws_MG X2PairedWeaponTemplate]
-FriendlyName="<font color='#0000e0'><b>Cyberclaws</b></font>"
-FriendlyNamePlural="<font color='#0000e0'><b>Cyberclaws</b></font>"
+FriendlyName="<font color='#0064e0'><b>Cyberclaws</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Cyberclaws</b></font>"
 BriefSummary=""
 TacticalText="<Bullet/>"
 AbilityDescName="Cyberclaws"
 
 [AugmentationTorso_NanoCoating_MG X2EquipmentTemplate]
-FriendlyName="<font color='#0000e0'><b>Nano-coated Torso</b></font>"
-FriendlyNamePlural="<font color='#0000e0'><b>Nano-coated Torso</b></font>"
+FriendlyName="<font color='#0064e0'><b>Nano-coated Torso</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Nano-coated Torso</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+[AugmentationLegs_JumpModule_MG X2EquipmentTemplate]
+FriendlyName="<font color='#0064e0'><b>Cybernetic Jump Module</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Cybernetic Jump Module</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+[AugmentationHead_NeuralGunlink_MG X2EquipmentTemplate]
+FriendlyName="<font color='#0064e0'><b>Neural Gunlink</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Neural Gunlink</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+[AugmentationLegs_Muscles_MG X2EquipmentTemplate]
+FriendlyName="<font color='#0064e0'><b>Synthetic Muscles</b></font>"
+FriendlyNamePlural="<font color='#0064e0'><b>Synthetic Muscles</b></font>"
 BriefSummary=""
 TacticalText="<Bullet/>"
 
 
-; BM color #d142f4
+[AugmentationLegs_JumpModule_BM X2EquipmentTemplate]
+FriendlyName="<font color='#d142f4'><b>Enhanced Cybernetic Jump Module</b></font>"
+FriendlyNamePlural="<font color='#d142f4'><b>Enhanced Cybernetic Jump Module</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+[AugmentationLegs_SilentRunners_BM X2EquipmentTemplate]
+FriendlyName="<font color='#d142f4'><b>Silent Runners</b></font>"
+FriendlyNamePlural="<font color='#d142f4'><b>Silent Runners</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+[AugmentationHead_NeuralTacticalProcessor_BM X2EquipmentTemplate]
+FriendlyName="<font color='#d142f4'><b>Neural Tactical Processor</b></font>"
+FriendlyNamePlural="<font color='#d142f4'><b>Neural Tactical Processor</b></font>"
+BriefSummary=""
+TacticalText="<Bullet/>"
+
+
+
+;--------------------------------------------------
+;----------------- Abilities ----------------------
+;--------------------------------------------------
+[CyberJumpLegsMK1 X2AbilityTemplate]
+FriendlyName="Cybernetic Jump Module"
+FriendlyNamePlural="Cybernetic Jump Modules"
+BriefSummary="Cybernetic Jump Modules enhance the mobility of out troops in the field"
+TacticalText="<Bullet/>Cybernetic Jump Modules grant +2 mobility, +15 dodge and the ability to jump on buildings."
+
+[CyberJumpLegsMK2 X2AbilityTemplate]
+FriendlyName="Enhanced Cybernetic Jump Module"
+FriendlyNamePlural="Enhanced Cybernetic Jump Modules"
+BriefSummary="Cybernetic Jump Modules enhance the mobility of out troops in the field"
+TacticalText="<Bullet/>Cybernetic Jump Modules grant +3 mobility, +25 dodge and the ability to jump on buildings."
 
 [ClawsSlash X2AbilityTemplate]
 LocFriendlyName="Claw Slash"
@@ -66,7 +120,7 @@ LocFlyOverText="Augmented Strike"
 
 [AugmentedSpeed X2AbilityTemplate]
 LocFriendlyName="Augmented Speed"
-LocLongDescription="Cybernetic legs allow your soldier to temporarily enhance your movement speed. On activation gain a additional action point that can be spend on movement. <Ability:SelfCooldown> Cooldown."
+LocLongDescription="Cybernetic legs allow your soldiers to temporarily enhance your movement speed. On activation gain an additional action point that can be spent on movement. <Ability:SelfCooldown> Cooldown."
 LocHelpText="Temporarily enhance your movement speed."
 LocFlyOverText="Augmented Speed" 
 
@@ -94,6 +148,28 @@ LocFlyOverText="Weakpoint Analyzer"
 LocLongDescription="Augmented headup display with autopsy data grant +1 armor pierce, +1 crit damage and +10% crit chance against autopsied targets"
 LocHelpText="Augmented headup display with autopsy data grant +1 armor pierce, +1 crit damage and +10% crit chance against autopsied targets"
 
+[ExMachina X2AbilityTemplate]
+LocFriendlyName="Deus Ex Machina"
+LocFlyOverText="Deus Ex Machina"
+LocLongDescription="When fully augmented the soldier becomes immune to fire, poison and acid and incoming damage is reduced by 33%. The downside is they tend to fall into a berserk rage when being wounded due to the mental instability."
+LocHelpText="When fully augmented the soldier becomes immune to fire, poison and acid and incoming damage is reduced by 33%. The downside is they tend to fall into a berserk rage when being wounded due to the mental instability."
+
+[NeuralGunLink X2AbilityTemplate]
+LocFriendlyName="Neural Gunink"
+LocFlyOverText="Neural Gunink"
+LocLongDescription="Neural Gunlinks provide +10 to hit chance."
+LocHelpText="Neural Gunlinks provide +10 to hit chance."
+
+[NeuralTacticalProcessor X2AbilityTemplate]
+LocFriendlyName="Neural Tactical Processor"
+LocFlyOverText="Neural Tactical Processor"
+LocLongDescription="Neural Tactical Processor provide +10 to hit chance and +3 hit chance for every squadmate that sees the target."
+LocHelpText="Neural Tactical Processor provide +10 to hit chance and +3 hit chance for every squadmate that sees the target."
+
+
+;--------------------------------------------------
+;----------------- Tech Templates -----------------
+;--------------------------------------------------
 [Augmentations X2TechTemplate]
 DisplayName="Cybernetic"
 Summary="Autopsies of Advent personnel recovered from the field indicate extensive surgical modification. We believe that given time and enough material to study we can come to understand their functions and perhaps replicate them for use in our own agents."
@@ -124,3 +200,45 @@ LongDescription=" L. Shen."
 DisplayName="Cyberclaws"
 Summary=""
 LongDescription=" L. Shen."
+
+[AugmentationArmsGrapple X2TechTemplate]
+DisplayName="Cybernetic Grapple Module"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationLegsJumpModuleMK1 X2TechTemplate]
+DisplayName="Cybernetic Jump Module"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationLegsMuscles X2TechTemplate]
+DisplayName="Synthetic Muscles"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationTorsoNanoCoating X2TechTemplate]
+DisplayName="Nano-coated Torso"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationLegsJumpModuleMK2 X2TechTemplate]
+DisplayName="Enhanced Cybernetic Jump Module"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationHeadNeuralGunlink X2TechTemplate]
+DisplayName="Neural Gunlink"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationHeadNeuralTacticalProcessor X2TechTemplate]
+DisplayName="Neural Tactical Processor"
+Summary=""
+LongDescription=" L. Shen."
+
+[AugmentationLegsSilentRunners X2TechTemplate]
+DisplayName="Silent Runners"
+Summary=""
+LongDescription=" L. Shen."
+
+
