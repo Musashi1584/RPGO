@@ -1,28 +1,34 @@
-﻿[h1]ALPHA VERSION. TESTING PURPOSES ONLY[/h1]
+﻿[h1]OPEN BETA VERSION[/h1]
 
 [h1]Features[/h1]
-- Gameplay overhaul that revamps various aspects of the game
-- Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
-- The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
-- Dynamic class title / class icon based on your ability choices
-- 2 random starting abilities on squaddie
-- Stats can be upgraded with ability points
-- All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
-- Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
-- Full support of Primary Secondaries and Utility Slot Sidearm
-- Full support of weapon mods like Resistance Firearms
+[list]
+[*] Gameplay overhaul that revamps various aspects of the game
+[*] Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
+[*] The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
+[*] Dynamic class title / class icon based on your ability choices
+[*] 2 random starting abilities on squaddie
+[*] Stats can be upgraded with ability points
+[*] All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
+[*] Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
+[*] Full support of Primary Secondaries and Utility Slot Sidearm
+[*] Full support of weapon mods like Resistance Firearms
+[/list]
 
 [h1]PSA[/h1]
 
 DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
-- [WOTC] Detailed Soldier Lists
-- [WOTC] New Promotion Screen by Default
+[list]
+[*] [WOTC] Detailed Soldier Lists
+[*] [WOTC] New Promotion Screen by Default
+[/list]
 
 I recommend to play this mod with the following mods:
-- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1135248412]WotC SpecOps Combat Knives[/url]
-- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1123865738]WotC Katana Mod Reloaded[/url]
-- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1142234205]Wotc Primary Secondaries[/url]
-- [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1144463583][WOTC] Point-Based Not Created Equal[/url]
+[list]
+[*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1135248412]WotC SpecOps Combat Knives[/url]
+[*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1123865738]WotC Katana Mod Reloaded[/url]
+[*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1142234205]Wotc Primary Secondaries[/url]
+[*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1144463583][WOTC] Point-Based Not Created Equal[/url]
+[/list]
 
 [h1]About this overhaul[/h1]
 The idea of this mod was born out of my passion for oldschool rpg games.
@@ -45,6 +51,8 @@ Most abilities work with each weapon, the secondary weapon abilities work with t
 Another big change is the possibility to upgrade the soldiers stats with ability points. Therefor i designed a completely new ui screen.
 
 For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachments work.
+
+[url=http://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/]FULL LIST OF FEATURES[/url]
 
 [h1]Credits[/h1]
 *Standing on the shoulders of giants*
