@@ -246,6 +246,7 @@ static function PatchWeapons()
 					case 'sidearm':
 						WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
+						WeaponTemplate.NumUpgradeSlots = 3;
 						break;
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
