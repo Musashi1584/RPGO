@@ -183,6 +183,7 @@ static function PatchWeapons()
 				{
 					case 'Gremlin':
 						GremlinTemplate = X2GremlinTemplate(WeaponTemplate);
+						AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
 						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol', true);
 						break;
 					case 'rifle':
@@ -250,9 +251,6 @@ static function PatchWeapons()
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
 						WeaponTemplate.NumUpgradeSlots = 3;
-						break;
-					case 'gremlin':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'IntrusionProtocol', true);
 						break;
 					case 'grenade_launcher':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
