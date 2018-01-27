@@ -70,7 +70,6 @@ MoonWolf for the initial [WOTC] New Promotion Screen by Default
 zamster for helping me turning my localization into proper english
 Chris the Thin Mint for help with balancing and localization
 FelineKnave for a lot of great localization
-Zyxpsilon for most of the cybenetic tech images
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters
@@ -81,5 +80,16 @@ bstar
 Chris the Thin Mint
 きゅう
 
+[h1]FAQ[/h1]
+[b]Will custom class mods work with this?[/b]
+There are some issues with ability restrictions applying to other classes.
+Classes with only custom abilities should works though.
+
+[b]What about Faction Heros, SPARKS, Psi Soldiers?[/b]
+They are not touched by this mod and should work normally
+
+[b]Is this mod compatible with Mod XY?[/b]
+Most mods should be compatible. If you have an issue let me know.
+Other Overhaul mods like MINT and A Better Barracks obviously clash in some areas.
 
 More to come!

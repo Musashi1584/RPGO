@@ -1,4 +1,4 @@
-class X2UniversalSoldierClassInfo extends Object config (RPG);
+class X2UniversalSoldierClassInfo extends Object PerObjectConfig PerObjectLocalized config (RPG);
 
-var config array<string> ClassSpecializationIcons;
-var localized array<string> ClassSpecializationSummaries;
+var config string ClassSpecializationIcon;
+var localized string ClassSpecializationSummary;

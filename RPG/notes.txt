@@ -1,24 +1,3 @@
-HL Hook for X2WeaponTemplate.GetLocalizedCategory
-
-shotty tree?
-- Medium (Better Psi Offense (?))
-- Packmaster (+ 1 Utility Slot)
-
-heavy weapon slot
-
-XCGS_Unit.IsGravelyInjured
-
-XComGameData.ini:
-
-[XComGame.X2StrategyGameRulesetDataStructures]
-HealSoldierProject_TimeScalar[0]=1.5 ;Easy
-HealSoldierProject_TimeScalar[1]=1.5 ;Normal
-HealSoldierProject_TimeScalar[2]=1.5 ;Classic
-HealSoldierProject_TimeScalar[3]=2.5 ;Impossible
-
-[XComGame.XComGameState_HeadquartersXCom]
-XComHeadquarters_BaseHealRates[0]=80 ;Quick
-XComHeadquarters_BaseHealRates[1]=80 ;Normal
-XComHeadquarters_BaseHealRates[2]=80 ;Long
-XComHeadquarters_BaseHealRates[3]=80 ;Epic
-
+- Fixed Grenade Launcher Radius
+- Fixed Remote Hacking
+- Added class plugin framework

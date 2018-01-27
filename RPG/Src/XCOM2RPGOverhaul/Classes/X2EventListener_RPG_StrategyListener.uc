@@ -6,6 +6,13 @@ struct RowDistribution
 	var int Count;
 };
 
+struct SoldierSpecialization
+{
+	var int Order;
+	var name TemplateName;
+};
+
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -139,7 +146,7 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 			break;
 	}
 
-	`LOG(GetFuncName() @ Event @ Info,, 'RPG');
+	//`LOG(GetFuncName() @ Event @ Info,, 'RPG');
 
 	Tuple.Data[0].s = Info;
 	EventData = Tuple;
@@ -149,10 +156,16 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 
 static function string GetClassIcon(XComGameState_Unit UnitState)
 {
-	local int RowIndex;
+	local name Spec;
+	local X2UniversalSoldierClassInfo Template;
 
-	RowIndex = GetSoldierSpecialization(UnitState);
-	return RowIndex != INDEX_NONE ? class'X2UniversalSoldierClassInfo'.default.ClassSpecializationIcons[RowIndex] : UnitState.GetSoldierClassTemplate().IconImage;
+	Spec = GetSpecializationName(UnitState);
+
+	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+
+	//`LOG(GetFuncName() @ Template @ Template.ClassSpecializationIcon,, 'RPG');
+
+	return Template.ClassSpecializationIcon != "" ? Template.ClassSpecializationIcon : UnitState.GetSoldierClassTemplate().IconImage;
 }
 
 static function string GetClassDisplayName(XComGameState_Unit UnitState)
@@ -163,12 +176,37 @@ static function string GetClassDisplayName(XComGameState_Unit UnitState)
 	return RowIndex != INDEX_NONE ? UnitState.GetSoldierClassTemplate().AbilityTreeTitles[RowIndex] : UnitState.GetSoldierClassTemplate().DisplayName;
 }
 
-static function string GetClassSummary(XComGameState_Unit UnitState)
+static function name GetSpecializationName(XComGameState_Unit UnitState)
 {
 	local int RowIndex;
-
+	local array<SoldierSpecialization> Specs;
+	//local SoldierSpecialization Spec;
+	
 	RowIndex = GetSoldierSpecialization(UnitState);
-	return RowIndex != INDEX_NONE ? class'X2UniversalSoldierClassInfo'.default.ClassSpecializationSummaries[RowIndex] : UnitState.GetSoldierClassTemplate().ClassSummary;
+
+	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
+	Specs.Sort(SortSpecializations);
+
+	//foreach Specs(Spec)
+	//{
+	//	`LOG(GetFuncName() @ Spec.Order @ Spec.TemplateName,, 'RPG');
+	//}
+
+	//`LOG(GetFuncName() @ RowIndex @ Specs[RowIndex].TemplateName,, 'RPG');
+	return RowIndex != INDEX_NONE ? Specs[RowIndex].TemplateName : UnitState.GetSoldierClassTemplate().DataName;
+}
+
+static function string GetClassSummary(XComGameState_Unit UnitState)
+{
+	local name Spec;
+	local X2UniversalSoldierClassInfo Template;
+
+	Spec = GetSpecializationName(UnitState);
+
+	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+
+	//`LOG(GetFuncName() @ Spec @ Template @ Template.ClassSpecializationSummary,, 'RPG');
+	return Template.ClassSpecializationSummary != "" ? Template.ClassSpecializationSummary : UnitState.GetSoldierClassTemplate().ClassSummary;
 }
 
 static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
@@ -219,4 +257,9 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 function int SortRowDistribution(RowDistribution A, RowDistribution B)
 {
 	return A.Count < B.Count ? -1 : 0;
+}
+
+function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
+{
+	return A.Order > B.Order ? -1 : 0;
 }

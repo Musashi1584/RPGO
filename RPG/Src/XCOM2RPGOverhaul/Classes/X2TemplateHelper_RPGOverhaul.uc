@@ -28,12 +28,14 @@ struct WeaponProficiency
 	var name UnlocksWeaponCategory;
 };
 
+
 var config array<AbilityWeaponCategoryRestriction> AbilityWeaponCategoryRestrictions;
 var config array<AbilityPrerequisite> AbilityPrerequisites;
 var config array<MutuallyExclusiveAbilityPool> MutuallyExclusiveAbilities;
 var config array<UniqueItemCategories> LoadoutUniqueItemCategories;
 var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
+var config array<SoldierSpecialization> Specializations;
 
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
@@ -184,6 +186,7 @@ static function PatchWeapons()
 					case 'Gremlin':
 						GremlinTemplate = X2GremlinTemplate(WeaponTemplate);
 						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol', true);
+						AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
 						break;
 					case 'rifle':
 					case 'sparkrifle':
@@ -380,10 +383,12 @@ static function PatchTraceRounds()
 	Template.Abilities.Length = 0;
 	Template.Abilities.AddItem('Holotargeting');
 
+	Template.Cost.ResourceCosts.Length = 0;
+	Template.TradingPostValue = 0;
 	Template.RewardDecks.Length = 0;
 	Template.bInfiniteItem = true;
 	Template.StartingItem = true;
-	Template.CanBeBuilt = true;
+	Template.CanBeBuilt = false;
 }
 
 
