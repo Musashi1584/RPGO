@@ -1,5 +1,14 @@
 ﻿[h1]OPEN BETA VERSION[/h1]
 
+[h1]PSA[/h1]
+
+DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
+
+[list]
+[*] [WOTC] Detailed Soldier Lists
+[*] [WOTC] New Promotion Screen by Default
+[/list]
+
 [h1]Features[/h1]
 [list]
 [*] Gameplay overhaul that revamps various aspects of the game
@@ -12,14 +21,6 @@
 [*] Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
 [*] Full support of Primary Secondaries and Utility Slot Sidearm
 [*] Full support of weapon mods like Resistance Firearms
-[/list]
-
-[h1]PSA[/h1]
-
-DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
-[list]
-[*] [WOTC] Detailed Soldier Lists
-[*] [WOTC] New Promotion Screen by Default
 [/list]
 
 I recommend to play this mod with the following mods:
@@ -81,6 +82,18 @@ Chris the Thin Mint
 きゅう
 
 [h1]FAQ[/h1]
+
+[b]I only see the first 4 ability rows and can't scroll in the promotion screen![/b]
+
+DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
+
+[list]
+[*] [WOTC] Detailed Soldier Lists
+[*] [WOTC] New Promotion Screen by Default
+[/list]
+
+After that delete %User\Documents\My Games\XCOM2 War of the Chosen\XComGame\Config
+
 [b]Will custom class mods work with this?[/b]
 There are some issues with ability restrictions applying to other classes.
 Classes with only custom abilities should works though.

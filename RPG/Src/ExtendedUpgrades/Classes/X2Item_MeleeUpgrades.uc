@@ -90,10 +90,15 @@ static function SetUpCritUpgrade(out X2WeaponUpgradeTemplate Template)
 	Template.AddCritChanceModifierFn = CritUpgradeModifier;
 	Template.GetBonusAmountFn = GetCritBonusAmount;
 
+	`LOG(GetFuncName() @ "MutuallyExclusiveUpgradesCategory1" @ default.MutuallyExclusiveUpgradesCategory1.Length,, 'ExtendedUpgrades');
+
 	foreach default.MutuallyExclusiveUpgradesCategory1(MutuallyExclusiveUpgrade)
 	{
 		Template.MutuallyExclusiveUpgrades.AddItem(MutuallyExclusiveUpgrade);
+		`LOG(GetFuncName() @ "MutuallyExclusiveUpgrade" @ MutuallyExclusiveUpgrade,, 'ExtendedUpgrades');
 	}
+
+	`LOG(GetFuncName() @ "MutuallyExclusiveUpgrades" @ Template.MutuallyExclusiveUpgrades.Length,, 'ExtendedUpgrades');
 }
 
 // #######################################################################################
@@ -192,6 +197,7 @@ static function bool CanApplyMeleeUpgradeToWeapon(X2WeaponUpgradeTemplate Upgrad
 
 	foreach AttachedUpgradeTemplates(AttachedUpgrade, iSlot)
 	{
+		`LOG(GetFuncName() @ AttachedUpgrade.DataName @ iSlot @ SlotIndex,, 'ExtendedUpgrades');
 		// Slot Index indicates the upgrade slot the player intends to replace with this new upgrade
 		if (iSlot == SlotIndex)
 		{
@@ -202,16 +208,17 @@ static function bool CanApplyMeleeUpgradeToWeapon(X2WeaponUpgradeTemplate Upgrad
 				return false;
 			}
 		}
-		else if (UpgradeTemplate.MutuallyExclusiveUpgrades.Find(AttachedUpgrade.Name) != INDEX_NONE)
+		else if (UpgradeTemplate.MutuallyExclusiveUpgrades.Find(AttachedUpgrade.DataName) != INDEX_NONE)
 		{
 			// If the new upgrade is mutually exclusive with any of the other currently equipped upgrades, it is not allowed
+			`LOG(GetFuncName() @ UpgradeTemplate @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "MutuallyExclusiveUpgrade" @ AttachedUpgrade.DataName,, 'ExtendedUpgrades');
 			return false;
 		}
 	}
 
 	if (WeaponTemplate != none && WeaponTemplate.iRange == INDEX_NONE)
 	{
-		`LOG(GetFuncName() @ UpgradeTemplate @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "no melee template",, '');
+		`LOG(GetFuncName() @ UpgradeTemplate @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "no melee template",, 'ExtendedUpgrades');
 		return false;
 	}
 

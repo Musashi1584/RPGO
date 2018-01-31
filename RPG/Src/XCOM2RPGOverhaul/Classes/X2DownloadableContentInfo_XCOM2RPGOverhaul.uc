@@ -23,6 +23,7 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 static event OnPostTemplatesCreated()
 {
 	`LOG(GetFuncName(),, 'RPG');
+	class'X2TemplateHelper_RPGOverhaul'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();

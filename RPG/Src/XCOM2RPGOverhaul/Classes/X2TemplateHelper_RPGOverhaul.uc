@@ -42,6 +42,36 @@ var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 
+static function SetupSpecialization(name SoldierClassTemplate)
+{
+	local X2SoldierClassTemplateManager Manager;
+	local X2SoldierClassTemplate Template;
+	local int Index;
+
+	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
+
+	Template = Manager.FindSoldierClassTemplate(SoldierClassTemplate);
+
+	// Sort here cause plugin mods which loaded first could added to the array already
+	default.Specializations.Sort(SortSpecializations);
+
+	for (Index = 0; Index < default.Specializations.Length; Index++)
+	{
+		`LOG("Specialization" @ Index @ default.Specializations[Index].TemplateName @ default.Specializations[Index].bEnabled,, 'RPG');
+		if (!default.Specializations[Index].bEnabled)
+		{
+			`LOG("Removing Specialization" @ Index @ default.Specializations[Index].TemplateName,, 'RPG');
+			class'X2SoldierClassTemplatePlugin'.static.DeleteSpecialization(Template, default.Specializations[Index].TemplateName, Index);
+		}
+	}
+
+}
+
+function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
+{
+	return A.Order > B.Order ? -1 : 0;
+}
+
 static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)
 {
 	local XComGameState_HeadquartersXCom NewXComHQ;
@@ -68,13 +98,15 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 	local EInventorySlot InvSlot;
 	local array<XComGameState_Item> CurrentInventory;
 	local XComGameState_Item InventoryItem;
+	local AbilitySetupData Data, EmptyData;
+	local array<AbilitySetupData> DataToAdd;
 
 	if (!UnitState.IsSoldier())
 		return;
 
 	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
 
-	for(Index = 0; Index < SetupData.Length; Index++)
+	for(Index = SetupData.Length; Index >= 0; Index--)
 	{
 		// Deactivate all ranged abilities
 		if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) && SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon)
@@ -105,6 +137,14 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 		// Do this here again because the launch grenade ability is now on the grenade lanucher itself and not in earned soldier abilities
 		if (SetupData[Index].Template.bUseLaunchedGrenadeEffects)
 		{
+			Data = EmptyData;
+			Data.TemplateName = SetupData[Index].TemplateName;
+			Data.Template = SetupData[Index].Template;
+			Data.SourceWeaponRef = SetupData[Index].SourceWeaponRef;
+
+			// Remove the original ability
+			SetupData.Remove(Index, 1);
+
 			//  populate a version of the ability for every grenade in the inventory
 			foreach CurrentInventory(InventoryItem)
 			{
@@ -113,12 +153,17 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 
 				if (X2GrenadeTemplate(InventoryItem.GetMyTemplate()) != none)
 				{ 
-					SetupData[Index].SourceAmmoRef = InventoryItem.GetReference();
+					Data.SourceAmmoRef = InventoryItem.GetReference();
+					DataToAdd.AddItem(Data);
+					`LOG(GetFuncName()  @ UnitState.GetFullName() @ "Patching" @ Data.TemplateName @ "Setting SourceAmmoRef" @ InventoryItem.GetMyTemplateName() @ Data.SourceAmmoRef.ObjectID,, 'RPG');
 				}
 			}
 		}
+	}
 
-
+	foreach DataToAdd(Data)
+	{
+		SetupData.AddItem(Data);
 	}
 }
 
@@ -702,7 +747,7 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 	SecondaryWeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
 	PrimaryWeaponTemplate = X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate());
 
-	`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');
+	//`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');
 
 	// SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
 	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
@@ -711,7 +756,7 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 		{
 			if (string(Pawn.Mesh.AnimSets[i]) == "AS_TemplarAutoPistol")
 			{
-				`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
+				//`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
 				Pawn.Mesh.AnimSets.Remove(i, 1);
 				break;
 			}
@@ -735,9 +780,9 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 	
 	foreach Pawn.Mesh.AnimSets(AnimSetIter)
 	{
-		`LOG(GetFuncName() @ UnitState.GetFullName() @ "current animsets: " @ AnimSetIter,, 'RPG');
+		//`LOG(GetFuncName() @ UnitState.GetFullName() @ "current animsets: " @ AnimSetIter,, 'RPG');
 	}
-	`LOG(GetFuncName() @ UnitState.GetFullName() @ "------------------",, 'RPG');
+	//`LOG(GetFuncName() @ UnitState.GetFullName() @ "------------------",, 'RPG');
 }
 
 static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
@@ -745,7 +790,7 @@ static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
 	if (Pawn.Mesh.AnimSets.Find(AnimSetToAdd) == INDEX_NONE)
 	{
 		Pawn.Mesh.AnimSets.AddItem(AnimSetToAdd);
-		`LOG(GetFuncName() @ "adding" @ AnimSetToAdd,, 'RPG');
+		//`LOG(GetFuncName() @ "adding" @ AnimSetToAdd,, 'RPG');
 	}
 }
 

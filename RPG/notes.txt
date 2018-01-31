@@ -1,3 +1,8 @@
-- Fixed Grenade Launcher Radius
-- Fixed Remote Hacking
-- Added class plugin framework
+- raised wound times a bit though not to the vanilla level.
+- fixed mutually excluded melee upgrades
+- fixed a possible cause of the mission loading crash (+TransientTacticalClassNames=XMBGameState_EventProxy)
+- fixed bug that caused only one type of equipped grenades show as launche grenade ability
+- added config options to disable specializations
+
+- Fixed blue move slash
+- added templar gauntlet to melee abilities weapon restrictions

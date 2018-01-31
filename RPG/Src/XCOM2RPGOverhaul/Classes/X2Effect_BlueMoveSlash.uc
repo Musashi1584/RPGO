@@ -13,7 +13,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	if (AbilityContext.InputContext.MovementPaths[0].CostIncreases.Length == 0)
 	{
 		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
-		if (AbilityState != none)
+		if (AbilityState != none && AbilityState.IsMeleeAbility())
 		{
 			SourceUnit.ActionPoints.Length = 0;
 			SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);

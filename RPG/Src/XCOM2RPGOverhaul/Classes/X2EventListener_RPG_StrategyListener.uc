@@ -10,6 +10,11 @@ struct SoldierSpecialization
 {
 	var int Order;
 	var name TemplateName;
+	var bool bEnabled;
+	structdefaultproperties
+	{
+		bEnabled = true
+	}
 };
 
 
@@ -125,11 +130,11 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 	Tuple = XComLWTuple(EventData);
 	UnitState = XComGameState_Unit(EventSource);
 
-	`LOG(GetFuncName() @ XComGameState_Unit(EventSource).GetFullName(),, 'RPG');
+	//`LOG(GetFuncName() @ XComGameState_Unit(EventSource).GetFullName(),, 'RPG');
 
 	if (UnitState.GetSoldierClassTemplate().DataName != 'UniversalSoldier')
 	{
-		`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
+		//`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
 		return ELR_NoInterrupt;
 	}
 
