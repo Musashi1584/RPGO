@@ -143,9 +143,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\DetailedSoldierListWOTC\Classes\UIPersonnel_SoldierListItemDetailed.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\DetailedSoldierListWOTC\Classes\X2DownloadableContentInfo_DetailedSoldierListWOTC.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\ExtendedUpgrades\Classes\TemplateHelper.uc">
       <SubType>Content</SubType>
     </Content>
@@ -213,9 +210,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_TargetAutopsy.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ActivateOverwatch.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_BlueMoveSlash.uc">
@@ -312,9 +306,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\XGLocalizedData_RPG.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBGameState_EventProxy.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBValue_Ammo.uc">

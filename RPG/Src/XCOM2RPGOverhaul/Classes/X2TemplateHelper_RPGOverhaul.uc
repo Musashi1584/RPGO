@@ -668,32 +668,37 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 
 	//If (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	//{
-		WeaponTemplate = X2WeaponTemplate(ItemTemplate);
-		InventoryItems = UnitState.GetAllInventoryItems(CheckGameState, true);
-		LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
+	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 
-		foreach InventoryItems(Item)
+	InventoryItems = UnitState.GetAllInventoryItems(CheckGameState, true);
+	LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
+
+	foreach InventoryItems(Item)
+	{
+		LoadoutWeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
+
+		if (LoadoutWeaponTemplate == none || WeaponTemplate == none)
+			continue;
+
+		foreach default.LoadoutUniqueItemCategories(ItemCategories)
 		{
-			LoadoutWeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
-			foreach default.LoadoutUniqueItemCategories(ItemCategories)
+			Categories = ItemCategories.Categories;
+			Index = Categories.Find(LoadoutWeaponTemplate.WeaponCat);
+			Index2 = Categories.Find(WeaponTemplate.WeaponCat);
+			if (Index != INDEX_NONE && Index2 != INDEX_NONE &&
+				LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot)
 			{
-				Categories = ItemCategories.Categories;
-				Index = Categories.Find(LoadoutWeaponTemplate.WeaponCat);
-				Index2 = Categories.Find(WeaponTemplate.WeaponCat);
-				if (Index != INDEX_NONE && Index2 != INDEX_NONE &&
-					LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot)
-				{
-					bCanAddItem = 0;
-					LocTag.StrValue0 = WeaponTemplate.GetLocalizedCategory();
-					DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
-						`XEXPAND.ExpandString(
-							class'XGLocalizedData_RPG'.default.m_strCategoryRestricted
-						)
-					);
-					bEvaluate = true;
-				}
+				bCanAddItem = 0;
+				LocTag.StrValue0 = WeaponTemplate.GetLocalizedCategory();
+				DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
+					`XEXPAND.ExpandString(
+						class'XGLocalizedData_RPG'.default.m_strCategoryRestricted
+					)
+				);
+				bEvaluate = true;
 			}
 		}
+	}
 	//}
 
 	if (!bEvaluate)
