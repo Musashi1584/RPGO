@@ -38,7 +38,6 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	if (iUsesThisTurn >= default.HNR_USES_PER_TURN)
 		return false;
 
-
 	//  match the weapon associated with Hit and Run to the attacking weapon
 	if (kAbility.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef)
 	{

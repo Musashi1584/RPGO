@@ -8,4 +8,7 @@
 - added templar gauntlet to melee abilities weapon restrictions
 - fixed a possible cause of the mission loading crash (XMBGameState_EventProxy)
 
-- Fexed close encounters
+- Fixed close encounters
+- Fixed Kenjutsu
+- Fixed Hit and Run
+- Added random nicknames

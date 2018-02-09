@@ -97,6 +97,12 @@ After that delete %User\Documents\My Games\XCOM2 War of the Chosen\XComGame\Conf
 [b]Will custom class mods work with this?[/b]
 There are some issues with ability restrictions applying to other classes.
 Classes with only custom abilities should works though.
+If you want to remove the ability restrictions you can delete the lines starting with
++AbilityPrerequisites...
+and
++MutuallyExclusiveAbilities...
+from the XComRPG.ini 
+This is on your own risk, because some restrictions are there to prevent ability incompatibilities or broken ability combinations.
 
 [b]What about Faction Heros, SPARKS, Psi Soldiers?[/b]
 They are not touched by this mod and should work normally
@@ -104,5 +110,9 @@ They are not touched by this mod and should work normally
 [b]Is this mod compatible with Mod XY?[/b]
 Most mods should be compatible. If you have an issue let me know.
 Other Overhaul mods like MINT and A Better Barracks obviously clash in some areas.
+
+Known incompatibilities:
+- "Configure Upgrade Slots" doesnt work cause this mod set all slots to 3
+- "Hack Plus" leads to insane high hacking stats
 
 More to come!

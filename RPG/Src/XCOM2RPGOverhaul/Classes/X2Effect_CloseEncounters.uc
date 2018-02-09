@@ -49,11 +49,11 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		`LOG(self.Class.Name @ GetFuncName() @ "kAbility", bLog, 'RPG');
 		return false;
 	}
-	//if (kAbility.SourceWeapon != EffectState.ApplyEffectParameters.ItemStateObjectRef)
-	//{
-	//	`LOG(self.Class.Name @ GetFuncName() @ "kAbility.SourceWeapon" @ kAbility.SourceWeapon.ObjectID @ EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID,, 'RPG');
-	//	//return false;
-	//}
+	if (kAbility.SourceWeapon != EffectState.ApplyEffectParameters.ItemStateObjectRef)
+	{
+		`LOG(self.Class.Name @ GetFuncName() @ "kAbility.SourceWeapon" @ kAbility.SourceWeapon.ObjectID @ EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID,, 'RPG');
+		//return false;
+	}
 
 	SourceUnit.GetUnitValue ('CloseEncountersUses', CEUsesThisTurn);
 	iUsesThisTurn = int(CEUsesThisTurn.fValue);
