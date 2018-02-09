@@ -68,7 +68,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(SurgicalPrecision());
 	Templates.AddItem(PurePassive('Gunner', "img:///UILibrary_RPG.UIPerk_Gunner"));
 	Templates.AddItem(ReadyForAnything());
-	Templates.AddItem(ReadyForAnythingOverwatch());
+	Templates.AddItem(ReadyForAnythingFlyover());
 	Templates.AddItem(DeadeyeAbility());
 	Templates.AddItem(KillEmAll());
 	Templates.AddItem(SniperElite());
@@ -731,40 +731,90 @@ static function X2AbilityTemplate SurgicalPrecision()
 	return Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
 }
 
-
-static function X2AbilityTemplate ReadyForAnything()
+static function X2DataTemplate ReadyForAnything()
 {
-	local X2AbilityTemplate Template;
+	local X2AbilityTemplate							Template;
+	local X2Effect_ReadyForAnything					ActionPointEffect;
 
-	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('ReadyForAnything');
+	`CREATE_X2ABILITY_TEMPLATE (Template, 'ReadyForAnything');
+
 	Template.IconImage = "img:///UILibrary_RPG.UIPerk_ReadyForAnything";
-	Template.OverrideAbilities.AddItem('StandardShot');
-	Template.bDontDisplayInAbilitySummary = false;
 
-	Template.AdditionalAbilities.AddItem('ReadyForAnythingOverwatch');
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.Hostility = eHostility_Neutral;
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.AbilityToHitCalc = default.DeadEye;
+    Template.AbilityTargetStyle = default.SelfTarget;
+	Template.bShowActivation = false;
+	Template.bIsPassive = true;
+	Template.bDisplayInUITooltip = true;
+	Template.bDisplayInUITacticalText = true;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+
+	ActionPointEffect = new class'X2Effect_ReadyForAnything';
+	ActionPointEffect.BuildPersistentEffect (1, true, false);
+	ActionPointEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyHelpText(), Template.IconImage,,, Template.AbilitySourceName);
+	Template.AddTargetEffect(ActionPointEffect);
+
+	Template.AdditionalAbilities.AddItem('ReadyForAnythingFlyover');
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
 	return Template;
 }
 
-static function X2AbilityTemplate ReadyForAnythingOverwatch()
+
+static function X2DataTemplate ReadyForAnythingFlyover()
 {
 	local X2AbilityTemplate					Template;
-	local X2Condition_UnitActionPoints		ActionPointCondition;
-	local X2Effect_ActivateOverwatch		OverwatchEffect;
+	local X2AbilityTrigger_EventListener	EventListener;
 
-	OverwatchEffect = new class'X2Effect_ActivateOverwatch';
-	Template = SelfTargetTrigger('ReadyForAnythingOverwatch', "img:///UILibrary_RPG.UIPerk_ReadyForAnything",, OverwatchEffect, 'StandardShotActivated');
+	`CREATE_X2ABILITY_TEMPLATE (Template, 'ReadyForAnythingFlyover');
 
-	// Require that the unit have no standard action points available
-	// This handles the case where the unit's action was refunded by a hair trigger
-	ActionPointCondition = new class'X2Condition_UnitActionPoints';
-	ActionPointCondition.AddActionPointCheck(0);
-	Template.AbilityShooterConditions.AddItem(ActionPointCondition);
-
-	// Don't display in HUD
+	Template.Hostility = eHostility_Neutral;
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.bShowActivation = true;
+	Template.bSkipFireAction = true;
+	Template.bDontDisplayInAbilitySummary = true;
+
+	EventListener = new class'X2AbilityTrigger_EventListener';
+	EventListener.ListenerData.EventID = 'ReadyForAnythingTriggered';
+	EventListener.ListenerData.Deferral = ELD_OnStateSubmitted;
+	EventListener.ListenerData.Filter = eFilter_Unit;
+	EventListener.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
+	Template.AbilityTriggers.AddItem(EventListener);
+
+	Template.CinescriptCameraType = "Overwatch";
+
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	Template.BuildVisualizationFn = ReadyforAnything_BuildVisualization;
 
 	return Template;
+}
+
+simulated function ReadyForAnything_BuildVisualization(XComGameState VisualizeGameState)
+{
+	local XComGameStateHistory History;
+	local XComGameStateContext_Ability  Context;
+	local VisualizationActionMetadata        EmptyActionMetadata;
+	local VisualizationActionMetadata        ActionMetadata;
+	local X2Action_PlaySoundAndFlyOver SoundAndFlyOver;
+	local StateObjectReference          InteractingUnitRef;
+	local XComGameState_Ability Ability;
+
+	History = `XCOMHISTORY;
+	Context = XComGameStateContext_Ability(VisualizeGameState.GetContext());
+	InteractingUnitRef = Context.InputContext.SourceObject;
+	Ability = XComGameState_Ability(History.GetGameStateForObjectID(context.InputContext.AbilityRef.ObjectID, 1, VisualizeGameState.HistoryIndex - 1));
+	ActionMetadata = EmptyActionMetadata;
+	ActionMetadata.StateObject_OldState = History.GetGameStateForObjectID(InteractingUnitRef.ObjectID, eReturnType_Reference, VisualizeGameState.HistoryIndex - 1);
+	ActionMetadata.StateObject_NewState = VisualizeGameState.GetGameStateForObjectID(InteractingUnitRef.ObjectID);
+	ActionMetadata.VisualizeActor = History.GetVisualizer(InteractingUnitRef.ObjectID);
+
+	SoundAndFlyOver = X2Action_PlaySoundAndFlyOver(class'X2Action_PlaySoundAndFlyOver'.static.AddToVisualizationTree(ActionMetadata, Context));
+	SoundAndFlyOver.SetSoundAndFlyOverParameters(SoundCue'SoundUI.OverWatchCue', Ability.GetMyTemplate().LocFlyOverText, '', eColor_Good, "img:///UILibrary_PerkIcons.UIPerk_overwatch");
 }
 
 static function X2AbilityTemplate DeadeyeAbility()

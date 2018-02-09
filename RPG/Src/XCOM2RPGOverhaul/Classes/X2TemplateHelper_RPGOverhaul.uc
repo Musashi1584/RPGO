@@ -669,12 +669,20 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	//If (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	//{
 		WeaponTemplate = X2WeaponTemplate(ItemTemplate);
+
+		if (WeaponTemplate == none)
+			return true;
+
 		InventoryItems = UnitState.GetAllInventoryItems(CheckGameState, true);
 		LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
 
 		foreach InventoryItems(Item)
 		{
 			LoadoutWeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
+
+			if (LoadoutWeaponTemplate == none)
+				continue;
+
 			foreach default.LoadoutUniqueItemCategories(ItemCategories)
 			{
 				Categories = ItemCategories.Categories;

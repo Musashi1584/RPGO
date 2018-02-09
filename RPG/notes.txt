@@ -6,3 +6,7 @@
 
 - Fixed blue move slash
 - added templar gauntlet to melee abilities weapon restrictions
+- fixed a possible cause of the mission loading crash (XMBGameState_EventProxy)
+
+- Fixed close encounters
+- Fixed Kenjutsu

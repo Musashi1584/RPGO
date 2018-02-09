@@ -12,7 +12,9 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	if (AbilityContext.InputContext.MovementPaths[0].CostIncreases.Length == 0)
 	{
-		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
+		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
+		//`LOG(self.Class.Name @ GetFuncName() @ AbilityState.GetMyTemplateName() @ AbilityState.IsMeleeAbility(),, 'RPG');
+		
 		if (AbilityState != none && AbilityState.IsMeleeAbility())
 		{
 			SourceUnit.ActionPoints.Length = 0;
