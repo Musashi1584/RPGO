@@ -1,11 +1,13 @@
 class X2Ability_Patches extends XMBAbility config (RPG);
 
 var config float HEAVY_WEAPON_MOBILITY_SCALAR;
+var config float HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 	
+	Templates.AddItem(PurePassive('QuickDrawNew', "img:///UILibrary_PerkIcons.UIPerk_quickdraw"));
 	Templates.AddItem(RpgDeathFromAbove());
 	Templates.AddItem(BlueMoveSlash());
 	Templates.AddItem(HeavyWeaponMobilityPenalty());
@@ -70,12 +72,26 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 {
 	local X2AbilityTemplate Template;
 	local XMBEffect_ConditionalStatChange Effect;
+	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+
+	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR, MODOP_PostMultiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+
+	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
+
+	Effect = new class'XMBEffect_ConditionalStatChange';
+	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED, MODOP_PostMultiplication);
+	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+
 
 	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
 	Template.AddTargetEffect(Effect);

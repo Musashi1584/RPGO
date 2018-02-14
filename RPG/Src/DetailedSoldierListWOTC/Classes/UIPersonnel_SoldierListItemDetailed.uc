@@ -24,6 +24,11 @@ var array<UIIcon> BadTraitIcon;
 
 var string strUnitName, strClassName;
 
+var localized string m_strServeredHead;
+var localized string m_strServeredTorso;
+var localized string m_strServeredArms;
+var localized string m_strServeredLegs;
+
 simulated function UIButton SetDisabled(bool disabled, optional string TooltipText)
 {
 	super.SetDisabled(disabled, TooltipText);
@@ -65,30 +70,25 @@ static function GetStatusStringsSeparate(XComGameState_Unit Unit, out string Sta
 		if (Status != "")
 			bProjectExists = true;
 
-		//`LOG(GetFuncName() @ Unit.GetFullName() @ Unit.IsGravelyInjured(),,'Augmentations');
-		//if (Unit.IsGravelyInjured())
-		//{
-		//	bProjectExists = false;
-		//	if (Unit.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
-		//	{
-		//		`LOG(GetFuncName() @ "SeveredBodyPart" @ GetEnum(Enum'ESeveredBodyPart', int(SeveredBodyPart.fValue)),,'Augmentations');
-		//		switch (int(SeveredBodyPart.fValue))
-		//		{
-		//			case eHead:
-		//				Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredHead $ ")";
-		//				break;
-		//			case eTorso:
-		//				Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredTorso $ ")";
-		//				break;
-		//			case eArms:
-		//				Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredArms $ ")";
-		//				break;
-		//			case eLegs:
-		//				Status $= " (" $ class'X2AugmentationsGameRulesetDataStructures'.default.m_strServeredLegs $ ")";
-		//				break;
-		//		}
-		//	}
-		//}
+		if (Unit.GetUnitValue('SeveredBodyPart', SeveredBodyPart))
+		{
+			bProjectExists = false;
+			switch (int(SeveredBodyPart.fValue))
+			{
+				case 0: // eHead
+					Status $= " (" $ default.m_strServeredHead $ ")";
+					break;
+				case 1: // eTorso
+					Status $= " (" $ default.m_strServeredTorso $ ")";
+					break;
+				case 2: // eArms
+					Status $= " (" $ default.m_strServeredArms $ ")";
+					break;
+				case 3: // eLegs
+					Status $= " (" $ default.m_strServeredLegs $ ")";
+					break;
+			}
+		}
 	}
 	else if (Unit.IsOnCovertAction())
 	{

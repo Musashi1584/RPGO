@@ -1,0 +1,5 @@
+[UIPersonnel_SoldierListItemDetailed]
+m_strServeredHead="<font color='#bf1e2e'><b>Needs Head Augmentation</b></font>"
+m_strServeredTorso="<font color='#bf1e2e'><b>Needs Torso Augmentation</b></font>"
+m_strServeredArms="<font color='#bf1e2e'><b>Needs Arm Augmention</b></font>"
+m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"

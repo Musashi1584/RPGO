@@ -110,6 +110,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Features.txt">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\DetailedSoldierListWOTC.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
       <SubType>Content</SubType>
     </Content>

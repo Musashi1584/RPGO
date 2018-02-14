@@ -416,6 +416,34 @@ static function PatchAbilityPrerequisites()
 	}
 }
 
+static function PatchPistolStandardShot()
+{
+	local X2AbilityTemplateManager						TemplateManager;
+	local X2AbilityTemplate								Template;
+	local array<name>									TemplateNames;
+	local name											TemplateName;
+	local X2AbilityCost_ActionPoints					ActionPointCost;
+	
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	TemplateNames.AddItem('PistolStandardShot');
+	
+	foreach TemplateNames(TemplateName)
+	{
+		Template = TemplateManager.FindAbilityTemplate(TemplateName);
+		if (Template != none)
+		{
+			ActionPointCost = X2AbilityCost_ActionPoints(Template.AbilityCosts[0]);
+			if (ActionPointCost != none && ActionPointCost.DoNotConsumeAllSoldierAbilities.Find('QuickdrawNew') == INDEX_NONE)
+			{
+				ActionPointCost.DoNotConsumeAllSoldierAbilities.AddItem('QuickDrawPrimary');
+				ActionPointCost.DoNotConsumeAllSoldierAbilities.AddItem('Quickdraw');
+				ActionPointCost.DoNotConsumeAllSoldierAbilities.AddItem('QuickdrawNew');
+			}
+		}
+	}
+}
+
 static function PatchTraceRounds()
 {
 	local X2ItemTemplateManager					TemplateManager;
@@ -740,7 +768,7 @@ private static function bool MissesWeaponProficiency(XComGameState_Unit UnitStat
 
 static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameState_Unit UnitState, XComUnitPawn Pawn)
 {
-	local X2WeaponTemplate PrimaryWeaponTemplate, SecondaryWeaponTemplate;
+	local X2WeaponTemplate PrimaryWeaponTemplate; //, SecondaryWeaponTemplate;
 	local AnimSet AnimSetIter;
 	local int i;
 
@@ -749,7 +777,7 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 		return;
 	}
 
-	SecondaryWeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
+	//SecondaryWeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
 	PrimaryWeaponTemplate = X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate());
 
 	//`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');

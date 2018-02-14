@@ -10,5 +10,12 @@
 
 - Fixed close encounters
 - Fixed Kenjutsu
+
 - Fixed Hit and Run
 - Added random nicknames
+
+- Fixed Sniper Specialization Icon
+- alien ruler VO bug
+- Added augmentation need hint in soldier list
+
+- added support for cybernetic muscles (reduces the heavy weapon mobility penalty to 10%)
