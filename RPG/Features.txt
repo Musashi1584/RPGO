@@ -11,12 +11,12 @@ Savant = 15
 The ability cost for buying abilities is raised too however:
 
 0 for Squaddie abilities
-10 for Corporal abilities
-15 for Sergeant abilities
-15 for Lieutenant abilities
-20 for Captain abilities
-20 for Major abilities
-25 for Colonel abilities
+30 for Corporal abilities
+30 for Sergeant abilities
+30 for Lieutenant abilities
+30 for Captain abilities
+30 for Major abilities
+30 for Colonel abilities
 50 for Brigadier abilities
 
 The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
@@ -44,7 +44,7 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 [list]
 [*] Scope	(Aim penalty for close range, aim bonus mid to long range.)
 [*] Laser Sight (Crit Bonus (5/10/15) but aim penalties for mid to long range.)
-[*] Hair Trigger (30/50/70)% chance to trigger a second shot if the first one misses
+[*] Hair Trigger (15/30/45)% chance to trigger a second shot if the first one misses
 [*] Repeater (get replaced by Tactical Suppressors (Uses WotC Tactical Suppressors))
 [*] Stock	(Reaction Fire Bonus (5/10/15))
 [*] Autoloader (Auto reload 1 ammo per turn (max 4/6/8))

@@ -125,8 +125,8 @@ function InitStatLines()
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Will, int(UnitState.GetMaxStat(eStat_Will)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 	
-	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_ArmorMitigation, int(UnitState.GetMaxStat(eStat_ArmorMitigation)), OnClickedIncrease, OnClickedDecrease);
-	StatLines.AddItem(StatLine);
+	//StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_ArmorMitigation, int(UnitState.GetMaxStat(eStat_ArmorMitigation)), OnClickedIncrease, OnClickedDecrease);
+	//StatLines.AddItem(StatLine);
 	
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Dodge, int(UnitState.GetMaxStat(eStat_Dodge)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);

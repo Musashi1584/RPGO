@@ -175,10 +175,14 @@ static function string GetClassIcon(XComGameState_Unit UnitState)
 
 static function string GetClassDisplayName(XComGameState_Unit UnitState)
 {
-	local int RowIndex;
+	local name Spec;
+	local X2UniversalSoldierClassInfo Template;
 
-	RowIndex = GetSoldierSpecialization(UnitState);
-	return RowIndex != INDEX_NONE ? UnitState.GetSoldierClassTemplate().AbilityTreeTitles[RowIndex] : UnitState.GetSoldierClassTemplate().DisplayName;
+	Spec = GetSpecializationName(UnitState);
+
+	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+
+	return Template.ClassSpecializationTitle != "" ? Template.ClassSpecializationTitle : UnitState.GetSoldierClassTemplate().DisplayName;
 }
 
 static function name GetSpecializationName(XComGameState_Unit UnitState)

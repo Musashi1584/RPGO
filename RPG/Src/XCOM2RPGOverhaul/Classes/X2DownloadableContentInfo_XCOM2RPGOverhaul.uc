@@ -24,6 +24,7 @@ static event OnPostTemplatesCreated()
 {
 	`LOG(GetFuncName(),, 'RPG');
 	class'X2TemplateHelper_RPGOverhaul'.static.SetupSpecialization('UniversalSoldier');
+	class'X2TemplateHelper_RPGOverhaul'.static.SetUpSpecializationPlugins();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
@@ -42,6 +43,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchCombatProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
 }
 
 // <summary>

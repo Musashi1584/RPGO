@@ -72,6 +72,56 @@ function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization 
 	return A.Order > B.Order ? -1 : 0;
 }
 
+static function SetUpSpecializationPlugins()
+{
+	local array<SoldierSpecialization> Specs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo Template;
+
+	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
+	Specs.Sort(SortSpecializations);
+
+	foreach Specs(Spec)
+	{
+		if (Spec.bEnabled)
+		{
+			Template = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+			if (Template.AbilitySlots.Length > 0)
+				AddAbilityRanks(Template.ClassSpecializationTitle, Template.AbilitySlots);
+		}
+	}
+
+}
+
+static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAbilitySlot> AbilitySlots)
+{
+	local X2SoldierClassTemplateManager Manager;
+	local X2SoldierClassTemplate Template;
+	local SoldierClassAbilitySlot Slot;
+	local int RankIndex;
+
+	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
+
+	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');
+
+	for (RankIndex = 1; RankIndex < Template.SoldierRanks.Length; RankIndex++)
+	{
+		Slot = AbilitySlots[RankIndex - 1];
+		class'X2SoldierClassTemplatePlugin'.static.AddSlot(Template, Slot, RankIndex);
+	}
+
+	Template.AbilityTreeTitles.AddItem(SpecializationTitle);
+
+	for (RankIndex = 1; RankIndex < Template.SoldierRanks.Length; RankIndex++)
+	{
+		`LOG("Rank" @ RankIndex,, 'RPG');
+		foreach Template.SoldierRanks[RankIndex].AbilitySlots(Slot)
+		{
+			`LOG("Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
+		}
+	}
+}
+
 static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)
 {
 	local XComGameState_HeadquartersXCom NewXComHQ;
@@ -461,6 +511,24 @@ static function PatchTraceRounds()
 	Template.bInfiniteItem = true;
 	Template.StartingItem = true;
 	Template.CanBeBuilt = false;
+}
+
+
+static function PatchSteadyHands()
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+	local X2Condition_UnitValue			ValueCondition;
+	
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('SteadyHands');
+
+	ValueCondition = new class'X2Condition_UnitValue';
+	ValueCondition.AddCheckValue('MovesThisTurn', 0, eCheck_Exact);
+
+	X2Effect_PersistentStatChange(X2Effect_Persistent(Template.AbilityShooterEffects[0]).ApplyOnTick[0]).TargetConditions.AddItem(ValueCondition);
+	`LOG("PatchSteadyHands" @ X2Effect_PersistentStatChange(X2Effect_Persistent(Template.AbilityShooterEffects[0]).ApplyOnTick[0]).TargetConditions.Length,, 'RPG');
 }
 
 

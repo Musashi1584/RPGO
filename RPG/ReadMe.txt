@@ -7,6 +7,7 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 [list]
 [*] [WOTC] Detailed Soldier Lists
 [*] [WOTC] New Promotion Screen by Default
+[*] View Locked Skills - Wotc
 [/list]
 
 [h1]Features[/h1]
@@ -90,6 +91,7 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 [list]
 [*] [WOTC] Detailed Soldier Lists
 [*] [WOTC] New Promotion Screen by Default
+[*] View Locked Skills - Wotc
 [/list]
 
 After that delete %User\Documents\My Games\XCOM2 War of the Chosen\XComGame\Config

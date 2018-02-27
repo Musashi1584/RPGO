@@ -19,6 +19,7 @@ var localized string m_strMutuallyExclusive;
 
 var config bool APRequiresTrainingCenter;
 var config bool RevealAllAbilities;
+var config array<name> NoFreeAbilityOnRankUpClasses;
 
 var config array<CustomClassAbilitiesPerRank> ClassAbilitiesPerRank;
 var config array<CustomClassAbilityCost> ClassCustomAbilityCost;
@@ -586,7 +587,7 @@ function int GetAbilityPointCost(int Rank, int Branch)
 
 	if (!UnitState.IsResistanceHero() && AbilityRanks != 0)
 	{
-		if (!UnitState.HasPurchasedPerkAtRank(Rank) && Branch < AbilityRanks)
+		if (!UnitState.HasPurchasedPerkAtRank(Rank) && Branch < AbilityRanks && default.NoFreeAbilityOnRankUpClasses.Find(ClassName) == INDEX_NONE)
 		{
 			// If this is a base game soldier with a promotion available, ability costs nothing since it would be their
 			// free promotion ability if they "bought" it through the Armory
