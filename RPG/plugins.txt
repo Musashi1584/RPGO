@@ -1,0 +1,55 @@
+[h1]How to make a plugin mod that converts any class mod to a rpgo specialization[/h1]
+Basically all you need a mod with two ini files and one localization file. 
+- XComClassData.ini
+- XComRPG.ini
+- XCOM2RPGOverhaul.int
+
+the files and their contents in detail
+
+[h1]Disable the original class[/h1]
+
+Add a XComClassData.ini and disable the original class like
+
+(replace <CustomClassName> with whatever class name you are working with)
+
+[code]
+[<CustomClassName> X2SoldierClassTemplate]
+NumInForcedDeck=0
+NumInDeck=0
+[/code]
+
+[h1]Add the RPGO specialization config[/h1]
+
+Add a XComRPG.ini and add the following entries
+
+[code]
+[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
++Specializations=(Order=1000*, TemplateName=<CustomClassName>)
+
+[<CustomClassName> X2UniversalSoldierClassInfo]
+ClassSpecializationIcon = "img:///<path_to_the_class_icon>**"
+
++AbilitySlots=(AbilityType=(AbilityName="<CorporalAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="<SergeantAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="<LieutenantAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="<CaptainAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="<MajorAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="<ColonelAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility>***"))
+[/code]
+
+* choose an order above 1000
+** can be found in the XComClassData.ini of the original class mod
+*** placeholder for whatever abilities you want to give the specialization from the original class. Note also add ApplyToWeaponSlot=... entries here if the original ability has them.
+
+You can also make additional configs for mutuallly exclusive abilities, prerequesite abilities or ability-weaponcategory restrictions here. See rpgo or the specops/samurai plugin mods for examples.
+
+[h1]Add the RPGO specialization localization[/h1]
+
+Add a XCOM2RPGOverhaul.int file with the following entries
+
+[code]
+[<CustomClassName> X2UniversalSoldierClassInfo]
+ClassSpecializationTitle="<MyCustomSpecializationTitle>"
+ClassSpecializationSummary="<MyCustomSpecializationDescription>"
+[/code]

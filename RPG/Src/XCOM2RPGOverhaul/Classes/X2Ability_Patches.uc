@@ -77,12 +77,14 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
 	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
+	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR, MODOP_PostMultiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
 	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+
+	Template.AddTargetEffect(Effect);
 
 	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
 	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');

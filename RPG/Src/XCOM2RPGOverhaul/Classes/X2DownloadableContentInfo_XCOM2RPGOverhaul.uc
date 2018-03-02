@@ -24,7 +24,6 @@ static event OnPostTemplatesCreated()
 {
 	`LOG(GetFuncName(),, 'RPG');
 	class'X2TemplateHelper_RPGOverhaul'.static.SetupSpecialization('UniversalSoldier');
-	class'X2TemplateHelper_RPGOverhaul'.static.SetUpSpecializationPlugins();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();

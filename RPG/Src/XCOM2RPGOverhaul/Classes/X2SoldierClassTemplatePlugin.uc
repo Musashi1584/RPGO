@@ -5,6 +5,16 @@ static function AddSlot(X2SoldierClassTemplate Template, SoldierClassAbilitySlot
 	Template.SoldierRanks[RankIndex].AbilitySlots.AddItem(Slot);
 }
 
+static function ResetDummySlot(X2SoldierClassTemplate Template)
+{
+	local int Index;
+
+	for(Index = 1; Index < Template.SoldierRanks.Length; Index++)
+	{
+		Template.SoldierRanks[Index].AbilitySlots.Remove(0, 1);
+	}
+}
+
 static function DeleteSpecialization(X2SoldierClassTemplate Template, name SpecializationName, int SpecializationIndex)
 {
 	local int Index;

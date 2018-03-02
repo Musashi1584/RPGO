@@ -46,11 +46,15 @@ static function SetupSpecialization(name SoldierClassTemplate)
 {
 	local X2SoldierClassTemplateManager Manager;
 	local X2SoldierClassTemplate Template;
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
 	local int Index;
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
 
 	Template = Manager.FindSoldierClassTemplate(SoldierClassTemplate);
+
+	Template.AbilityTreeTitles.Length = 0;
+	class'X2SoldierClassTemplatePlugin'.static.ResetDummySlot(Template);
 
 	// Sort here cause plugin mods which loaded first could added to the array already
 	default.Specializations.Sort(SortSpecializations);
@@ -58,7 +62,13 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	for (Index = 0; Index < default.Specializations.Length; Index++)
 	{
 		`LOG("Specialization" @ Index @ default.Specializations[Index].TemplateName @ default.Specializations[Index].bEnabled,, 'RPG');
-		if (!default.Specializations[Index].bEnabled)
+		if (default.Specializations[Index].bEnabled)
+		{
+			UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
+			if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0)
+				AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
+		}
+		else
 		{
 			`LOG("Removing Specialization" @ Index @ default.Specializations[Index].TemplateName,, 'RPG');
 			class'X2SoldierClassTemplatePlugin'.static.DeleteSpecialization(Template, default.Specializations[Index].TemplateName, Index);
@@ -72,27 +82,6 @@ function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization 
 	return A.Order > B.Order ? -1 : 0;
 }
 
-static function SetUpSpecializationPlugins()
-{
-	local array<SoldierSpecialization> Specs;
-	local SoldierSpecialization Spec;
-	local X2UniversalSoldierClassInfo Template;
-
-	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
-	Specs.Sort(SortSpecializations);
-
-	foreach Specs(Spec)
-	{
-		if (Spec.bEnabled)
-		{
-			Template = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
-			if (Template.AbilitySlots.Length > 0)
-				AddAbilityRanks(Template.ClassSpecializationTitle, Template.AbilitySlots);
-		}
-	}
-
-}
-
 static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAbilitySlot> AbilitySlots)
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -104,22 +93,23 @@ static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAb
 
 	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');
 
-	for (RankIndex = 1; RankIndex < Template.SoldierRanks.Length; RankIndex++)
+	for (RankIndex = 1; RankIndex < Template.GetMaxConfiguredRank(); RankIndex++)
 	{
 		Slot = AbilitySlots[RankIndex - 1];
+		`LOG("Adding Spec" @ SpecializationTitle @ "Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
 		class'X2SoldierClassTemplatePlugin'.static.AddSlot(Template, Slot, RankIndex);
 	}
 
 	Template.AbilityTreeTitles.AddItem(SpecializationTitle);
 
-	for (RankIndex = 1; RankIndex < Template.SoldierRanks.Length; RankIndex++)
-	{
-		`LOG("Rank" @ RankIndex,, 'RPG');
-		foreach Template.SoldierRanks[RankIndex].AbilitySlots(Slot)
-		{
-			`LOG("Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
-		}
-	}
+	//for (RankIndex = 1; RankIndex < class'X2ExperienceConfig'.static.GetMaxRank(); RankIndex++)
+	//{
+	//	`LOG("Rank" @ RankIndex,, 'RPG');
+	//	foreach Template.SoldierRanks[RankIndex].AbilitySlots(Slot)
+	//	{
+	//		`LOG("Adding Spec" @ SpecializationTitle @ "Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
+	//	}
+	//}
 }
 
 static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)

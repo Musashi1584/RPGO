@@ -51,10 +51,10 @@ static function CHEventListenerTemplate CreateListenerTemplateGetItemRange()
 	Template.RegisterInTactical = true;
 	Template.RegisterInStrategy = false;
 
-	Template.AddCHEvent('GetItemRange', OnGetItemRangeBombard, ELD_OnStateSubmitted);
+	Template.AddCHEvent('OnGetItemRange', OnGetItemRangeBombard, ELD_OnStateSubmitted);
 	`LOG("Register Event OnGetItemRangeBombard",, 'RPG');
 
-	Template.AddCHEvent('GetItemRange', OnGetItemRangeScout, ELD_OnStateSubmitted);
+	Template.AddCHEvent('OnGetItemRange', OnGetItemRangeScout, ELD_OnStateSubmitted);
 	`LOG("Register Event OnGetItemRangeScout",, 'RPG');
 
 	return Template;
