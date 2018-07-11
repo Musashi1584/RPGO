@@ -132,7 +132,7 @@ static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState N
 
 static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
 {
-	local X2Condition_WeaponCategory WeaponCondition;
+	local X2ConditionDisabled DisabledCondition;
 	local int Index, CategoryIndex;
 	local name WeaponCategory;
 	local EInventorySlot InvSlot;
@@ -148,12 +148,13 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 
 	for(Index = SetupData.Length; Index >= 0; Index--)
 	{
-		// Deactivate all ranged abilities
-		if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) && SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon)
+		// Deactivate all ranged abilities that are associated with the primary weapon slot
+		if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) &&
+			SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon &&
+			SetupData[Index].Template.TargetingMethod == class'X2TargetingMethod_OverTheShoulder')
 		{
-			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.ExcludeWeaponCategories.AddItem('sword');
-			SetupData[Index].Template.AbilityTargetConditions.AddItem(WeaponCondition);
+			DisabledCondition = new class'X2ConditionDisabled';
+			SetupData[Index].Template.AbilityTargetConditions.AddItem(DisabledCondition);
 		}
 
 		`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
