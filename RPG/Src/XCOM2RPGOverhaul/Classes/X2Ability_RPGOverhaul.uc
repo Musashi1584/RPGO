@@ -592,7 +592,6 @@ static function X2AbilityTemplate Overkill()
 	Effect.ApplyToSlots.AddItem(eInvSlot_Utility);
 	Effect.ApplyToSlots.AddItem(eInvSlot_SecondaryWeapon);
 	Effect.ApplyToNames.AddItem('ProximityMine');
-	Effect.ApplyToNames.AddItem('Reaper_Claymore');
 	Effect.ApplyToNames.AddItem('TacticalC4');
 	Effect.ApplyToNames.AddItem('TacticalX4');
 	Effect.ApplyToNames.AddItem('TacticalE4');

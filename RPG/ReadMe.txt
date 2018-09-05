@@ -28,8 +28,14 @@ I recommend to play this mod with the following mods:
 [list]
 [*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1135248412]WotC SpecOps Combat Knives[/url]
 [*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1123865738]WotC Katana Mod Reloaded[/url]
-[*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1142234205]Wotc Primary Secondaries[/url]
 [*] [url=http://steamcommunity.com/sharedfiles/filedetails/?id=1144463583][WOTC] Point-Based Not Created Equal[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1135111760] Stealth Overhaul[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1135274274] WotC Tactical Suppressors[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1494099360] WOTC Dual Wielded Pistols[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1439279281] Dual Wield Melee[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1499767042] [WOTC] Mechatronic Warfare[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1313834895] [WoTC] XCOM Psi Overhaul[/url]
+
 [/list]
 
 [h1]About this overhaul[/h1]
@@ -118,3 +124,9 @@ Known incompatibilities:
 - "Hack Plus" leads to insane high hacking stats
 
 More to come!
+
+[h1]Patreon[/h1]
+Have look at my work in progress and infos on my mods at my patreon page.
+Your really like my mods and would like to help me have more time for modding? Consider become a patreon :)
+
+https://www.patreon.com/musashi1584

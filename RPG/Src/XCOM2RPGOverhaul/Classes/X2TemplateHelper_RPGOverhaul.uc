@@ -41,6 +41,7 @@ var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
+var config int DefaultWeaponUpgradeSlots;
 
 static function SetupSpecialization(name SoldierClassTemplate)
 {
@@ -149,13 +150,13 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 	for(Index = SetupData.Length; Index >= 0; Index--)
 	{
 		// Deactivate all ranged abilities that are associated with the primary weapon slot
-		if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) &&
-			SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon &&
-			SetupData[Index].Template.TargetingMethod == class'X2TargetingMethod_OverTheShoulder')
-		{
-			DisabledCondition = new class'X2ConditionDisabled';
-			SetupData[Index].Template.AbilityTargetConditions.AddItem(DisabledCondition);
-		}
+		//if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) &&
+		//	SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon &&
+		//	SetupData[Index].Template.TargetingMethod == class'X2TargetingMethod_OverTheShoulder')
+		//{
+		//	DisabledCondition = new class'X2ConditionDisabled';
+		//	SetupData[Index].Template.AbilityTargetConditions.AddItem(DisabledCondition);
+		//}
 
 		`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
 
@@ -229,6 +230,50 @@ static function PatchAbilitiesWeaponCondition()
 	}
 }
 
+static function PatchAcademyUnlocks(name SoldierClassName)
+{
+	local X2StrategyElementTemplateManager TemplateManager;
+	local array<X2StrategyElementTemplate> Templates;
+	local X2StrategyElementTemplate Template;
+	local array<name> HeroClasses;
+	local array<name> HideUnlocks;
+
+	TemplateManager = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
+
+	Templates = TemplateManager.GetAllTemplatesOfClass(class'X2SoldierAbilityUnlockTemplate');
+
+	HeroClasses.AddItem('Templar');
+	HeroClasses.AddItem('Skirmisher');
+	HeroClasses.AddItem('Reaper');
+
+	HideUnlocks.AddItem('HitWhereItHurtsUnlock');
+	HideUnlocks.AddItem('CoolUnderPressureUnlock');
+	HideUnlocks.AddItem('BiggestBoomsUnlock');
+	HideUnlocks.AddItem('HuntersInstinctUnlock');
+
+	foreach Templates(Template)
+	{
+		
+		if (HideUnlocks.Find(Template.DataName) != INDEX_NONE)
+		{
+			Template = none;
+		}
+
+		if (Template != none &&
+			!X2SoldierAbilityUnlockTemplate(Template).bAllClasses &&
+			X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass != '' &&
+			HeroClasses.Find(X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass) == INDEX_NONE
+		)
+		{
+			X2SoldierAbilityUnlockTemplate(Template).AllowedClasses.AddItem(SoldierClassName);
+			X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass = SoldierClassName;
+			X2SoldierAbilityUnlockTemplate(Template).Cost.ResourceCosts[0].Quantity = 300;
+			`LOG(GetFuncName() @ "patching template" @ Template.DataName,, 'RPG');
+		}
+
+	}
+}
+
 static function PatchWeapons()
 {
 	local X2ItemTemplateManager ItemTemplateManager;
@@ -277,15 +322,17 @@ static function PatchWeapons()
 						break;
 					case 'rifle':
 					case 'sparkrifle':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
-							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
-						if (InStr(string(WeaponTemplate.DataName), "MG") != INDEX_NONE)
-							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
-						if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
-							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
-
-						WeaponTemplate.NumUpgradeSlots = 3;
+						if (InStr(WeaponTemplate.DataName, "SMG") == INDEX_NONE)
+						{
+							AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
+							if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
+								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
+							if (InStr(string(WeaponTemplate.DataName), "MG") != INDEX_NONE)
+								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
+							if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
+								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+						}
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'bullpup':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
@@ -298,17 +345,17 @@ static function PatchWeapons()
 						if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
 
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'sniper_rifle':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
 
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'vektor_rifle':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
 
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'shotgun':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
@@ -316,7 +363,7 @@ static function PatchWeapons()
 						
 						WeaponTemplate.CritChance += default.ShotgunCritBonus;
 						WeaponTemplate.Aim += default.ShotgunAimBonus;
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'cannon':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
@@ -327,20 +374,20 @@ static function PatchWeapons()
 						
 						WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
 						WeaponTemplate.iClipSize += 2;
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'pistol':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'sidearm':
 						WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
-						WeaponTemplate.NumUpgradeSlots = 3;
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'grenade_launcher':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
@@ -541,6 +588,19 @@ static function PatchMedicalProtocol()
 	Template = TemplateManager.FindAbilityTemplate('GremlinStabilize');
 	Template.AbilityCosts[0] = ActionPointCost;
 }
+
+static function PatchHomingMine()
+{
+	local X2AbilityTemplateManager				TemplateManager;
+	local X2AbilityTemplate						Template;
+	local X2AbilityCost_ActionPointsExtended	ActionPointCost;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('HomingMine');
+	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
+}
+
 
 
 static function PatchHolotargeting()
@@ -797,7 +857,6 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 				TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 				Template = TemplateManager.FindAbilityTemplate(Proficiency.AbilityName);
 				bCanAddItem = 0;
-				// @TODO get localization from ability
 				LocTag.StrValue0 = Template.LocFriendlyName;
 				DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
 					`XEXPAND.ExpandString(

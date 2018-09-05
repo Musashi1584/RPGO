@@ -11,13 +11,13 @@ Savant = 15
 The ability cost for buying abilities is raised too however:
 
 0 for Squaddie abilities
-30 for Corporal abilities
-30 for Sergeant abilities
-30 for Lieutenant abilities
-30 for Captain abilities
-30 for Major abilities
-30 for Colonel abilities
-50 for Brigadier abilities
+50 for Corporal abilities
+50 for Sergeant abilities
+50 for Lieutenant abilities
+50 for Captain abilities
+60 for Major abilities
+60 for Colonel abilities
+70 for Brigadier abilities
 
 The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
 
