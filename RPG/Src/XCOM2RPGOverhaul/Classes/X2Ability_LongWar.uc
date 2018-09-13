@@ -153,7 +153,7 @@ static function X2AbilityTemplate BringEmOn()
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	
-	Effect.AddDamageModifier(1, eHit_Crit);
+	Effect.AddDamageModifier(0.5, eHit_Crit);
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = 8;
 

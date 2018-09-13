@@ -83,6 +83,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComGameData_XpData.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComLW_SoldierSkills.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComRPG.ini">
       <SubType>Content</SubType>
     </Content>
@@ -101,10 +104,22 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Content\NewPromotionScreenbyDefault.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\Perk_MintFX.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\StatUpgradeUI\StatUpgradeUI_Library.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\UILibrary_IconsMint.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\UILibrary_LW_PerkPack.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\UILibrary_RPG.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Content\XPerkIconPack.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Features.txt">
@@ -206,7 +221,22 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCost_ActionPointsExtended.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_Aptitudes.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_LW2WotC_PassiveAbilitySet.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2ConditionDisabled.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_Fade.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_MissionData.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NearestAlly.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotFlankable.uc">
@@ -236,7 +266,13 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DamageModifierCoverType.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DangerousGame.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DeathFromAboveRPG.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DefendingDamage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">
@@ -245,7 +281,31 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_HitandRun.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Infighter.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Latent.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LowProfile_LW.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LW2WotC_HEATGrenades.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LW2WotC_Sentinel.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Mercenary.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_NoSquadsightPenalities.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Prevail.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RangeMultiplier.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ReducedRecoveryTime.uc">
@@ -294,6 +354,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RevealUnit.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_SystemUplink.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_StrategyListener.uc">

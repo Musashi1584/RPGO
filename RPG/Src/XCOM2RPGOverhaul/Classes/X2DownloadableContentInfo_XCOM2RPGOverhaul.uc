@@ -61,3 +61,24 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 {
 	class'X2TemplateHelper_RPGOverhaul'.static.UpdateAnimations(CustomAnimSets, UnitState, Pawn);
 }
+
+static function bool AbilityTagExpandHandler(string InString, out string OutString)
+{
+	local name Type;
+
+	Type = name(InString);
+	switch(Type)
+	{
+		case 'SENTINEL_LW_USES_PER_TURN':
+			OutString = string(class'X2Effect_LW2WotC_Sentinel'.default.SENTINEL_LW_USES_PER_TURN + 1);
+			return true;
+		case 'HEAT_WARHEADS_PIERCE':
+			OutString = string(class'X2Ability_LW2WotC_PassiveAbilitySet'.default.HEAT_WARHEADS_PIERCE);
+			return true;
+		case 'HEAT_WARHEADS_SHRED':
+			OutString = string(class'X2Ability_LW2WotC_PassiveAbilitySet'.default.HEAT_WARHEADS_SHRED);
+			return true;
+		default: 
+			return false;
+	}
+}
