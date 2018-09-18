@@ -78,6 +78,8 @@ MoonWolf for the initial [WOTC] New Promotion Screen by Default
 zamster for helping me turning my localization into proper english
 Chris the Thin Mint for help with balancing and localization
 FelineKnave for a lot of great localization
+bstar - adding the mint aptitudes to the fun
+Ziodyne - for the aptitude perks of mint
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters
@@ -86,7 +88,6 @@ Astery86
 nekoworkshop
 bstar
 Chris the Thin Mint
-きゅう
 
 [h1]FAQ[/h1]
 

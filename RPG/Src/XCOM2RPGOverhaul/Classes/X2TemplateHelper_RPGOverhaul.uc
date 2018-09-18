@@ -67,7 +67,9 @@ static function SetupSpecialization(name SoldierClassTemplate)
 		{
 			UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
 			if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0)
+			{
 				AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
+			}
 		}
 		else
 		{

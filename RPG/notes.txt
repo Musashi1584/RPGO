@@ -1,3 +1,10 @@
+- Added [b]32[/b] new squaddie perks from Ziodyne's MINT Classless Overhaul mod. Every soldier will now get one of these aptitudes as well as one of the 19 standard squaddie perks, giving you a total of 608 possible combinations for your squaddies - now every soldier will be a little unique!
+- The Sentinel specialization now gets the eponymous [b]Sentinel[/b] perk from Long War 2 at Corporal rank. [b]Cool Under Pressure[/b] will become a GTS perk.
+- The Assault specialization has undergone a few changes. Both [b]Close Encounters[/b] and [b]Bring 'Em On[/b] are now available at higher ranks, [b]Close Combat Specialist[/b] and [b]Deadeye[/b] become available a little earlier. This should improve the overall balance of the specialization.
+- Fixed [b]Bring 'Em On[/b]. It now grants +1 critical hit damage per two enemies instead of +1 per enemy.
+- [b]Light 'Em Up[/b] can no longer be used with cannons.
+- Both [b]Light 'Em Up[/b] and [b]Run and Gun[/b] have received an update to their localization that tells you about their weapon category restrictions.
+
 - Remove autofire from smg
 
 - Enable GTS class unlocks (HitWhereItHurts, CoolUnderPressure, BiggestBooms) for rpgo soldier class
