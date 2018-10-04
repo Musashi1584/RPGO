@@ -630,10 +630,10 @@ static function X2AbilityTemplate Irregular()
 	local X2Effect_DefendingDamage	DamageTaken;
 
 	StealthEffect = new class'X2Effect_RangerStealth';
-	StealthEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnEnd);
+	StealthEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnBegin);
 	StealthEffect.bRemoveWhenTargetConcealmentBroken = true;
 
-	Template = SelfTargetTrigger('APT_Irregular', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_vanish", false, StealthEffect, 'AbilityActivated');
+	Template = SelfTargetTrigger('APT_Irregular', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_vanish", false, StealthEffect, 'PlayerTurnBegun');
 	AddIconPassive(Template);
 
 	Template.AbilityShooterConditions.AddItem(new class'X2Condition_Stealth');

@@ -189,12 +189,11 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 {
 	local int RowIndex;
 	local array<SoldierSpecialization> Specs;
-	//local SoldierSpecialization Spec;
+	local SoldierSpecialization Spec;
 	
 	RowIndex = GetSoldierSpecialization(UnitState);
 
-	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
-	Specs.Sort(SortSpecializations);
+	Specs = class'X2TemplateHelper_RPGOverhaul'.static.GetSpecializations();
 
 	//foreach Specs(Spec)
 	//{
@@ -202,6 +201,7 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 	//}
 
 	//`LOG(GetFuncName() @ RowIndex @ Specs[RowIndex].TemplateName,, 'RPG');
+	
 	return RowIndex != INDEX_NONE ? Specs[RowIndex].TemplateName : UnitState.GetSoldierClassTemplate().DataName;
 }
 
@@ -236,6 +236,7 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 		for (RowIndex = 0; RowIndex < Abilities.Length; RowIndex++)
 		{
 			Ability = Abilities[RowIndex];
+			
 			if (UnitState.HasSoldierAbility(Ability.AbilityName))
 			{
 				DistributionIndex = RowsDistribution.Find('Row', RowIndex);
@@ -266,9 +267,4 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 function int SortRowDistribution(RowDistribution A, RowDistribution B)
 {
 	return A.Count < B.Count ? -1 : 0;
-}
-
-function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
-{
-	return A.Order > B.Order ? -1 : 0;
 }

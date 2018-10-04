@@ -48,28 +48,47 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	local X2SoldierClassTemplateManager Manager;
 	local X2SoldierClassTemplate Template;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local array<SoldierSpecialization> ValidSpecs;
 	local int Index;
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
-
 	Template = Manager.FindSoldierClassTemplate(SoldierClassTemplate);
 
 	Template.AbilityTreeTitles.Length = 0;
 	class'X2SoldierClassTemplatePlugin'.static.ResetDummySlot(Template);
+
+	ValidSpecs = GetSpecializations();
+
+	for (Index = 0; Index < ValidSpecs.Length; Index++)
+	{
+		
+		UniversalSoldierClassTemplate = new(None, string(ValidSpecs[Index].TemplateName))class'X2UniversalSoldierClassInfo';
+		`LOG("Specialization" @ Index @ ValidSpecs[Index].TemplateName @ ValidSpecs[Index].bEnabled @ UniversalSoldierClassTemplate.ClassSpecializationTitle,, 'RPG');
+		AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
+		
+	}
+}
+
+static function array<SoldierSpecialization> GetSpecializations()
+{
+	local X2SoldierClassTemplateManager Manager;
+	local X2SoldierClassTemplate Template;
+	local array<SoldierSpecialization> ValidSpecs;
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local int Index;
+
+	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
+	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');
 
 	// Sort here cause plugin mods which loaded first could added to the array already
 	default.Specializations.Sort(SortSpecializations);
 
 	for (Index = 0; Index < default.Specializations.Length; Index++)
 	{
-		`LOG("Specialization" @ Index @ default.Specializations[Index].TemplateName @ default.Specializations[Index].bEnabled,, 'RPG');
-		if (default.Specializations[Index].bEnabled)
+		UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
+		if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0 && default.Specializations[Index].bEnabled)
 		{
-			UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
-			if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0)
-			{
-				AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
-			}
+			ValidSpecs.AddItem(default.Specializations[Index]);
 		}
 		else
 		{
@@ -78,6 +97,9 @@ static function SetupSpecialization(name SoldierClassTemplate)
 		}
 	}
 
+	ValidSpecs.Sort(SortSpecializations);
+
+	return ValidSpecs;
 }
 
 function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
@@ -99,7 +121,7 @@ static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAb
 	for (RankIndex = 1; RankIndex < Template.GetMaxConfiguredRank(); RankIndex++)
 	{
 		Slot = AbilitySlots[RankIndex - 1];
-		`LOG("Adding Spec" @ SpecializationTitle @ "Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
+		`LOG("Adding Spec" @ RankIndex - 1 @ SpecializationTitle @ "Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
 		class'X2SoldierClassTemplatePlugin'.static.AddSlot(Template, Slot, RankIndex);
 	}
 
@@ -407,12 +429,14 @@ static function PatchWeapons()
 			}
 
 			// Patch hero weapons
-			if (WeaponTemplate.DataName == 'WristBlade_CV' ||
+			if (WeaponTemplate != none &&
+				(WeaponTemplate.DataName == 'WristBlade_CV' ||
 				WeaponTemplate.DataName == 'ShardGauntlet_CV' ||
 				WeaponTemplate.DataName == 'VektorRifle_CV' ||
 				WeaponTemplate.DataName == 'Bullpup_CV' ||
 				WeaponTemplate.DataName == 'Reaper_Claymore' ||
 				WeaponTemplate.DataName == 'Sidearm_CV')
+			)
 			{
 				WeaponTemplate.StartingItem = true;
 				`LOG("Unlock" @ WeaponTemplate.DataName,, 'RPG');

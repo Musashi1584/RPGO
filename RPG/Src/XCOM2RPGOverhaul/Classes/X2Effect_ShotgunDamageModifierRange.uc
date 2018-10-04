@@ -1,6 +1,7 @@
 class X2Effect_ShotgunDamageModifierRange extends X2Effect_Persistent config (RPG);
 
 var config array<int> SHOTGUN_DAMAGE_FALLOFF;
+var config array<name> AbilityIgnoreDamageFalloff;
 
 function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGameState_Unit Attacker, Damageable TargetDamageable, XComGameState_Ability AbilityState, const out EffectAppliedData AppliedData, const int CurrentDamage, optional XComGameState NewGameState)
 {
@@ -8,11 +9,20 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 	local XComGameState_Unit TargetUnit;
 	local XComGameState_Item WeaponState;
 	local int Tiles, RangeDamageModifier;
+	local name Ability;
 
 	History = `XCOMHISTORY;
 
 	if (!class'XComGameStateContext_Ability'.static.IsHitResultHit(AppliedData.AbilityResultContext.HitResult))
 		return 0;
+
+	foreach default.AbilityIgnoreDamageFalloff (Ability)
+	{
+		if (Attacker.HasSoldierAbility(Ability))
+		{
+			return 0;
+		}
+	}
 
 	TargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(AppliedData.AbilityInputContext.PrimaryTarget.ObjectID));
 	WeaponState = XComGameState_Item(History.GetGameStateForObjectID(AppliedData.ItemStateObjectRef.ObjectID));
