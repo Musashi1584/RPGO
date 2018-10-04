@@ -11,8 +11,7 @@ static function ResetDummySlot(X2SoldierClassTemplate Template)
 
 	for(Index = 1; Index < Template.SoldierRanks.Length; Index++)
 	{
-		//Template.SoldierRanks[Index].AbilitySlots.Remove(0, 1);
-		Template.SoldierRanks[Index].AbilitySlots.Length = 0;
+		Template.SoldierRanks[Index].AbilitySlots.Remove(0, 1);
 	}
 }
 

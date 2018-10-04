@@ -57,15 +57,13 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	Template.AbilityTreeTitles.Length = 0;
 	class'X2SoldierClassTemplatePlugin'.static.ResetDummySlot(Template);
 
-	ValidSpecs = GetSpecializations();
+	default.Specializations = GetSpecializations();
 
-	for (Index = 0; Index < ValidSpecs.Length; Index++)
+	for (Index = 0; Index < default.Specializations.Length; Index++)
 	{
-		
-		UniversalSoldierClassTemplate = new(None, string(ValidSpecs[Index].TemplateName))class'X2UniversalSoldierClassInfo';
-		`LOG("Specialization" @ Index @ ValidSpecs[Index].TemplateName @ ValidSpecs[Index].bEnabled @ UniversalSoldierClassTemplate.ClassSpecializationTitle,, 'RPG');
+		UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
+		`LOG("Specialization" @ Index @ default.Specializations[Index].TemplateName @ default.Specializations[Index].bEnabled @ UniversalSoldierClassTemplate.ClassSpecializationTitle,, 'RPG');
 		AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
-		
 	}
 }
 
@@ -75,7 +73,13 @@ static function array<SoldierSpecialization> GetSpecializations()
 	local X2SoldierClassTemplate Template;
 	local array<SoldierSpecialization> ValidSpecs;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local SoldierClassAbilitySlot Slot;
 	local int Index;
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Ability;
+	local bool bHasAbilityInDeck;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
 	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');
@@ -88,7 +92,21 @@ static function array<SoldierSpecialization> GetSpecializations()
 		UniversalSoldierClassTemplate = new(None, string(default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
 		if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0 && default.Specializations[Index].bEnabled)
 		{
-			ValidSpecs.AddItem(default.Specializations[Index]);
+			bHasAbilityInDeck = false;
+			foreach UniversalSoldierClassTemplate.AbilitySlots(Slot)
+			{
+				Ability = TemplateManager.FindAbilityTemplate(Slot.AbilityType.AbilityName);
+				if (Ability != none)
+				{
+					bHasAbilityInDeck = true;
+					break;
+				}
+			}
+			
+			if (bHasAbilityInDeck && ValidSpecs.Find('TemplateName', default.Specializations[Index].TemplateName) == INDEX_NONE)
+			{
+				ValidSpecs.AddItem(default.Specializations[Index]);
+			}
 		}
 		else
 		{
@@ -96,9 +114,7 @@ static function array<SoldierSpecialization> GetSpecializations()
 			class'X2SoldierClassTemplatePlugin'.static.DeleteSpecialization(Template, default.Specializations[Index].TemplateName, Index);
 		}
 	}
-
-	ValidSpecs.Sort(SortSpecializations);
-
+	
 	return ValidSpecs;
 }
 

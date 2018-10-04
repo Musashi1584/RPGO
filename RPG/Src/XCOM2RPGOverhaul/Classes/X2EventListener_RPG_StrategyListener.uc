@@ -193,7 +193,8 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 	
 	RowIndex = GetSoldierSpecialization(UnitState);
 
-	Specs = class'X2TemplateHelper_RPGOverhaul'.static.GetSpecializations();
+	class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Sort(SortSpecializations);
+	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
 
 	//foreach Specs(Spec)
 	//{
@@ -267,4 +268,9 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 function int SortRowDistribution(RowDistribution A, RowDistribution B)
 {
 	return A.Count < B.Count ? -1 : 0;
+}
+
+function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
+{
+	return A.Order > B.Order ? -1 : 0;
 }
