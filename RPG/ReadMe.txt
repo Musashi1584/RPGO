@@ -123,8 +123,16 @@ Other Overhaul mods like MINT and A Better Barracks obviously clash in some area
 Known incompatibilities:
 - "Configure Upgrade Slots" doesnt work cause this mod set all slots to 3
 - "Hack Plus" leads to insane high hacking stats
+- I am the commander here
 
-More to come!
+[h1]A note on the beta status[/h1]
+This mod will change freqquently.
+Therefor it might be needed that you rebuild you soldiers.
+Use the command RebuildSelectedSoldiersClass from the mod [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1370543410] Additional Soldier Console Commands[/url]
+for that purpose.
+
+[h1]Mod troubleshooting[/h1]
+https://www.reddit.com/r/xcom2mods/wiki/mod_troubleshooting
 
 [h1]Patreon[/h1]
 Have look at my work in progress and infos on my mods at my patreon page.

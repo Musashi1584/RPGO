@@ -198,7 +198,7 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 		//	SetupData[Index].Template.AbilityTargetConditions.AddItem(DisabledCondition);
 		//}
 
-		`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
+		//`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
 
 		CategoryIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
 		//`LOG(GetFuncName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot @ Index,, 'RPG');
@@ -267,6 +267,25 @@ static function PatchAbilitiesWeaponCondition()
 			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
 			Template.AbilityTargetConditions.AddItem(WeaponCondition);
 		}
+	}
+}
+
+static function AddWeaponCategoryConditionToEffect(name AbilityName, X2Effect Effect)
+{
+	local X2Condition_WeaponCategory	WeaponCategoryCondition;
+	local int							Index;
+	local name							Category;
+
+	Index = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', AbilityName);
+	if (Index != INDEX_NONE)
+	{
+		WeaponCategoryCondition = new class'X2Condition_WeaponCategory';
+
+		foreach default.AbilityWeaponCategoryRestrictions[Index].WeaponCategories(Category)
+		{
+			WeaponCategoryCondition.IncludeWeaponCategories.AddItem(Category);
+		}
+		Effect.TargetConditions.AddItem(WeaponCategoryCondition);
 	}
 }
 
@@ -746,7 +765,9 @@ static function PatchStandardShot()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('StandardShot');
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('LightEmUp');
+	`LOG(default.Class @ GetFuncName() @ X2AbilityCost_ActionPoints(Template.AbilityCosts[0]),, 'RPG');
+	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).AllowedTypes.AddItem(class'X2Effect_LightEmUp'.default.LightEmUpActionPoint);
+	//X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('RPGO_LightEmUp');
 }
 
 static function PatchRemoteStart()

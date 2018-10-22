@@ -26,6 +26,10 @@ var config int DAMN_GOOD_GROUND_AIM_BONUS;
 var config int DAMN_GOOD_GROUND_DEFENSE_BONUS;
 var config float SCOUT_BATTLESCANNER_RANGE_SCALAR;
 var config int XENO_BIOLOGIST_DMG_BONUS;
+var config int AUTOFIRE_ENVIRONMENTAL_DAMAGE;
+var config int AUTOFIRE_DESTRUCTION_CHANCE;
+var config int AUTOFIRE_FULLCOVER_MALUS;
+var config int AUTOFIRE_HALFCOVER_MALUS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -623,7 +627,7 @@ static function X2AbilityTemplate Rocketeer()
 static function X2AbilityTemplate FullAutoFire()
 {
 	local X2AbilityTemplate Template;
-	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
+	local X2Effect_MaybeApplyDirectionalWorldDamage WorldDamage;
 
 	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('FullAutoFire');
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_SHOT_PRIORITY + 10;
@@ -633,10 +637,11 @@ static function X2AbilityTemplate FullAutoFire()
 	X2AbilityCost_Ammo(Template.AbilityCosts[1]).iAmmo += 2;
 	X2AbilityCost_Ammo(Template.AbilityCosts[1]).bConsumeAllAmmo = true;
 
-	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
+	WorldDamage = new class'X2Effect_MaybeApplyDirectionalWorldDamage';
 	WorldDamage.bUseWeaponDamageType = true;
 	WorldDamage.bUseWeaponEnvironmentalDamage = false;
-	WorldDamage.EnvironmentalDamageAmount = 30;
+	WorldDamage.EnvironmentalDamageAmount = default.AUTOFIRE_ENVIRONMENTAL_DAMAGE;
+	WorldDamage.ApplyChance = default.AUTOFIRE_DESTRUCTION_CHANCE;
 	WorldDamage.bApplyOnHit = true;
 	WorldDamage.bApplyOnMiss = false;
 	WorldDamage.bApplyToWorldOnHit = true;
@@ -680,7 +685,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(-20, eHit_Success);
+	HitEffect.AddToHitModifier(default.AUTOFIRE_FULLCOVER_MALUS, eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -691,7 +696,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(-10, eHit_Success);
+	HitEffect.AddToHitModifier(default.AUTOFIRE_HALFCOVER_MALUS, eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -706,7 +711,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	DamageBonus.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	DamageBonus.AddDamageModifier(1);
 	DamageBonus.ScaleValue = new class'XMBValue_Ammo';
-	DamageBonus.ScaleMax = 99;
+	DamageBonus.ScaleMax = 5;
 	DamageBonus.AbilityTargetConditions.AddItem(WeaponCondition);
 	DamageBonus.AbilityTargetConditions.AddItem(AbilityCondition);
 	Template.AddTargetEffect(DamageBonus);
@@ -717,17 +722,21 @@ static function X2AbilityTemplate AutoFireModifications()
 
 static function X2AbilityTemplate SurgicalPrecision()
 {
-	local XMBEffect_ConditionalBonus Effect;
+	local X2AbilityTemplate						Template;
+	local XMBEffect_ConditionalBonus			Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AbilityTargetConditions.AddItem(default.FullCoverCondition);
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.HIGH_COVER_BONUS / 2);
 
+	Template = Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
+
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AbilityTargetConditions.AddItem(default.HalfCoverCondition);
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.LOW_COVER_BONUS / 2);
+	Template.AddTargetEffect(Effect);
 
-	return Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
+	return Template;
 }
 
 static function X2DataTemplate ReadyForAnything()

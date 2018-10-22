@@ -31,3 +31,35 @@ event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameSta
 
 	return 'AA_WeaponIncompatible';
 }
+
+//function bool CanEverBeValid(XComGameState_Unit SourceUnit, bool bStrategyCheck)
+//{
+//	local array<XComGameState_Item> InventoryItems;
+//	local XComGameState_Item ItemState;
+//	local X2WeaponTemplate WeaponTemplate;
+//
+//	if (IncludeWeaponCategories.Length == 0)
+//	{
+//		return true;
+//	}
+//
+//	InventoryItems = SourceUnit.GetAllInventoryItems();
+//
+//	foreach InventoryItems(ItemState)
+//	{
+//		WeaponTemplate = X2WeaponTemplate(ItemState.GetMyTemplate());
+//
+//		if (WeaponTemplate == none)
+//		{
+//			continue;
+//		}
+//
+//		if (IncludeWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
+//		{
+//			//`LOG(self.Class.Name @ GetFuncName() @ kAbility.GetMyTemplateName() @ "IncludeWeaponCategories matches" @ WeaponTemplate.WeaponCat,, 'RPG');
+//			return true;
+//		}
+//	}
+//
+//	return false;
+//}

@@ -278,6 +278,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LightEmUp.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_HitandRun.uc">
       <SubType>Content</SubType>
     </Content>
@@ -294,6 +297,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LW2WotC_Sentinel.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_MaybeApplyDirectionalWorldDamage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Mercenary.uc">

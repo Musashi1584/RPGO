@@ -15,8 +15,8 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
 	Templates.AddItem(DamageModifierCoverType());
-	Templates.AddItem(AutoFireOverwatch());
-	Templates.AddItem(AutoFireShot());
+	//Templates.AddItem(AutoFireOverwatch());
+	//Templates.AddItem(AutoFireShot());
 	Templates.AddItem(RemoveSquadSightOnMove());
 
 	return Templates;
