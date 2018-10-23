@@ -42,7 +42,7 @@ static function X2AbilityTemplate BlueMoveSlash()
 	
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'BlueMoveSlash');
 
-	Template.IconImage = "";
+	Template.IconImage = "img:///UILibrary_RPG.UIPerk_Kenjutsu";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
