@@ -36,6 +36,7 @@ var config array<UniqueItemCategories> LoadoutUniqueItemCategories;
 var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
 var config array<SoldierSpecialization> Specializations;
+var config array<name> ValidLightEmUpAbilities;
 
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
@@ -306,7 +307,7 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 	HeroClasses.AddItem('Reaper');
 
 	HideUnlocks.AddItem('HitWhereItHurtsUnlock');
-	HideUnlocks.AddItem('CoolUnderPressureUnlock');
+	//HideUnlocks.AddItem('CoolUnderPressureUnlock');
 	HideUnlocks.AddItem('BiggestBoomsUnlock');
 	HideUnlocks.AddItem('HuntersInstinctUnlock');
 
@@ -565,6 +566,33 @@ static function PatchAbilityPrerequisites()
 	}
 }
 
+static function PatchSpecialShotAbiitiesForLightEmUp()
+{
+	local X2AbilityTemplateManager						TemplateManager;
+	local X2AbilityTemplate								Template;
+	local name											TemplateName;
+	local X2AbilityCost_ActionPoints					ActionPointCost;
+	local int											Index;
+	
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+		
+	foreach default.ValidLightEmUpAbilities(TemplateName)
+	{
+		Template = TemplateManager.FindAbilityTemplate(TemplateName);
+		if (Template != none)
+		{
+			for (Index = 0; Index < Template.AbilityCosts.Length; Index++)
+			{
+				ActionPointCost = X2AbilityCost_ActionPoints(Template.AbilityCosts[Index]);
+				if (ActionPointCost != none)
+				{
+					ActionPointCost.AllowedTypes.AddItem(class'X2Effect_LightEmUp'.default.LightEmUpActionPoint);
+				}
+			}
+		}
+	}
+}
+
 static function PatchPistolStandardShot()
 {
 	local X2AbilityTemplateManager						TemplateManager;
@@ -612,7 +640,6 @@ static function PatchTraceRounds()
 	Template.CanBeBuilt = false;
 }
 
-
 static function PatchSteadyHands()
 {
 	local X2AbilityTemplateManager		TemplateManager;
@@ -629,7 +656,6 @@ static function PatchSteadyHands()
 	X2Effect_PersistentStatChange(X2Effect_Persistent(Template.AbilityShooterEffects[0]).ApplyOnTick[0]).TargetConditions.AddItem(ValueCondition);
 	`LOG("PatchSteadyHands" @ X2Effect_PersistentStatChange(X2Effect_Persistent(Template.AbilityShooterEffects[0]).ApplyOnTick[0]).TargetConditions.Length,, 'RPG');
 }
-
 
 static function PatchMedicalProtocol()
 {

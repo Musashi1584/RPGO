@@ -32,6 +32,9 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	if (PreCostActionPoints.Find('RunAndGun') != INDEX_NONE)
 		return false;
 
+	if (PreCostActionPoints.Find('LightEmUp') != INDEX_NONE)
+		return false;
+
 	if (PreCostActionPoints.Length == 2 && AbilityContext.InputContext.MovementPaths[0].CostIncreases.Length == 0)
 	{
 		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));

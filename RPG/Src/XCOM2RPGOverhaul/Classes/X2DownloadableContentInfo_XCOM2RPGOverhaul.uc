@@ -33,7 +33,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchStandardShot();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchRemoteStart();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
+	//class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSuppression();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchKillZone();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherGrapple();
@@ -45,6 +45,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchHomingMine();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSpecialShotAbiitiesForLightEmUp();
 }
 
 // <summary>

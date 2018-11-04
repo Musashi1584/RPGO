@@ -18,9 +18,9 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 [*] Dynamic class title / class icon based on your ability choices
 [*] 2 random starting abilities on squaddie
 [*] Stats can be upgraded with ability points
-[*] All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the utility slot).
+[*] All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the primary slot).
 [*] Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
-[*] Full support of Primary Secondaries and Utility Slot Sidearm
+[*] Full support of Primary Secondaries
 [*] Full support of weapon mods like Resistance Firearms
 [/list]
 
@@ -44,7 +44,7 @@ I thought it would be cool to develop every single soldier in every way you want
 
 So here it is. The mod replaces the vanilla class by one class starting as "Soldier".
 
-The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Secondary Weapons and Utility Slot Sidearms).
+The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Secondary Weapons).
 
 This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from. I am planning to even expand on this.
 
@@ -54,7 +54,7 @@ On squaddie your soldier will get two random starting abilities from a pool to g
 
 Any combination of abilities and weapons are possible. For example you can create a cannon wielding medic, a gunslinging grenadier, sniper with ripjack or whatever you can imagine.
 
-Most abilities work with each weapon, the secondary weapon abilities work with their associated secondary regardless if it is in the primary, secondary or utility slot (if you are using Utility Slot Sidearms WOTC)
+Most abilities work with each weapon, the secondary weapon abilities work with their associated secondary regardless if it is in the primary or secondary.
 
 Another big change is the possibility to upgrade the soldiers stats with ability points. Therefor i designed a completely new ui screen.
 
@@ -126,7 +126,7 @@ Known incompatibilities:
 - I am the commander here
 
 [h1]A note on the beta status[/h1]
-This mod will change freqquently.
+This mod will change frequently.
 Therefor it might be needed that you rebuild you soldiers.
 Use the command RebuildSelectedSoldiersClass from the mod [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1370543410] Additional Soldier Console Commands[/url]
 for that purpose.

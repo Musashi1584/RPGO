@@ -1,3 +1,6 @@
+- Unlocks cool under pressure as GTS Perk
+- Allow special shots like rapid fire and chain shot as valid second actions for LightEmUp.
+
 - Fix SurgicalPrecision
 - Changed template name of LightEmUp to RPGO_LightEmUp to prevent conflicts with other mods adding a LEU ability (You need to rebuild solders with LEU because of that sorry)
 - Changed LightEmp so you can only do another standard shot as a second action
