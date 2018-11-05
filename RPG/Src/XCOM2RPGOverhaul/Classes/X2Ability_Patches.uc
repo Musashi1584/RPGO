@@ -11,7 +11,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(RpgDeathFromAbove());
 	Templates.AddItem(BlueMoveSlash());
 	Templates.AddItem(HeavyWeaponMobilityPenalty());
-	Templates.AddItem(CombatProtocolHackingBonus());
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
 	Templates.AddItem(DamageModifierCoverType());
@@ -101,19 +100,6 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	return Template;
 }
 
-static function X2AbilityTemplate CombatProtocolHackingBonus()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalStatChange Effect;
-
-	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Hacking, 50);
-	
-	Template = Passive('CombatProtocolHackingBonus', "img:///Texture2D'UILibrary_RPG.UIPerk_HackingBonus'", false, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, 50);
-	
-	return Template;
-}
 
 static function X2AbilityTemplate ShotgunDamageModifierRange()
 {
