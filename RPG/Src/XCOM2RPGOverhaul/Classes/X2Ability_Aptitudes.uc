@@ -633,7 +633,7 @@ static function X2AbilityTemplate Irregular()
 	StealthEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnBegin);
 	StealthEffect.bRemoveWhenTargetConcealmentBroken = true;
 
-	Template = SelfTargetTrigger('APT_Irregular', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_vanish", false, StealthEffect, 'PlayerTurnBegun');
+	Template = SelfTargetTrigger('APT_Irregular', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_vanish", false, StealthEffect, 'PlayerTurnBegun', eFilter_Player);
 	AddIconPassive(Template);
 
 	Template.AbilityShooterConditions.AddItem(new class'X2Condition_Stealth');
