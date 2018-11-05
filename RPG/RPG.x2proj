@@ -86,6 +86,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComLW_SoldierSkills.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComMINTAptitudes.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComRPG.ini">
       <SubType>Content</SubType>
     </Content>

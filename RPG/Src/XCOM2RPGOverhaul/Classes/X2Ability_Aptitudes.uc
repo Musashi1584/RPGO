@@ -1,4 +1,4 @@
-class X2Ability_Aptitudes extends XMBAbility config(RPG);
+class X2Ability_Aptitudes extends XMBAbility config(MINTAptitudes);
 
 var config int GUTTERSNIPE_CRIT;
 var config int GUTTERSNIPE_SHRED_CV;
