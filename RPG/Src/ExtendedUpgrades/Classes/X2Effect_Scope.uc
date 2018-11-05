@@ -9,7 +9,7 @@ function GetToHitModifiers(XComGameState_Effect EffectState, XComGameState_Unit 
 	local ShotModifierInfo ShotInfo;
 
 	SourceWeapon = AbilityState.GetSourceWeapon();
-	//`LOG("X2Effect_ScopeRange.GetToHitModifiers" @ SourceWeapon.ObjectID @ EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID,, 'ExtendedUpgrades');
+	//`LOG("X2Effect_ScopeRange.GetToHitModifiers" @ SourceWeapon.ObjectID @ EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID @ SCOPE_RANGE_CHANGE.Length,, 'ExtendedUpgrades');
 	if(SourceWeapon != none && SourceWeapon.ObjectID == EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID)
 	{
 
@@ -25,7 +25,7 @@ function GetToHitModifiers(XComGameState_Effect EffectState, XComGameState_Unit 
 				ShotInfo.Value = SCOPE_RANGE_CHANGE[SCOPE_RANGE_CHANGE.Length - 1];
 			}
 
-			`LOG("X2Effect_ScopeRange.GetToHitModifiers" @ SourceWeapon.GetMyTemplateName() @ "modifying range by" @ ShotInfo.Value,, 'ExtendedUpgrades');
+			//`LOG("X2Effect_ScopeRange.GetToHitModifiers" @ SourceWeapon.GetMyTemplateName() @ "modifying range by" @ ShotInfo.Value,, 'ExtendedUpgrades');
 			ShotInfo.ModType = eHit_Success;
 			ShotInfo.Reason = FriendlyName; //class'XLocalizedData'.default.WeaponRange;
 			ShotModifiers.AddItem(ShotInfo);

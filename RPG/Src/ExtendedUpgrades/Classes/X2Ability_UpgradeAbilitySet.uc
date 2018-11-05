@@ -398,10 +398,10 @@ static function X2AbilityTemplate ScopeAttachment(name TemplateName, array<int> 
 	
 	AimModifier = new class 'X2Effect_Scope';
 	AimModifier.SCOPE_RANGE_CHANGE = BonusRange;
-	AimModifier.BuildPersistentEffect (1, true, false);
-	//AimModifier.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
-	
-	Template.AddTargetEffect (AimModifier);
+	AimModifier.BuildPersistentEffect (1, true, false, false, eGameRule_PlayerTurnBegin);
+	AimModifier.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false,,Template.AbilitySourceName);
+	Template.AddTargetEffect(AimModifier);
+
 	Template.bCrossClassEligible = false;
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
