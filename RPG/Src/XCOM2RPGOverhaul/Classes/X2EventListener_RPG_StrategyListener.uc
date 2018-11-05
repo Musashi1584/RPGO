@@ -24,6 +24,7 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
 	Templates.AddItem(CreateListenerTemplate_OnGetLocalizedCategory());
+	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
 
 	return Templates;
 }
@@ -63,6 +64,40 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnGetLocalizedCat
 
 	return Template;
 }
+
+static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGUnitRankUp');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUp, ELD_Immediate);
+	`LOG("Register Event OnUnitRankUp",, 'RPG');
+
+	return Template;
+}
+
+static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit UnitState;
+	local UnitValue StatPointsValue;
+
+	UnitState = XComGameState_Unit(EventData);
+
+	if (UnitState != none)
+	{
+		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));	
+		UnitState.GetUnitValue('StatPoints', StatPointsValue);
+		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + class'X2TemplateHelper_RPGOverhaul'.default.StatPointsPerPromotion, eCleanup_Never);
+		GameState.AddStateObject(UnitState);
+	}
+
+	return ELR_NoInterrupt;
+}
+
 
 static function EventListenerReturn OnGetLocalizedCategory(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {

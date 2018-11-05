@@ -112,6 +112,11 @@ function InitStatLines()
 {
 	local UIPanel_StatUI_StatLine StatLine;
 	local int Index, OffsetX, OffsetY;
+	local UnitValue StatPointsValue;
+
+
+	UnitState.GetUnitValue('StatPoints', StatPointsValue);
+	`LOG(default.Class @ GetFuncName() @ UnitState.GetFullName() @ StatPointsValue.fValue,, 'RPG');
 
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, int(UnitState.GetMaxStat(eStat_HP)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);

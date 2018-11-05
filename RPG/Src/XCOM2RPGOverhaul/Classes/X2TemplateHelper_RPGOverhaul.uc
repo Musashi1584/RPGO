@@ -43,6 +43,7 @@ var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 var config int DefaultWeaponUpgradeSlots;
+var config int StatPointsPerPromotion;
 
 static function SetupSpecialization(name SoldierClassTemplate)
 {
