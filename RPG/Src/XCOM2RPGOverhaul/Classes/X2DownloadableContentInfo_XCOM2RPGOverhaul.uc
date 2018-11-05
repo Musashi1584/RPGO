@@ -44,7 +44,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchHomingMine();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchClaymoreCharges();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSpecialShotAbiitiesForLightEmUp();
 }
 

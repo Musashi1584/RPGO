@@ -676,13 +676,16 @@ static function PatchMedicalProtocol()
 	Template.AbilityCosts[0] = ActionPointCost;
 }
 
-static function PatchHomingMine()
+static function PatchClaymoreCharges()
 {
 	local X2AbilityTemplateManager				TemplateManager;
 	local X2AbilityTemplate						Template;
 	local X2AbilityCost_ActionPointsExtended	ActionPointCost;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('ThrowClaymore');
+	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
 
 	Template = TemplateManager.FindAbilityTemplate('HomingMine');
 	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
