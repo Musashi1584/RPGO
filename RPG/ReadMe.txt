@@ -80,6 +80,8 @@ Chris the Thin Mint for help with balancing and localization
 FelineKnave for a lot of great localization
 bstar - adding the mint aptitudes to the fun
 Ziodyne - for the aptitude perks of mint
+DerBK - for some ABB perks bstar "aquired"
+
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters
@@ -136,6 +138,6 @@ https://www.reddit.com/r/xcom2mods/wiki/mod_troubleshooting
 
 [h1]Patreon[/h1]
 Have look at my work in progress and infos on my mods at my patreon page.
-Your really like my mods and would like to help me have more time for modding? Consider become a patreon :)
+Your really like my mods and would like to see sneakpeeks of work in progress mods or become a closed beta tester? Consider become a patreon :)
 
 https://www.patreon.com/musashi1584
