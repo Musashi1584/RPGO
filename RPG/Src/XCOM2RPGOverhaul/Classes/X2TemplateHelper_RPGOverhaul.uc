@@ -458,6 +458,9 @@ static function PatchWeapons()
 					case 'claymore':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
 						break;
+					case 'holotargeter':
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'RapidTargeting', true);
+						break;
 					default:
 						//`LOG(GetFuncName() @ WeaponTemplate.GetItemFriendlyName() @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "ignored",, 'RPG');
 						break;
@@ -843,18 +846,6 @@ static function PatchSuppression()
 	Template = TemplateManager.FindAbilityTemplate('Suppression');
 	Template.AdditionalAbilities.AddItem('LockdownBonuses');
 }
-
-static function PatchCombatProtocol()
-{
-	local X2AbilityTemplateManager		TemplateManager;
-	local X2AbilityTemplate				Template;
-
-	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
-	Template = TemplateManager.FindAbilityTemplate('CombatProtocol');
-	Template.AdditionalAbilities.AddItem('CombatProtocolHackingBonus');
-}
-
 
 static function PatchSquadSight()
 {

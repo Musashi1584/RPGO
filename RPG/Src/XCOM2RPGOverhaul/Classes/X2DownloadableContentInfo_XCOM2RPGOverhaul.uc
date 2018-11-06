@@ -40,7 +40,6 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchThrowClaymore();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSwordSlice();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchBladestormAttack();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchCombatProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
