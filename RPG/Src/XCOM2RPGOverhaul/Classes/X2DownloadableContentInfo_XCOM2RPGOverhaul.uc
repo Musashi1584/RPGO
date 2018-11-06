@@ -8,6 +8,7 @@ static event InstallNewCampaign(XComGameState StartState)
 	XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
 
 	XComHQ.BonusAbilityPointScalar *= 2.0;
+	
 }
 
 static event OnLoadedSavedGameToStrategy()

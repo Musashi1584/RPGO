@@ -295,8 +295,13 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 	local X2StrategyElementTemplateManager TemplateManager;
 	local array<X2StrategyElementTemplate> Templates;
 	local X2StrategyElementTemplate Template;
+	local X2SoldierAbilityUnlockTemplate SoldierUnlockTemplate;
 	local array<name> HeroClasses;
-	local array<name> HideUnlocks;
+	local array<Name> TemplateNames;
+	local Name TemplateName;
+	local array<X2DataTemplate> DataTemplates;
+	local X2DataTemplate DataTemplate;
+	local int Difficulty;
 
 	TemplateManager = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
 
@@ -306,33 +311,69 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 	HeroClasses.AddItem('Skirmisher');
 	HeroClasses.AddItem('Reaper');
 
-	HideUnlocks.AddItem('HitWhereItHurtsUnlock');
-	//HideUnlocks.AddItem('CoolUnderPressureUnlock');
-	HideUnlocks.AddItem('BiggestBoomsUnlock');
-	HideUnlocks.AddItem('HuntersInstinctUnlock');
-
 	foreach Templates(Template)
 	{
-		
-		if (HideUnlocks.Find(Template.DataName) != INDEX_NONE)
-		{
-			Template = none;
-		}
+		SoldierUnlockTemplate = X2SoldierAbilityUnlockTemplate(Template);
 
-		if (Template != none &&
-			!X2SoldierAbilityUnlockTemplate(Template).bAllClasses &&
-			X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass != '' &&
-			HeroClasses.Find(X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass) == INDEX_NONE
+		if (SoldierUnlockTemplate == none)
+		{
+			continue;
+		}
+		
+		//`LOG(GetFuncName() @ SoldierUnlockTemplate.DataName @ SoldierUnlockTemplate.bAllClasses @ SoldierUnlockTemplate.Requirements.RequiredSoldierClass,, 'RPG');
+		
+		if (!SoldierUnlockTemplate.bAllClasses &&
+			SoldierUnlockTemplate.Requirements.RequiredSoldierClass != '' &&
+			HeroClasses.Find(SoldierUnlockTemplate.Requirements.RequiredSoldierClass) == INDEX_NONE
 		)
 		{
-			X2SoldierAbilityUnlockTemplate(Template).AllowedClasses.AddItem(SoldierClassName);
-			X2SoldierAbilityUnlockTemplate(Template).Requirements.RequiredSoldierClass = SoldierClassName;
-			X2SoldierAbilityUnlockTemplate(Template).Cost.ResourceCosts[0].Quantity = 300;
+			SoldierUnlockTemplate.AllowedClasses.AddItem(SoldierClassName);
+			SoldierUnlockTemplate.Requirements.RequiredSoldierClass = SoldierClassName;
+			SoldierUnlockTemplate.Cost.ResourceCosts[0].Quantity = 300;
 			`LOG(GetFuncName() @ "patching template" @ Template.DataName,, 'RPG');
 		}
+	}
 
+	TemplateManager.GetTemplateNames(TemplateNames);
+	
+	foreach TemplateNames(TemplateName)
+	{
+ 		TemplateManager.FindDataTemplateAllDifficulties(TemplateName, DataTemplates);
+		foreach DataTemplates(DataTemplate)
+		{
+			Template = X2StrategyElementTemplate(DataTemplate);
+			if(Template != none)
+			{
+				Difficulty = GetDifficultyFromTemplateName(TemplateName);
+				ReconfigFacilities(Template, Difficulty);
+			}
+		}
 	}
 }
+
+static function ReconfigFacilities(X2StrategyElementTemplate Template, int Difficulty)
+{
+	local int						i;
+	local ArtifactCost				Resources;
+	local X2FacilityTemplate		FacilityTemplate;
+
+	FacilityTemplate = X2FacilityTemplate (Template);
+	if (FacilityTemplate != none)
+	{
+		if (FacilityTemplate.DataName == 'OfficerTrainingSchool')
+		{
+			FacilityTemplate.SoldierUnlockTemplates.RemoveItem('HuntersInstinctUnlock');
+			FacilityTemplate.SoldierUnlockTemplates.RemoveItem('HitWhereItHurtsUnlock');
+			FacilityTemplate.SoldierUnlockTemplates.RemoveItem('BiggestBoomsUnlock');
+		}
+	}
+}
+
+static function int GetDifficultyFromTemplateName(name TemplateName)
+{
+	return int(GetRightMost(string(TemplateName)));
+}
+
 
 static function PatchWeapons()
 {
@@ -1109,3 +1150,4 @@ static function ShowInTacticalText(name Ability)
 	AbilityTemplate = TemplateManager.FindAbilityTemplate(Ability);
 	AbilityTemplate.bDisplayInUITacticalText = true;
 }
+
