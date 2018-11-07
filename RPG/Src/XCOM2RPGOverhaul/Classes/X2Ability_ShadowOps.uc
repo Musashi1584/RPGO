@@ -22,7 +22,7 @@ static function X2AbilityTemplate Firebug()
 	ItemEffect.DataName = 'Firebomb';
 	ItemEffect.SkipAbilities.AddItem('SmallItemWeight');
 
-	return Passive('RpgFirebug', "img:///UILibrary_SOCombatEngineer.UIPerk_pyromaniac", true, ItemEffect);
+	return Passive('RpgFirebug', "img:///UILibrary_BlackOps.UIPerk_pyromaniac", true, ItemEffect);
 }
 
 static function X2AbilityTemplate Scrounger()
@@ -80,7 +80,7 @@ static function X2AbilityTemplate Airstrike()
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgAirstrike');
 
 	// Icon Properties
-	Template.IconImage = "img:///UILibrary_SOInfantry.UIPerk_airstrike";
+	Template.IconImage = "img:///UILibrary_BlackOps.UIPerk_airstrike";
 	Template.ShotHUDPriority = default.AUTO_PRIORITY;
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
 	Template.DisplayTargetHitChance = false;
