@@ -118,10 +118,6 @@ function InitStatLines()
 	local int Index, OffsetX, OffsetY;
 	local UnitValue StatPointsValue;
 
-
-	UnitState.GetUnitValue('StatPoints', StatPointsValue);
-	`LOG(default.Class @ GetFuncName() @ UnitState.GetFullName() @ StatPointsValue.fValue,, 'RPG');
-
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, int(UnitState.GetMaxStat(eStat_HP)), OnClickedIncrease, OnClickedDecrease);
 	StatLines.AddItem(StatLine);
 	
@@ -279,7 +275,7 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 	
 	PointsLeft = GetSoldierSP() + GetSoldierAP() - AbilityPointCostSum - StatPointCostSum - StatCost;
 
-	`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
+	//`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
 
 	bCanIncrease = (PointsLeft >= 0);	
 	if (bCanIncrease)
@@ -307,7 +303,6 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int StatCost)
 {
 	local bool bCanDecrease;
-	local int SPAdd, CostRemain;
 	
 	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ StatCost, bLog, 'RPG');
 
