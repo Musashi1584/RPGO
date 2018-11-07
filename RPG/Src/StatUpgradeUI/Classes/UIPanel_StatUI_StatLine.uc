@@ -332,5 +332,5 @@ defaultproperties
 	Padding=20
 	IconSize=32
 	FontSize=32
-	bLog=true
+	bLog=false
 }

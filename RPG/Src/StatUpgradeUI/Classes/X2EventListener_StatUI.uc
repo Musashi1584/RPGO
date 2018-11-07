@@ -1,4 +1,6 @@
-class X2EventListener_StatUI_MainMenu extends X2EventListener;
+class X2EventListener_StatUI extends X2EventListener config(UI);
+
+var config int StatPointsPerPromotion;
 
 var delegate<OnItemSelectedCallback> NextOnSelectionChanged;
 delegate OnItemSelectedCallback(UIList _list, int itemIndex);
@@ -8,6 +10,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	local array<X2DataTemplate> Templates;
 
 	Templates.AddItem(CreateMainMenuListenerTemplate());
+	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
 
 	return Templates;
 }
@@ -27,6 +30,38 @@ static function CHEventListenerTemplate CreateMainMenuListenerTemplate()
 	return Template;
 }
 
+static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGUnitRankUp');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUp, ELD_Immediate);
+	`LOG("Register Event OnUnitRankUp",, 'RPG');
+
+	return Template;
+}
+
+static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit UnitState;
+	local UnitValue StatPointsValue;
+
+	UnitState = XComGameState_Unit(EventData);
+
+	if (UnitState != none)
+	{
+		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));	
+		UnitState.GetUnitValue('StatPoints', StatPointsValue);
+		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + default.StatPointsPerPromotion, eCleanup_Never);
+		GameState.AddStateObject(UnitState);
+	}
+
+	return ELR_NoInterrupt;
+}
 
 static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
@@ -34,17 +69,19 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	local UIArmory_MainMenu MainMenu;
 	local UIListItemString StatUIButton;
 	local XComGameState_Unit UnitState;
+	local UnitValue StatPointsValue;
 
 	`LOG(GetFuncName(),, 'RPG');
 	
 	List = UIList(EventData);
 	MainMenu = UIArmory_MainMenu(EventSource);	
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(MainMenu.GetUnitRef().ObjectID));
+	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 
 	StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
 	StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
 	StatUIButton.ButtonBG.OnClickedDelegate = OnSoldierStats;
-	StatUIButton.NeedsAttention(UnitState.AbilityPoints > 0);
+	StatUIButton.NeedsAttention(StatPointsValue.fValue > 0);
 
 	//if(NextOnSelectionChanged == none)
 	//{

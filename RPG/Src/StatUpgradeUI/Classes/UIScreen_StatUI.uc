@@ -6,14 +6,14 @@ var UIBGBox FullBG;
 var UIX2PanelHeader TitleHeader;
 var UIImage SCImage;
 var UIButton SaveButton;
-var UIText AbilityPointsText, StatNameHeader, StatValueHeader, UpgradePointsHeader, StatCostHeader, UpgradeCostHeader;
+var UIText StatPointsText, AbilityPointsText, StatNameHeader, StatValueHeader, UpgradePointsHeader, StatCostHeader, UpgradeCostHeader;
 var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
 var XComGameState_Unit UnitState;
-var int AbilityPointCostSum, FontSize, Padding, LeftPadding, StatOffsetY;
+var int StatPointCostSum, AbilityPointCostSum, FontSize, Padding, LeftPadding, StatOffsetY;
 
-var localized string m_StatNameHeader, m_StatValueHeader, m_UpgradePointsHeader, m_StatCostHeader, m_UpgradeCostHeader;
+var localized string m_strSoldierSPLabel, m_StatNameHeader, m_StatValueHeader, m_UpgradePointsHeader, m_StatCostHeader, m_UpgradeCostHeader;
 
 simulated function InitArmory(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false, optional XComGameState InitCheckGameState)
 {
@@ -46,9 +46,13 @@ function InitPanels()
 	SCImage.SetSize(80, 80);
 	SCImage.SetPosition(RunningHeaderOffsetX, RunningHeaderOffsetX);
 
+	StatPointsText = Spawn(class'UIText', Container).InitText('StatPointsText');
+	StatPointsText.SetWidth(200);
+	StatPointsText.SetPosition(Container.Width - StatPointsText.Width - LeftPadding, LeftPadding);
+
 	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
 	AbilityPointsText.SetWidth(200);
-	AbilityPointsText.SetPosition(Container.Width - AbilityPointsText.Width - LeftPadding, LeftPadding);
+	AbilityPointsText.SetPosition(Container.Width - AbilityPointsText.Width - StatPointsText.Width - LeftPadding, LeftPadding);
 
 	TitleHeader = Spawn(class'UIX2PanelHeader', Container);
 	TitleHeader.InitPanelHeader('', "", "");
@@ -66,7 +70,7 @@ function InitPanels()
 	InitStatLines();
 
 	PopulateHeaderData();
-	PopulateSoldierAP();
+	PopulateSoldierPoints();
 }
 
 function InitStatHeaders(
@@ -169,18 +173,27 @@ function PopulateHeaderData()
 	TitleHeader.MC.FunctionVoid("realize");
 }
 
-function PopulateSoldierAP()
+function PopulateSoldierPoints()
 {
-	local int CurrentAP;
+	local int CurrentAP, CurrentSP;
 
-	CurrentAP = GetSoldierAP() - AbilityPointCostSum;
+	CurrentSP = Max(GetSoldierSP() - StatPointCostSum, 0);
+	CurrentAP = GetSoldierAP() - AbilityPointCostSum - Min(GetSoldierSP() - StatPointCostSum, 0);
 
+	StatPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_strSoldierSPLabel @ string(CurrentSP), eUIState_Normal, FontSize));
 	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, FontSize));
 }
 
 function int GetSoldierAP()
 {
 	return UnitState.AbilityPoints;
+}
+
+function int GetSoldierSP()
+{
+	local UnitValue StatPointsValue;
+	UnitState.GetUnitValue('StatPoints', StatPointsValue);
+	return int(StatPointsValue.fValue);
 }
 
 function Save(UIButton Button)
@@ -242,6 +255,7 @@ simulated function ComfirmStatUpgradeCallback(Name Action)
 
 		UpdatedUnit.AbilityPoints -= AbilityPointCostSum;
 		UpdatedUnit.SpentAbilityPoints += AbilityPointCostSum;
+		UpdatedUnit.SetUnitFloatValue('StatPoints', float(GetSoldierSP() - StatPointCostSum), eCleanup_Never);
 		`XEVENTMGR.TriggerEvent('AbilityPointsChange', UpdatedUnit, , UpdateState);
 
 		`GAMERULES.SubmitGameState(UpdateState);
@@ -259,19 +273,33 @@ simulated function ComfirmStatUpgradeCallback(Name Action)
 function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int StatCost)
 {
 	local bool bCanIncrease;
-	local int AbilityPointsLeft;
+	local int PointsLeft, SPLeft, CostRemain;
 	
 	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue, bLog, 'RPG');
 	
-	AbilityPointsLeft = GetSoldierAP() - AbilityPointCostSum - StatCost;
-	bCanIncrease = (AbilityPointsLeft) >= 0;
+	PointsLeft = GetSoldierSP() + GetSoldierAP() - AbilityPointCostSum - StatPointCostSum - StatCost;
+
+	`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
+
+	bCanIncrease = (PointsLeft >= 0);	
 	if (bCanIncrease)
 	{
-		AbilityPointCostSum += StatCost;
-		PopulateSoldierAP();
+		
+		SPLeft = GetSoldierSP() - StatPointCostSum - StatCost;
+		if (SPLeft >= 0)
+		{
+			StatPointCostSum += StatCost;
+		}
+		else
+		{
+			CostRemain = StatCost + SPLeft;
+			StatPointCostSum += CostRemain;
+			AbilityPointCostSum += StatCost - CostRemain;
+		}
+		PopulateSoldierPoints();
 	}
 
-	`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ AbilityPointsLeft @ bCanIncrease, bLog, 'RPG');
+	//`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ PointsLeft @ bCanIncrease, bLog, 'RPG');
 
 	return bCanIncrease;
 }
@@ -279,6 +307,7 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int StatCost)
 {
 	local bool bCanDecrease;
+	local int SPAdd, CostRemain;
 	
 	`LOG(self.Class.name @ GetFuncName() @ StatType @ NewStatValue @ StatCost, bLog, 'RPG');
 
@@ -286,8 +315,16 @@ function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int St
 
 	if (bCanDecrease)
 	{
-		AbilityPointCostSum -= StatCost;
-		PopulateSoldierAP();
+		if (StatCost <= AbilityPointCostSum)
+		{
+			AbilityPointCostSum -= StatCost;	
+		}
+		else
+		{
+			StatPointCostSum -= (StatCost - AbilityPointCostSum);
+			AbilityPointCostSum = 0;
+		}
+		PopulateSoldierPoints();
 	}
 
 	return bCanDecrease;
