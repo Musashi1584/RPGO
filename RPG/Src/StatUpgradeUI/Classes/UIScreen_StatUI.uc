@@ -205,7 +205,7 @@ simulated function OnCancel()
 
 simulated function OnAccept()
 {
-	if (AbilityPointCostSum > 0)
+	if (AbilityPointCostSum + StatPointCostSum > 0)
 		ConfirmStatUpgrade();
 	else
 		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
