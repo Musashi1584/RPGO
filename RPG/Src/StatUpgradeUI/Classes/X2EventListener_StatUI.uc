@@ -1,6 +1,13 @@
 class X2EventListener_StatUI extends X2EventListener config(UI);
 
-var config int StatPointsPerPromotion;
+struct ClassStatPoints
+{
+	var name SoldierClassTemplateName;
+	var int StatPointsPerPromotion;
+};
+
+var config int DefaultStatPointsPerPromotion;
+var config array<ClassStatPoints> ClassStatPointsPerPromotion;
 
 var delegate<OnItemSelectedCallback> NextOnSelectionChanged;
 delegate OnItemSelectedCallback(UIList _list, int itemIndex);
@@ -49,14 +56,26 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 {
 	local XComGameState_Unit UnitState;
 	local UnitValue StatPointsValue;
+	local int Index, StatPointsPerPromotion;
 
 	UnitState = XComGameState_Unit(EventData);
 
 	if (UnitState != none)
 	{
+		Index = default.ClassStatPointsPerPromotion.Find('SoldierClassTemplateName', UnitState.GetSoldierClassTemplateName());
+
+		if (Index != INDEX_NONE)
+		{
+			StatPointsPerPromotion = default.ClassStatPointsPerPromotion[Index].StatPointsPerPromotion;
+		}
+		else
+		{
+			StatPointsPerPromotion = default.DefaultStatPointsPerPromotion;
+		}
+
 		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));	
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
-		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + default.StatPointsPerPromotion, eCleanup_Never);
+		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion, eCleanup_Never);
 		GameState.AddStateObject(UnitState);
 	}
 
