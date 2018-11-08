@@ -117,8 +117,11 @@ function InitStatLines()
 	local UIPanel_StatUI_StatLine StatLine;
 	local int Index, OffsetX, OffsetY;
 	local UnitValue StatPointsValue;
+	local bool bUseBetaStrikeHealthProgression;
 
-	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, int(UnitState.GetMaxStat(eStat_HP)), OnClickedIncrease, OnClickedDecrease);
+	bUseBetaStrikeHealthProgression = UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier';
+
+	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_HP, int(UnitState.GetMaxStat(eStat_HP)), OnClickedIncrease, OnClickedDecrease, bUseBetaStrikeHealthProgression);
 	StatLines.AddItem(StatLine);
 	
 	StatLine = Spawn(class'UIPanel_StatUI_StatLine', Container).InitStatLine(eStat_Mobility, int(UnitState.GetMaxStat(eStat_Mobility)), OnClickedIncrease, OnClickedDecrease);

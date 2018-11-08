@@ -21,6 +21,8 @@ struct StatLocaleBind
 
 var config array<StatIconBind> StatIcons;
 var config array<StatCostBind> StatCosts;
+var config float HealthAbilityPointCostBetaStrikeMultiplier, HealthAbilityPointCostDeltaStrikeMultiplier;
+var config int HealthBetaStrikeCostLamda, HealthDeltaStrikeCostLamda;
 
 var array<StatLocaleBind> StatLocales;
 
@@ -32,6 +34,7 @@ var ECharStatType StatType;
 var int IconSize, Padding, FontSize;
 var int InitStatValue, StatValue;
 var bool bLog;
+var bool bUseBetaStrikeHealthProgression;
 
 var delegate<OnStatUpdateDelegate> CustomOnClickedIncreaseFn;
 var delegate<OnStatUpdateDelegate> CustomOnClickedDecreaseFn;
@@ -44,7 +47,8 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 	ECharStatType InitStatType,
 	int InitialStatValue,
 	delegate<OnStatUpdateDelegate> OnClickedIncreaseFn,
-	delegate<OnStatUpdateDelegate> OnClickedDecreaseFn
+	delegate<OnStatUpdateDelegate> OnClickedDecreaseFn,
+	optional bool UseBetaStrikeHealthProgression = false
 )
 {
 	local name PanelName;
@@ -57,6 +61,7 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 	StatType = InitStatType;
 	StatValue = InitialStatValue;
 	InitStatValue = InitialStatValue;
+	bUseBetaStrikeHealthProgression = UseBetaStrikeHealthProgression;
 
 	CustomOnClickedIncreaseFn = OnClickedIncreaseFn;
 	CustomOnClickedDecreaseFn = OnClickedDecreaseFn;
@@ -261,6 +266,7 @@ function int GetStatCost(int NewStatValue)
 {
 	local int Index;
 	local float Div, Cost;
+	local int AbilityPointCost;
 
 	Index = default.StatCosts.Find('Stat', StatType);
 
@@ -268,15 +274,31 @@ function int GetStatCost(int NewStatValue)
 	{
 		`LOG(self.class.name @ GetFuncName() @ "NewStatValue" @ NewStatValue @ "AbilityPointCost" @ default.StatCosts[Index].AbilityPointCost @ "NonLinearProgressionCostLamda" @ default.StatCosts[Index].NonLinearProgressionCostLamda, bLog, 'RPG');
 
+		AbilityPointCost = default.StatCosts[Index].AbilityPointCost;
+
+		if (`SecondWaveEnabled('BetaStrike') && StatType == eStat_HP && bUseBetaStrikeHealthProgression)
+		{
+			AbilityPointCost *= default.HealthAbilityPointCostBetaStrikeMultiplier;
+			default.StatCosts[Index].NonLinearProgressionCostLamda = HealthBetaStrikeCostLamda;
+			`LOG(self.class.name @ GetFuncName() @ "modifying HP because SWO BetaStrike is enabled. New AbilityPointCost" @ AbilityPointCost, bLog, 'RPG');
+		}
+
+		if (`SecondWaveEnabled('DeltaStrike') && StatType == eStat_HP && bUseBetaStrikeHealthProgression)
+		{
+			AbilityPointCost *= default.HealthAbilityPointCostDeltaStrikeMultiplier;
+			default.StatCosts[Index].NonLinearProgressionCostLamda = HealthDeltaStrikeCostLamda;
+			`LOG(self.class.name @ GetFuncName() @ "modifying HP because SWO DeltaStrike is enabled. New AbilityPointCost" @ AbilityPointCost, bLog, 'RPG');
+		}
+
 		if (default.StatCosts[Index].NonLinearProgressionCostLamda > 0)
 		{
 			Div = float(NewStatValue) / float(default.StatCosts[Index].NonLinearProgressionCostLamda);
-			Cost = FMin(Exp(Pow(Div, 6)) * default.StatCosts[Index].AbilityPointCost, 50.0f);
+			Cost = FMin(Exp(Pow(Div, 6)) * AbilityPointCost, 50.0f);
 			`LOG(self.class.name @ GetFuncName() @ "Cost" @ Cost, bLog, 'RPG');
 			return int(Cost + 0.5f);
 		}
 
-		return default.StatCosts[Index].AbilityPointCost;
+		return AbilityPointCost;
 	}
 
 	return 0;
@@ -332,5 +354,5 @@ defaultproperties
 	Padding=20
 	IconSize=32
 	FontSize=32
-	bLog=false
+	bLog=true
 }
