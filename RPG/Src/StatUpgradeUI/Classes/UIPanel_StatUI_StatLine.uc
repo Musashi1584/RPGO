@@ -276,18 +276,17 @@ function int GetStatCost(int NewStatValue)
 
 		AbilityPointCost = default.StatCosts[Index].AbilityPointCost;
 
-		if (`SecondWaveEnabled('BetaStrike') && StatType == eStat_HP && bUseBetaStrikeHealthProgression)
-		{
-			AbilityPointCost *= default.HealthAbilityPointCostBetaStrikeMultiplier;
-			default.StatCosts[Index].NonLinearProgressionCostLamda = HealthBetaStrikeCostLamda;
-			`LOG(self.class.name @ GetFuncName() @ "modifying HP because SWO BetaStrike is enabled. New AbilityPointCost" @ AbilityPointCost, bLog, 'RPG');
-		}
-
 		if (`SecondWaveEnabled('DeltaStrike') && StatType == eStat_HP && bUseBetaStrikeHealthProgression)
 		{
 			AbilityPointCost *= default.HealthAbilityPointCostDeltaStrikeMultiplier;
 			default.StatCosts[Index].NonLinearProgressionCostLamda = HealthDeltaStrikeCostLamda;
 			`LOG(self.class.name @ GetFuncName() @ "modifying HP because SWO DeltaStrike is enabled. New AbilityPointCost" @ AbilityPointCost, bLog, 'RPG');
+		}
+		else if (`SecondWaveEnabled('BetaStrike') && StatType == eStat_HP && bUseBetaStrikeHealthProgression)
+		{
+			AbilityPointCost *= default.HealthAbilityPointCostBetaStrikeMultiplier;
+			default.StatCosts[Index].NonLinearProgressionCostLamda = HealthBetaStrikeCostLamda;
+			`LOG(self.class.name @ GetFuncName() @ "modifying HP because SWO BetaStrike is enabled. New AbilityPointCost" @ AbilityPointCost, bLog, 'RPG');
 		}
 
 		if (default.StatCosts[Index].NonLinearProgressionCostLamda > 0)

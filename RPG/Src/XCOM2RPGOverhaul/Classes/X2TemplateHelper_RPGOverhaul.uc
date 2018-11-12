@@ -619,7 +619,7 @@ static function PatchSpecialShotAbiitiesForLightEmUp()
 	local int											Index;
 	
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-		
+
 	foreach default.ValidLightEmUpAbilities(TemplateName)
 	{
 		Template = TemplateManager.FindAbilityTemplate(TemplateName);
@@ -654,7 +654,7 @@ static function PatchPistolStandardShot()
 		Template = TemplateManager.FindAbilityTemplate(TemplateName);
 		if (Template != none)
 		{
-			ActionPointCost = X2AbilityCost_ActionPoints(Template.AbilityCosts[0]);
+			ActionPointCost = GetAbilityCostActionPoints(Template);
 			if (ActionPointCost != none && ActionPointCost.DoNotConsumeAllSoldierAbilities.Find('QuickdrawNew') == INDEX_NONE)
 			{
 				ActionPointCost.DoNotConsumeAllSoldierAbilities.AddItem('QuickDrawPrimary');
@@ -663,6 +663,19 @@ static function PatchPistolStandardShot()
 			}
 		}
 	}
+}
+
+static function X2AbilityCost_ActionPoints GetAbilityCostActionPoints(X2AbilityTemplate Template)
+{
+	local X2AbilityCost Cost;
+	foreach Template.AbilityCosts(Cost)
+	{
+		if (X2AbilityCost_ActionPoints(Cost) != none)
+		{
+			return X2AbilityCost_ActionPoints(Cost);
+		}
+	}
+	return none;
 }
 
 static function PatchTraceRounds()
@@ -706,6 +719,7 @@ static function PatchMedicalProtocol()
 	local X2AbilityTemplateManager				TemplateManager;
 	local X2AbilityTemplate						Template;
 	local X2AbilityCost_ActionPointsExtended	ActionPointCost;
+	local int									Index;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
@@ -714,10 +728,22 @@ static function PatchMedicalProtocol()
 	ActionPointCost.FreeCostAbilities.AddItem('EmergencyProtocol');
 
 	Template = TemplateManager.FindAbilityTemplate('GremlinHeal');
-	Template.AbilityCosts[0] = ActionPointCost;
+	for (Index = 0; Index < Template.AbilityCosts.Length; Index++)
+	{
+		if (X2AbilityCost_ActionPoints(Template.AbilityCosts[Index]) != none)
+		{
+			Template.AbilityCosts[Index] = ActionPointCost;
+		}
+	}
 
 	Template = TemplateManager.FindAbilityTemplate('GremlinStabilize');
-	Template.AbilityCosts[0] = ActionPointCost;
+	for (Index = 0; Index < Template.AbilityCosts.Length; Index++)
+	{
+		if (X2AbilityCost_ActionPoints(Template.AbilityCosts[Index]) != none)
+		{
+			Template.AbilityCosts[Index] = ActionPointCost;
+		}
+	}
 }
 
 static function PatchClaymoreCharges()
@@ -838,9 +864,8 @@ static function PatchStandardShot()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('StandardShot');
-	`LOG(default.Class @ GetFuncName() @ X2AbilityCost_ActionPoints(Template.AbilityCosts[0]),, 'RPG');
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).AllowedTypes.AddItem(class'X2Effect_LightEmUp'.default.LightEmUpActionPoint);
-	//X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('RPGO_LightEmUp');
+
+	GetAbilityCostActionPoints(Template).AllowedTypes.AddItem(class'X2Effect_LightEmUp'.default.LightEmUpActionPoint);
 }
 
 static function PatchRemoteStart()
@@ -851,7 +876,7 @@ static function PatchRemoteStart()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('RemoteStart');
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).DoNotConsumeAllSoldierAbilities.AddItem('AsymmetricWarfare');
+	GetAbilityCostActionPoints(Template).DoNotConsumeAllSoldierAbilities.AddItem('AsymmetricWarfare');
 }
 
 static function PatchSniperStandardFire()
@@ -862,7 +887,7 @@ static function PatchSniperStandardFire()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('SniperStandardFire');
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).bAddWeaponTypicalCost = false;
+	GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
 }
 
 static function PatchLongWatch()
@@ -873,7 +898,7 @@ static function PatchLongWatch()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('LongWatch');
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).bAddWeaponTypicalCost = false;
+	GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
 }
 
 
