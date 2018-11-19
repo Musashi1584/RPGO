@@ -112,6 +112,9 @@ static function EventListenerReturn OnGetLocalizedCategory(Object EventData, Obj
 		case 'sawedoffshotgun':
 			Localization = class'XGLocalizedData_RPG'.default.UtilityCatSawedoffshotgun;
 			break;
+		case 'lw_gauntlet':
+			Localization = class'XGLocalizedData_RPG'.default.UtilityCatLWGauntlet;
+			break;
 		default:
 			Localization = Tuple.Data[0].s;
 			break;

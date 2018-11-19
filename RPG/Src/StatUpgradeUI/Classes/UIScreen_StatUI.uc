@@ -195,6 +195,13 @@ function int GetSoldierSP()
 	return int(StatPointsValue.fValue);
 }
 
+function int GetSpentSoldierSP()
+{
+	local UnitValue StatPointsValue;
+	UnitState.GetUnitValue('SpentStatPoints', StatPointsValue);
+	return int(StatPointsValue.fValue);
+}
+
 function Save(UIButton Button)
 {
 	`LOG(self.Class.name @ GetFuncName(), bLog, 'RPG');
@@ -255,6 +262,7 @@ simulated function ComfirmStatUpgradeCallback(Name Action)
 		UpdatedUnit.AbilityPoints -= AbilityPointCostSum;
 		UpdatedUnit.SpentAbilityPoints += AbilityPointCostSum;
 		UpdatedUnit.SetUnitFloatValue('StatPoints', float(GetSoldierSP() - StatPointCostSum), eCleanup_Never);
+		UpdatedUnit.SetUnitFloatValue('SpentStatPoints', float(GetSpentSoldierSP() + StatPointCostSum), eCleanup_Never);
 		`XEVENTMGR.TriggerEvent('AbilityPointsChange', UpdatedUnit, , UpdateState);
 
 		`GAMERULES.SubmitGameState(UpdateState);

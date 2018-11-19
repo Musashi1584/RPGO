@@ -1,3 +1,8 @@
+- New ability/stat purchase system. No more free perks. Adjusted perk costs (cheap, baseline, expensive perks).  Stats can be bought with a separate stat point pool (15/promotion) and Soldier AP.
+  Ability AP costs and Stat Points per promotion can be edited in config/StatUpgradeUI/XcomUI.ini
+- Reduced HP stat costs for beta/delta strike
+
+
 - Unlocks cool under pressure as GTS Perk
 - Allow special shots like rapid fire and chain shot as valid second actions for LightEmUp.
 

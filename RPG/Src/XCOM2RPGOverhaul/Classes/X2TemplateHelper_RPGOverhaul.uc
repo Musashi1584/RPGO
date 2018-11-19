@@ -256,17 +256,22 @@ static function PatchAbilitiesWeaponCondition()
 	local X2AbilityTemplate				Template;
 	local X2Condition_WeaponCategory	WeaponCondition;
 	local AbilityWeaponCategoryRestriction Restriction;
+	local bool							bMeleeReaction;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		if (Template != none && !X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire)
+		bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
+		if (Template != none && !bMeleeReaction)
 		{
 			WeaponCondition = new class'X2Condition_WeaponCategory';
 			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
 			Template.AbilityTargetConditions.AddItem(WeaponCondition);
+
+			Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+			Template.HideErrors.AddItem('AA_WeaponIncompatible');
 		}
 	}
 }
@@ -1094,7 +1099,12 @@ static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
 	}
 }
 
-static function EInventorySlot FindInventorySlotForItemCategory(XComGameState_Unit UnitState, name WeaponCategory, out XComGameState_Item FoundItemState, optional XComGameState StartState)
+static function EInventorySlot FindInventorySlotForItemCategory(
+	XComGameState_Unit UnitState,
+	name WeaponCategory,
+	out XComGameState_Item FoundItemState,
+	optional XComGameState StartState
+	)
 {
 	local array<XComGameState_Item> CurrentInventory;
 	local XComGameState_Item InventoryItem;

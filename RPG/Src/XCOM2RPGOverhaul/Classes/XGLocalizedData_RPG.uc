@@ -12,6 +12,7 @@ var localized string UtilityCatArcthrower;
 var localized string UtilityCatCombatknife;
 var localized string UtilityCatHolotargeter;
 var localized string UtilityCatSawedoffshotgun;
+var localized string UtilityCatLWGauntlet;
 
 var localized string m_strCategoryRestricted;
 var localized string m_strAbilityRequired;

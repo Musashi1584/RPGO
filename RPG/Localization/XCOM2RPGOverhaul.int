@@ -54,6 +54,10 @@ ClassSpecializationSummary="Sometimes its not enough to just bring a rocket laun
 ClassSpecializationTitle=Spotter
 ClassSpecializationSummary="Every group of dedicated insurgents needs someone to watch their back. Traps, Tricks, and Treats are the name of their game, find it, mark it, and make sure the Op goes smooth."
 
+[Technical X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Technical
+ClassSpecializationSummary="Our Technicals are trained to use certain heavy weaponry, the rocket launcher and flamethrower, to provide critical support during firefights."
+
 [XGLocalizedData_RPG]
 UtilityCatPistol="(Auto-)Pistol"
 UtilityCatSidearm="(Auto-)Pistol"
@@ -67,5 +71,6 @@ UtilityCatArcthrower="Arc Thrower"
 UtilityCatCombatknife="Melee Weapon"
 UtilityCatHolotargeter="Holotargeter"
 UtilityCatSawedoffshotgun="Sawed-Off Shotgun"
+UtilityCatLWGauntlet="XCOM Gauntlet"
 m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
