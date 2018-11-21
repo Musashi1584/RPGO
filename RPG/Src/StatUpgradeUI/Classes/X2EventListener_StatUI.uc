@@ -18,6 +18,7 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	Templates.AddItem(CreateMainMenuListenerTemplate());
 	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
+	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 
 	return Templates;
 }
@@ -52,26 +53,50 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	return Template;
 }
 
-static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecSoldier()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGCompleteRespecSoldier');
+
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldier, ELD_Immediate);
+	`LOG("Register Event CompleteRespecSoldier",, 'RPG');
+
+	return Template;
+}
+
+static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
 	local UnitValue StatPointsValue;
-	local int Index, StatPointsPerPromotion;
+	local int SpentSoldierSP, SoldierSP;
 
 	UnitState = XComGameState_Unit(EventData);
 
 	if (UnitState != none)
 	{
-		Index = default.ClassStatPointsPerPromotion.Find('SoldierClassTemplateName', UnitState.GetSoldierClassTemplateName());
+		SpentSoldierSP = GetSpentSoldierSP(UnitState);
+		SoldierSP = GetSoldierSP(UnitState);
 
-		if (Index != INDEX_NONE)
-		{
-			StatPointsPerPromotion = default.ClassStatPointsPerPromotion[Index].StatPointsPerPromotion;
-		}
-		else
-		{
-			StatPointsPerPromotion = default.DefaultStatPointsPerPromotion;
-		}
+		UnitState.SetUnitFloatValue('StatPoints', SoldierSP + SpentSoldierSP, eCleanup_Never);
+	}
+
+	return ELR_NoInterrupt;
+}
+
+static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit UnitState;
+	local UnitValue StatPointsValue;
+	local int StatPointsPerPromotion;
+
+	UnitState = XComGameState_Unit(EventData);
+
+	if (UnitState != none)
+	{
+		StatPointsPerPromotion = GetClassStatPointsPerPromition(UnitState);
 
 		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));	
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
@@ -156,3 +181,32 @@ simulated function OnSelectionChanged(UIList ContainerList, int ItemIndex)
 	NextOnSelectionChanged(ContainerList, ItemIndex);
 }
 
+static function int GetClassStatPointsPerPromition(XComGameState_Unit UnitState)
+{
+	local int Index;
+
+	Index = default.ClassStatPointsPerPromotion.Find('SoldierClassTemplateName', UnitState.GetSoldierClassTemplateName());
+
+	if (Index != INDEX_NONE)
+	{
+		return default.ClassStatPointsPerPromotion[Index].StatPointsPerPromotion;
+	}
+	else
+	{
+		return default.DefaultStatPointsPerPromotion;
+	}
+}
+
+static function int GetSpentSoldierSP(XComGameState_Unit UnitState)
+{
+	local UnitValue StatPointsValue;
+	UnitState.GetUnitValue('SpentStatPoints', StatPointsValue);
+	return int(StatPointsValue.fValue);
+}
+
+static function int GetSoldierSP(XComGameState_Unit UnitState)
+{
+	local UnitValue StatPointsValue;
+	UnitState.GetUnitValue('StatPoints', StatPointsValue);
+	return int(StatPointsValue.fValue);
+}
