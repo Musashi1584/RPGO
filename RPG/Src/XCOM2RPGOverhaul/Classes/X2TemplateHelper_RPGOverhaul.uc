@@ -270,8 +270,17 @@ static function PatchAbilitiesWeaponCondition()
 			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
 			Template.AbilityTargetConditions.AddItem(WeaponCondition);
 
-			Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-			Template.HideErrors.AddItem('AA_WeaponIncompatible');
+			// Hide active abilities if no weapon matches
+			if (
+				(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
+				 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
+				!Template.bIsPassive &&
+				Template.HasTrigger('X2AbilityTrigger_PlayerInput')
+			)
+			{
+				Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+				Template.HideErrors.AddItem('AA_WeaponIncompatible');
+			}
 		}
 	}
 }
@@ -575,7 +584,6 @@ static function UpdateStorage()
 		}
 	}
 }
-
 
 static function PatchAbilityPrerequisites()
 {

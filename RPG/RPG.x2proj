@@ -62,7 +62,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\NewPromotionScreenbyDefault\XComPromotionUIMod.ini">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Config\StatUpgradeUI\XComUI.ini">
+    <Content Include="Config\StatUpgradeUI\XComStatUpgradeUI.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComClassData.ini">
@@ -207,6 +207,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\NewPromotionScreenbyDefault\Classes\X2DownloadableContentInfo_NewPromotionScreenbyDefault.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\StatUpgradeUI\Classes\StatUIHelper.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\StatUpgradeUI\Classes\UIPanel_StatUI_StatLine.uc">

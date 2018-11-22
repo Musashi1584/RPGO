@@ -1,4 +1,4 @@
-class X2EventListener_StatUI extends X2EventListener config(UI);
+class X2EventListener_StatUI extends X2EventListener config(StatUpgradeUI);
 
 struct ClassStatPoints
 {
@@ -70,7 +70,6 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
-	local UnitValue StatPointsValue;
 	local int SpentSoldierSP, SoldierSP;
 
 	UnitState = XComGameState_Unit(EventData);
@@ -90,17 +89,20 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 {
 	local XComGameState_Unit UnitState;
 	local UnitValue StatPointsValue;
-	local int StatPointsPerPromotion;
+	local int StatPointsPerPromotion, BonusStatPointsNaturalAptitude;
 
 	UnitState = XComGameState_Unit(EventData);
 
 	if (UnitState != none)
 	{
 		StatPointsPerPromotion = GetClassStatPointsPerPromition(UnitState);
-
-		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));	
+		BonusStatPointsNaturalAptitude = class'StatUIHelper'.static.GetBonusStatPointsFromNaturalAptitude(UnitState);
+		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
-		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion, eCleanup_Never);
+		
+		`LOG(default.Class @ GetFuncName() @ "StatPointsValue" @ int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @ StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @ BonusStatPointsNaturalAptitude,, 'RPG');
+
+		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion + BonusStatPointsNaturalAptitude, eCleanup_Never);
 		GameState.AddStateObject(UnitState);
 	}
 

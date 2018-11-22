@@ -1,4 +1,4 @@
-class UIScreen_StatUI extends UIArmory config(UI);
+class UIScreen_StatUI extends UIArmory config(StatUpgradeUI);
 
 var UIPanel Container;
 var UIBGBox PanelBG;
@@ -6,7 +6,7 @@ var UIBGBox FullBG;
 var UIX2PanelHeader TitleHeader;
 var UIImage SCImage;
 var UIButton SaveButton;
-var UIText StatPointsText, AbilityPointsText, StatNameHeader, StatValueHeader, UpgradePointsHeader, StatCostHeader, UpgradeCostHeader;
+var UIText NaturalAptitudeText, StatPointsText, AbilityPointsText, StatNameHeader, StatValueHeader, UpgradePointsHeader, StatCostHeader, UpgradeCostHeader;
 var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
@@ -53,6 +53,10 @@ function InitPanels()
 	AbilityPointsText = Spawn(class'UIText', Container).InitText('AbilityPointsText');
 	AbilityPointsText.SetWidth(200);
 	AbilityPointsText.SetPosition(Container.Width - AbilityPointsText.Width - StatPointsText.Width - LeftPadding, LeftPadding);
+
+	NaturalAptitudeText = Spawn(class'UIText', Container).InitText('NaturalAptitudeText');
+	NaturalAptitudeText.SetWidth(450);
+	NaturalAptitudeText.SetPosition(Container.Width - NaturalAptitudeText.Width - LeftPadding, LeftPadding * 2);
 
 	TitleHeader = Spawn(class'UIX2PanelHeader', Container);
 	TitleHeader.InitPanelHeader('', "", "");
@@ -116,7 +120,6 @@ function InitStatLines()
 {
 	local UIPanel_StatUI_StatLine StatLine;
 	local int Index, OffsetX, OffsetY;
-	local UnitValue StatPointsValue;
 	local bool bUseBetaStrikeHealthProgression;
 
 	bUseBetaStrikeHealthProgression = UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier';
@@ -162,6 +165,8 @@ function InitStatLines()
 
 function PopulateHeaderData()
 {
+	local string NaturalAptitude;
+
 	if (UnitState.GetSoldierClassTemplate() != none)
 	{
 		SCImage.LoadImage(UnitState.GetSoldierClassIcon());
@@ -170,6 +175,9 @@ function PopulateHeaderData()
 
 	TitleHeader.SetText(UnitState.GetName(eNameType_FullNick), Caps(UnitState.IsSoldier() ? UnitState.GetSoldierClassDisplayName() : ""));
 	TitleHeader.MC.FunctionVoid("realize");
+
+	NaturalAptitude = class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(class'StatUIHelper'.default.NaturalAptitude $ ":" @ Caps(class'StatUIHelper'.static.GetNaturalAptitudeLabel(class'StatUIHelper'.static.GetNaturalAptitude(UnitState))), eUIState_Normal, FontSize));
+	NaturalAptitudeText.SetHtmlText(NaturalAptitude);
 }
 
 function PopulateSoldierPoints()
@@ -179,7 +187,7 @@ function PopulateSoldierPoints()
 	CurrentSP = Max(GetSoldierSP() - StatPointCostSum, 0);
 	CurrentAP = GetSoldierAP() - AbilityPointCostSum - Min(GetSoldierSP() - StatPointCostSum, 0);
 
-	StatPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(m_strSoldierSPLabel @ string(CurrentSP), eUIState_Normal, FontSize));
+	StatPointsText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(m_strSoldierSPLabel @ string(CurrentSP), eUIState_Normal, FontSize)));
 	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, FontSize));
 }
 
@@ -360,7 +368,7 @@ simulated function bool IsAllowedToCycleSoldiers()
 
 defaultproperties
 {
-	StatOffsetY=70
+	StatOffsetY=90
 	LeftPadding=40
 	Padding=20
 	FontSize=32

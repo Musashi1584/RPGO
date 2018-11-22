@@ -1,6 +1,9 @@
 class X2DownloadableContentInfo_StatUpgradeUI extends X2DownloadableContentInfo;
 
-
+static event OnPostTemplatesCreated()
+{
+	class'StatUIHelper'.static.OnPostCharacterTemplatesCreated();
+}
 
 exec function DebugStatUIHeader(
 	int StatNameHeaderWidth,

@@ -127,6 +127,12 @@ Known incompatibilities:
 - "Hack Plus" leads to insane high hacking stats
 - I am the commander here
 
+
+[b]My soldier keep getting promited to basegame/other classes?[/b]
+Its a strange bug cause by the config system for some people.
+Use the mod Disable Any Class Wotc and disable all classes but UniversalSoldier in the ingame mod options.
+https://steamcommunity.com/sharedfiles/filedetails/?id=1148535137
+
 [h1]A note on the beta status[/h1]
 This mod will change frequently.
 Therefor it might be needed that you rebuild you soldiers.

@@ -16,9 +16,9 @@ var UIText AimValue, DefenseValue;
 
 //icons to be shown in the name area
 var UIImage HealthIcon, MobilityIcon, WillIcon, HackIcon, DodgeIcon, PsiIcon, PrimaryWeaponIcon, SecondaryWeaponIcon; 
-var UIText HealthValue, MobilityValue, WillValue, HackValue, DodgeValue, PsiValue;
+var UIText HealthValue, MobilityValue, WillValue, HackValue, DodgeValue, PsiValue, SPValue;
 
-var UIIcon APIcon;
+var UIIcon APIcon, NatAptIcon;
 
 var array<UIIcon> BadTraitIcon;
 
@@ -541,6 +541,27 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 		}
 	}
 
+	if (NatAptIcon == none)
+	{
+		NatAptIcon = Spawn(class'UIIcon', self);
+		NatAptIcon.bAnimateOnInit = false;
+		NatAptIcon.bDisableSelectionBrackets = true;
+		NatAptIcon.InitIcon('NaturalAptitudeIcon', "img:///UILibrary_LWToolbox.UI.NaturalAptitudeIcon", false, false);
+	}
+	IconXPos += IconXDelta;
+	NatAptIcon.SetScale(IconScale * 0.6);
+	NatAptIcon.SetPosition(IconXPos - (IconToValueOffsetX * 0.1), IconYPos);
+	NatAptIcon.Show();
+	
+	if(SPValue == none)
+	{
+		SPValue = Spawn(class'UIText', self);
+		SPValue.bAnimateOnInit = false;
+		SPValue.InitText('SPValue_ListItem_LW').SetPosition(IconXPos + IconToValueOffsetX, IconYPos + IconToValueOffsetY);
+	}
+	SPValue.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(string(class'StatUpgradeUI.StatUIHelper'.static.GetSoldierSP(Unit)), eUIState_Normal));
+	SPValue.Show();
+
 	PrimaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetPrimaryWeapon().GetMyTemplate()).WeaponCat);
 	SecondaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetSecondaryWeapon().GetMyTemplate()).WeaponCat);
 	
@@ -548,7 +569,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	{
 		PrimaryWeaponIcon = Spawn(class'UIImage', self);
 		PrimaryWeaponIcon.bAnimateOnInit = false;
-		PrimaryWeaponIcon.InitImage('PrimaryLoadoutImage_ListItem', PrimaryLoadoutImage).SetScale(IconScale).SetPosition(IconXPos += 35, -9.0f);
+		PrimaryWeaponIcon.InitImage('PrimaryLoadoutImage_ListItem', PrimaryLoadoutImage).SetScale(IconScale).SetPosition(IconXPos += 35 - IconXDelta, -9.0f);
 	}
 
 	if (SecondaryWeaponIcon == none && Unit.GetSecondaryWeapon() != none)
@@ -559,7 +580,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	}
 
 
-	IconXPos += IconXDelta;
+	//IconXPos += IconXDelta;
 
 	EventTemplateManager = class'X2EventListenerTemplateManager'.static.GetEventListenerTemplateManager();
 
@@ -673,6 +694,11 @@ simulated function UpdateItemsForFocus(bool Focussed)
 			if (APIcon != none)
 			{
 				APIcon.SetForegroundColor(APColours[int(Unit.ComInt)]);
+			}
+
+			if (NatAptIcon != none)
+			{
+				NatAptIcon.SetForegroundColor(APColours[int(class'StatUpgradeUI.StatUIHelper'.static.GetNaturalAptitude(Unit))]);
 			}
 		}
 	}

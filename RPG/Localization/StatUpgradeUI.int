@@ -8,3 +8,13 @@ m_strSoldierSPLabel="SOLDIER SP"
 
 [UIPanel_StatUI_StatLine]
 PsiOffenseLabel="PSI"
+
+[StatUIHelper]
+NaturalAptitude="NATURAL APTITUDE"
+
+NaturalAptitudeLabel[0]="Mortal"
+NaturalAptitudeLabel[1]="Good Genes"
+NaturalAptitudeLabel[2]="Peak Human"
+NaturalAptitudeLabel[3]="Super Human"
+NaturalAptitudeLabel[4]="Godlike"
+

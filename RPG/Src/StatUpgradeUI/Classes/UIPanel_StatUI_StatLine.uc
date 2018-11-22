@@ -1,4 +1,4 @@
-class UIPanel_StatUI_StatLine extends UIPanel config (UI);
+class UIPanel_StatUI_StatLine extends UIPanel config (StatUpgradeUI);
 
 struct StatCostBind
 {
