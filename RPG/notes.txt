@@ -1,5 +1,16 @@
-- New ability/stat purchase system. No more free perks. Adjusted perk costs (cheap, baseline, expensive perks).  Stats can be bought with a separate stat point pool (15/promotion) and Soldier AP.
-  Ability AP costs and Stat Points per promotion can be edited in config/StatUpgradeUI/XcomUI.ini
+- New ability/stat purchase system. No more free perks. Different perk costs depending on powerlevel of the perk and rank (colonel and brigadier rank perks are more expensive).
+  Stats can be bought with a separate stat point pool (15/promotion) and Soldier AP.
+  Ability AP costs and Stat Points per promotion can be edited in config/StatUpgradeUI/XComStatUpgradeUI.ini
+- Added natural aptitude as a counterpart to combat intelligence but for stat points
+  Mortal +0 SP / Promotion
+  Good Genes +5 SP / Promotion
+  Peak Human +10  SP / Promotion
+  Super Human +15 SP / Promotion
+  Godlike +20 SP / Promotion
+- Added new random squaddie ability "SyntheticGenes" that works like Prodigy but for natural aptitude
+- Training center respec currently does *not* refund SP. this will be fixed with the next Highlander Update.
+
+
 - Reduced HP stat costs for beta/delta strike
 
 

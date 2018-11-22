@@ -8,18 +8,38 @@ Gifted = 7
 Genius = 10
 Savant = 15
 
-The ability cost for buying abilities is raised too however:
+The basline ability cost for buying abilities is raised too however:
 
 0 for Squaddie abilities
-50 for Corporal abilities
-50 for Sergeant abilities
-50 for Lieutenant abilities
-50 for Captain abilities
-60 for Major abilities
-60 for Colonel abilities
-70 for Brigadier abilities
+25 for Corporal abilities
+25 for Sergeant abilities
+25 for Lieutenant abilities
+25 for Captain abilities
+25 for Major abilities
+35 for Colonel abilities
+45 for Brigadier abilities
+
+Individual abilities may cost more or less depending on their powerlevel.
 
 The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
+
+[h1]Soldier SP[/h1]
+
+Soldier Stat Points are a new system introduced by RPGO which. Its a dedicated pool that can only used for raising stats.
+
+By default your soldiers get 15SP/Promotion.
+
+In addition your soldiers have a "natural aptitude" level. It serves the same purpose as combat intelligence but for stat points.
+
+As with combat intelligence there are 5 levels of natural aptitude:
+
+Mortal +0 SP / Promotion
+Good Genes +5 SP / Promotion
+Peak Human +10  SP / Promotion
+Super Human +15 SP / Promotion
+Godlike +20 SP / Promotion
+
+You can see the aptitude level of a soldier int the soldier list (a new icon next to combat intelligence with the same color code) and on the stats screen.
 
 [h1]Changes to weapons[/h1]
 [list]

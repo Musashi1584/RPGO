@@ -48,7 +48,7 @@ static function OnStatAssignmentCompleteNaturalAptitude(XComGameState_Unit UnitS
 	Apt = RollNaturalAptitude();
 
 	//`LOG(default.Class @ GetFuncName() @ Apt @ float(Apt),, 'RPG');
-	UnitState.SetUnitFloatValue('NaturalAptitude', float(Apt) , eCleanUp_Never);
+	UnitState.SetUnitFloatValue('NaturalAptitude', float(Apt), eCleanUp_Never);
 }
 
 static function int GetBonusStatPointsFromNaturalAptitude(XComGameState_Unit UnitState)

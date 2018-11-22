@@ -52,6 +52,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(HotShot());
 	Templates.AddItem(EagleEye());
 	Templates.AddItem(Runner());
+	Templates.AddItem(SyntheticGenes());
 	
 	// Class abilities
 	Templates.AddItem(Quartermaster());
@@ -168,6 +169,41 @@ static function ProdigyPurchased(XComGameState NewGameState, XComGameState_Unit 
 	{
 		UnitState.ComInt = ECombatIntelligence(UnitState.ComInt + 1);
 	}
+}
+
+static function X2AbilityTemplate SyntheticGenes()
+{
+	local X2AbilityTemplate Template;
+	
+	Template = PurePassive('SyntheticGenes', "img:///Texture2D'UILibrary_RPG.UIPerk_SyntheticGenes'");
+	Template.SoldierAbilityPurchasedFn = SyntheticGenesPurchased;
+
+	return Template;
+}
+
+static function SyntheticGenesPurchased(XComGameState NewGameState, XComGameState_Unit UnitState)
+{
+	local int NaturalAptitude;
+
+	NaturalAptitude = int(GetNaturalAptitude(UnitState));
+
+	if (NaturalAptitude <= 2)
+	{
+		UnitState.SetUnitFloatValue('NaturalAptitude', NaturalAptitude + 2, eCleanUp_Never);
+	}
+	if (NaturalAptitude == 3)
+	{
+		UnitState.SetUnitFloatValue('NaturalAptitude', NaturalAptitude + 1, eCleanUp_Never);
+	}
+}
+
+
+static function ENaturalAptitude GetNaturalAptitude(XComGameState_Unit UnitState)
+{
+	local UnitValue NaturalAptitudeValue;
+	
+	UnitState.GetUnitValue('NaturalAptitude', NaturalAptitudeValue);
+	return ENaturalAptitude(NaturalAptitudeValue.fValue);
 }
 
 static function X2AbilityTemplate Bulletproof()
