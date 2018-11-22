@@ -101,26 +101,3 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [/list]
 
 A full documentation of all abilities can be found [url=https://docs.google.com/spreadsheets/d/12QgqB_rPZ5NaH3tep2a_JJTutkK-xvdR9KDmhg97ix8/edit#gid=0]here[/url].
-
-[h1]Random Starting Abilities[/h1]
-[list]
-[*] LightningReflexes
-[*] DeepCover
-[*] Prodigy (Better ComInt)
-[*] Nimble Fingers (Free reload)
-[*] Bulletproof (Better Defence)
-[*] Juggernaut (Better Health)
-[*] Stalker (Reduce Detection Radius)
-[*] IronWill (Better Will)
-[*] CyberAdept (Better Hack)
-[*] MovingTarget (Better dodge)
-[*] Praetorian (Better Aim (Melee))
-[*] HotShot (Better Aim (reaction fire))
-[*] EagleEye (Better Aim (non reaction fire))
-[*] Runner (Better Mobility)
-[*] Hitman (Better Crit on flanking shots)
-[*] Panoptical (+2 sightradius)
-[*] Damn Good Ground (You get an additional 10 Aim and 10 Defense against targets at lower elevation.)
-[*] Scout (You carry a free battle scanner. Increases throw range for battle scanners by 50%.)
-[*] Xeno Biologist (Confers 1 bonus damage, against targets who have been autopsied.)
-[/list]
