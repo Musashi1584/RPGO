@@ -8,7 +8,7 @@ Gifted = 7
 Genius = 10
 Savant = 15
 
-The basline ability cost for buying abilities is raised too however:
+The baseline ability cost for buying abilities is raised too however:
 
 0 for Squaddie abilities
 25 for Corporal abilities
@@ -25,9 +25,9 @@ The ability point rewards are doubled and the mission cap is raised from 2 to 10
 
 [h1]Soldier SP[/h1]
 
-Soldier Stat Points are a new system introduced by RPGO which. Its a dedicated pool that can only used for raising stats.
+Soldier Stat Points are a new system introduced by RPGO. Its a dedicated pool that can only used for raising stats.
 
-By default your soldiers get 15SP/Promotion.
+By default your soldiers get 15SP per promotion. Currently there are no other sources to get SP.
 
 In addition your soldiers have a "natural aptitude" level. It serves the same purpose as combat intelligence but for stat points.
 
