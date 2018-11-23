@@ -9,7 +9,6 @@ enum ENaturalAptitude
 	eNaturalAptitude_Savant,
 };
 
-
 var config array<name> NaturalAptitudeCharacterTemplates;
 var config array<int> NaturalAptitudeThresholds;
 var config int NaturalAptitudeAboveAverageChance;
@@ -18,12 +17,14 @@ var config array<ENaturalAptitude> BaseSoldierNaturalAptitude;
 var localized string NaturalAptitudeLabel[ENaturalAptitude.EnumCount]<BoundEnum = ENaturalAptitude>;
 var localized string NaturalAptitude;
 
+
 static function OnPostCharacterTemplatesCreated()
 {
 	local X2CharacterTemplateManager CharacterTemplateMgr;
 	local X2CharacterTemplate SoldierTemplate;
 	local array<X2DataTemplate> DataTemplates;
 	local int ScanTemplates, ScanAdditions;
+	local OnStatAssignmentCompleteClosure DelegateClosure;
 
 	CharacterTemplateMgr = class'X2CharacterTemplateManager'.static.GetCharacterTemplateManager();
 	
@@ -35,7 +36,9 @@ static function OnPostCharacterTemplatesCreated()
 			SoldierTemplate = X2CharacterTemplate(DataTemplates[ScanTemplates]);
 			if (SoldierTemplate != none)
 			{
-				SoldierTemplate.OnStatAssignmentCompleteFn = class'StatUIHelper'.static.OnStatAssignmentCompleteNaturalAptitude;
+				DelegateClosure = new class'OnStatAssignmentCompleteClosure';
+				DelegateClosure.OnStatAssignmentCompleteOriginalFn = SoldierTemplate.OnStatAssignmentCompleteFn;
+				SoldierTemplate.OnStatAssignmentCompleteFn = DelegateClosure.OnStatAssignmentCompleteFn;
 			}
 		}
 	}
@@ -43,12 +46,7 @@ static function OnPostCharacterTemplatesCreated()
 
 static function OnStatAssignmentCompleteNaturalAptitude(XComGameState_Unit UnitState)
 {
-	local ENaturalAptitude Apt;
 
-	Apt = RollNaturalAptitude();
-
-	//`LOG(default.Class @ GetFuncName() @ Apt @ float(Apt),, 'RPG');
-	UnitState.SetUnitFloatValue('NaturalAptitude', float(Apt), eCleanUp_Never);
 }
 
 static function int GetBonusStatPointsFromNaturalAptitude(XComGameState_Unit UnitState)

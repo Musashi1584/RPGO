@@ -18,7 +18,7 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	Templates.AddItem(CreateMainMenuListenerTemplate());
 	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
-	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
+	//Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 
 	return Templates;
 }
