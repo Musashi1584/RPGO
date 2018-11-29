@@ -66,7 +66,7 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 
 simulated function AddUtilityItem(XComGameState_Unit NewUnit, X2ItemTemplate ItemTemplate, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
-	local X2EquipmentTemplate EquipmentTemplate;
+	local X2EquipmentTemplate EquipmentTemplate, SoldierEquipmentTemplate;
 	local X2WeaponTemplate WeaponTemplate;
 	local XComGameState_Item ItemState;
 	local X2AbilityTemplateManager AbilityTemplateMan;
@@ -75,6 +75,8 @@ simulated function AddUtilityItem(XComGameState_Unit NewUnit, X2ItemTemplate Ite
 	local name AbilityName;
 	local array<SoldierClassAbilityType> EarnedSoldierAbilities;
 	local XGUnit UnitVisualizer;
+	local array<XComGameState_Item> CurrentInventory;
+	local XComGameState_Item InventoryItem;
 	local int idx;
 
 	History = `XCOMHISTORY;
@@ -128,6 +130,7 @@ simulated function AddUtilityItem(XComGameState_Unit NewUnit, X2ItemTemplate Ite
 	NewEffectState.CreatedObjectReference = ItemState.GetReference();
 
 	// Add equipment-dependent soldier abilities
+	
 	EarnedSoldierAbilities = NewUnit.GetEarnedSoldierAbilities();
 	for (idx = 0; idx < EarnedSoldierAbilities.Length; ++idx)
 	{
@@ -151,6 +154,31 @@ simulated function AddUtilityItem(XComGameState_Unit NewUnit, X2ItemTemplate Ite
 		}
 	}
 
+	// RPGO Extension for LaunchGrenade provided by the GL itself
+	CurrentInventory = NewUnit.GetAllInventoryItems(NewGameState);
+	foreach CurrentInventory(InventoryItem)
+	{
+		if (InventoryItem.bMergedOut) 
+			continue;
+		SoldierEquipmentTemplate = X2EquipmentTemplate(InventoryItem.GetMyTemplate());
+		if (SoldierEquipmentTemplate != none)
+		{
+			foreach SoldierEquipmentTemplate.Abilities(AbilityName)
+			{
+				AbilityTemplate = AbilityTemplateMan.FindAbilityTemplate(AbilityName);
+				//`LOG(default.Class @ GetFuncName() @ NewUnit.GetFirstName() @ AbilityTemplate.DataName @ InventoryItem.GetMyTemplateName() @ AbilityTemplate.ConditionsEverValidForUnit(NewUnit, false) @ AbilityTemplate.bUseLaunchedGrenadeEffects @ SoldierEquipmentTemplate,, 'RPG');
+				if(AbilityTemplate != none &&
+					AbilityTemplate.ConditionsEverValidForUnit(NewUnit, false) &&
+					AbilityTemplate.bUseLaunchedGrenadeEffects &&
+					X2GrenadeLauncherTemplate(SoldierEquipmentTemplate) != none
+					)
+				{
+					//`LOG(default.Class @ GetFuncName() @ NewUnit.GetFirstName() @ AbilityTemplate.DataName @ InventoryItem.GetMyTemplateName(),, 'RPG');
+					InitAbility(AbilityTemplate, NewUnit, NewGameState, InventoryItem.GetReference(), ItemState.GetReference());
+				}
+			}
+		}
+	}
 	// Add abilities from the equipment item itself. Add these last in case they're overridden by soldier abilities.
 	foreach EquipmentTemplate.Abilities(AbilityName)
 	{
