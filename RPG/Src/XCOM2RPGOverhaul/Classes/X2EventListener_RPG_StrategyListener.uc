@@ -193,19 +193,11 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 {
 	local int RowIndex;
 	local array<SoldierSpecialization> Specs;
-	local SoldierSpecialization Spec;
 	
 	RowIndex = GetSoldierSpecialization(UnitState);
 
 	class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Sort(SortSpecializations);
 	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
-
-	//foreach Specs(Spec)
-	//{
-	//	`LOG(GetFuncName() @ Spec.Order @ Spec.TemplateName,, 'RPG');
-	//}
-
-	//`LOG(GetFuncName() @ RowIndex @ Specs[RowIndex].TemplateName,, 'RPG');
 	
 	return RowIndex != INDEX_NONE ? Specs[RowIndex].TemplateName : UnitState.GetSoldierClassTemplate().DataName;
 }

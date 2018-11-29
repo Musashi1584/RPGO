@@ -49,7 +49,6 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	local X2SoldierClassTemplateManager Manager;
 	local X2SoldierClassTemplate Template;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
-	local array<SoldierSpecialization> ValidSpecs;
 	local int Index;
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
@@ -174,7 +173,6 @@ static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState N
 
 static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
 {
-	local X2ConditionDisabled DisabledCondition;
 	local int Index, CategoryIndex;
 	local name WeaponCategory;
 	local EInventorySlot InvSlot;
@@ -367,8 +365,6 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 
 static function ReconfigFacilities(X2StrategyElementTemplate Template, int Difficulty)
 {
-	local int						i;
-	local ArtifactCost				Resources;
 	local X2FacilityTemplate		FacilityTemplate;
 
 	FacilityTemplate = X2FacilityTemplate (Template);
@@ -763,8 +759,7 @@ static function PatchClaymoreCharges()
 {
 	local X2AbilityTemplateManager				TemplateManager;
 	local X2AbilityTemplate						Template;
-	local X2AbilityCost_ActionPointsExtended	ActionPointCost;
-
+	
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('ThrowClaymore');

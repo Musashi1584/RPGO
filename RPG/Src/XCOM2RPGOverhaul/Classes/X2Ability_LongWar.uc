@@ -351,13 +351,10 @@ static function X2AbilityTemplate AddCutthroatAbility()
 
 static function X2AbilityTemplate AddLightEmUpAbility()
 {
-	local X2AbilityTemplate				Template;
 	local X2Effect_LightEmUp			Effect;
 	
 	Effect = new class'X2Effect_LightEmUp';
 
-	//class'X2TemplateHelper_RPGOverhaul'.static.AddWeaponCategoryConditionToEffect('RPGO_LightEmUp', Effect);
-	
 	return Passive('RPGO_LightEmUp', "img:///UILibrary_RPG.LW_AbilityLightEmUp", true, Effect);
 }
 
