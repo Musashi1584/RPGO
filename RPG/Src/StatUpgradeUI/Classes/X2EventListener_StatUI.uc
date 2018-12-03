@@ -80,6 +80,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 		SoldierSP = GetSoldierSP(UnitState);
 
 		UnitState.SetUnitFloatValue('StatPoints', SoldierSP + SpentSoldierSP, eCleanup_Never);
+		UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
 	}
 
 	return ELR_NoInterrupt;
