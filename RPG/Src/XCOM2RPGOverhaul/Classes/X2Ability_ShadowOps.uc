@@ -22,14 +22,14 @@ static function X2AbilityTemplate Firebug()
 	ItemEffect.DataName = 'Firebomb';
 	ItemEffect.SkipAbilities.AddItem('SmallItemWeight');
 
-	return Passive('RpgFirebug', "img:///UILibrary_BlackOps.UIPerk_pyromaniac", true, ItemEffect);
+	return Passive('RpgFirebug', "img:///UILibrary_RPG.UIPerk_pyromaniac", true, ItemEffect);
 }
 
 static function X2AbilityTemplate Scrounger()
 {
 	local X2AbilityTemplate						Template;
 	
-	Template = PurePassive('RpgScrounger', "img:///UILibrary_BlackOps.UIPerk_scrounger", true);
+	Template = PurePassive('RpgScrounger', "img:///UILibrary_RPG.UIPerk_scrounger", true);
 	Template.AdditionalAbilities.AddItem('RpgScroungerTrigger');
 
 	return Template;
@@ -42,7 +42,7 @@ static function X2AbilityTemplate ScroungerTrigger()
 
 	// Icon Properties
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgScroungerTrigger');
-	Template.IconImage = "img:///UILibrary_BlackOps.UIPerk_scrounger";
+	Template.IconImage = "img:///UILibrary_RPG.UIPerk_scrounger";
 
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
@@ -80,7 +80,7 @@ static function X2AbilityTemplate Airstrike()
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgAirstrike');
 
 	// Icon Properties
-	Template.IconImage = "img:///UILibrary_BlackOps.UIPerk_airstrike";
+	Template.IconImage = "img:///UILibrary_RPG.UIPerk_airstrike";
 	Template.ShotHUDPriority = default.AUTO_PRIORITY;
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
 	Template.DisplayTargetHitChance = false;

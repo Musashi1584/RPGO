@@ -15,6 +15,9 @@ var config int RESCUE_BM_CHARGES;
 var config int BOMBARD_BONUS_RANGE_TILES;
 var config int FAILSAFE_PCT_CHANCE;
 
+var config int TACTICAL_SENSE_DEFENSE;
+var config int TACTICAL_SENSE_SCALE_MAX;
+
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
@@ -312,11 +315,11 @@ static function X2AbilityTemplate TacticalSense()
 	Effect = new class'XMBEffect_ConditionalBonus';
 
 	// The effect adds +10 Dodge per enemy unit
-	Effect.AddToHitAsTargetModifier(3, eHit_Success);
+	Effect.AddToHitAsTargetModifier(default.TACTICAL_SENSE_DEFENSE, eHit_Success);
 
 	// The effect scales with the number of visible enemy units, to a maximum of 5 (for +15 Defense).
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = 5;
+	Effect.ScaleMax = default.TACTICAL_SENSE_SCALE_MAX;
 
 	// Create the template using a helper function
 	return Passive('RpgTacticalSense', "img:///UILibrary_RPG.LW_AbilityTacticalSense", true, Effect);

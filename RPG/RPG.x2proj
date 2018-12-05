@@ -242,6 +242,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_LW2WotC_PassiveAbilitySet.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_SecondaryWeaponPerks.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_ShadowOps.uc">
       <SubType>Content</SubType>
     </Content>
@@ -249,6 +252,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2ConditionDisabled.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_ArcthrowerAbilities.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_Fade.uc">
@@ -273,6 +279,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_TargetAutopsy.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_UnitAffectedByAcidBurn.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_AddGrenade.uc">
@@ -348,6 +357,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierRange.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_SpareBattery.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_StealthTactics.uc">

@@ -30,6 +30,11 @@ var config int AUTOFIRE_ENVIRONMENTAL_DAMAGE;
 var config int AUTOFIRE_DESTRUCTION_CHANCE;
 var config int AUTOFIRE_FULLCOVER_MALUS;
 var config int AUTOFIRE_HALFCOVER_MALUS;
+var config int SPOT_WEAKNESS_PIERCE_CV;
+var config int SPOT_WEAKNESS_PIERCE_MG;
+var config int SPOT_WEAKNESS_PIERCE_BM;
+var config int SPOT_WEAKNESS_CRIT;
+
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -82,6 +87,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(PurePassive('EmergencyProtocol', "img:///UILibrary_RPG.UIPerk_EmergencyProtocol"));
 	Templates.AddItem(TriggerHappy());
 	Templates.AddItem(TriggerHappyScamperShot());
+	Templates.AddItem(SpotWeakness());
 
 	return Templates;
 }
@@ -1257,3 +1263,19 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	return Template;	
 }
 
+static function X2AbilityTemplate SpotWeakness()
+{
+	local XMBEffect_ConditionalBonus Effect;
+
+	// Create an effect that adds +15 to crit and +1/2/3 armor piercing
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_CV, eHit_Success, 'conventional');
+	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_MG, eHit_Success, 'magnetic');
+	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_BM, eHit_Success, 'beam');
+	Effect.AddToHitModifier(default.SPOT_WEAKNESS_CRIT, eHit_Crit);
+
+	// Restrict to the weapon matching this ability
+	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+
+	return Passive('RpgSpotWeakness', "img:///XPerkIconPack.UIPerk_pistol_crit2", false, Effect);
+}
