@@ -83,3 +83,4 @@ UtilityCatSawedoffshotgun="Sawed-Off Shotgun"
 UtilityCatLWGauntlet="XCOM Gauntlet"
 m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
+

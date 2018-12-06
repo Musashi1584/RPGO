@@ -93,6 +93,10 @@ Chris the Thin Mint
 
 [h1]FAQ[/h1]
 
+[b]Do i need to start a new campaign for this?[/b]
+
+Yes!
+
 [b]I only see the first 4 ability rows and can't scroll in the promotion screen![/b]
 
 DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
@@ -118,7 +122,14 @@ This is on your own risk, because some restrictions are there to prevent ability
 [b]What about Faction Heros, SPARKS, Psi Soldiers?[/b]
 They are not touched by this mod and should work normally
 
-[b]Is this mod compatible with Mod XY?[/b]
+[b]My soldier keep getting promited to basegame/other classes?[/b]
+Its a strange bug cause by the config system for some people.
+Use the mod [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1148535137] Disable Any Class Wotc[/url] and disable all classes but UniversalSoldier in the ingame mod options.
+
+[b]I have a lot of plugins and the promotion screen skips specializations when scrolling[/b]
+Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1131906393] [WoTC] Row-Based Scrolling Speed Wotc[/url]
+
+[h1]Mod compatibility[/h1]
 Most mods should be compatible. If you have an issue let me know.
 Other Overhaul mods like MINT and A Better Barracks obviously clash in some areas.
 
@@ -126,12 +137,6 @@ Known incompatibilities:
 - "Configure Upgrade Slots" doesnt work cause this mod set all slots to 3
 - "Hack Plus" leads to insane high hacking stats
 - I am the commander here
-
-
-[b]My soldier keep getting promited to basegame/other classes?[/b]
-Its a strange bug cause by the config system for some people.
-Use the mod Disable Any Class Wotc and disable all classes but UniversalSoldier in the ingame mod options.
-https://steamcommunity.com/sharedfiles/filedetails/?id=1148535137
 
 [h1]A note on the beta status[/h1]
 This mod will change frequently.
