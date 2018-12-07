@@ -20,16 +20,165 @@ static event OnPostTemplatesCreated()
 	class'StatUIHelper'.static.OnPostCharacterTemplatesCreated();
 }
 
-private function bool ValidateAbility(name AbilityName)
+// 	0 = eComInt_Standard,
+// 	1 = eComInt_AboveAverage,e,
+// 	2 = eComInt_Gifted,
+// 	3 = eComInt_Genius,
+// 	4 = eComInt_Savant,
+exec function RPGO_SetCombatIntelligence(int NewComInt)
 {
-	local X2AbilityTemplateManager		TemplateManager;
-	local X2AbilityTemplate				Template;
+	local XComGameStateHistory				History;
+	local UIArmory							Armory;
+	local XComGameState_Unit				UnitState;
+	local XComGameState						NewGameState;
+	local int								OldComInt, Index;
 
-	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SetCombatIntelligence");
 
-	Template = TemplateManager.FindAbilityTemplate(AbilityName);
+	Armory = GetArmory();
+	UnitState = GetSelectedUnit();
 
-	return (Template != none);
+	if (UnitState == none || Armory == none)
+		return;
+
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+	OldComInt = UnitState.ComInt;
+
+	// Retroactively give AP if combat intelligence was improved
+	if (OldComInt < NewComInt)
+	{
+		for (Index = 0; Index < (NewComInt - OldComInt); Index++)
+		{
+			UnitState.ImproveCombatIntelligence();
+		}
+	}
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+	
+	Armory.PopulateData();
+}
+
+
+// 0 = eNaturalAptitude_Standard,
+// 1 = eNaturalAptitude_AboveAverage,
+// 2 = eNaturalAptitude_Gifted,
+// 3 = eNaturalAptitude_Genius,
+// 4 = eNaturalAptitude_Savant,
+exec function RPGO_SetNaturalAptitude(int NewNaturalAptitude)
+{
+	local XComGameStateHistory				History;
+	local UIArmory							Armory;
+	local XComGameState_Unit				UnitState;
+	local XComGameState						NewGameState;
+	local int								OldNaturalAptitude, Index;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SetNaturalAptitude");
+
+	Armory = GetArmory();
+	UnitState = GetSelectedUnit();
+
+	if (UnitState == none || Armory == none)
+		return;
+
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+	OldNaturalAptitude = int(class'StatUIHelper'.static.GetNaturalAptitude(UnitState));
+
+	// Retroactively give SP if natural aptitude was improved
+	if (OldNaturalAptitude < NewNaturalAptitude)
+	{
+		for (Index = 0; Index < (NewNaturalAptitude - OldNaturalAptitude); Index++)
+		{
+			class'StatUIHelper'.static.ImproveNaturalAptitude(UnitState);
+		}
+	}
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+	
+	Armory.PopulateData();
+}
+
+exec function RPGO_GiveAbiltiyPoints(int AbilitsPoints)
+{
+	local XComGameStateHistory				History;
+	local UIArmory							Armory;
+	local XComGameState_Unit				UnitState;
+	local XComGameState						NewGameState;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_GiveAbiltiyPoints");
+
+	Armory = GetArmory();
+	UnitState = GetSelectedUnit();
+
+	if (UnitState == none || Armory == none)
+		return;
+
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+	UnitState.AbilityPoints += AbilityPoints;
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+	
+	Armory.PopulateData();
+}
+
+exec function RPGO_GiveStatPoints(int StatPoints)
+{
+	local XComGameStateHistory				History;
+	local UIArmory							Armory;
+	local XComGameState_Unit				UnitState;
+	local XComGameState						NewGameState;
+	local int								CurrentSP;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SetNaturalAptitude");
+
+	Armory = GetArmory();
+	UnitState = GetSelectedUnit();
+
+	if (UnitState == none || Armory == none)
+		return;
+
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+	CurrentSP = class'StatUIHelper'.static.GetSoldierSP(UnitState);
+
+	UnitState.SetUnitFloatValue('StatPoints', float(CurrentSP + StatPoints), eCleanUp_Never);
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+	
+	Armory.PopulateData();
 }
 
 exec function RPGO_AssignSquaddieAbilities(optional name OPTIONAL_Ability1 = '', optional name OPTIONAL_Ability2 = '', optional name OPTIONAL_Ability3 = '', optional name OPTIONAL_Ability4 = '')
@@ -303,6 +452,18 @@ private function XComGameState_Unit GetSelectedUnit()
 	}
 
 	return UnitState;
+}
+
+private function bool ValidateAbility(name AbilityName)
+{
+	local X2AbilityTemplateManager		TemplateManager;
+	local X2AbilityTemplate				Template;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate(AbilityName);
+
+	return (Template != none);
 }
 
 

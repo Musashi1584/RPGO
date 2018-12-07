@@ -44,11 +44,6 @@ static function OnPostCharacterTemplatesCreated()
 	}
 }
 
-static function OnStatAssignmentCompleteNaturalAptitude(XComGameState_Unit UnitState)
-{
-
-}
-
 static function int GetBonusStatPointsFromNaturalAptitude(XComGameState_Unit UnitState)
 {
 	//`LOG(default.Class @ GetFuncName() @ default.BaseSoldierNaturalAptitude[GetNaturalAptitude(UnitState)],, 'RPG');
@@ -64,6 +59,11 @@ static function ENaturalAptitude GetNaturalAptitude(XComGameState_Unit UnitState
 	//`LOG(default.Class @ GetFuncName() @ NaturalAptitudeValue.fValue @ GetEnum(Enum'ENaturalAptitude', NaturalAptitudeValue.fValue),, 'RPG');
 	
 	return ENaturalAptitude(NaturalAptitudeValue.fValue);
+}
+
+static function SetNaturalAptitude(XComGameState_Unit UnitState, ENaturalAptitude NaturalAptitude)
+{
+	UnitState.SetUnitFloatValue('NaturalAptitude', float(NaturalAptitude), eCleanUp_Never);	
 }
 
 static function ENaturalAptitude RollNaturalAptitude()
@@ -100,4 +100,34 @@ static function int GetSoldierSP(XComGameState_Unit UnitState)
 	local UnitValue StatPointsValue;
 	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 	return int(StatPointsValue.fValue);
+}
+
+static function SetSoldierSP(XComGameState_Unit UnitState, int StatPoints)
+{
+	UnitState.SetUnitValue('StatPoints', float(StatPoints), eCleanUp_Never);
+}
+
+// Improves the NaturalAptitude by one and retroactivly provide SP as if the soldier had the higher NaturalAptitude the entire time 
+static function ImproveNaturalAptitude(XComGameState_Unit UnitState)
+{
+	local int iRank, SPIncrease, SP;
+	local ENaturalAptitude NaturalAptitude;
+
+	SP = GetSoldierSP(UnitState);
+	NaturalAptitude = GetNaturalAptitude(UnitState);
+
+	// First improve Natural Aptitude to the next rank
+	if (NaturalAptitude < eNaturalAptitude_Savant)
+	{
+		SetNaturalAptitude(UnitState, ENaturalAptitude(NaturalAptitude + 1));
+	}
+
+	// Provide additional SP as if the soldier had the higher NaturalAptitude the entire time
+	for (iRank = UnitState.m_SoldierRank; iRank >= 2; iRank--)
+	{
+
+		SPIncrease += (default.BaseSoldierNaturalAptitude[NaturalAptitude] - default.BaseSoldierNaturalAptitude[NaturalAptitude - 1]));
+	}
+
+	SetSoldierSP(UnitState, GetSoldierSP(UnitState) + Round(SPIncrease);
 }
