@@ -7,9 +7,11 @@ The Electrocutioner uses the arcthrower and its four LW 2 perks as well as [b]3 
 [b]Quick Zap[/b]: Activate this ability to make your next arcthrower shot a free action. 4 turn cooldown.
 [b]Spare Battery[/b]: Quickly recharge your Arc Thrower's battery with a spare, reducing all related cooldowns by up to 3. Cooldown 5 turns.
 [b]That's Close Enough[/b]: During enemy turns, fire your arcthrower at any visible enemy within four tiles who moves or fires.
+
 The [b]Gunslinger[/b] specialization was slightly rebalanced. [b]Return Fire[/b] is now automatically granted to every soldier carrying a pistol. [b]Quickdraw[/b] is now available at Corporal rank to give pistol-wielding soldiers a useful and role-defining perk right away. A brand new perk has taken the place of Return Fire:
 
 The Gunslinger now gets the [b]Spot Weakness[/b] perk at Lieutenant rank, which grants the pistol additional crit chance as well as armor piercing to help them deal with armored foes.
+
 Four new squaddie perks that focus on dealing elemental damage were added to the aptitude deck.
 
 [b]Chemist[/b]: Your acid attacks and acid burn effects deal +1 damage, and your attacks against targets affected by acid burn shred additional armor. You get a free acid grenade on each mission.

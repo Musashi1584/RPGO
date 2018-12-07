@@ -50,7 +50,7 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [*] Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 [*] Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 [*] Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
-[*] Autopistol get +20% crit change but have a significantly shorter range table than pistol.
+[*] Autopistol get +20% crit change but have a significantly shorter range table than pistol and get the Return Fire ability.
 [*] Swords get Slice ability.
 [*] Gremlins get Remote Hacking and Aid ability.
 [*] Pistols get Pistol Shot and Return Fire ability.
