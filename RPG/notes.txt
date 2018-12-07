@@ -1,3 +1,37 @@
+[b]Changes:[/b]
+
+Added [b]3 new specializations[/b]: The [b]Rocketeer[/b], the [b]Purifier[/b] and the [b]Electrocutioner[/b].
+
+The Rocketeer and the Purifier use the Long War 2 Gauntlet and its LW2 perks
+The Electrocutioner uses the arcthrower and its four LW 2 perks as well as [b]3 brand new perks[/b] (well one was kinda stolen from ABB):
+[b]Quick Zap[/b]: Activate this ability to make your next arcthrower shot a free action. 4 turn cooldown.
+[b]Spare Battery[/b]: Quickly recharge your Arc Thrower's battery with a spare, reducing all related cooldowns by up to 3. Cooldown 5 turns.
+[b]That's Close Enough[/b]: During enemy turns, fire your arcthrower at any visible enemy within four tiles who moves or fires.
+The [b]Gunslinger[/b] specialization was slightly rebalanced. [b]Return Fire[/b] is now automatically granted to every soldier carrying a pistol. [b]Quickdraw[/b] is now available at Corporal rank to give pistol-wielding soldiers a useful and role-defining perk right away. A brand new perk has taken the place of Return Fire:
+
+The Gunslinger now gets the [b]Spot Weakness[/b] perk at Lieutenant rank, which grants the pistol additional crit chance as well as armor piercing to help them deal with armored foes.
+Four new squaddie perks that focus on dealing elemental damage were added to the aptitude deck.
+
+[b]Chemist[/b]: Your acid attacks and acid burn effects deal +1 damage, and your attacks against targets affected by acid burn shred additional armor. You get a free acid grenade on each mission.
+[b]Toxicologist[/b]:Your poison attacks deal +2 damage and your poison effects deal +2 damage per turn. You get a free gas grenade on each mission.
+[b]Pyromaniac[/b]:Your fire attacks deal +1 damage, and your burn effects deal +1 damage per turn. You get a free incendiary grenade on each mission.
+[b]Electrician[/b]: Your electrical attacks deal +2 damage and you get a free EMP grenade on each mission.
+
+[b]Introducing custom console commands for RPGO:[/b]
+RPGO_SetCombatIntelligence <CombatIntelligence>
+RPGO_SetNaturalAptitude <NaturalAptitude>
+RPGO_GiveAbiltiyPoints <AbilityPoints>
+RPGO_GiveStatPoints <StatPoints>
+RPGO_AssignSquaddieAbilities <OPTIONAL_Ability1> <OPTIONAL_Ability2> <OPTIONAL_Ability3> <OPTIONAL_Ability4>
+
+[b]Miscellaneous Changes:[/b]
+- Tracer rounds are no starting item anymore
+
+[b]Fixes:[/b]
+- Tactical Sense should now correctly increase defense instead of decreasing it.
+
+----------------------------------------------------------------------------------------------------
+
 - New ability/stat purchase system. No more free perks. Different perk costs depending on powerlevel of the perk and rank (colonel and brigadier rank perks are more expensive).
   Stats can be bought with a separate stat point pool (15/promotion) and Soldier AP.
   Ability AP costs and Stat Points per promotion can be edited in config/StatUpgradeUI/XComStatUpgradeUI.ini

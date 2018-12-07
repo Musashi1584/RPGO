@@ -53,7 +53,7 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [*] Autopistol get +20% crit change but have a significantly shorter range table than pistol.
 [*] Swords get Slice ability.
 [*] Gremlins get Remote Hacking and Aid ability.
-[*] Pistols get Pistol Shot ability.
+[*] Pistols get Pistol Shot and Return Fire ability.
 [*] Grenade Launchers get Launch Grenade ability.
 [*] Gremlins get AidProtocol ability.
 [*] Grenades get 1 tile bonus radius.
@@ -74,7 +74,7 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [h1]Miscellaneous Changes[/h1]
 [list]
 [*] Squadsight only applies if the unit has not moved this turn.
-[*] Soldier Healing Times are drastically reduced.
+[*] Soldier Healing Times are reduced.
 [/list]
 
 [h1]New/Modified Items[/h1]
@@ -101,3 +101,47 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [/list]
 
 A full documentation of all abilities can be found [url=https://docs.google.com/spreadsheets/d/12QgqB_rPZ5NaH3tep2a_JJTutkK-xvdR9KDmhg97ix8/edit#gid=0]here[/url].
+
+[h1]Custom console commands[/h1]
+All the commands should be used in the armory and are applied to the current selected soldier
+
+[b]RPGO_SetCombatIntelligence <CombatIntelligence>[/b]
+Difference in AP are retroactivle applied as if the soldier was at the new level the whole time if the new level is higher than the old. If its lower no retroactive AP changes are applied.
+
+CombatIntelligence:
+0 = Standard
+1 = AboveAverage
+2 = Gifted
+3 = Genius
+4 = Savant
+
+
+eg "RPGO_SetCombatIntelligence 4" sets the current soldier to savant. 
+
+
+[b]RPGO_SetNaturalAptitude <NaturalAptitude>[/b]
+Difference in SP are retroactivle applied as if the soldier was at the new level the whole time if the new level is higher than the old. If its lower no retroactive SP changes are applied.
+
+NaturalAptitude:
+0 = Mortal
+1 = Good Genes
+2 = Peak Human
+3 = Super Human
+4 = Godlike
+
+eg "RPGO_SetNaturalAptitude 4" sets the current soldier to Godlike. 
+
+[b]RPGO_GiveAbiltiyPoints <AbilityPoints>[/b]
+
+eg "RPGO_GiveAbiltiyPoints 10" adds 10 AP to the soldier. 
+
+[b]RPGO_GiveStatPoints <StatPoints>[/b]
+
+eg "RPGO_GiveStatPoints 10" adds 10 SP to the soldier.
+
+[b]RPGO_AssignSquaddieAbilities <OPTIONAL_Ability1> <OPTIONAL_Ability2> <OPTIONAL_Ability3> <OPTIONAL_Ability4>[/b]
+
+Specify up to 4 abilities that replace the current squaddie abilities of the soldier.
+Use the ability template names that can be found in XComClassData.ini (TraitsXComAbilities, InnateAptitudesDeck)
+
+eg "RPGO_AssignSquaddieAbilities HotShot Bulletproof APT_Militia" replaces the current squaddie abilities with HotShot, Bulletproof and Militia.
