@@ -489,6 +489,7 @@ static function PatchWeapons()
 						break;
 					case 'pistol':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'sidearm':

@@ -72,7 +72,13 @@ var config int SCRAPPER_CRIT;
 var config int HERETIC_DAMAGE_BONUS;
 var config int OVERSEER_SHRED;
 var config int VIGILANTE_CRIT_DAMAGE_BONUS;
-
+var config int TOXICOLOGIST_DAMAGE_BONUS;
+var config int ELECTRICIAN_DAMAGE_BONUS;
+var config int CHEMIST_DAMAGE_BONUS;
+var config int CHEMIST_SHRED_BONUS_CV;
+var config int CHEMIST_SHRED_BONUS_MG;
+var config int CHEMIST_SHRED_BONUS_BM;
+var config int PYROMANIAC_DAMAGE_BONUS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -113,6 +119,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Heretic());
 	Templates.AddItem(Overseer());
 	Templates.AddItem(Vigilante());
+	Templates.AddItem(Toxicologist());
+	Templates.AddItem(Electrician());
+	Templates.AddItem(Chemist());
+	Templates.AddItem(Pyromaniac());
 
 	//Recolor icons
 	foreach Templates(Template){
@@ -900,3 +910,147 @@ static function X2AbilityTemplate Vigilante()
 	return Passive('APT_Vigilante', "img:///XPerkIconPack.UIPerk_enemy_crit_plus", true, ADVEffect);
 }
 
+// #######################################################################################
+// -------------------- TOXICOLOGIST ----------------------------------------------------------
+// #######################################################################################
+
+// Perk name:		Toxicologist
+// Perk effect:		Your poison attacks deal +1 damage, and your poison effects deal +1 damage per turn. You get a free gas grenade on each mission.
+// Localized text:	"Your poison  attacks deal +1 damage, and your poison effects deal +1 damage per turn. You get a free gas grenade on each mission."
+// Config:			(AbilityName="RpgToxicologist")
+
+static function X2AbilityTemplate Toxicologist()
+{
+	local XMBEffect_BonusDamageByDamageType Effect;
+	local X2AbilityTemplate Template;
+	local XMBEffect_AddUtilityItem ItemEffect;
+
+	// Create an effect that adds +1 damage to poison attacks and +1 damage to poison damage
+	Effect = new class'XMBEffect_BonusDamageByDamageType';
+	Effect.EffectName = 'Toxicologist';
+	Effect.RequiredDamageTypes.AddItem('Poison');
+	Effect.DamageBonus = default.TOXICOLOGIST_DAMAGE_BONUS;
+
+	// Create the template using a helper function
+	Template = Passive('RpgToxicologist', "img:///UILibrary_RPG.UIPerk_Toxicologist_Aptitude", true, Effect);
+
+	// Add another effect that grants a free gas grenade during each mission
+	ItemEffect = new class 'XMBEffect_AddUtilityItem';
+	ItemEffect.DataName = 'GasGrenade';
+	AddSecondaryEffect(Template, ItemEffect);
+
+	return Template;
+}
+
+// #######################################################################################
+// -------------------- ELECTRICIAN-------------------------------------------------------
+// #######################################################################################
+
+// Perk name:		Electrician
+// Perk effect:		Your electrical attacks deal +1 damage, and your electrical effects have a 25% chance to stun for 1 turn. You get a free EMP grenade on each mission.
+// Localized text:	"Your electrical attacks deal +1 damage, and your electrical effects have a 25% chance to stun for 1 turn. You get a free EMP grenade on each mission."
+// Config:			(AbilityName="RpgToxicologist")
+
+static function X2AbilityTemplate Electrician()
+{
+	local XMBEffect_BonusDamageByDamageType Effect;
+	local X2AbilityTemplate Template;
+	local XMBEffect_AddUtilityItem ItemEffect;
+
+	// Create an effect that adds +2 damage to electrical attacks
+	Effect = new class'XMBEffect_BonusDamageByDamageType';
+	Effect.EffectName = 'Electrician';
+	Effect.RequiredDamageTypes.AddItem('Electricity'); // check if this is correct terminology
+	Effect.RequiredDamageTypes.AddItem('Electrical');
+	Effect.DamageBonus = default.ELECTRICIAN_DAMAGE_BONUS;
+
+	// Create the template using a helper function
+	Template = Passive('RpgElectrician', "img:///UILibrary_RPG.UIPerk_Electrician_Aptitude", true, Effect);
+
+	// Add another effect that grants a free EMP grenade during each mission
+	ItemEffect = new class 'XMBEffect_AddUtilityItem';
+	ItemEffect.DataName = 'EMPGrenade';
+	AddSecondaryEffect(Template, ItemEffect);
+
+	return Template;
+}
+
+// #######################################################################################
+// -------------------- CHEMIST ----------------------------------------------------------
+// #######################################################################################
+
+// Perk name:		Chemist
+// Perk effect:		Your acid attacks deal +1 damage, and your attacks against targets affected by acid burn shred armour. You get a free acid grenade on each mission.
+// Localized text:	"Your acid attacks deal +1 damage, and your attacks against targets affected by acid burn shred armour. You get a free acid grenade on each mission."
+// Config:			(AbilityName="RpgChemist")
+
+static function X2AbilityTemplate Chemist()
+{
+	local XMBEffect_BonusDamageByDamageType Effect;
+	local XMBEffect_ConditionalBonus Effect2;
+	local XMBEffect_AddUtilityItem ItemEffect;
+    local X2Condition_UnitAffectedByAcidBurn Condition;
+	local X2AbilityTemplate Template;
+
+	// Create an effect that adds +1 damage to acid attacks and +1 damage to acid effects 
+	Effect = new class'XMBEffect_BonusDamageByDamageType';
+	Effect.EffectName = 'Chemist';
+	Effect.RequiredDamageTypes.AddItem('Acid');
+	Effect.DamageBonus = default.CHEMIST_DAMAGE_BONUS;
+
+	// Create an effect that make
+	Effect2 = new class'XMBEffect_ConditionalBonus';
+	Effect2.EffectName = 'RpgChemist_Bonuses';
+	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_CV, eHit_Success, 'conventional');
+	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_MG, eHit_Success, 'magnetic');
+	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_BM, eHit_Success, 'beam');
+	
+	// Add a condition that the target must suffer from a acid burn
+    Condition = new class'X2Condition_UnitAffectedByAcidBurn';
+	Effect2.AbilityTargetConditions.AddItem(Condition);
+
+	// Create the template using a helper function
+	Template = Passive('RpgChemist', "img:///UILibrary_RPG.UIPerk_Chemist_Aptitude", true, Effect);
+
+	// Add another effect that grants a free acid grenade during each mission
+	ItemEffect = new class 'XMBEffect_AddUtilityItem';
+	ItemEffect.DataName = 'AcidGrenade';
+
+	AddSecondaryEffect(Template, ItemEffect);
+	AddSecondaryEffect(Template, Effect2);
+
+	return Template;
+}
+
+// #######################################################################################
+// -------------------- PYROMANIAC--------------------------------------------------------
+// #######################################################################################
+
+// Perk name:		Pyromaniac
+// Perk effect:		Your fire attacks deal +1 damage, and your burn effects deal +1 damage per turn. You get a free incendiary grenade on each mission.
+// Localized text:	"Your fire attacks deal +1 damage, and your burn effects deal +1 damage per turn. You get a free incendiary grenade on each mission."
+// Config:			(AbilityName="XMBExample_Pyromaniac")
+
+static function X2AbilityTemplate Pyromaniac()
+{
+	local XMBEffect_BonusDamageByDamageType Effect;
+	local X2AbilityTemplate Template;
+	local XMBEffect_AddUtilityItem ItemEffect;
+
+	// Create an effect that adds +1 damage to fire attacks and +1 damage to burn damage
+	Effect = new class'XMBEffect_BonusDamageByDamageType';
+	Effect.EffectName = 'Pyromaniac';
+	Effect.RequiredDamageTypes.AddItem('fire');
+	Effect.RequiredDamageTypes.AddItem('Napalm');
+	Effect.DamageBonus = default.PYROMANIAC_DAMAGE_BONUS;
+
+	// Create the template using a helper function
+	Template = Passive('RpgPyromaniac', "img:///UILibrary_RPG.UIPerk_Pyromaniac_Aptitude", true, Effect);
+
+	// Add another effect that grants a free incendiary grenade during each mission
+	ItemEffect = new class 'XMBEffect_AddUtilityItem';
+	ItemEffect.DataName = 'Firebomb';
+	AddSecondaryEffect(Template, ItemEffect);
+
+	return Template;
+}

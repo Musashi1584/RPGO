@@ -54,9 +54,18 @@ ClassSpecializationSummary="Sometimes its not enough to just bring a rocket laun
 ClassSpecializationTitle=Spotter
 ClassSpecializationSummary="Every group of dedicated insurgents needs someone to watch their back. Traps, Tricks, and Treats are the name of their game, find it, mark it, and make sure the Op goes smooth."
 
-[Technical X2UniversalSoldierClassInfo]
-ClassSpecializationTitle=Technical
-ClassSpecializationSummary="Our Technicals are trained to use certain heavy weaponry, the rocket launcher and flamethrower, to provide critical support during firefights."
+[RpgRocketeer X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Rocketeer
+ClassSpecializationSummary="Our Rocketeers are trained to use the gauntlet's rocket launcher to devastating effect, dealing damage to large groups of enemies, shredding armor and leveleling whole buildings."
+
+[RpgPurifier X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Purifier
+ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flamethrower to devastating effect, setting aflame the battlefield and all foes that come too close."
+
+[Electrocutioner X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Electrocutioner
+ClassSpecializationSummary="The Electrocutioner utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Electrocutioner's allies take aim."
+
 
 [XGLocalizedData_RPG]
 UtilityCatPistol="(Auto-)Pistol"
