@@ -1,4 +1,3 @@
-
 [h1]Soldier AP[/h1]
 Since you can raise stats with Soldier AP the rank up AP bonus is raised to 30, plus a bonus depending on the Combat Intelligence Level:
 
@@ -145,3 +144,11 @@ Specify up to 4 abilities that replace the current squaddie abilities of the sol
 Use the ability template names that can be found in XComClassData.ini (TraitsXComAbilities, InnateAptitudesDeck)
 
 eg "RPGO_AssignSquaddieAbilities HotShot Bulletproof APT_Militia" replaces the current squaddie abilities with HotShot, Bulletproof and Militia.
+
+[b]RPGO_RebuildSelectedSoldier <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>[/b]
+
+Rebuilds the current soldier, resets AP and SP and by default keeps the current squaddie abilities
+
+eg "RPGO_RebuildSelectedSoldier false 5" rebuilds the soldier including new random squaddie perks and promotes to rank 5.
+
+"RPGO_RebuildSelectedSoldier" without any arguments rebuilds the soldier, keeps the current squaddie perks and promotes to the former rank.

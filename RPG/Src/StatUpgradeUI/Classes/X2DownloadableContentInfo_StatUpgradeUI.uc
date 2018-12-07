@@ -114,7 +114,7 @@ exec function RPGO_SetNaturalAptitude(int NewNaturalAptitude)
 	Armory.PopulateData();
 }
 
-exec function RPGO_GiveAbiltiyPoints(int AbilitsPoints)
+exec function RPGO_GiveAbiltiyPoints(int AbilityPoints)
 {
 	local XComGameStateHistory				History;
 	local UIArmory							Armory;
@@ -187,10 +187,7 @@ exec function RPGO_AssignSquaddieAbilities(optional name OPTIONAL_Ability1 = '',
 	local UIArmory							Armory;
 	local XComGameState_Unit				UnitState;
 	local XComGameState						NewGameState;
-	local int								i;
-	local array<SCATProgression>			SoldierProgressionAbilties;
-	local SCATProgression					AbilityProgression;
-	local SoldierClassAbilityType			AbilityType;
+	local array<name>						AbilityNames;
 
 	History = `XCOMHISTORY;
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_AssignSquaddieAbilities");
@@ -202,6 +199,33 @@ exec function RPGO_AssignSquaddieAbilities(optional name OPTIONAL_Ability1 = '',
 		return;
 
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+	AbilityNames.AddItem(OPTIONAL_Ability1);
+	AbilityNames.AddItem(OPTIONAL_Ability2);
+	AbilityNames.AddItem(OPTIONAL_Ability3);
+	AbilityNames.AddItem(OPTIONAL_Ability4);
+
+	SetSquaddieAbilites(NewGameState, UnitState, AbilityNames);
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+	
+	Armory.PopulateData();
+}
+
+private function SetSquaddieAbilites(XComGameState NewGameState, XComGameState_Unit UnitState, array<name> Abilities)
+{
+	local array<SCATProgression>			SoldierProgressionAbilties;
+	local SCATProgression					AbilityProgression;
+	local SoldierClassAbilityType			AbilityType;
+	local name								Ability;
+	local int								i;
 
 	UnitState.AbilityTree[0].Abilities.Length = 0;
 
@@ -220,61 +244,26 @@ exec function RPGO_AssignSquaddieAbilities(optional name OPTIONAL_Ability1 = '',
 	UnitState.SetSoldierProgression(SoldierProgressionAbilties);
 
 	// Assign the new abilities
-	if (OPTIONAL_Ability1 != '' && ValidateAbility(OPTIONAL_Ability1))
+	foreach Abilities(Ability)
 	{
-		AbilityType.AbilityName = OPTIONAL_Ability1;
-		UnitState.AbilityTree[0].Abilities.Additem(AbilityType);
+		if (Ability != '' && ValidateAbility(Ability))
+		{
+			AbilityType.AbilityName = Ability;
+			UnitState.AbilityTree[0].Abilities.Additem(AbilityType);
 
-		AbilityProgression = UnitState.GetSCATProgressionForAbility(OPTIONAL_Ability1);
+			AbilityProgression = UnitState.GetSCATProgressionForAbility(Ability);
 
-		`LOG("Buy new squaddie ability" @ OPTIONAL_Ability1 @ "Rank:" @ AbilityProgression.iRank @ "Branch:" @ AbilityProgression.iBranch,, 'RPG');
+			`LOG("Buy new squaddie ability" @ Ability @ "Rank:" @ AbilityProgression.iRank @ "Branch:" @ AbilityProgression.iBranch,, 'RPG');
 
-		UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
+			UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
+		}
 	}
-	
-	if (OPTIONAL_Ability2 != '' && ValidateAbility(OPTIONAL_Ability2))
-	{
-		AbilityType.AbilityName = OPTIONAL_Ability2;
-		UnitState.AbilityTree[0].Abilities.Additem(AbilityType);
-
-		AbilityProgression = UnitState.GetSCATProgressionForAbility(OPTIONAL_Ability2);
-		UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
-	}
-
-	if (OPTIONAL_Ability3 != '' && ValidateAbility(OPTIONAL_Ability3))
-	{
-		AbilityType.AbilityName = OPTIONAL_Ability3;
-		UnitState.AbilityTree[0].Abilities.Additem(AbilityType);
-
-		AbilityProgression = UnitState.GetSCATProgressionForAbility(OPTIONAL_Ability3);
-		UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
-	}
-
-	if (OPTIONAL_Ability4 != '' && ValidateAbility(OPTIONAL_Ability4))
-	{
-		AbilityType.AbilityName = OPTIONAL_Ability4;
-		UnitState.AbilityTree[0].Abilities.Additem(AbilityType);
-
-		AbilityProgression = UnitState.GetSCATProgressionForAbility(OPTIONAL_Ability4);
-		UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
-	}
-
-	if (NewGameState.GetNumGameStateObjects() > 0)
-	{
-		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
-	}
-	else
-	{
-		History.CleanupPendingGameState(NewGameState);
-	}
-	
-	Armory.PopulateData();
 }
 
 // Refresh a soldier's ability tree and XCOM abilities from the armory screen, with the option to
 // change their class and rank. Specifiying a class for a rookie will rank them up to Squaddie.
 // Like the Training Center respec, you will lose any XCOM AP spent, but not soldier AP.
-exec function RPGO_RebuildSelectedSoldiersClass(optional name OPTIONAL_ChangeClassTo = '', optional int OPTIONAL_SetRankTo = 0)
+exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddiePerks = true, optional int OPTIONAL_SetRankTo = 0, optional name OPTIONAL_ChangeClassTo = '')
 {
 	local XComGameStateHistory				History;
 	local UIArmory							Armory;
@@ -284,6 +273,9 @@ exec function RPGO_RebuildSelectedSoldiersClass(optional name OPTIONAL_ChangeCla
 	local X2SoldierClassTemplateManager		ClassTemplateManager;
 	local X2SoldierClassTemplate			ClassTemplate;
 	local name								ClassName;
+	local array<SoldierClassAbilityType>	SquaddieAbilities;
+	local SoldierClassAbilityType			SquaddieAbility;
+	local array<name>						SquaddieAbilityNames;
 	local bool								bChangeClass;
 	local int								i, NumRanks, iXP;
 	
@@ -370,6 +362,9 @@ exec function RPGO_RebuildSelectedSoldiersClass(optional name OPTIONAL_ChangeCla
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
 
+	SquaddieAbilities = UnitState.GetRankAbilities(0);
+
+
 	UnitState.AbilityPoints = 0; // Reset Ability Points
 	UnitState.SpentAbilityPoints = 0; // And reset the spent AP tracker
 	UnitState.ResetSoldierRank(); // Clear their rank
@@ -378,6 +373,17 @@ exec function RPGO_RebuildSelectedSoldiersClass(optional name OPTIONAL_ChangeCla
 	{
 		UnitState.RankUpSoldier(NewGameState, ClassName);
 	}
+
+	// Restore the squaddie abilities
+	if (OPTIONAL_PreserveSquaddiePerks)
+	{
+		foreach SquaddieAbilities(SquaddieAbility)
+		{
+			SquaddieAbilityNames.AddItem(SquaddieAbility.AbilityName);
+		}
+		SetSquaddieAbilites(NewGameState, UnitState, SquaddieAbilityNames);
+	}
+
 	UnitState.ApplySquaddieLoadout(NewGameState, XComHQ);
 
 	// Reapply Stat Modifiers (Beta Strike HP, etc.)

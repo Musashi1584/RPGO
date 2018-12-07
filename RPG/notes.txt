@@ -25,6 +25,9 @@ RPGO_SetNaturalAptitude <NaturalAptitude>
 RPGO_GiveAbiltiyPoints <AbilityPoints>
 RPGO_GiveStatPoints <StatPoints>
 RPGO_AssignSquaddieAbilities <OPTIONAL_Ability1> <OPTIONAL_Ability2> <OPTIONAL_Ability3> <OPTIONAL_Ability4>
+RPGO_RebuildSelectedSoldier  <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>
+
+All commands are documented on the Full Feature List page ( https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/ )
 
 [b]Miscellaneous Changes:[/b]
 - Tracer rounds are no starting item anymore

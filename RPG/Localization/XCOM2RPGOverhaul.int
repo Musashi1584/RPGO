@@ -62,9 +62,9 @@ ClassSpecializationSummary="Our Rocketeers are trained to use the gauntlet's roc
 ClassSpecializationTitle=Purifier
 ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flamethrower to devastating effect, setting aflame the battlefield and all foes that come too close."
 
-[Electrocutioner X2UniversalSoldierClassInfo]
-ClassSpecializationTitle=Electrocutioner
-ClassSpecializationSummary="The Electrocutioner utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Electrocutioner's allies take aim."
+[Enforcer X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Enforcer
+ClassSpecializationSummary="The Enforcer utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Enforcer's allies take aim."
 
 
 [XGLocalizedData_RPG]
