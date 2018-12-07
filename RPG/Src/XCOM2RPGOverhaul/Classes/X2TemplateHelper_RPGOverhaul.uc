@@ -480,9 +480,7 @@ static function PatchWeapons()
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireShot');
-						//AddAbilityToWeaponTemplate(WeaponTemplate, 'AutoFireOverwatch');
-						
+
 						WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
 						WeaponTemplate.iClipSize += 2;
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
@@ -493,6 +491,7 @@ static function PatchWeapons()
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						break;
 					case 'sidearm':
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 						WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
