@@ -699,12 +699,12 @@ static function PatchTraceRounds()
 	Template.Abilities.Length = 0;
 	Template.Abilities.AddItem('Holotargeting');
 
-	Template.Cost.ResourceCosts.Length = 0;
-	Template.TradingPostValue = 0;
-	Template.RewardDecks.Length = 0;
-	Template.bInfiniteItem = true;
-	Template.StartingItem = true;
-	Template.CanBeBuilt = false;
+	//Template.Cost.ResourceCosts.Length = 0;
+	//Template.TradingPostValue = 0;
+	//Template.RewardDecks.Length = 0;
+	//Template.bInfiniteItem = true;
+	//Template.StartingItem = true;
+	//Template.CanBeBuilt = false;
 }
 
 static function PatchSteadyHands()

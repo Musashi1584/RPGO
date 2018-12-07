@@ -79,7 +79,7 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 
 [h1]New/Modified Items[/h1]
 [list]
-[*] Tracer Ammo - give HoloTargeting instead of aim and is a starting item
+[*] Tracer Ammo - give HoloTargeting instead of aim
 [/list]
 
 [h1]Specializations[/h1]
