@@ -1,9 +1,9 @@
-[b]Changes:[/b]
+[b]Update[/b]
 
-Added [b]3 new specializations[/b]: The [b]Rocketeer[/b], the [b]Purifier[/b] and the [b]Electrocutioner[/b].
+Added [b]3 new specializations[/b]: The [b]Rocketeer[/b], the [b]Purifier[/b] and the [b]Enforcer[/b].
 
 The Rocketeer and the Purifier use the Long War 2 Gauntlet and its LW2 perks
-The Electrocutioner uses the arcthrower and its four LW 2 perks as well as [b]3 brand new perks[/b] (well one was kinda stolen from ABB):
+The Enforcer uses the arcthrower and its four LW 2 perks as well as [b]3 brand new perks[/b] (well one was kinda stolen from ABB):
 [b]Quick Zap[/b]: Activate this ability to make your next arcthrower shot a free action. 4 turn cooldown.
 [b]Spare Battery[/b]: Quickly recharge your Arc Thrower's battery with a spare, reducing all related cooldowns by up to 3. Cooldown 5 turns.
 [b]That's Close Enough[/b]: During enemy turns, fire your arcthrower at any visible enemy within four tiles who moves or fires.

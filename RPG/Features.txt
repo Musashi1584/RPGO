@@ -104,7 +104,7 @@ A full documentation of all abilities can be found [url=https://docs.google.com/
 [h1]Custom console commands[/h1]
 All the commands should be used in the armory and are applied to the current selected soldier
 
-[b]RPGO_SetCombatIntelligence <CombatIntelligence>[/b]
+[code]RPGO_SetCombatIntelligence <CombatIntelligence>[/code]
 Difference in AP are retroactivle applied as if the soldier was at the new level the whole time if the new level is higher than the old. If its lower no retroactive AP changes are applied.
 
 CombatIntelligence:
@@ -118,7 +118,7 @@ CombatIntelligence:
 eg "RPGO_SetCombatIntelligence 4" sets the current soldier to savant. 
 
 
-[b]RPGO_SetNaturalAptitude <NaturalAptitude>[/b]
+[code]RPGO_SetNaturalAptitude <NaturalAptitude>[/code]
 Difference in SP are retroactivle applied as if the soldier was at the new level the whole time if the new level is higher than the old. If its lower no retroactive SP changes are applied.
 
 NaturalAptitude:
@@ -130,22 +130,22 @@ NaturalAptitude:
 
 eg "RPGO_SetNaturalAptitude 4" sets the current soldier to Godlike. 
 
-[b]RPGO_GiveAbiltiyPoints <AbilityPoints>[/b]
+[code]RPGO_GiveAbiltiyPoints <AbilityPoints>[/code]
 
 eg "RPGO_GiveAbiltiyPoints 10" adds 10 AP to the soldier. 
 
-[b]RPGO_GiveStatPoints <StatPoints>[/b]
+[code]RPGO_GiveStatPoints <StatPoints>[/code]
 
 eg "RPGO_GiveStatPoints 10" adds 10 SP to the soldier.
 
-[b]RPGO_AssignSquaddieAbilities <OPTIONAL_Ability1> <OPTIONAL_Ability2> <OPTIONAL_Ability3> <OPTIONAL_Ability4>[/b]
+[code]RPGO_AssignSquaddieAbilities <OPTIONAL_Ability1> <OPTIONAL_Ability2> <OPTIONAL_Ability3> <OPTIONAL_Ability4>[/code]
 
 Specify up to 4 abilities that replace the current squaddie abilities of the soldier.
 Use the ability template names that can be found in XComClassData.ini (TraitsXComAbilities, InnateAptitudesDeck)
 
 eg "RPGO_AssignSquaddieAbilities HotShot Bulletproof APT_Militia" replaces the current squaddie abilities with HotShot, Bulletproof and Militia.
 
-[b]RPGO_RebuildSelectedSoldier <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>[/b]
+[code]RPGO_RebuildSelectedSoldier <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>[/code]
 
 Rebuilds the current soldier, resets AP and SP and by default keeps the current squaddie abilities
 

@@ -311,8 +311,8 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 	local array<name> HeroClasses;
 	local array<Name> TemplateNames;
 	local Name TemplateName;
-	local array<X2DataTemplate> DataTemplates;
-	local X2DataTemplate DataTemplate;
+	local array<X2DataTemplate> DataTemplates, DifficultyTemplates;
+	local X2DataTemplate DataTemplate, DifficultyTemplate;
 	local int Difficulty;
 
 	TemplateManager = class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager();
@@ -325,24 +325,30 @@ static function PatchAcademyUnlocks(name SoldierClassName)
 
 	foreach Templates(Template)
 	{
-		SoldierUnlockTemplate = X2SoldierAbilityUnlockTemplate(Template);
+		TemplateManager.FindDataTemplateAllDifficulties(Template.DataName, DifficultyTemplates);
 
-		if (SoldierUnlockTemplate == none)
+		foreach DifficultyTemplates(DifficultyTemplate)
 		{
-			continue;
-		}
+
+			SoldierUnlockTemplate = X2SoldierAbilityUnlockTemplate(DifficultyTemplate);
+
+			if (SoldierUnlockTemplate == none)
+			{
+				continue;
+			}
 		
-		//`LOG(GetFuncName() @ SoldierUnlockTemplate.DataName @ SoldierUnlockTemplate.bAllClasses @ SoldierUnlockTemplate.Requirements.RequiredSoldierClass,, 'RPG');
+			//`LOG(GetFuncName() @ SoldierUnlockTemplate.DataName @ SoldierUnlockTemplate.bAllClasses @ SoldierUnlockTemplate.Requirements.RequiredSoldierClass,, 'RPG');
 		
-		if (!SoldierUnlockTemplate.bAllClasses &&
-			SoldierUnlockTemplate.Requirements.RequiredSoldierClass != '' &&
-			HeroClasses.Find(SoldierUnlockTemplate.Requirements.RequiredSoldierClass) == INDEX_NONE
-		)
-		{
-			SoldierUnlockTemplate.AllowedClasses.AddItem(SoldierClassName);
-			SoldierUnlockTemplate.Requirements.RequiredSoldierClass = SoldierClassName;
-			SoldierUnlockTemplate.Cost.ResourceCosts[0].Quantity = 300;
-			`LOG(GetFuncName() @ "patching template" @ Template.DataName,, 'RPG');
+			if (!SoldierUnlockTemplate.bAllClasses &&
+				SoldierUnlockTemplate.Requirements.RequiredSoldierClass != '' &&
+				HeroClasses.Find(SoldierUnlockTemplate.Requirements.RequiredSoldierClass) == INDEX_NONE
+			)
+			{
+				SoldierUnlockTemplate.AllowedClasses.AddItem(SoldierClassName);
+				SoldierUnlockTemplate.Requirements.RequiredSoldierClass = SoldierClassName;
+				SoldierUnlockTemplate.Cost.ResourceCosts[0].Quantity = 300;
+				`LOG(GetFuncName() @ "patching template" @ Template.DataName,, 'RPG');
+			}
 		}
 	}
 
