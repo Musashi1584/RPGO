@@ -37,6 +37,7 @@ var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
 var config array<SoldierSpecialization> Specializations;
 var config array<name> ValidLightEmUpAbilities;
+var config array<name> IgnoreWeaponTemplatesForPatch;
 
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
@@ -400,6 +401,7 @@ static function PatchWeapons()
 	local X2DataTemplate ItemTemplate;
 	local X2WeaponTemplate WeaponTemplate;
 	local X2GremlinTemplate GremlinTemplate;
+	
 
 	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
 
@@ -427,6 +429,11 @@ static function PatchWeapons()
 				if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)
 				{
 					//WeaponTemplate.BaseDamage
+				}
+
+				if (default.IgnoreWeaponTemplatesForPatch.Find(WeaponTemplate.DataName) != INDEX_NONE)
+				{
+					continue;
 				}
 
 				switch (WeaponTemplate.WeaponCat)
@@ -495,6 +502,7 @@ static function PatchWeapons()
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						`LOG(WeaponTemplate.DataName,, 'RPG');
 						break;
 					case 'sidearm':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
@@ -578,13 +586,13 @@ static function UpdateStorage()
 				NewItemState = ItemTemplates[i].CreateInstanceFromTemplate(NewGameState);
 				NewGameState.AddStateObject(NewItemState);
 				XComHQ.AddItemToHQInventory(NewItemState);
-				History.AddGameStateToHistory(NewGameState);
 			} else {
 				`Log(ItemTemplates[i].GetItemFriendlyName() @ " found, skipping inventory add",, 'RPG');
-				History.CleanupPendingGameState(NewGameState);
 			}
 		}
 	}
+
+	History.AddGameStateToHistory(NewGameState);
 }
 
 static function PatchAbilityPrerequisites()
