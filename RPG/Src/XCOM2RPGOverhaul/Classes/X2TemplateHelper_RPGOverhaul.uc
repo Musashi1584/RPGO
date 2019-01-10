@@ -998,14 +998,21 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 		if (LoadoutWeaponTemplate == none || WeaponTemplate == none)
 			continue;
 
+		`LOG(GetFuncName() @ "Testing" @ LoadoutWeaponTemplate.WeaponCat @ LoadoutWeaponTemplate.InventorySlot @ Slot,, 'RPG');
+
 		foreach default.LoadoutUniqueItemCategories(ItemCategories)
 		{
 			Categories = ItemCategories.Categories;
 			Index = Categories.Find(LoadoutWeaponTemplate.WeaponCat);
 			Index2 = Categories.Find(WeaponTemplate.WeaponCat);
 			if (Index != INDEX_NONE && Index2 != INDEX_NONE &&
-				LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot)
+				LoadoutWeaponTemplate.InventorySlot != WeaponTemplate.InventorySlot &&
+				(LoadoutWeaponTemplate.InventorySlot == eInvSlot_PrimaryWeapon ||
+				 LoadoutWeaponTemplate.InventorySlot == eInvSlot_SecondaryWeapon ||
+				 LoadoutWeaponTemplate.InventorySlot == eInvSlot_Utility
+				))
 			{
+				`LOG(GetFuncName() @ LoadoutWeaponTemplate.InventorySlot @ WeaponTemplate.InventorySlot,, 'RPG');
 				bCanAddItem = 0;
 				LocTag.StrValue0 = WeaponTemplate.GetLocalizedCategory();
 				DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(
