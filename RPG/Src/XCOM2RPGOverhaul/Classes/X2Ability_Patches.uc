@@ -180,7 +180,7 @@ static function X2AbilityTemplate AutoFireShot()
 	WorldDamage.bHitTargetTile = true;
 	Template.AddTargetEffect(WorldDamage);
 
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).iNumPoints = 2;
+	class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityCostActionPoints(Template).iNumPoints = 2;
 	Template.OverrideAbilities.AddItem('StandardShot');
 
 	return Template;
@@ -193,7 +193,7 @@ static function X2AbilityTemplate AutoFireOverwatch()
 	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
 	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
 
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[1]).iNumPoints = 2;
+	class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityCostActionPoints(Template).iNumPoints = 2;
 	Template.OverrideAbilities.AddItem('Overwatch');
 
 	return Template;

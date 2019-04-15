@@ -701,6 +701,22 @@ static function X2AbilityCost_ActionPoints GetAbilityCostActionPoints(X2AbilityT
 	return none;
 }
 
+// Mr. Nice: Only really safe if you *know* there is never more than one of that cost type
+// For example, RapidFire/ChainShot have two ammo costs, a free cost for 2 ammo, and the actual cose for 1 ammo.
+static function X2AbilityCost GetAbilityCostByClassName(X2AbilityTemplate Template, name CostClassName)
+{
+	local X2AbilityCost Cost;
+
+	foreach Template.AbilityCosts(Cost)
+	{
+		if (Cost.IsA(CostClassName))
+		{
+			return Cost;
+		}
+	}
+	return none;
+}
+
 static function PatchTraceRounds()
 {
 	local X2ItemTemplateManager					TemplateManager;
