@@ -1,4 +1,17 @@
-class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo;
+class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo config(RPG);
+
+var config array<string> RunBefore;
+var config array<string> RunAfter;
+
+function array<string> GetRunBeforeDLCIdentifiers()
+{
+	return default.RunBefore;
+}
+
+function array<string> GetRunAfterDLCIdentifiers()
+{
+	return default.RunAfter;
+}
 
 // Double tactical ability points
 static event InstallNewCampaign(XComGameState StartState)
@@ -23,7 +36,7 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 
 static event OnPostTemplatesCreated()
 {
-	`LOG(GetFuncName(),, 'RPG');
+	`LOG(default.class @ GetFuncName(),, 'DLCSort');
 	class'X2TemplateHelper_RPGOverhaul'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();

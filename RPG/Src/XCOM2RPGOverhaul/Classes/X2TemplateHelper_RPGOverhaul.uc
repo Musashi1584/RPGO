@@ -956,7 +956,6 @@ static function PatchSquadSight()
 	local X2AbilityTemplateManager		TemplateManager;
 	local X2AbilityTemplate				Template;
 	local X2Effect_Squadsight			Squadsight;
-	local X2Condition_UnitActionPoints	ActionPointCondition;
 	local X2AbilityTrigger_EventListener EventTrigger;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
@@ -974,13 +973,9 @@ static function PatchSquadSight()
 	EventTrigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
 	Template.AbilityTriggers.AddItem(EventTrigger);
 
-	ActionPointCondition = new class'X2Condition_UnitActionPoints';
-	ActionPointCondition.AddActionPointCheck(0, class'X2CharacterTemplateManager'.default.StandardActionPoint, false, eCheck_GreaterThanOrEqual, 2, 0);
-
 	Squadsight = new class'X2Effect_Squadsight';
 	Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnBegin);
 	Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
-	Squadsight.TargetConditions.AddItem(ActionPointCondition);
 	Template.AddTargetEffect(Squadsight);
 
 	Template.AdditionalAbilities.AddItem('RemoveSquadSightOnMove');
@@ -1014,7 +1009,7 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 		if (LoadoutWeaponTemplate == none || WeaponTemplate == none)
 			continue;
 
-		`LOG(GetFuncName() @ "Testing" @ LoadoutWeaponTemplate.WeaponCat @ LoadoutWeaponTemplate.InventorySlot @ Slot,, 'RPG');
+		//`LOG(GetFuncName() @ "Testing" @ LoadoutWeaponTemplate.WeaponCat @ LoadoutWeaponTemplate.InventorySlot @ Slot,, 'RPG');
 
 		foreach default.LoadoutUniqueItemCategories(ItemCategories)
 		{
@@ -1063,8 +1058,8 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 		}
 	}
 
-	if (bEvaluate)
-		`LOG(GetFuncName() @ DisabledReason @ bEvaluate,, 'RPG');
+	//if (bEvaluate)
+		//`LOG(GetFuncName() @ DisabledReason @ bEvaluate,, 'RPG');
 
 	if(CheckGameState == none)
 		return !bEvaluate;
@@ -1095,21 +1090,21 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 	//`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');
 
 	// SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
-	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
-	{
-		for (i = 0; i < Pawn.Mesh.AnimSets.Length; i++)
-		{
-			if (string(Pawn.Mesh.AnimSets[i]) == "AS_TemplarAutoPistol")
-			{
-				//`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
-				Pawn.Mesh.AnimSets.Remove(i, 1);
-				break;
-			}
-		}
-		AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("AutoPistol_ANIM.Anims.AS_AutoPistol")));
-
-		Pawn.Mesh.UpdateAnimations();
-	}
+	//if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
+	//{
+	//	for (i = 0; i < Pawn.Mesh.AnimSets.Length; i++)
+	//	{
+	//		if (string(Pawn.Mesh.AnimSets[i]) == "AS_TemplarAutoPistol")
+	//		{
+	//			//`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
+	//			Pawn.Mesh.AnimSets.Remove(i, 1);
+	//			break;
+	//		}
+	//	}
+	//	AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("AutoPistol_ANIM.Anims.AS_AutoPistol")));
+	//
+	//	Pawn.Mesh.UpdateAnimations();
+	//}
 
 	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_SkirmisherGauntlet") != INDEX_NONE)
 	{
