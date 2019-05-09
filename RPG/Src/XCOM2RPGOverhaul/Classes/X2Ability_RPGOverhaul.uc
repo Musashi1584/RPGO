@@ -670,14 +670,15 @@ static function X2AbilityTemplate FullAutoFire()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_MaybeApplyDirectionalWorldDamage WorldDamage;
-
+	local X2AbilityCost_Ammo AmmoCost;
 	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('FullAutoFire');
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_SHOT_PRIORITY + 10;
 	Template.IconImage = "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'";
 
-	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).iNumPoints = 2;
-	X2AbilityCost_Ammo(Template.AbilityCosts[1]).iAmmo += 2;
-	X2AbilityCost_Ammo(Template.AbilityCosts[1]).bConsumeAllAmmo = true;
+	class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityCostActionPoints(Template).iNumPoints = 2;
+	AmmoCost = X2AbilityCost_Ammo(class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityCostByClassName(Template, 'X2AbilityCost_Ammo'));
+	AmmoCost.iAmmo += 2;
+	AmmoCost.bConsumeAllAmmo = true;
 
 	WorldDamage = new class'X2Effect_MaybeApplyDirectionalWorldDamage';
 	WorldDamage.bUseWeaponDamageType = true;
