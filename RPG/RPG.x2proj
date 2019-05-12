@@ -188,10 +188,10 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_Scope.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Item_MeleeUpgrades.uc">
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_Silencer.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\XMBEffect_AbilityCostRefundChance.uc">
+    <Content Include="Src\ExtendedUpgrades\Classes\X2Item_MeleeUpgrades.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\LW_Tuple\Classes\*.uc">

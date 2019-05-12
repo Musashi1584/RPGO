@@ -76,6 +76,28 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Templates;
 }
 
+static function X2AbilityTemplate SilencerAttachement(name TemplateName, int Bonus)
+{
+	local X2AbilityTemplate					Template;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, TemplateName);
+
+	Template.AbilitySourceName = 'eAbilitySource_Item';
+	Template.Hostility = eHostility_Neutral;
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.bIsPassive = true;
+	Template.bCrossClassEligible = false;
+
+
+	
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	
+	return Template;
+}
+
 static function X2AbilityTemplate StockAttachment(name TemplateName, int Bonus)
 {
 	local X2AbilityTemplate					Template;
