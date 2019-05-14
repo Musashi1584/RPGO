@@ -932,11 +932,19 @@ static function PatchLongWatch()
 {
 	local X2AbilityTemplateManager		TemplateManager;
 	local X2AbilityTemplate				Template;
+	local X2Effect_Squadsight			Squadsight;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('LongWatch');
-	GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
+
+	// Readd squad sight in case it was removed on movement on playerturn
+	Squadsight = new class'X2Effect_Squadsight';
+	Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnEnd);
+	Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	Template.AddTargetEffect(Squadsight);
+
+	// GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
 }
 
 

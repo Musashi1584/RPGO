@@ -61,11 +61,11 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 
 [h1]Changes to attachments[/h1]
 [list]
-[*] Scope	(Aim penalty for close range, aim bonus mid to long range.)
+[*] Scope (Aim penalty for close range, aim bonus mid to long range.)
 [*] Laser Sight (Crit Bonus (5/10/15) but aim penalties for mid to long range.)
 [*] Hair Trigger (15/30/45)% chance to trigger a second shot if the first one misses
 [*] Repeater (get replaced by Tactical Suppressors (Uses WotC Tactical Suppressors))
-[*] Stock	(Reaction Fire Bonus (5/10/15))
+[*] Stock (Reaction Fire Bonus (5/10/15))
 [*] Autoloader (Auto reload 1 ammo per turn (max 4/6/8))
 [*] more attachments to come
 [/list]

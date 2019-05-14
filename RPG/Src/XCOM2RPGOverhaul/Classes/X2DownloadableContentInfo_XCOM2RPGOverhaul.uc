@@ -2,6 +2,9 @@ class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentIn
 
 var config array<string> RunBefore;
 var config array<string> RunAfter;
+var config array<string> IncompatibleMods;
+var config array<string> RequiredMods;
+var config string DisplayName;
 
 function array<string> GetRunBeforeDLCIdentifiers()
 {
@@ -11,6 +14,21 @@ function array<string> GetRunBeforeDLCIdentifiers()
 function array<string> GetRunAfterDLCIdentifiers()
 {
 	return default.RunAfter;
+}
+
+function array<string> GetIncompatibleDLCIdentifiers()
+{
+	return default.IncompatibleMods;
+}
+
+function array<string> GetRequiredDLCIdentifiers()
+{
+	return default.RequiredMods;
+}
+
+function string GetDisplayName()
+{
+	return default.DisplayName;
 }
 
 // Double tactical ability points
@@ -47,7 +65,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchStandardShot();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchRemoteStart();
-	//class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSuppression();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchKillZone();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherGrapple();
