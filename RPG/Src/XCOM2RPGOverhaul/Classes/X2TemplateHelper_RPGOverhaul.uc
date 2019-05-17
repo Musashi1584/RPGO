@@ -45,7 +45,14 @@ var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 var config int DefaultWeaponUpgradeSlots;
 
-var config bool bAddWeaponsChanges;
+
+var config bool bPatchBullpups;
+var config bool bPatchShotguns;
+var config bool bPatchCannons;
+var config bool bPatchPistols;
+var config bool bPatchAutoPistols;
+var config bool bPatchDefaultWeaponUpgradeSlots;
+var config bool bAddHeavyWeaponMobility;
 var config bool bAddFullAutoFire;
 
 static function SetupSpecialization(name SoldierClassTemplate)
@@ -459,7 +466,10 @@ static function PatchWeapons()
 							if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
 								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
 						}
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'bullpup':
 						if (default.bAddFullAutoFire)
@@ -472,25 +482,34 @@ static function PatchWeapons()
 						if (InStr(string(WeaponTemplate.DataName), "BM") != INDEX_NONE)
 							WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
 						}
-						if (default.bAddWeaponsChanges)
+						if (default.bPatchBullpups)
 						{
 						WeaponTemplate.iClipSize += 1;
 						}
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);						
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'sniper_rifle':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
 
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'vektor_rifle':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
 
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'shotgun':
-						if (default.bAddWeaponsChanges)
+						if (default.bPatchShotguns)
 						{					
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
@@ -498,7 +517,10 @@ static function PatchWeapons()
 						WeaponTemplate.CritChance += default.ShotgunCritBonus;
 						WeaponTemplate.Aim += default.ShotgunAimBonus;
 						}
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'cannon':
 						if (default.bAddFullAutoFire)
@@ -506,35 +528,60 @@ static function PatchWeapons()
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 						}
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-						if (default.bAddWeaponsChanges)
+						if (default.bPatchCannons)
 						{
 						WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
 						WeaponTemplate.iClipSize += 2;
 						}
+						if (default.bAddHeavyWeaponMobility)
+						{
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
+						}						
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'pistol':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
+						if (default.bPatchPistols)
+						{
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
+						}
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						`LOG(WeaponTemplate.DataName,, 'RPG');
 						break;
 					case 'sidearm':
+						if (default.bPatchPistols)
+						{
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
+						}
+						if (default.bPatchAutoPistols)
+						{
 						WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 						WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
+						}
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
+						if (default.bPatchDefaultWeaponUpgradeSlots)
+						{
 						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+						}
 						break;
 					case 'grenade_launcher':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
 						break;
 					case 'wristblade':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);					
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'Reckoning', true);						
 						break;
 					case 'claymore':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
