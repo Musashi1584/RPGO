@@ -52,8 +52,8 @@ var config bool bPatchCannons;
 var config bool bPatchPistols;
 var config bool bPatchAutoPistols;
 var config bool bPatchDefaultWeaponUpgradeSlots;
-var config bool bAddHeavyWeaponMobility;
-var config bool bAddFullAutoFire;
+var config bool bPatchHeavyWeaponMobility;
+var config bool bPatchFullAutoFire;
 
 static function SetupSpecialization(name SoldierClassTemplate)
 {
@@ -456,7 +456,7 @@ static function PatchWeapons()
 						break;
 					case 'rifle':
 					case 'sparkrifle':
-						if (InStr(WeaponTemplate.DataName, "SMG") == INDEX_NONE && default.bAddFullAutoFire)
+						if (InStr(WeaponTemplate.DataName, "SMG") == INDEX_NONE && default.bPatchFullAutoFire)
 						{
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 							if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
@@ -472,7 +472,7 @@ static function PatchWeapons()
 						}
 						break;
 					case 'bullpup':
-						if (default.bAddFullAutoFire)
+						if (default.bPatchFullAutoFire)
 						{
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 						if (InStr(string(WeaponTemplate.DataName), "CV") != INDEX_NONE)
@@ -523,7 +523,7 @@ static function PatchWeapons()
 						}
 						break;
 					case 'cannon':
-						if (default.bAddFullAutoFire)
+						if (default.bPatchFullAutoFire)
 						{					
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
 						}
@@ -533,7 +533,7 @@ static function PatchWeapons()
 						WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
 						WeaponTemplate.iClipSize += 2;
 						}
-						if (default.bAddHeavyWeaponMobility)
+						if (default.bPatchHeavyWeaponMobility)
 						{
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
 						}						
