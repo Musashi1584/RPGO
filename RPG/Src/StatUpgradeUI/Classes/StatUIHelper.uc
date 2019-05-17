@@ -1,13 +1,4 @@
-class StatUIHelper extends Object config(StatUpgradeUI);
-
-enum ENaturalAptitude
-{
-	eNaturalAptitude_Standard,
-	eNaturalAptitude_AboveAverage,
-	eNaturalAptitude_Gifted,
-	eNaturalAptitude_Genius,
-	eNaturalAptitude_Savant,
-};
+class StatUIHelper extends Object config(StatUpgradeUI) dependson (DataStructure_StatUpgradeUI);
 
 var config array<name> NaturalAptitudeCharacterTemplates;
 var config array<int> NaturalAptitudeThresholds;
