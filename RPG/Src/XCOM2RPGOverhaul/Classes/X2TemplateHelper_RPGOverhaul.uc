@@ -39,12 +39,13 @@ var config array<SoldierSpecialization> Specializations;
 var config array<name> ValidLightEmUpAbilities;
 var config array<name> IgnoreWeaponTemplatesForPatch;
 
+var config int SecondWaveTrainingRouletteRandomSpecCount;
+
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 var config int DefaultWeaponUpgradeSlots;
-
 
 var config bool bPatchBullpups;
 var config bool bPatchShotguns;
@@ -54,6 +55,26 @@ var config bool bPatchAutoPistols;
 var config bool bPatchDefaultWeaponUpgradeSlots;
 var config bool bPatchHeavyWeaponMobility;
 var config bool bPatchFullAutoFire;
+
+static function AddSecondWaveOption(name ID, string Description, string Tooltip)
+{
+	local array<Object>			UIShellDifficultyArray;
+	local Object				ArrayObject;
+	local UIShellDifficulty		UIShellDifficulty;
+	local SecondWaveOption		Option;
+	
+	Option.ID = ID;
+	Option.DifficultyValue = 0;
+
+	UIShellDifficultyArray = class'XComEngine'.static.GetClassDefaultObjects(class'UIShellDifficulty');
+	foreach UIShellDifficultyArray(ArrayObject)
+	{
+		UIShellDifficulty = UIShellDifficulty(ArrayObject);
+		UIShellDifficulty.SecondWaveOptions.AddItem(Option);
+		UIShellDifficulty.SecondWaveDescriptions.AddItem(Description);
+		UIShellDifficulty.SecondWaveToolTips.AddItem(Tooltip);
+	}
+}
 
 static function SetupSpecialization(name SoldierClassTemplate)
 {
@@ -153,15 +174,78 @@ static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAb
 	}
 
 	Template.AbilityTreeTitles.AddItem(SpecializationTitle);
+}
 
-	//for (RankIndex = 1; RankIndex < class'X2ExperienceConfig'.static.GetMaxRank(); RankIndex++)
-	//{
-	//	`LOG("Rank" @ RankIndex,, 'RPG');
-	//	foreach Template.SoldierRanks[RankIndex].AbilitySlots(Slot)
-	//	{
-	//		`LOG("Adding Spec" @ SpecializationTitle @ "Slot" @ Slot.AbilityType.AbilityName,, 'RPG');
-	//	}
-	//}
+static function string GetAbilityTreeTitle(XComGameState_Unit UnitState, int SlotIndex)
+{
+	local X2UniversalSoldierClassInfo Template;
+
+	if (UnitState.GetSoldierClassTemplateName() != 'UniversalSoldier')
+	{
+		return UnitState.GetSoldierClassTemplate().AbilityTreeTitles[SlotIndex];
+	}
+
+	Template = GetSpecializationForSlot(UnitState, SlotIndex);
+
+	if (Template != none)
+	{
+		return Template.ClassSpecializationTitle;
+	}
+}
+
+static function X2UniversalSoldierClassInfo GetSpecializationForSlot(XComGameState_Unit UnitState, int SlotIndex)
+{
+	local SoldierClassAbilityType AbilityType;
+	local array<SoldierSpecialization> Specs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo Template;
+	local SoldierClassAbilitySlot SpecAbilitySlot;
+	local array<name> SoldierAbilitiesForSlot;
+	local array<name> SpecAbilitiesForSlot;
+	local name Ability;
+	local int Index;
+	local bool bFound;
+
+	//`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @ UnitState.GetSoldierClassTemplateName(),, 'RPG');
+	
+	for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
+	{
+		SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
+	}
+
+	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
+
+	foreach Specs(Spec)
+	{
+		Template = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+		
+		SpecAbilitiesForSlot.Length = 0;
+
+		foreach Template.AbilitySlots(SpecAbilitySlot)
+		{
+			SpecAbilitiesForSlot.AddItem(SpecAbilitySlot.AbilityType.AbilityName);
+		}
+
+		//`LOG(default.class @ GetFuncName() @ Template.ClassSpecializationTitle @ SoldierAbilitiesForSlot[0] @ SpecAbilitiesForSlot[0],, 'RPG');
+
+		bFound = true;
+
+		foreach SpecAbilitiesForSlot(Ability)
+		{
+			if(SoldierAbilitiesForSlot.Find(Ability) == INDEX_NONE)
+			{
+				bFound = false;
+				break;
+			}
+		}
+
+		if(bFound)
+		{
+			return Template;
+		}
+	}
+
+	return none;
 }
 
 static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState NewGameState)
@@ -1153,34 +1237,13 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 {
 	local X2WeaponTemplate PrimaryWeaponTemplate; //, SecondaryWeaponTemplate;
 	local AnimSet AnimSetIter;
-	local int i;
 
 	if (!UnitState.IsSoldier() || UnitState.GetSoldierClassTemplateName() == 'Templar')
 	{
 		return;
 	}
 
-	//SecondaryWeaponTemplate = X2WeaponTemplate( UnitState.GetSecondaryWeapon().GetMyTemplate());
 	PrimaryWeaponTemplate = X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate());
-
-	//`LOG(GetFuncName() @ UnitState.GetFullName() @ SecondaryWeaponTemplate.DataName @ PrimaryWeaponTemplate.DataName @ string(XComWeapon(Pawn.Weapon).ObjectArchetype) @ `XCOMVISUALIZATIONMGR.GetCurrentActionForVisualizer(Pawn),, 'RPG');
-
-	// SecondaryWeaponTemplate.WeaponCat == 'sidearm' &&
-	//if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_TemplarAutoPistol") != INDEX_NONE)
-	//{
-	//	for (i = 0; i < Pawn.Mesh.AnimSets.Length; i++)
-	//	{
-	//		if (string(Pawn.Mesh.AnimSets[i]) == "AS_TemplarAutoPistol")
-	//		{
-	//			//`LOG(GetFuncName() @ UnitState.GetFullName() @ "Removing" @ Pawn.Mesh.AnimSets[i],, 'RPG');
-	//			Pawn.Mesh.AnimSets.Remove(i, 1);
-	//			break;
-	//		}
-	//	}
-	//	AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("AutoPistol_ANIM.Anims.AS_AutoPistol")));
-	//
-	//	Pawn.Mesh.UpdateAnimations();
-	//}
 
 	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_SkirmisherGauntlet") != INDEX_NONE)
 	{

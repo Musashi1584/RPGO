@@ -15,6 +15,18 @@ struct CustomClassAbilityCost
 	var int AbilityCost;
 };
 
+struct SoldierSpecialization
+{
+	var int Order;
+	var name TemplateName;
+	var bool bEnabled;
+	structdefaultproperties
+	{
+		bEnabled = true
+	}
+};
+
+
 var localized string m_strMutuallyExclusive;
 
 var config bool APRequiresTrainingCenter;
@@ -201,10 +213,10 @@ simulated function PopulateData()
 	
 	AS_SetPathLabels(
 		m_strBranchesLabel,
-		ClassTemplate.AbilityTreeTitles[0 + Position],
-		ClassTemplate.AbilityTreeTitles[1 + Position],
-		ClassTemplate.AbilityTreeTitles[2 + Position],
-		ClassTemplate.AbilityTreeTitles[3 + Position]
+		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 0 + Position),
+		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 1 + Position),
+		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 2 + Position),
+		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 3 + Position)
 	);
 
 	// Fix None-context
@@ -223,6 +235,7 @@ simulated function PopulateData()
 	RealizeScrollbar();
 	HidePreview();
 }
+
 
 function HidePreview()
 {

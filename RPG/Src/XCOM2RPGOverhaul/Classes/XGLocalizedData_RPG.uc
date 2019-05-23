@@ -16,3 +16,10 @@ var localized string UtilityCatLWGauntlet;
 
 var localized string m_strCategoryRestricted;
 var localized string m_strAbilityRequired;
+
+var localized string strSWO_SpecRoulette_Description;
+var localized string strSWO_SpecRoulette_Tooltip;
+var localized string strSWO_CommandersChoice_Description;
+var localized string strSWO_CommandersChoice_Tooltip;
+var localized string strSWO_TrainingRoulette_Description;
+var localized string strSWO_TrainingRoulette_Tooltip;

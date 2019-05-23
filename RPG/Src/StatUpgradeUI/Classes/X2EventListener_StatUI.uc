@@ -18,7 +18,7 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	Templates.AddItem(CreateMainMenuListenerTemplate());
 	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
-	//Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
+	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 
 	return Templates;
 }
@@ -43,8 +43,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	local CHEventListenerTemplate Template;
 
 	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGUnitRankUp');
-
-	Template.RegisterInTactical = true;
+		
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUp, ELD_Immediate);
@@ -72,7 +71,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 	local XComGameState_Unit UnitState;
 	local int SpentSoldierSP, SoldierSP;
 
-	UnitState = XComGameState_Unit(EventData);
+	UnitState = XComGameState_Unit(EventSource);
 
 	if (UnitState != none)
 	{
@@ -81,6 +80,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 
 		UnitState.SetUnitFloatValue('StatPoints', SoldierSP + SpentSoldierSP, eCleanup_Never);
 		UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
+		`LOG(default.class @ GetFuncName() @ "new StatPoints" @ SoldierSP + SpentSoldierSP @ "SpentStatPoints 0",, 'RPG');
 	}
 
 	return ELR_NoInterrupt;

@@ -361,9 +361,8 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
-
+	
 	SquaddieAbilities = UnitState.GetRankAbilities(0);
-
 
 	UnitState.AbilityPoints = 0; // Reset Ability Points
 	UnitState.SpentAbilityPoints = 0; // And reset the spent AP tracker
@@ -406,6 +405,8 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 		UnitState.bRolledForAWCAbility = false;
 		UnitState.RollForTrainingCenterAbilities(); // Reroll XCOM abilities
 	}
+
+	`XEVENTMGR.TriggerEvent('CompleteRespecSoldier', none, UnitState, NewGameState);
 
 	if (NewGameState.GetNumGameStateObjects() > 0)
 	{
