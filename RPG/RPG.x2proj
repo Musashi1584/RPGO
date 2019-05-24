@@ -92,6 +92,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\XComRPG.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComSecondWaveOptions.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComStealthOverhaul.ini">
       <SubType>Content</SubType>
     </Content>
@@ -411,6 +414,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_TacticalListener.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2SecondWaveConfigOptions.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2SoldierClassTemplatePlugin.uc">

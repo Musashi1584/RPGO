@@ -39,8 +39,6 @@ var config array<SoldierSpecialization> Specializations;
 var config array<name> ValidLightEmUpAbilities;
 var config array<name> IgnoreWeaponTemplatesForPatch;
 
-var config int SecondWaveTrainingRouletteRandomSpecCount;
-
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
 var config int CannonDamageBonus;

@@ -15,17 +15,10 @@ struct CustomClassAbilityCost
 	var int AbilityCost;
 };
 
-struct SoldierSpecialization
-{
-	var int Order;
-	var name TemplateName;
-	var bool bEnabled;
-	structdefaultproperties
-	{
-		bEnabled = true
-	}
-};
 
+var array<SoldierSpecialization> RpgoSpecializations;
+var int	iSelectedSpec;
+var array<int> SelectedSpecs;
 
 var localized string m_strMutuallyExclusive;
 
@@ -46,7 +39,7 @@ simulated function OnInit()
 {
 	super.OnInit();
 
-	`LOG(self.Class.name @ GetFuncName(),, 'PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
 
 	if (HasBrigadierRank())
 	{
@@ -58,15 +51,19 @@ simulated function OnInit()
 		MC.FunctionVoid("AnimateIn");
 	}
 
-	Show();
+	if (!ShowChooseSpecScreen(GetUnit()))
+	{
+		Show();
+	}
 }
+
 
 //Override functions
 simulated function InitPromotion(StateObjectReference UnitRef, optional bool bInstantTransition)
 {
 	local XComGameState_Unit Unit; // bsg-nlong (1.25.17): Used to determine which column we should start highlighting
 
-	`LOG(self.Class.name @ GetFuncName(),, 'PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
 
 	Position = 0;
 
@@ -86,51 +83,136 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 		CameraTag = string(default.DisplayTag);
 		DisplayTag = default.DisplayTag;
 	}
-
-	
-
 	// Don't show nav help during tutorial, or during the After Action sequence.
 	bUseNavHelp = class'XComGameState_HeadquartersXCom'.static.IsObjectiveCompleted('T0_M2_WelcomeToArmory') || Movie.Pres.ScreenStack.IsInStack(class'UIAfterAction');
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
 
-	InitColumns();
-
-	PopulateData();
-
-	//Only set position and animate in the scrollbar once after data population. Prevents scrollbar flicker on scrolling.
-	if (HasBrigadierRank())
+	// Ugh ugly i know... leave this till i figured what needs to be done for a proper reset
+	Unit = GetUnit();
+	if (!ShowChooseSpecScreen(Unit))
 	{
-		Scrollbar.SetPosition(-465, 310);
-	}
-	else
-	{
-		Scrollbar.SetPosition(-550, 310);
-	}
+		`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPG-PromotionScreen');
 
-	Scrollbar.MC.SetNum("_alpha", 0);
-	Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+		InitColumns();
 
-	DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
+		PopulateData();
 
-	// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
-	if( `ISCONTROLLERACTIVE )
-	{
-		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
-		if( Unit != none )
+		//Only set position and animate in the scrollbar once after data population. Prevents scrollbar flicker on scrolling.
+		if (HasBrigadierRank())
 		{
-			m_iCurrentlySelectedColumn = m_iCurrentlySelectedColumn;
+			Scrollbar.SetPosition(-465, 310);
 		}
 		else
 		{
-			m_iCurrentlySelectedColumn = 0;
+			Scrollbar.SetPosition(-550, 310);
 		}
 
-		Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
+		Scrollbar.MC.SetNum("_alpha", 0);
+		Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+
+		DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
+
+		// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
+		if( `ISCONTROLLERACTIVE )
+		{
+			Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
+			if( Unit != none )
+			{
+				m_iCurrentlySelectedColumn = m_iCurrentlySelectedColumn;
+			}
+			else
+			{
+				m_iCurrentlySelectedColumn = 0;
+			}
+
+			Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
+		}
 	}
-	// bsg-nlong (1.25.17): end
+	else
+	{
+		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice spawning UI",, 'RPG-PromotionScreen');
+		RpgoSpecializations = class'X2TemplateHelper_RPGOverhaul'.static.GetSpecializations();
+		SpawnChooseSpecScreen(Unit, 0);
+	}
 }
 
+function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
+{
+	local UnitValue SpecChosen;
+
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
+
+	return UnitState.GetMyTemplateName() == 'Soldier' &&
+		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+		UnitState.GetSoldierRank() == 1 &&
+		`SecondWaveEnabled('RPGOCommandersChoice') &&
+		SelectedSpecs.Length == 0 &&
+		SpecChosen.fValue != 1;
+}
+
+function SpawnChooseSpecScreen(XComGameState_Unit UnitState, int SpecIndex)
+{
+	local UIChooseClass_SWO_CommandersChoice ChooseSpecScreen;
+
+	ChooseSpecScreen = UIChooseClass_SWO_CommandersChoice(Movie.Stack.Push(Spawn(class'UIChooseClass_SWO_CommandersChoice', self), Movie.Pres.Get3DMovie()));
+	ChooseSpecScreen.InitChooseSpec(UnitState, SpecIndex, SelectedSpecs);
+	ChooseSpecScreen.List.OnItemDoubleClicked = OnSelectSpecClicked;
+}
+
+simulated function OnSelectSpecClicked(UIList kList, int itemIndex)
+{
+	if (itemIndex != iSelectedSpec)
+	{
+		iSelectedSpec = itemIndex;
+	}
+
+	SelectedSpecs.AddItem(iSelectedSpec);
+
+	`log(default.class @ GetFuncName() @ "Chosen NewSpec is:" @ RpgoSpecializations[iSelectedSpec].TemplateName,, 'RPG-PromotionScreen');
+
+	if (SelectedSpecs.Length < class'X2SecondWaveConfigOptions'.default.SecondWaveCommandersChoiceSpecCount)
+	{
+		SpawnChooseSpecScreen(GetUnit(), SelectedSpecs.Length);
+	}
+	else
+	{
+		OnAllSpecSelected();
+	}
+
+	Movie.Stack.Pop(kList.ParentPanel.Screen);
+	//UpdateData();
+}
+
+function bool OnAllSpecSelected()
+{
+	local XComGameState NewGameState;
+	local XComGameState_Unit UnitState;
+	
+	UnitState = GetUnit();
+
+	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+
+	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs);
+	
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+
+	//CheckGameState = NewGameState;
+
+	`log(default.class @ GetFuncName() @ "Updated Specializations for" @ UnitState.SummaryString(),, 'RPG-PromotionScreen');
+
+	InitPromotion(UnitState.GetReference());
+	Show();
+	// Hack reload screen
+	CycleToSoldier(UnitState.GetReference());
+
+	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
+	
+	return true;
+}
 
 simulated function SetUnitReference(StateObjectReference NewUnitRef)
 {
@@ -223,12 +305,13 @@ simulated function PopulateData()
 	maxRank = Columns.Length; //class'X2ExperienceConfig'.static.GetMaxRank();
 	for (iRank = 0; iRank < maxRank; iRank++)
 	{
-		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);		
+		Column = NPSBDP_UIArmory_PromotionHeroColumn(Columns[iRank]);
 		Column.Offset = Position;
 
 		bHasColumnAbility = UpdateAbilityIcons_Override(Column);
 		bHighlightColumn = (!bHasColumnAbility && (iRank+1) == Unit.GetRank());
 
+		`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPG-PromotionScreen');
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
 	
@@ -259,7 +342,7 @@ function bool HasBrigadierRank()
 	
 	Unit = GetUnit();
 	
-	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'RPG-PromotionScreen');
 
 	return Unit.AbilityTree.Length > 7;
 }
@@ -293,7 +376,7 @@ function bool UpdateAbilityIcons_Override(out NPSBDP_UIArmory_PromotionHeroColum
 			if (Column.AbilityNames.Find(AbilityTemplate.DataName) == INDEX_NONE)
 			{
 				Column.AbilityNames.AddItem(AbilityTemplate.DataName);
-				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'PromotionScreen');
+				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'RPG-PromotionScreen');
 			}
 
 			// The unit is not yet at the rank needed for this column

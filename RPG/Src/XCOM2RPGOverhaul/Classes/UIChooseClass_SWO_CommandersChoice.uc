@@ -1,37 +1,31 @@
 class UIChooseClass_SWO_CommandersChoice extends UIChooseClass dependson(X2EventListener_RPG_StrategyListener);
 
-//var UIArmory_MainMenu ParentScreen;
 var XcomGameState_Unit Unit;
 var array<SoldierSpecialization> Specializations;
-
-//-------------- EVENT HANDLING --------------------------------------------------------
-simulated function OnPurchaseClicked(UIList kList, int itemIndex)
-{
-	if (itemIndex != iSelectedItem)
-	{
-		iSelectedItem = itemIndex;
-	}
-
-	else
-	{
-		OnSpecSelected(iSelectedItem);
-		Movie.Stack.Pop(self);
-		//UpdateData();
-	}
-
-}
+var int SpecNumber;
+var array<int> DisabledItems;
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
 	super.InitScreen(InitController, InitMovie, InitName);
 
 	ItemCard.Hide();
+}
 
-	Movie.Stack.MoveToTopOfStack(self.Class);
+simulated function InitChooseSpec(XcomGameState_Unit UnitState, int SpecNumberToSet, array<int> DisabledItemsToSet)
+{
+	Unit = UnitState;
+	SpecNumber = SpecNumberToSet;
+	DisabledItems = DisabledItemsToSet;
+
+	//SetCategory(m_strInventoryLabel);
+	//TitleHeader.InitPanelHeader('TitleHeader', m_strTitle @ SpecNumber + 1, m_strSubTitleTitle);
+	//TitleHeader.SetHeaderWidth(580);
 }
 
 simulated function PopulateData()
 {
+	local UIInventory_ClassListItem Item;
 	local Commodity Template;
 	local int i;
 
@@ -43,11 +37,18 @@ simulated function PopulateData()
 		Template = arrItems[i];
 		if(i < m_arrRefs.Length)
 		{
-			Spawn(class'UIInventory_ClassListItem', List.itemContainer).InitInventoryListCommodity(Template, m_arrRefs[i], GetButtonString(i), m_eStyle, , 126);
+			Item = Spawn(class'UIInventory_ClassListItem', List.itemContainer);
+			Item.InitInventoryListCommodity(Template, m_arrRefs[i], GetButtonString(i), m_eStyle, , 126);
 		}
 		else
 		{
-			Spawn(class'UIInventory_ClassListItem', List.itemContainer).InitInventoryListCommodity(Template, , GetButtonString(i), m_eStyle, , 126);
+			Item = Spawn(class'UIInventory_ClassListItem', List.itemContainer);
+			Item.InitInventoryListCommodity(Template, , GetButtonString(i), m_eStyle, , 126);
+		}
+		if (DisabledItems.Find(i) != INDEX_NONE)
+		{
+			`LOG(self.Class.name @ GetFuncName() @ "Disable" @ Template.Title,, 'RPG-PromotionScreen');
+			Item.SetDisabled(true, "Specialization already chosen");
 		}
 	}
 }
@@ -60,6 +61,11 @@ simulated function PopulateResearchCard(optional Commodity ItemCommodity, option
 simulated function GetItems()
 {
 	arrItems = ConvertSpecializationsToCommodities();
+}
+
+simulated function bool IsItemPurchased(int ItemIndex)
+{
+	return DisabledItems.Find(ItemIndex) != INDEX_NONE;
 }
 
 simulated function array<Commodity> ConvertSpecializationsToCommodities()
@@ -88,36 +94,6 @@ simulated function array<Commodity> ConvertSpecializationsToCommodities()
 	}
 
 	return arrCommodoties;
-}
-
-//-----------------------------------------------------------------------------
-
-//This is overwritten in the research archives. 
-
-function bool OnSpecSelected(int iOption)
-{
-	local XComGameState NewGameState;
-	local name NewSpec;
-
-	NewSpec = Specializations[iOption].TemplateName;
-
-	`log(default.class @ GetFuncName() @ "Chosen NewSpec is:" @ NewSpec,, 'RPG');
-
-	//if(Unit.GetSoldierClassTemplate().DataName==NewClass) //if trying to change into class the unit already is return
-	//	return false;
-
-	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen Class");
-
-	//Unit.MakeItemsAvailable(NewGameState, False);
-	//Unit.RankUpSoldier(NewGameState, NewClass);
-	//Unit.ApplySquaddieLoadout(NewGameState);
-
-	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
-	`HQPRES.UIArmory_Promotion(Unit.GetReference());
-	//ParentScreen.PopulateData();
-
-	return true;
 }
 
 //----------------------------------------------------------------

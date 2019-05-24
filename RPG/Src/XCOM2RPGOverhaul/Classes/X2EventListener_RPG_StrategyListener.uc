@@ -41,9 +41,6 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveSpecRoulette, ELD_OnStateSubmitted);
 	`LOG("Register Event OnUnitRankUpSecondWaveSpecRoulette",, 'RPG');
 
-	//Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveCommandersChoice, ELD_PreStateSubmitted);
-	//`LOG("Register Event OnUnitRankUpSecondWaveCommandersChoice",, 'RPG');
-
 	return Template;
 }
 
@@ -120,44 +117,22 @@ static function EventListenerReturn OnUnitRankUpSecondWaveSpecRoulette(Object Ev
 			`SecondWaveEnabled('RPGOSpecRoulette'))
 		{
 			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
-			BuildRandomSpecAbilityTree(UnitState);
+			class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
 			GameState.AddStateObject(UnitState);
+
+			//NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+			//
+			//class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs);
+			//
+			//UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+			//
+			//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 		}
 	}
 
 	return ELR_NoInterrupt;
 }
 
-static function EventListenerReturn OnUnitRankUpSecondWaveCommandersChoice(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
-{
-	//local XComGameState_Unit UnitState;
-	//local XComHQPresentationLayer HQPres;
-	//local UIChooseClass_SWO_CommandersChoice ChooseClassScreen;
-	//local UIArmory_PromotionHero PromotionScreen;
-	//
-	//UnitState = XComGameState_Unit(EventData);
-	//
-	//`LOG(default.class @ GetFuncName() @ UnitState @ `SecondWaveEnabled('RPGOCommandersChoice'),, 'RPG');
-	//
-	//if (UnitState != none)
-	//{
-	//	if (UnitState.GetMyTemplateName() == 'Soldier' &&
-	//			UnitState.GetSoldierClassTemplateName() == 'Rookie' &&
-	//			UnitState.GetSoldierRank() == 0 &&
-	//			`SecondWaveEnabled('RPGOCommandersChoice'))
-	//	{
-	//		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice spawning UI",, 'RPG');
-	//			
-	//		HQPres = `HQPRES;
-	//		ChooseClassScreen = UIChooseClass_SWO_CommandersChoice(HQPres.ScreenStack.Push(HQPres.Spawn(class'UIChooseClass_SWO_CommandersChoice', HQPres), HQPres.Get3DMovie()));
-	//		HQPres.ScreenStack.MoveToTopOfStack(ChooseClassScreen.Class);
-	//
-	//		PromotionScreen = UIArmory_PromotionHero(HQPres.ScreenStack.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
-	//		//ChooseClassScreen.ParentScreen = PromotionScreen;
-	//		ChooseClassScreen.Unit=UnitState;
-	//	}
-	//}
-}
 
 static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
@@ -178,118 +153,12 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 			`SecondWaveEnabled('RPGOSpecRoulette'))
 		{
 			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
-			BuildRandomSpecAbilityTree(UnitState);
-			GameState.AddStateObject(UnitState);
+			class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
+			//GameState.AddStateObject(UnitState);
 		}
 	}
 
 	return ELR_NoInterrupt;
-}
-
-static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState)
-{
-	local X2SoldierClassTemplate ClassTemplate;
-	local SoldierRankAbilities RankAbilities, EmptyRankAbilities;
-	local array<SoldierClassRandomAbilityDeck> RandomAbilityDecks;
-	local SoldierClassRandomAbilityDeck RandomDeck;
-	local array<SoldierClassAbilitySlot> AllAbilitySlots;
-	local SoldierClassAbilitySlot AbilitySlot;
-	local SoldierClassAbilityType EmptyAbility;
-	local int RankIndex, SlotIndex, DeckIndex, Index, RandomSlotIndex;
-	local array<int> RandomAbilitySlotIndices;
-
-	ClassTemplate = UnitState.GetSoldierClassTemplate();
-
-	// Reset everything above squaddie
-	UnitState.AbilityTree.Length = 1;
-	
-	if(ClassTemplate != none)
-	{
-		`LOG(default.class @ GetFuncName() @ `ShowVar(class'X2TemplateHelper_RPGOverhaul'.default.SecondWaveTrainingRouletteRandomSpecCount),, 'RPG');
-		
-		// Grab random ability decks
-		RandomAbilityDecks = ClassTemplate.RandomAbilityDecks;
-
-		for (Index = 0; Index < class'X2TemplateHelper_RPGOverhaul'.default.SecondWaveTrainingRouletteRandomSpecCount; Index++)
-		{
-			while (true)
-			{
-				RandomSlotIndex = `SYNC_RAND_STATIC(ClassTemplate.AbilityTreeTitles.Length);
-				if (RandomAbilitySlotIndices.Find(RandomSlotIndex) == INDEX_NONE)
-				{
-					break;
-				}
-			}
-			RandomAbilitySlotIndices.AddItem(RandomSlotIndex);
-			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ RandomAbilitySlotIndices[RandomAbilitySlotIndices.Length - 1],, 'RPG');
-		}
-
-		// Go rank by rank, filling in our tree
-		for(RankIndex = 1; RankIndex < ClassTemplate.GetMaxConfiguredRank(); RankIndex++)
-		{
-			RankAbilities = EmptyRankAbilities;
-			AllAbilitySlots = ClassTemplate.GetAbilitySlots(RankIndex);
-
-			// Determine ability (or lack thereof) from each slot
-			for(SlotIndex = 0; SlotIndex < AllAbilitySlots.Length; SlotIndex++)
-			{
-				if (RandomAbilitySlotIndices.Find(SlotIndex) == INDEX_NONE)
-				{
-					continue;
-				}
-
-				AbilitySlot = AllAbilitySlots[SlotIndex];
-
-				// First check for random ability from deck
-				// Do not give random abilities to units in Skirmish Mode
-				if(AbilitySlot.RandomDeckName != '')
-				{
-					DeckIndex = RandomAbilityDecks.Find('DeckName', AbilitySlot.RandomDeckName);
-
-					if(DeckIndex != INDEX_NONE)
-					{
-						RandomDeck = RandomAbilityDecks[DeckIndex];
-						RankAbilities.Abilities.AddItem(GetAbilityFromRandomDeck(RandomDeck));
-						RandomAbilityDecks[DeckIndex] = RandomDeck; // Resave the deck so we don't get the same abilities multiple times
-					}
-					else
-					{
-						// Deck not found, probably a data error
-						`RedScreen("Random ability deck" @ string(AbilitySlot.RandomDeckName) @ "not found. Probably a config error. @gameplay @mnauta");
-						RankAbilities.Abilities.AddItem(EmptyAbility);
-					}
-				}
-				else
-				{
-					// Use the ability type listed (can be blank)
-					RankAbilities.Abilities.AddItem(AbilitySlot.AbilityType);
-				}
-			}
-
-			// Add the rank to the ability tree
-			UnitState.AbilityTree.AddItem(RankAbilities);
-		}
-	}
-	else
-	{
-		`RedScreen("Tried to build soldier ability tree without a set soldier class. @gameplay @mnauta");
-	}
-}
-
-static function SoldierClassAbilityType GetAbilityFromRandomDeck(out SoldierClassRandomAbilityDeck RandomDeck)
-{
-	local SoldierClassAbilityType AbilityToReturn;
-	local int RandIndex;
-
-	if(RandomDeck.Abilities.Length == 0)
-	{
-		return AbilityToReturn;
-	}
-
-	RandIndex = `SYNC_RAND_STATIC(RandomDeck.Abilities.Length);
-	AbilityToReturn = RandomDeck.Abilities[RandIndex];
-	RandomDeck.Abilities.Remove(RandIndex, 1);
-	return AbilityToReturn;
 }
 
 static function EventListenerReturn OnGetLocalizedCategory(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
