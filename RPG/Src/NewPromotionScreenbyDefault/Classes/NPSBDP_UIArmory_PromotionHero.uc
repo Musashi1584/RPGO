@@ -1213,7 +1213,6 @@ function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 
 	return UnitState.GetMyTemplateName() == 'Soldier' &&
 		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-		UnitState.GetSoldierRank() == 1 &&
 		`SecondWaveEnabled('RPGOCommandersChoice') &&
 		SelectedSpecs.Length == 0 &&
 		SpecChosen.fValue != 1;

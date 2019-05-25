@@ -1,5 +1,16 @@
 class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate;
 
+struct SoldierSpecialization
+{
+	var int Order;
+	var name TemplateName;
+	var bool bEnabled;
+	structdefaultproperties
+	{
+		bEnabled = true
+	}
+};
+
 static function SetupSpecialization(name SoldierClassTemplate)
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -168,7 +179,6 @@ static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameS
 
 static function bool GetSpecializationForSlot(XComGameState_Unit UnitState, int SlotIndex, out SoldierSpecialization Spec)
 {
-	local SoldierClassAbilityType AbilityType;
 	local array<SoldierSpecialization> Specs;
 	local SoldierSpecialization PossibleSpec;
 	local X2UniversalSoldierClassInfo Template;

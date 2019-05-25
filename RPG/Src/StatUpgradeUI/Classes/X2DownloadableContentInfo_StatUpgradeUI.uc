@@ -361,7 +361,9 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
-	
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
+	UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+
 	SquaddieAbilities = UnitState.GetRankAbilities(0);
 
 	UnitState.AbilityPoints = 0; // Reset Ability Points
@@ -418,6 +420,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	}
 
 	Armory.PopulateData();
+	UpdatePromotionScreen();
 }
 
 private function UIArmory GetArmory()
@@ -433,6 +436,19 @@ private function UIArmory GetArmory()
 
 	return Armory;
 }
+
+private function UpdatePromotionScreen()
+{
+	local UIArmory_PromotionHero Promotion;
+
+	Promotion = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
+
+	if (Promotion != none)
+	{
+		Promotion.CycleToSoldier(Promotion.GetUnit().GetReference());
+	}
+}
+
 
 private function XComGameState_Unit GetSelectedUnit()
 {

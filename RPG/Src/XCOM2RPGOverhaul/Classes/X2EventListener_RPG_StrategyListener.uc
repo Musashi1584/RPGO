@@ -1,20 +1,9 @@
-class X2EventListener_RPG_StrategyListener extends X2EventListener config (RPG);
+class X2EventListener_RPG_StrategyListener extends X2EventListener dependson(X2SoldierClassTemplatePlugin) config (RPG);
 
 struct RowDistribution
 {
 	var int Row;
 	var int Count;
-};
-
-struct SoldierSpecialization
-{
-	var int Order;
-	var name TemplateName;
-	var bool bEnabled;
-	structdefaultproperties
-	{
-		bEnabled = true
-	}
 };
 
 
@@ -100,22 +89,27 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
 	local array<int> AllSpecs;
+	local UnitValue AddedRandomSpecs;
 
 	UnitState = XComGameState_Unit(EventData);
+	AllSpecs.Length = 0; // get rid if unused var warning
 
 	`LOG(default.class @ GetFuncName() @ UnitState @ "RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @ "RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPG');
 
 	if (UnitState != none)
 	{
+		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
+
 		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette" @
 			UnitState.GetMyTemplateName() @
 			UnitState.GetSoldierClassTemplateName() @
-			UnitState.GetSoldierRank()
+			UnitState.GetSoldierRank() @ 
+			"AddedRandomSpecs" @ AddedRandomSpecs.fValue
 			,, 'RPG');
 
 		if (UnitState.GetMyTemplateName() == 'Soldier' &&
 			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-			UnitState.GetSoldierRank() == 1 &&
+			AddedRandomSpecs.fValue != 1 &&
 			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette'))
 		)
 		{

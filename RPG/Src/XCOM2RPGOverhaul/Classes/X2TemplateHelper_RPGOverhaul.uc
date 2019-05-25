@@ -54,6 +54,24 @@ var config bool bPatchDefaultWeaponUpgradeSlots;
 var config bool bPatchHeavyWeaponMobility;
 var config bool bPatchFullAutoFire;
 
+static function bool IsPrerequisiteAbility(name AbiliityName)
+{
+	local AbilityPrerequisite					Prerequisite;
+	local int									Index;
+	
+	foreach default.AbilityPrerequisites(Prerequisite)
+	{
+		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
+		{
+			if (Prerequisite.PrerequisiteTree[Index] == AbiliityName)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 static function AddSecondWaveOption(name ID, string Description, string Tooltip)
 {
 	local array<Object>			UIShellDifficultyArray;

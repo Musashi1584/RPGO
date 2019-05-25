@@ -105,7 +105,9 @@ static function BuildSpecAbilityTree(
 
 				if (bRandomizePerkOrder &&
 					RankIndex >= Max(1, default.TrainingRouletteMinRank) &&
-					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, default.TrainingRouletteMaxRank))
+					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, default.TrainingRouletteMaxRank) &&
+					!class'X2TemplateHelper_RPGOverhaul'.static.IsPrerequisiteAbility(AbilitySlot.AbilityType.AbilityName)
+				)
 				{
 					AbilitySlot.RandomDeckName = GetTrainingRouletteDeckname(SlotIndex);
 				}
@@ -161,6 +163,7 @@ static function AddSWORandomizedAbilityDecks(
 	out array<SoldierClassRandomAbilityDeck> RandomDecks
 )
 {
+	
 	local array<SoldierClassAbilitySlot> AllAbilitySlots;
 	local SoldierClassAbilitySlot AbilitySlot;
 	local SoldierClassRandomAbilityDeck SWORandomDeck;
@@ -180,22 +183,26 @@ static function AddSWORandomizedAbilityDecks(
 			}
 
 			AbilitySlot = AllAbilitySlots[SlotIndex];
-
-			DeckIndex = RandomDecks.Find('DeckName', GetTrainingRouletteDeckname(SlotIndex));
-			if (DeckIndex == INDEX_NONE)
+			if (!class'X2TemplateHelper_RPGOverhaul'.static.IsPrerequisiteAbility(AbilitySlot.AbilityType.AbilityName))
 			{
-				SWORandomDeck.DeckName = GetTrainingRouletteDeckname(SlotIndex);
-				SWORandomDeck.Abilities.Length = 0;
-				SWORandomDeck.Abilities.AddItem(AbilitySlot.AbilityType);
-				RandomDecks.AddItem(SWORandomDeck);
-			}
-			else
-			{
-				RandomDecks[DeckIndex].Abilities.AddItem(AbilitySlot.AbilityType);
+				DeckIndex = RandomDecks.Find('DeckName', GetTrainingRouletteDeckname(SlotIndex));
+				if (DeckIndex == INDEX_NONE)
+				{
+					SWORandomDeck.DeckName = GetTrainingRouletteDeckname(SlotIndex);
+					SWORandomDeck.Abilities.Length = 0;
+					SWORandomDeck.Abilities.AddItem(AbilitySlot.AbilityType);
+					RandomDecks.AddItem(SWORandomDeck);
+				}
+				else
+				{
+					RandomDecks[DeckIndex].Abilities.AddItem(AbilitySlot.AbilityType);
+				}
 			}
 		}
 	}
 }
+
+
 
 static function name GetTrainingRouletteDeckname(int SlotIndex)
 {
@@ -204,85 +211,61 @@ static function name GetTrainingRouletteDeckname(int SlotIndex)
 
 static function SoldierClassAbilityType GetAbilityFromRandomDeck(out SoldierClassRandomAbilityDeck RandomDeck)
 {
-	local X2AbilityTemplateManager AbilityTemplateManager;
-	local X2AbilityTemplate AbilityTemplate;
 	local SoldierClassAbilityType AbilityToReturn;
-	local name PrerequisiteAbilityName;
-	local int RandIndex, PrerequisiteAbilityIndex, SourceAbilityIndex, LoopTimeout;
-
-	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
+	local int RandIndex;
+	
 	if(RandomDeck.Abilities.Length == 0)
 	{
 		return AbilityToReturn;
 	}
 
-	while (LoopTimeout < RandomDeck.Abilities.Length)
-	{
-		RandIndex = `SYNC_RAND_STATIC(RandomDeck.Abilities.Length);
-		AbilityToReturn = RandomDeck.Abilities[RandIndex];
-		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityToReturn.AbilityName);
-		PrerequisiteAbilityIndex = GetRequisiteIndex(RandomDeck.Abilities, AbilityToReturn);
-
-		if (AbilityTemplate.PrerequisiteAbilities.Length == 0 && PrerequisiteAbilityIndex == INDEX_NONE)
-		{
-			break;
-		}
-
-		if (PrerequisiteAbilityIndex != INDEX_NONE)
-		{
-			if (RandIndex > PrerequisiteAbilityIndex)
-			{
-				break;
-			}
-		}
-
-		foreach AbilityTemplate.PrerequisiteAbilities(PrerequisiteAbilityName)
-		{
-			SourceAbilityIndex = RandomDeck.Abilities.Find('AbilityName', PrerequisiteAbilityName);
-			if (SourceAbilityIndex != INDEX_NONE)
-			{
-				if (SourceAbilityIndex < RandIndex)
-				{
-					break;
-				}
-			}
-		}
-
-		LoopTimeout++;
-	}
-
-
+	RandIndex = `SYNC_RAND_STATIC(RandomDeck.Abilities.Length);
+	
+	AbilityToReturn = RandomDeck.Abilities[RandIndex];
 	RandomDeck.Abilities.Remove(RandIndex, 1);
+	
 	return AbilityToReturn;
 }
 
-static function int GetRequisiteIndex(array<SoldierClassAbilityType> Abilities, SoldierClassAbilityType SourceAbility)
+// unused
+static function int GetRequisiteIndex(array<SoldierClassAbilityType> Abilities, SoldierClassAbilityType SourceAbility, optional bool bHasPrerequisite = false)
 {
 	local SoldierClassAbilityType Ability;
 	local X2AbilityTemplateManager AbilityTemplateManager;
 	local X2AbilityTemplate AbilityTemplate;
 	local name PrerequisiteAbilityName;
-	local int PrerequisiteAbilityIndex;
 
 	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
-	for (PrerequisiteAbilityIndex = 0; PrerequisiteAbilityIndex < Abilities.Length; PrerequisiteAbilityIndex++)
-	{
-		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(Abilities[PrerequisiteAbilityIndex].AbilityName);
+	AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(SourceAbility.AbilityName);
 
-		if (AbilityTemplate == none || AbilityTemplate.PrerequisiteAbilities.Length == 0)
+	if (AbilityTemplate == none)
+	{
+		return INDEX_NONE;
+	}
+
+	foreach AbilityTemplate.PrerequisiteAbilities(PrerequisiteAbilityName)
+	{
+		bHasPrerequisite = true;
+		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(PrerequisiteAbilityName);
+
+		if (AbilityTemplate == none)
 		{
 			continue;
 		}
 
-		foreach AbilityTemplate.PrerequisiteAbilities(PrerequisiteAbilityName)
+		if (AbilityTemplate.PrerequisiteAbilities.Length > 0 &&
+			Abilities.Find('AbilityName', PrerequisiteAbilityName) != INDEX_NONE)
 		{
-			if (PrerequisiteAbilityName == SourceAbility.AbilityName)
-			{
-				return PrerequisiteAbilityIndex;
-			}
+			Ability.AbilityName = PrerequisiteAbilityName;
+			return GetRequisiteIndex(Abilities, Ability, true);
+		}
+
+		if (bHasPrerequisite)
+		{
+			return Abilities.Find('AbilityName', PrerequisiteAbilityName);
 		}
 	}
+
 	return INDEX_NONE;
 }
