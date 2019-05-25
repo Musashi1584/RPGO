@@ -34,12 +34,12 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 {
 	local CHEventListenerTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGUnitRankUpSecondWaveSpecRoulette');
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGUnitRankUpSecondWaveRoulette');
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveSpecRoulette, ELD_OnStateSubmitted);
-	`LOG("Register Event OnUnitRankUpSecondWaveSpecRoulette",, 'RPG');
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_OnStateSubmitted);
+	`LOG("Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
 
 	return Template;
 }
@@ -95,13 +95,15 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnGetLocalizedCat
 	return Template;
 }
 
-static function EventListenerReturn OnUnitRankUpSecondWaveSpecRoulette(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
+	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
+	local array<int> AllSpecs;
 
 	UnitState = XComGameState_Unit(EventData);
 
-	`LOG(default.class @ GetFuncName() @ UnitState @ `SecondWaveEnabled('RPGOSpecRoulette'),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ UnitState @ "RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @ "RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPG');
 
 	if (UnitState != none)
 	{
@@ -114,19 +116,26 @@ static function EventListenerReturn OnUnitRankUpSecondWaveSpecRoulette(Object Ev
 		if (UnitState.GetMyTemplateName() == 'Soldier' &&
 			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
 			UnitState.GetSoldierRank() == 1 &&
-			`SecondWaveEnabled('RPGOSpecRoulette'))
+			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette'))
+		)
 		{
 			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
-			class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
-			GameState.AddStateObject(UnitState);
 
-			//NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
-			//
-			//class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs);
-			//
-			//UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-			//
-			//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+			NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
+
+			if (`SecondWaveEnabled('RPGOSpecRoulette'))
+			{
+				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
+			}
+			else if (`SecondWaveEnabled('RPGOTrainingRoulette'))
+			{
+				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
+			}
+	
+			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
+			
+			`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 		}
 	}
 
@@ -296,7 +305,7 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 	//class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Sort(SortSpecializations);
 	//Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
 
-	Spec = class'X2TemplateHelper_RPGOverhaul'.static.GetSpecializationForSlot(UnitState, RowIndex);
+	Spec = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlot(UnitState, RowIndex);
 	
 	return ((RowIndex != INDEX_NONE) && (Spec != none)) ? Spec.Name : UnitState.GetSoldierClassTemplate().DataName;
 }

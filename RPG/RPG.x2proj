@@ -11,6 +11,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <RootNamespace>RPG</RootNamespace>
     <ProjectGuid>{b887d41d-cc1d-44a1-9884-e228ff827c02}</ProjectGuid>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Config\ExtendedUpgrades" />
@@ -230,7 +233,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\UIChooseClass_SWO_CommandersChoice.uc">
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\UIChooseSpecializations.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">

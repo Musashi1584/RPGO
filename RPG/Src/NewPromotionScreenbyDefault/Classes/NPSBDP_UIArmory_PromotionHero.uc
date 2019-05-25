@@ -132,86 +132,9 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 	else
 	{
 		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice spawning UI",, 'RPG-PromotionScreen');
-		RpgoSpecializations = class'X2TemplateHelper_RPGOverhaul'.static.GetSpecializations();
-		SpawnChooseSpecScreen(Unit, 0);
+		RpgoSpecializations = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
+		SpawnChooseSpecScreen(Unit);
 	}
-}
-
-function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
-{
-	local UnitValue SpecChosen;
-
-	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
-
-	return UnitState.GetMyTemplateName() == 'Soldier' &&
-		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-		UnitState.GetSoldierRank() == 1 &&
-		`SecondWaveEnabled('RPGOCommandersChoice') &&
-		SelectedSpecs.Length == 0 &&
-		SpecChosen.fValue != 1;
-}
-
-function SpawnChooseSpecScreen(XComGameState_Unit UnitState, int SpecIndex)
-{
-	local UIChooseClass_SWO_CommandersChoice ChooseSpecScreen;
-
-	ChooseSpecScreen = UIChooseClass_SWO_CommandersChoice(Movie.Stack.Push(Spawn(class'UIChooseClass_SWO_CommandersChoice', self), Movie.Pres.Get3DMovie()));
-	ChooseSpecScreen.InitChooseSpec(UnitState, SpecIndex, SelectedSpecs);
-	ChooseSpecScreen.List.OnItemDoubleClicked = OnSelectSpecClicked;
-}
-
-simulated function OnSelectSpecClicked(UIList kList, int itemIndex)
-{
-	if (itemIndex != iSelectedSpec)
-	{
-		iSelectedSpec = itemIndex;
-	}
-
-	SelectedSpecs.AddItem(iSelectedSpec);
-
-	`log(default.class @ GetFuncName() @ "Chosen NewSpec is:" @ RpgoSpecializations[iSelectedSpec].TemplateName,, 'RPG-PromotionScreen');
-
-	if (SelectedSpecs.Length < class'X2SecondWaveConfigOptions'.default.SecondWaveCommandersChoiceSpecCount)
-	{
-		SpawnChooseSpecScreen(GetUnit(), SelectedSpecs.Length);
-	}
-	else
-	{
-		OnAllSpecSelected();
-	}
-
-	Movie.Stack.Pop(kList.ParentPanel.Screen);
-	//UpdateData();
-}
-
-function bool OnAllSpecSelected()
-{
-	local XComGameState NewGameState;
-	local XComGameState_Unit UnitState;
-	
-	UnitState = GetUnit();
-
-	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
-
-	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs);
-	
-	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
-	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
-
-	//CheckGameState = NewGameState;
-
-	`log(default.class @ GetFuncName() @ "Updated Specializations for" @ UnitState.SummaryString(),, 'RPG-PromotionScreen');
-
-	InitPromotion(UnitState.GetReference());
-	Show();
-	// Hack reload screen
-	CycleToSoldier(UnitState.GetReference());
-
-	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
-	
-	return true;
 }
 
 simulated function SetUnitReference(StateObjectReference NewUnitRef)
@@ -295,10 +218,10 @@ simulated function PopulateData()
 	
 	AS_SetPathLabels(
 		m_strBranchesLabel,
-		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 0 + Position),
-		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 1 + Position),
-		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 2 + Position),
-		class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityTreeTitle(Unit, 3 + Position)
+		class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(Unit, 0 + Position),
+		class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(Unit, 1 + Position),
+		class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(Unit, 2 + Position),
+		class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(Unit, 3 + Position)
 	);
 
 	// Fix None-context
@@ -311,7 +234,7 @@ simulated function PopulateData()
 		bHasColumnAbility = UpdateAbilityIcons_Override(Column);
 		bHighlightColumn = (!bHasColumnAbility && (iRank+1) == Unit.GetRank());
 
-		`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPG-PromotionScreen');
+		//`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPG-PromotionScreen');
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
 	
@@ -768,8 +691,8 @@ function PreviewAbility(int Rank, int Branch)
 				AbilityCost = "";
 				APLabel = "";
 			}
-			// Musashi ignore ability prerquisites for heroes
-			else if (AbilityTemplate.PrerequisiteAbilities.Length > 0 && !Unit.IsResistanceHero())
+			// Musashi ignore ability prerquisites for other classes
+			else if (AbilityTemplate.PrerequisiteAbilities.Length > 0 && Unit.GetSoldierClassTemplateName() == 'UniversalSoldier')
 			{
 				// Look back to the previous rank and check to see if that ability is a prereq for this one
 				// If so, display a message warning the player that there is a prereq
@@ -1278,4 +1201,94 @@ static function string GetClassSummary(XComGameState_Unit Unit)
 	}
 
 	return Unit.GetSoldierClassTemplate().ClassSummary;
+}
+
+// -------------- SecondWaveOptionSupport---------------------
+
+function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
+{
+	local UnitValue SpecChosen;
+
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
+
+	return UnitState.GetMyTemplateName() == 'Soldier' &&
+		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+		UnitState.GetSoldierRank() == 1 &&
+		`SecondWaveEnabled('RPGOCommandersChoice') &&
+		SelectedSpecs.Length == 0 &&
+		SpecChosen.fValue != 1;
+}
+
+function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
+{
+	local UIChooseSpecializations ChooseSpecScreen;
+	local array<SoldierSpecialization> TrainedSpecs;
+
+	if (`SecondWaveEnabled('RPGOSpecRoulette'))
+	{
+		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecializations(UnitState);
+	}
+
+	ChooseSpecScreen = UIChooseSpecializations(Movie.Stack.Push(Spawn(class'UIChooseSpecializations', self)));
+	ChooseSpecScreen.InitChooseSpecialization(
+		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount(),
+		TrainedSpecs,
+		OnSelectSpecClicked
+	);
+	//ChooseSpecScreen = UIChooseSpecializations(Movie.Stack.Push(Spawn(class'UIChooseSpecializations', Movie.Stack.GetFirstInstanceOf(class'UIArmory')), Movie.Pres.Get3DMovie()));
+}
+
+simulated function OnSelectSpecClicked(UIButton Button)
+{
+	local UIChooseSpecializations SpecializationScreen;
+
+	SpecializationScreen = UIChooseSpecializations(Button.ParentPanel.Screen);
+
+	SelectedSpecs = SpecializationScreen.SelectedItems;
+	`log(default.class @ GetFuncName() @ SpecializationScreen @ SelectedSpecs.Length,, 'RPG-PromotionScreen');
+
+	if (SelectedSpecs.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
+	{
+		OnAllSpecSelected();
+		Movie.Stack.Pop(SpecializationScreen);
+	}
+	else
+	{
+		SpecializationScreen.PlayNegativeSound();
+	}
+}
+
+function bool OnAllSpecSelected()
+{
+	local XComGameState NewGameState;
+	local XComGameState_Unit UnitState;
+	local int Index;
+	
+	UnitState = GetUnit();
+
+	foreach SelectedSpecs(Index)
+	{
+		`log(default.class @ GetFuncName() @
+			"Add Specializations for" @ UnitState.SummaryString() @ 
+			class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(UnitState, Index)
+		,, 'RPG-PromotionScreen');
+	}
+
+	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+
+	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
+	
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+
+	InitPromotion(UnitState.GetReference());
+	Show();
+	// Hack reload screen
+	CycleToSoldier(UnitState.GetReference());
+
+	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
+	
+	return true;
 }

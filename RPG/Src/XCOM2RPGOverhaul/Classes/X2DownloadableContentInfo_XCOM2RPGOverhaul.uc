@@ -75,7 +75,7 @@ static event OnPostTemplatesCreated()
 	
 	
 
-	class'X2TemplateHelper_RPGOverhaul'.static.SetupSpecialization('UniversalSoldier');
+	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();

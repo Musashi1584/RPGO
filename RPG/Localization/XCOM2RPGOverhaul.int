@@ -72,6 +72,14 @@ m_strTitle=Choose Specialization
 m_strInventoryLabel=Available Specializations:
 m_strBuy=CHOOSE
 
+[UIChooseSpecializations]
+m_strTitlePool=Choose Specialization
+m_strInventoryLabelPool=Available Specializations:
+m_strTitleChosen=Chosen Specialization
+m_strInventoryLabelChosen=Removable Specializations:
+m_strChoose=CHOOSE
+m_strRemove=REMOVE
+
 [XGLocalizedData_RPG]
 UtilityCatPistol="(Auto-)Pistol"
 UtilityCatSidearm="(Auto-)Pistol"
@@ -89,11 +97,11 @@ UtilityCatLWGauntlet="XCOM Gauntlet"
 m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
 
-strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Soldiers start with 2 randomized specializations on Squaddie."
-strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only get 2 which are randomized on promotion to Sqaddie."
+strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Soldiers start with a limited number of randomized specializations on Squaddie."
+strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette and/or Commanders Choice."
 
 strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
-strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot"
+strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette and/or Commanders Choice."
 
-strSWO_CommandersChoice_Description="[RPGO] Commanders Choice:Choose a limted number of specializations"
-strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations"
+strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
+strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette and/or Training Roulette."
