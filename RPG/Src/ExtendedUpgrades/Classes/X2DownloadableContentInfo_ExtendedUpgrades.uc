@@ -8,5 +8,8 @@ static event OnPostTemplatesCreated()
 		class'TemplateHelper'.static.ReconfigDefaultAttachments();
 	}
 
-	class'TemplateHelper'.static.AddLootTables();
+	if (class'TemplateHelper'.static.IsModInstalled('X2DownloadableContentInfo_X2WOTCCommunityHighlander'))
+	{
+		class'TemplateHelper'.static.AddLootTables();
+	}
 }

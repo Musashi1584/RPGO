@@ -289,7 +289,6 @@ static function bool IsModInstalled(name X2DCIName)
 	{
 		if (Mod.Class.Name == X2DCIName)
 		{
-			`Log("Mod installed:" @ Mod.Class);
 			return true;
 		}
 	}
