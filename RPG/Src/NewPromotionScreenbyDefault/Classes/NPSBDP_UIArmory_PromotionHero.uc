@@ -15,9 +15,6 @@ struct CustomClassAbilityCost
 	var int AbilityCost;
 };
 
-
-var array<SoldierSpecialization> RpgoSpecializations;
-var int	iSelectedSpec;
 var array<int> SelectedSpecs;
 
 var localized string m_strMutuallyExclusive;
@@ -66,7 +63,7 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
 
 	Position = 0;
-
+	SelectedSpecs.Length = 0;
 	Hide();
 
 	// If the AfterAction screen is running, let it position the camera
@@ -88,51 +85,48 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
 
-	// Ugh ugly i know... leave this till i figured what needs to be done for a proper reset
-	Unit = GetUnit();
-	if (!ShowChooseSpecScreen(Unit))
+	`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPG-PromotionScreen');
+
+	InitColumns();
+
+	PopulateData();
+
+	//Only set position and animate in the scrollbar once after data population. Prevents scrollbar flicker on scrolling.
+	if (HasBrigadierRank())
 	{
-		`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPG-PromotionScreen');
-
-		InitColumns();
-
-		PopulateData();
-
-		//Only set position and animate in the scrollbar once after data population. Prevents scrollbar flicker on scrolling.
-		if (HasBrigadierRank())
-		{
-			Scrollbar.SetPosition(-465, 310);
-		}
-		else
-		{
-			Scrollbar.SetPosition(-550, 310);
-		}
-
-		Scrollbar.MC.SetNum("_alpha", 0);
-		Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
-
-		DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
-
-		// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
-		if( `ISCONTROLLERACTIVE )
-		{
-			Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
-			if( Unit != none )
-			{
-				m_iCurrentlySelectedColumn = m_iCurrentlySelectedColumn;
-			}
-			else
-			{
-				m_iCurrentlySelectedColumn = 0;
-			}
-
-			Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
-		}
+		Scrollbar.SetPosition(-465, 310);
 	}
 	else
 	{
+		Scrollbar.SetPosition(-550, 310);
+	}
+
+	Scrollbar.MC.SetNum("_alpha", 0);
+	Scrollbar.AddTweenBetween("_alpha", 0, 100, 0.2f, 0.3f);
+
+	DisableNavigation(); // bsg-nlong (1.25.17): This and the column panel will have to use manual naviation, so we'll disable the navigation here
+
+	// bsg-nlong (1.25.17): Focus a column so the screen loads with an ability highlighted
+	if( `ISCONTROLLERACTIVE )
+	{
+		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
+		if( Unit != none )
+		{
+			m_iCurrentlySelectedColumn = m_iCurrentlySelectedColumn;
+		}
+		else
+		{
+			m_iCurrentlySelectedColumn = 0;
+		}
+
+		Columns[m_iCurrentlySelectedColumn].OnReceiveFocus();
+	}
+
+	Unit = GetUnit();
+
+	if (ShowChooseSpecScreen(Unit))
+	{
 		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice spawning UI",, 'RPG-PromotionScreen');
-		RpgoSpecializations = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
 		SpawnChooseSpecScreen(Unit);
 	}
 }
@@ -1204,6 +1198,24 @@ static function string GetClassSummary(XComGameState_Unit Unit)
 }
 
 // -------------- SecondWaveOptionSupport---------------------
+function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
+{
+	local UIChooseSpecializations ChooseSpecScreen;
+	local array<SoldierSpecialization> TrainedSpecs;
+
+	if (`SecondWaveEnabled('RPGOSpecRoulette'))
+	{
+		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecializations(UnitState);
+	}
+
+	ChooseSpecScreen = Spawn(class'UIChooseSpecializations', Movie.Pres);
+	Movie.Stack.Push(ChooseSpecScreen, Movie.Pres.Get3DMovie());
+	ChooseSpecScreen.InitChooseSpecialization(
+		UnitState.GetReference(),
+		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount(),
+		TrainedSpecs
+	);
+}
 
 function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 {
@@ -1218,76 +1230,3 @@ function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 		SpecChosen.fValue != 1;
 }
 
-function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
-{
-	local UIChooseSpecializations ChooseSpecScreen;
-	local array<SoldierSpecialization> TrainedSpecs;
-
-	if (`SecondWaveEnabled('RPGOSpecRoulette'))
-	{
-		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecializations(UnitState);
-	}
-
-	ChooseSpecScreen = UIChooseSpecializations(Movie.Stack.Push(Spawn(class'UIChooseSpecializations', self)));
-	ChooseSpecScreen.InitChooseSpecialization(
-		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount(),
-		TrainedSpecs,
-		OnSelectSpecClicked
-	);
-	//ChooseSpecScreen = UIChooseSpecializations(Movie.Stack.Push(Spawn(class'UIChooseSpecializations', Movie.Stack.GetFirstInstanceOf(class'UIArmory')), Movie.Pres.Get3DMovie()));
-}
-
-simulated function OnSelectSpecClicked(UIButton Button)
-{
-	local UIChooseSpecializations SpecializationScreen;
-
-	SpecializationScreen = UIChooseSpecializations(Button.ParentPanel.Screen);
-
-	SelectedSpecs = SpecializationScreen.SelectedItems;
-	`log(default.class @ GetFuncName() @ SpecializationScreen @ SelectedSpecs.Length,, 'RPG-PromotionScreen');
-
-	if (SelectedSpecs.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
-	{
-		OnAllSpecSelected();
-		Movie.Stack.Pop(SpecializationScreen);
-	}
-	else
-	{
-		SpecializationScreen.PlayNegativeSound();
-	}
-}
-
-function bool OnAllSpecSelected()
-{
-	local XComGameState NewGameState;
-	local XComGameState_Unit UnitState;
-	local int Index;
-	
-	UnitState = GetUnit();
-
-	foreach SelectedSpecs(Index)
-	{
-		`log(default.class @ GetFuncName() @
-			"Add Specializations for" @ UnitState.SummaryString() @ 
-			class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(UnitState, Index)
-		,, 'RPG-PromotionScreen');
-	}
-
-	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
-
-	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedSpecs, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
-	
-	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
-	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
-
-	InitPromotion(UnitState.GetReference());
-	Show();
-	// Hack reload screen
-	CycleToSoldier(UnitState.GetReference());
-
-	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
-	
-	return true;
-}

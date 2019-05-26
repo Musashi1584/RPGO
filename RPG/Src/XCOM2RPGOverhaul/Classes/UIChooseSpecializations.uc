@@ -15,10 +15,8 @@ var UIX2PanelHeader PoolHeader;
 var UIList PoolList;
 var UIX2PanelHeader ChosenHeader;
 var UIList ChosenList;
-var UIButton SaveButton;
 
-// var StateObjectReference m_UnitRef;
-
+var StateObjectReference UnitReference;
 
 var localized string m_strTitlePool;
 var localized string m_strInventoryLabelPool;
@@ -27,21 +25,13 @@ var localized string m_strInventoryLabelChosen;
 var localized string m_strChoose;
 var localized string m_strRemove;
 
-delegate OnClickedDelegate(UIButton Button);
+delegate AcceptAbilities(array<int> SelectedSpecialization);
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
-	`LOG(self.Class.name @ GetFuncName() @ InitController @ InitMovie @ InitName @ Movie.UI_RES_X @ Movie.UI_RES_Y,, 'RPG-UIChooseSpecializations');
+	`LOG(self.Class.name @ GetFuncName() @ InitController @ InitMovie @ InitName @ InitMovie.UI_RES_X @ InitMovie.UI_RES_Y,, 'RPG-UIChooseSpecializations');
 
 	super.InitScreen(InitController, InitMovie, InitName);
-
-	SaveButton = Spawn(class'UIButton', self).InitButton('SaveButton', "ACCEPT");
-	SaveButton.SetFontSize(26);
-	SaveButton.SetResizeToText(true);
-	SaveButton.SetWidth(150);
-	SaveButton.SetPosition(Movie.UI_RES_X / 2 - SaveButton.Width / 2, Movie.UI_RES_Y - SaveButton.Height - 50);
-	SaveButton.Show();
-	SaveButton.DisableButton();
 
 	BuildList(PoolList, PoolHeader, 'PoolList', 'PoolTitleHeader',
 		120, m_strTitlePool, m_strInventoryLabelPool);
@@ -76,14 +66,16 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	//	class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
 
-simulated function InitChooseSpecialization(int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, delegate<OnClickedDelegate> OnAccept)
+
+simulated function InitChooseSpecialization(StateObjectReference UnitRef ,int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
 	local Commodity Comm;
 
-	`LOG(self.Class.name @ GetFuncName() @ OwnedSpecs.Length @ MaxSpecs,, 'RPG-UIChooseSpecializations');
+	`LOG(self.Class.name @ GetFuncName() @ UnitRef.ObjectID @ OwnedSpecs.Length @ MaxSpecs,, 'RPG-UIChooseSpecializations');
+	UnitReference = UnitRef;
 	SpecializationsChosen = OwnedSpecs;
 	ChooseSpecializationMax = MaxSpecs;
-	SaveButton.OnClickedDelegate = OnAccept;
+	AcceptAbilities = OnAccept;
 	
 	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
 
@@ -93,6 +85,69 @@ simulated function InitChooseSpecialization(int MaxSpecs, array<SoldierSpecializ
 	}
 
 	PopulateData();
+}
+
+simulated function XComGameState_Unit GetUnit()
+{
+	return XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitReference.ObjectID));
+}
+
+simulated function OnContinueButtonClick()
+{
+	local UIArmory_PromotionHero HeroScreen;
+	`log(default.class @ GetFuncName() @ SelectedItems.Length,, 'RPG');
+
+	if (SelectedItems.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
+	{
+		OnAllSpecSelected();
+		
+		Movie.Stack.Pop(self);
+		HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
+		if (HeroScreen != none)
+		{
+			HeroScreen.CycleToSoldier(UnitReference);
+		}
+	}
+	else
+	{
+		PlayNegativeSound();
+	}
+}
+
+
+function bool OnAllSpecSelected()
+{
+	local XComGameState NewGameState;
+	local XComGameState_Unit UnitState;
+	local int Index;
+	
+	UnitState = GetUnit();
+
+	foreach SelectedItems(Index)
+	{
+		`log(default.class @ GetFuncName() @
+			"Add Specializations for" @ UnitState.SummaryString() @ 
+			class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(UnitState, Index)
+		,, 'RPG');
+	}
+
+	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+
+	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedItems, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
+	
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+
+	if (AcceptAbilities != none)
+	{
+		AcceptAbilities(SelectedItems);
+	}
+
+	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
+	
+	return true;
 }
 
 simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, name ListName, name HeaderName,
@@ -255,13 +310,17 @@ simulated function UpdateChosenListItem(UIInventory_ClassListItem Item)
 
 simulated function UpdateButton()
 {
+	local UINavigationHelp NavHelp;
+
+	NavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
+
 	if (HasReachedSpecLimit())
 	{
-		SaveButton.EnableButton();
+		NavHelp.ContinueButton.EnableButton();
 	}
 	else
 	{
-		SaveButton.DisableButton();
+		NavHelp.ContinueButton.DisableButton();
 	}
 }
 
@@ -401,6 +460,7 @@ simulated function UpdateNavHelp()
 	NavHelp.ClearButtonHelp();
 	NavHelp.bIsVerticalHelp = `ISCONTROLLERACTIVE;
 	NavHelp.AddBackButton(OnCancel);
+	NavHelp.AddContinueButton(OnContinueButtonClick);
 
 	if(`ISCONTROLLERACTIVE && !IsPicked(SelectedIndexPool))
 	{
@@ -480,7 +540,6 @@ defaultproperties
 	
 	InputState = eInputState_Consume
 	
-	DisplayTag="UIBlueprint_ArmoryMenu"
-	CameraTag="UIBlueprint_ArmoryMenu"
-
+	DisplayTag = "UIBlueprint_Promotion"
+	CameraTag = "UIBlueprint_Promotion"
 }
