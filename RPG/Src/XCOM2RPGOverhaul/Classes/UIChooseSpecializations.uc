@@ -193,6 +193,7 @@ simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecializa
 		Comm.Title = Template.ClassSpecializationTitle;
 		Comm.Image = Template.ClassSpecializationIcon;
 		Comm.Desc = Template.ClassSpecializationSummary;
+		Comm.OrderHours = -1;
 		//Comm.OrderHours = class'SpecialTrainingUtilities'.static.GetSpecialTrainingDays() * 24;
 
 		Commodities.AddItem(Comm);
@@ -222,7 +223,10 @@ simulated function PopulatePool()
 {
 	local Commodity Template;
 	local int i;
-	local UIInventory_ClassListItem Item;
+	local UIInventory_SpecializationListItem Item;
+
+	//local X2AbilityTemplateManager AbilityTemplateManager;
+	//local X2AbilityTemplate AbilityTemplate;
 
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-UIChooseSpecializations');
 
@@ -230,10 +234,23 @@ simulated function PopulatePool()
 	for(i = 0; i < CommodityPool.Length; i++)
 	{
 		Template = CommodityPool[i];
-		Item = Spawn(class'UIInventory_ClassListItem', PoolList.itemContainer);
+		Item = Spawn(class'UIInventory_SpecializationListItem', PoolList.itemContainer);
 		Item.InitInventoryListCommodity(Template, , m_strChoose, , , 126);
 		UpdatePoolListItem(Item);
 	}
+
+	
+	// Test
+	//AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	//AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate('RunAndGun');
+	//
+	//Template.Title = AbilityTemplate.LocFriendlyName;
+	////Template.Image = AbilityTemplate.IconImage;
+	//Template.Desc = AbilityTemplate.LocHelpText;
+	//Template.OrderHours = -1;
+	//Item = Spawn(class'UIInventory_SpecializationListItem', PoolList.itemContainer);
+	//Item.InitInventoryListCommodity(Template, , m_strChoose, , , 50);
+	
 }
 
 simulated function UpdatePoolList()
@@ -242,11 +259,11 @@ simulated function UpdatePoolList()
 
 	for (Index = 0; Index < PoolList.GetItemCount(); Index++)
 	{
-		UpdatePoolListItem(UIInventory_ClassListItem(PoolList.GetItem(Index)));
+		UpdatePoolListItem(UIInventory_SpecializationListItem(PoolList.GetItem(Index)));
 	}
 }
 
-simulated function UpdatePoolListItem(UIInventory_ClassListItem Item)
+simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 {
 	local int Index;
 
@@ -276,7 +293,7 @@ simulated function PopulateChosen()
 {
 	local Commodity Template;
 	local int i;
-	local UIInventory_ClassListItem Item;
+	local UIInventory_SpecializationListItem Item;
 
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-UIChooseSpecializations');
 
@@ -284,7 +301,7 @@ simulated function PopulateChosen()
 	for(i = 0; i < CommoditiesChosen.Length; i++)
 	{
 		Template = CommoditiesChosen[i];
-		Item = Spawn(class'UIInventory_ClassListItem', ChosenList.ItemContainer);
+		Item = Spawn(class'UIInventory_SpecializationListItem', ChosenList.ItemContainer);
 		Item.InitInventoryListCommodity(Template, , m_strRemove, , , 126);
 		UpdateChosenListItem(Item);
 	}
@@ -296,11 +313,11 @@ simulated function UpdateChosenList()
 
 	for (Index = 0; Index < ChosenList.GetItemCount(); Index++)
 	{
-		UpdateChosenListItem(UIInventory_ClassListItem(ChosenList.GetItem(Index)));
+		UpdateChosenListItem(UIInventory_SpecializationListItem(ChosenList.GetItem(Index)));
 	}
 }
 
-simulated function UpdateChosenListItem(UIInventory_ClassListItem Item)
+simulated function UpdateChosenListItem(UIInventory_SpecializationListItem Item)
 {
 	Item.EnableListItem();
 
@@ -389,7 +406,7 @@ simulated function OnSpecializationsRemoved(UIList kList, int itemIndex)
 		SelectedIndexChosen = itemIndex;
 	}
 
-	PoolIndex = GetItemIndex(UIInventory_ClassListItem(ChosenList.GetItem(SelectedIndexChosen)).ItemComodity);
+	PoolIndex = GetItemIndex(UIInventory_SpecializationListItem(ChosenList.GetItem(SelectedIndexChosen)).ItemComodity);
 
 	if (!IsOwnedSpec(PoolIndex))
 	{

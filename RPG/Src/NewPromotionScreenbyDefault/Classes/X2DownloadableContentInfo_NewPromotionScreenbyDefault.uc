@@ -68,12 +68,3 @@ exec function PSScrollBarSetSize(int Width = 0, int Height = 0)
 		UI.Scrollbar.SetHeight(Height);
 	}
 }
-
-
-exec function CSSetButton(int X, int Y)
-{
-	local UIChooseSpecializations UI;
-	
-	UI = UIChooseSpecializations(`SCREENSTACK.GetFirstInstanceOf(class'UIChooseSpecializations'));
-	UI.SaveButton.SetPosition(X, Y);
-}
