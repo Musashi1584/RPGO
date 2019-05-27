@@ -5,6 +5,10 @@ m_strTitleChosen=Chosen Specialization
 m_strInventoryLabelChosen=Removable Specializations:
 m_strChoose=CHOOSE
 m_strRemove=REMOVE
+m_strItemChosen=You already have chosen this specialization
+m_strItemRandom=Random specialization
+m_strItemLimitReached=You cannot pick any more specialization
+m_strItemNotRemovable=Random specializations cant be removed
 
 [UIChooseAbilities]
 m_strTitlePool=Choose Abilities
@@ -13,6 +17,10 @@ m_strTitleChosen=Chosen Abilties
 m_strInventoryLabelChosen=Removable Abilities:
 m_strChoose=CHOOSE
 m_strRemove=REMOVE
+m_strItemChosen=You already have chosen this ability
+m_strItemOwned=Owned ability
+m_strItemLimitReached=You cannot pick any more abilties
+m_strItemNotRemovable=Ability cant be removed
 
 [UISL_UIShell_RPGO]
 strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to work"

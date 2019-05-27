@@ -19,3 +19,42 @@ simulated function PopulateData(optional bool bRealizeDisabled)
 	if(bRealizeDisabled)
 		RealizeDisabledState();
 }
+
+simulated function RefreshConfirmButtonVisibility()
+{
+	if( ConfirmButton != none )
+	{
+		if( bIsFocused )
+		{
+			// initially it seems as though the visible flag gets stuck to true when it hasn't displayed yet. Turn off and on again.
+			ConfirmButton.SetVisible(false);
+			ConfirmButton.SetVisible(!bIsBad && !bDisabled && !bIsGood);
+			if( bIsBad || bDisabled )
+			{
+				SetRightColPadding( AttentionIconPadding + ConfirmButtonStoredRightCol );
+			}
+			else
+			{
+				SetRightColPadding(ConfirmButton.Width + ConfirmButtonArrowWidth + AttentionIconPadding + ConfirmButtonStoredRightCol);
+			}
+			if( `ISCONTROLLERACTIVE )
+			{
+				ConfirmButton.OnReceiveFocus();
+			}
+		}
+		else
+		{
+			ConfirmButton.SetVisible(false);
+			SetRightColPadding(ConfirmButtonStoredRightCol + AttentionIconPadding);
+			if( `ISCONTROLLERACTIVE )
+			{
+				ConfirmButton.OnLoseFocus();
+			}
+		}
+	}
+	else
+	{
+		SetRightColPadding(ConfirmButtonStoredRightCol + AttentionIconPadding);
+	}
+
+}

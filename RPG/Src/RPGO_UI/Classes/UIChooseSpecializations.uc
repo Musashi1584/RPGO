@@ -24,6 +24,10 @@ var localized string m_strTitleChosen;
 var localized string m_strInventoryLabelChosen;
 var localized string m_strChoose;
 var localized string m_strRemove;
+var localized string m_strItemChosen;
+var localized string m_strItemRandom;
+var localized string m_strItemLimitReached;
+var localized string m_strItemNotRemovable;
 
 delegate AcceptAbilities(array<int> SelectedSpecialization);
 
@@ -62,7 +66,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	Navigator.SetSelected(PoolList);
 	PoolList.SetSelectedIndex(0);
 
-	//if( bIsIn3D )
+	//if(bIsIn3D)
 	//	class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
 
@@ -97,7 +101,7 @@ simulated function OnContinueButtonClick()
 	local UIArmory_PromotionHero HeroScreen;
 	`log(default.class @ GetFuncName() @ SelectedItems.Length,, 'RPG');
 
-	if (SelectedItems.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
+	if (SelectedItems.Length == ChooseSpecializationMax)
 	{
 		OnAllSpecSelected();
 		
@@ -247,18 +251,18 @@ simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 
 	if (IsPicked(Index))
 	{
-		Item.ShouldShowGoodState(true, "You already have a chosen this specialization.");
-		Item.SetDisabled(true);
+		Item.ShouldShowGoodState(true, m_strItemChosen);
+		//Item.SetDisabled(true);
 	}
 
 	if (IsOwnedSpec(Index))
 	{
-		Item.SetDisabled(true, "Random specialization.");
+		Item.SetDisabled(true, m_strItemRandom);
 	}
 
 	if (HasReachedSpecLimit())
 	{
-		Item.SetDisabled(true, "You cannot pick any more specialization.");
+		Item.SetDisabled(true, m_strItemLimitReached);
 	}
 }
 
@@ -293,9 +297,10 @@ simulated function UpdateChosenList()
 simulated function UpdateChosenListItem(UIInventory_SpecializationListItem Item)
 {
 	Item.EnableListItem();
+	Item.ShouldShowGoodState(false);
 
 	if (IsOwnedSpec(GetItemIndex(Item.ItemComodity)))
-		Item.SetDisabled(true, "Random specializations cant be removed.");
+		Item.ShouldShowGoodState(true, m_strItemNotRemovable);
 }
 
 simulated function UpdateButton()
