@@ -1,0 +1,29 @@
+[h1]RPGO has Second Wave Options now![/h1]
+
+In order to enable them mid campaign you need the mod:
+Better Second Wave Mod Support
+
+You can use these option separately or in any combination of the three. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.
+
+Configuration:
+Setting like the number of random specs or the number of specs to pick can be edited in
+[code]
+%Steam%\SteamApps\workshop\content\268500\1280477867\Config\XComSecondWaveOptions.ini
+[/code]
+
+[RPGO] Specialization Roulette
+Soldiers start with a limited number of randomized specializations on Squaddie.
+Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie.
+Can be combined with Training Roulette and/or Commanders Choice.
+
+[RPGO] Commanders Choice
+Choose a limted number of specializations
+On promotion to squaddie you can choose a limted number of specializations.
+Can be combined with Specialization Roulette and/or Training Roulette.
+
+[RPGO] Training Roulette
+The order of perks within specializations get randomized.
+Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot.
+Can be combined with Specialization Roulette and/or Commanders Choice.
+
+

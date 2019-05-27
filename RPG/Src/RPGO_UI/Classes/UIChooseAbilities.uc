@@ -1,15 +1,14 @@
-class UIChooseSpecializations extends UIInventory dependson(X2EventListener_RPG_StrategyListener);
+class UIChooseAbilities extends UIInventory;
 
-var array<SoldierSpecialization> SpecializationsPool;
+var array<X2AbilityTemplate> AbilitiesPool;
 var array<Commodity>		CommodityPool;
 var int						SelectedIndexPool;
 
-var array<SoldierSpecialization> SpecializationsChosen;
+var array<X2AbilityTemplate> AbilitiesChosen;
 var array<Commodity>		CommoditiesChosen;
 var int						SelectedIndexChosen;
 
-var int ChooseSpecializationMax;
-var array<int> SelectedItems, OwnedItems;
+var int ChooseAbilityMax;
 
 var UIX2PanelHeader PoolHeader;
 var UIList PoolList;
@@ -25,7 +24,7 @@ var localized string m_strInventoryLabelChosen;
 var localized string m_strChoose;
 var localized string m_strRemove;
 
-delegate AcceptAbilities(array<int> SelectedSpecialization);
+delegate AcceptAbilities(array<int> SelectedAbiltites);
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
@@ -45,12 +44,12 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	PoolList.OnItemDoubleClicked = OnSpecializationsAdded;
 	ChosenList.OnItemDoubleClicked = OnSpecializationsRemoved;
 	
-	SpecializationsPool.Length = 0;
-	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
+	AbilitiesPool.Length = 0;
+	AbilitiesPool = GetAbilityTemplates(GetUnit());
+	AbilitiesPool.Sort(SortAbiltiesByName);
+	CommodityPool = ConvertToCommodities(AbilitiesPool);
 
-	CommodityPool = ConvertToCommodities(SpecializationsPool);
-
-	SpecializationsChosen.Length = 0;
+	AbilitiesChosen.Length = 0;
 	
 	UpdateNavHelp();
 	
@@ -67,22 +66,57 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 }
 
 
-simulated function InitChooseSpecialization(StateObjectReference UnitRef ,int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
+simulated function array<X2AbilityTemplate> GetAbilityTemplates(XComGameState_Unit Unit, optional XComGameState CheckGameState)
+{
+	local int i;
+	local X2AbilityTemplate AbilityTemplate;
+	local X2AbilityTemplateManager AbilityTemplateManager;
+	local array<X2AbilityTemplate> AbilityTemplates;
+	local array<SoldierClassRandomAbilityDeck> RandomAbilityDecks;
+	local SoldierClassRandomAbilityDeck Deck;
+	local X2CharacterTemplate CharacterTemplate;
+	local SoldierClassAbilityType AbilityType;
+	local name AbilityName;
+
+	if(Unit.IsSoldier())
+	{
+		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+		RandomAbilityDecks = Unit.GetSoldierClassTemplate().RandomAbilityDecks;
+
+		foreach RandomAbilityDecks(Deck)
+		{
+			foreach Deck.Abilities(AbilityType)
+			{
+				AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
+				if(AbilityTemplate != none &&
+					!AbilityTemplate.bDontDisplayInAbilitySummary &&
+					AbilityTemplate.ConditionsEverValidForUnit(Unit, true) )
+				{
+					AbilityTemplates.AddItem(AbilityTemplate);
+				}
+			}
+		}
+	}
+	return AbilityTemplates;
+}
+
+simulated function InitChooseAbiltites(StateObjectReference UnitRef ,int MaxAbilities, optional array<X2AbilityTemplate> OwnedAbiltites, optional delegate<AcceptAbilities> OnAccept)
 {
 	local Commodity Comm;
 
-	`LOG(self.Class.name @ GetFuncName() @ UnitRef.ObjectID @ OwnedSpecs.Length @ MaxSpecs,, 'RPG-UIChooseSpecializations');
+	`LOG(self.Class.name @ GetFuncName() @ UnitRef.ObjectID,, 'RPG-UIChooseSpecializations');
 	UnitReference = UnitRef;
-	SpecializationsChosen = OwnedSpecs;
-	ChooseSpecializationMax = MaxSpecs;
+	AbilitiesChosen = OwnedAbiltites;
+	ChooseAbilityMax = MaxAbilities;
 	AcceptAbilities = OnAccept;
 	
-	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
-
-	foreach CommoditiesChosen(Comm)
-	{
-		OwnedItems.AddItem(GetItemIndex(Comm));
-	}
+	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
+	
+	AbilitiesPool.Length = 0;
+	AbilitiesPool = GetAbilityTemplates(GetUnit());
+	AbilitiesPool.Sort(SortAbiltiesByName);
+	CommodityPool = ConvertToCommodities(AbilitiesPool);
 
 	PopulateData();
 }
@@ -95,55 +129,57 @@ simulated function XComGameState_Unit GetUnit()
 simulated function OnContinueButtonClick()
 {
 	local UIArmory_PromotionHero HeroScreen;
-	`log(default.class @ GetFuncName() @ SelectedItems.Length,, 'RPG');
+	`log(default.class @ GetFuncName(),, 'RPG');
+	Movie.Stack.Pop(self);
 
-	if (SelectedItems.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
-	{
-		OnAllSpecSelected();
-		
-		Movie.Stack.Pop(self);
-		HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
-		if (HeroScreen != none)
-		{
-			HeroScreen.CycleToSoldier(UnitReference);
-		}
-	}
-	else
-	{
-		PlayNegativeSound();
-	}
+	//if (SelectedItems.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
+	//{
+	//	OnAllAbiltiesSelected();
+	//	
+	//	Movie.Stack.Pop(self);
+	//	HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
+	//	if (HeroScreen != none)
+	//	{
+	//		HeroScreen.CycleToSoldier(UnitReference);
+	//	}
+	//}
+	//else
+	//{
+	//	PlayNegativeSound();
+	//}
 }
 
 
-function bool OnAllSpecSelected()
+function bool OnAllAbiltiesSelected()
 {
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
-	local int Index;
+	local X2AbilityTemplate Ability;
 	
 	UnitState = GetUnit();
 
-	foreach SelectedItems(Index)
+	foreach AbilitiesChosen(Ability)
 	{
 		`log(default.class @ GetFuncName() @
 			"Add Specializations for" @ UnitState.SummaryString() @ 
-			class'X2SoldierClassTemplatePlugin'.static.GetAbilityTreeTitle(UnitState, Index)
+			Ability.LocFriendlyName
+
 		,, 'RPG');
 	}
 
-	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
-
-	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedItems, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
-	
-	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
-	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
-
-	if (AcceptAbilities != none)
-	{
-		AcceptAbilities(SelectedItems);
-	}
+	//NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+	//
+	//class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedItems, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
+	//
+	//UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+	//UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	//
+	//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	//
+	//if (AcceptAbilities != none)
+	//{
+	//	AcceptAbilities(SelectedItems);
+	//}
 
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
 	
@@ -176,42 +212,34 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 	`LOG(self.Class.name @ GetFuncName() @ CommList @ Header,, 'RPG-UIChooseSpecializations');
 }
 
-simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecialization> Specializations)
+simulated function array<Commodity> ConvertToCommodities(array<X2AbilityTemplate> Abilities)
 {
-	local SoldierSpecialization Spec;
+	local X2AbilityTemplate AbilityTemplate;
 	local int i;
 	local array<Commodity> Commodities;
 	local Commodity Comm;
-	local X2UniversalSoldierClassInfo Template;
 
-	for (i = 0; i < Specializations.Length; i++)
+	foreach Abilities(AbilityTemplate)
 	{
-		Spec = Specializations[i];
-		
-		Template = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
-		
-		Comm.Title = Template.ClassSpecializationTitle;
-		Comm.Image = Template.ClassSpecializationIcon;
-		Comm.Desc = Template.ClassSpecializationSummary;
+		Comm.Title = AbilityTemplate.LocFriendlyName;
+		Comm.Desc = AbilityTemplate.GetMyHelpText();
 		Comm.OrderHours = -1;
-		//Comm.OrderHours = class'SpecialTrainingUtilities'.static.GetSpecialTrainingDays() * 24;
-
+		
 		Commodities.AddItem(Comm);
 	}
 
 	return Commodities;
 }
-/*
-function int SortSpecializationsByName(SoldierSpecialization a, SoldierSpecialization b)
+
+function int SortAbiltiesByName(X2AbilityTemplate a, X2AbilityTemplate b)
 {	
-	if (a.DisplayName < b.DisplayName)
+	if (a.LocFriendlyName < b.LocFriendlyName)
 		return 1;
-	else if (a.DisplayName > b.DisplayName)
+	else if (a.LocFriendlyName > b.LocFriendlyName)
 		return -1;
 	else
 		return 0;
 }
-*/
 simulated function PopulateData()
 {
 	PopulatePool();
@@ -221,36 +249,22 @@ simulated function PopulateData()
 
 simulated function PopulatePool()
 {
-	local Commodity Template;
+	local Commodity Comm;
+	local X2AbilityTemplate Template;
 	local int i;
-	local UIInventory_SpecializationListItem Item;
-
-	//local X2AbilityTemplateManager AbilityTemplateManager;
-	//local X2AbilityTemplate AbilityTemplate;
+	local UIInventory_AbilityListItem Item;
 
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-UIChooseSpecializations');
 
 	PoolList.ClearItems();
 	for(i = 0; i < CommodityPool.Length; i++)
 	{
-		Template = CommodityPool[i];
-		Item = Spawn(class'UIInventory_SpecializationListItem', PoolList.itemContainer);
-		Item.InitInventoryListCommodity(Template, , m_strChoose, , , 126);
+		Comm = CommodityPool[i];
+		Template = AbilitiesPool[GetItemIndex(Comm)];
+		Item = Spawn(class'UIInventory_AbilityListItem', PoolList.itemContainer);
+		Item.InitInventoryListAbility(Template, Comm, ,m_strChoose, , , 90);
 		UpdatePoolListItem(Item);
 	}
-
-	
-	// Test
-	//AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-	//AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate('RunAndGun');
-	//
-	//Template.Title = AbilityTemplate.LocFriendlyName;
-	////Template.Image = AbilityTemplate.IconImage;
-	//Template.Desc = AbilityTemplate.LocHelpText;
-	//Template.OrderHours = -1;
-	//Item = Spawn(class'UIInventory_SpecializationListItem', PoolList.itemContainer);
-	//Item.InitInventoryListCommodity(Template, , m_strChoose, , , 50);
-	
 }
 
 simulated function UpdatePoolList()
@@ -259,11 +273,11 @@ simulated function UpdatePoolList()
 
 	for (Index = 0; Index < PoolList.GetItemCount(); Index++)
 	{
-		UpdatePoolListItem(UIInventory_SpecializationListItem(PoolList.GetItem(Index)));
+		UpdatePoolListItem(UIInventory_AbilityListItem(PoolList.GetItem(Index)));
 	}
 }
 
-simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
+simulated function UpdatePoolListItem(UIInventory_AbilityListItem Item)
 {
 	local int Index;
 
@@ -291,18 +305,20 @@ simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 
 simulated function PopulateChosen()
 {
-	local Commodity Template;
+	local Commodity Comm;
+	local X2AbilityTemplate Template;
 	local int i;
-	local UIInventory_SpecializationListItem Item;
+	local UIInventory_AbilityListItem Item;
 
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-UIChooseSpecializations');
 
 	ChosenList.ClearItems();
 	for(i = 0; i < CommoditiesChosen.Length; i++)
 	{
-		Template = CommoditiesChosen[i];
-		Item = Spawn(class'UIInventory_SpecializationListItem', ChosenList.ItemContainer);
-		Item.InitInventoryListCommodity(Template, , m_strRemove, , , 126);
+		Comm = CommoditiesChosen[i];
+		Template = AbilitiesChosen[GetItemIndex(Comm)];
+		Item = Spawn(class'UIInventory_AbilityListItem', PoolList.itemContainer);
+		Item.InitInventoryListAbility(Template, Comm, , m_strChoose, , , 90);
 		UpdateChosenListItem(Item);
 	}
 }
@@ -313,11 +329,11 @@ simulated function UpdateChosenList()
 
 	for (Index = 0; Index < ChosenList.GetItemCount(); Index++)
 	{
-		UpdateChosenListItem(UIInventory_SpecializationListItem(ChosenList.GetItem(Index)));
+		UpdateChosenListItem(UIInventory_AbilityListItem(ChosenList.GetItem(Index)));
 	}
 }
 
-simulated function UpdateChosenListItem(UIInventory_SpecializationListItem Item)
+simulated function UpdateChosenListItem(UIInventory_AbilityListItem Item)
 {
 	Item.EnableListItem();
 
@@ -344,17 +360,20 @@ simulated function UpdateButton()
 
 simulated function bool IsPicked(int Index)
 {
-	return SelectedItems.Find(Index) != INDEX_NONE;
+	return false;
+	//return SelectedItems.Find(Index) != INDEX_NONE;
 }
 
 simulated function bool IsOwnedSpec(int Index)
 {
-	return OwnedItems.Find(Index) != INDEX_NONE;
+	return false;
+	//return OwnedItems.Find(Index) != INDEX_NONE;
 }
 
 simulated function bool HasReachedSpecLimit()
 {
-	return SelectedItems.Length >= ChooseSpecializationMax;
+	return false;
+	//return SelectedItems.Length >= ChooseAbilityMax;
 }
 
 simulated function int GetItemIndex(Commodity Item)
@@ -406,7 +425,7 @@ simulated function OnSpecializationsRemoved(UIList kList, int itemIndex)
 		SelectedIndexChosen = itemIndex;
 	}
 
-	PoolIndex = GetItemIndex(UIInventory_SpecializationListItem(ChosenList.GetItem(SelectedIndexChosen)).ItemComodity);
+	PoolIndex = GetItemIndex(UIInventory_AbilityListItem(ChosenList.GetItem(SelectedIndexChosen)).ItemComodity);
 
 	if (!IsOwnedSpec(PoolIndex))
 	{
@@ -421,16 +440,16 @@ simulated function OnSpecializationsRemoved(UIList kList, int itemIndex)
 
 simulated function AddToChosenList(int Index)
 {
-	SelectedItems.AddItem(Index);
-	SpecializationsChosen.AddItem(SpecializationsPool[Index]);
-	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
+	//SelectedItems.AddItem(Index);
+	AbilitiesChosen.AddItem(AbilitiesPool[Index]);
+	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
 }
 
 simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 {
-	SelectedItems.RemoveItem(PoolIndex);
-	SpecializationsChosen.RemoveItem(SpecializationsChosen[ChosenIndex]);
-	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
+	//SelectedItems.RemoveItem(PoolIndex);
+	AbilitiesChosen.RemoveItem(AbilitiesChosen[ChosenIndex]);
+	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
 }
 
 simulated function bool OnUnrealCommand(int cmd, int arg)
@@ -532,23 +551,6 @@ simulated function OnReceiveFocus()
 	`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
 	`HQPRES.m_kAvengerHUD.NavHelp.AddBackButton(OnCancel);
 }
-
-//simulated function BuildScreen()
-//{
-//	`LOG(self.Class.name @ GetFuncName() @ InventoryListName,, 'RPG-UIChooseSpecializations');
-//
-//	//ListContainer = Spawn(class'UIPanel', self).InitPanel('InventoryContainer');
-//	//ListContainer.Width = Movie.UI_RES_X - 100;
-//	//ListContainer.Height = Movie.UI_RES_Y - 100;
-//	//ListContainer.SetPosition((Movie.UI_RES_X - ListContainer.Width) / 2, (Movie.UI_RES_Y- ListContainer.Height) / 2);
-//	
-//	//ListBG = Spawn(class'UIPanel', ListContainer);
-//	//ListBG.InitPanel('InventoryListBG'); 
-//	//ListBG.bShouldPlayGenericUIAudioEvents = false;
-//	//ListBG.Show();
-//
-//
-//}
 
 defaultproperties
 {

@@ -127,6 +127,7 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 	if (ShowChooseSpecScreen(Unit))
 	{
 		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice spawning UI",, 'RPG-PromotionScreen');
+		//SpawnChooseAbilityScreen(Unit);
 		SpawnChooseSpecScreen(Unit);
 	}
 }
@@ -925,7 +926,7 @@ function ResizeScreenForBrigadierRank()
 	//
 	Width = int(MC.GetNum("_width"));
 	AdjustXOffset = MC.GetNum("rankColumn6._x") - MC.GetNum("rankColumn5._x");
-	SetWidth(Width + AdjustXOffset);
+	SetWidth(Width + AdjustXOffset - 2);
 
 	// Widths
 	MC.ChildSetNum("bg",				"_width", MC.GetNum("bg._width") + AdjustXOffset);
@@ -1216,6 +1217,19 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 		TrainedSpecs
 	);
 }
+
+function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
+{
+	local UIChooseAbilities ChooseAbilityScreen;
+
+	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
+	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());
+	ChooseAbilityScreen.InitChooseAbiltites(
+		UnitState.GetReference(),
+		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount()
+	);
+}
+
 
 function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 {

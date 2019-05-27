@@ -61,11 +61,11 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 
 [h1]Changes to attachments[/h1]
 [list]
-[*] Scope (Aim penalty for close range, aim bonus mid to long range.)
+[*] Scope	(Aim penalty for close range, aim bonus mid to long range.)
 [*] Laser Sight (Crit Bonus (5/10/15) but aim penalties for mid to long range.)
 [*] Hair Trigger (15/30/45)% chance to trigger a second shot if the first one misses
 [*] Repeater (get replaced by Tactical Suppressors (Uses WotC Tactical Suppressors))
-[*] Stock (Reaction Fire Bonus (5/10/15))
+[*] Stock	(Reaction Fire Bonus (5/10/15))
 [*] Autoloader (Auto reload 1 ammo per turn (max 4/6/8))
 [*] more attachments to come
 [/list]
@@ -152,3 +152,6 @@ Rebuilds the current soldier, resets AP and SP and by default keeps the current 
 eg "RPGO_RebuildSelectedSoldier false 5" rebuilds the soldier including new random squaddie perks and promotes to rank 5.
 
 "RPGO_RebuildSelectedSoldier" without any arguments rebuilds the soldier, keeps the current squaddie perks and promotes to the former rank.
+
+[h1]New Second Wave Options[/h1]
+see [url=https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1653297026045137844/]Second Wave Options in RPGO[/url]

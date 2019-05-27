@@ -36,6 +36,8 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\ExtendedUpgrades" />
     <Folder Include="Src\Debug" />
     <Folder Include="Src\DetailedSoldierListWOTC" />
+    <Folder Include="Src\RPGO_UI" />
+    <Folder Include="Src\RPGO_UI\Classes" />
     <Folder Include="Src\StatUpgradeUI" />
     <Folder Include="Src\NewPromotionScreenbyDefault" />
     <Folder Include="Src\NewPromotionScreenbyDefault\Classes" />
@@ -146,6 +148,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Localization\NewPromotionScreenbyDefault\XComGame.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\RPGO_UI.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\StatUpgradeUI.int">
       <SubType>Content</SubType>
     </Content>
@@ -215,6 +220,21 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\NewPromotionScreenbyDefault\Classes\X2DownloadableContentInfo_NewPromotionScreenbyDefault.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIChooseAbilities.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIChooseSpecializations.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIInventory_AbilityListItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIInventory_SpecializationListItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UISL_UIShell_RPGO.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\StatUpgradeUI\Classes\OnStatAssignmentCompleteClosure.uc">
       <SubType>Content</SubType>
     </Content>
@@ -231,15 +251,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\UIChooseSpecializations.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\UIInventory_SpecializationListItem.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\UISL_UIShell_RPGO.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">

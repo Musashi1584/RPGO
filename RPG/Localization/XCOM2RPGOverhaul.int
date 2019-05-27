@@ -66,20 +66,6 @@ ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flam
 ClassSpecializationTitle=Enforcer
 ClassSpecializationSummary="The Enforcer utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Enforcer's allies take aim."
 
-
-[UIChooseClass_SWO_CommandersChoice]
-m_strTitle=Choose Specialization
-m_strInventoryLabel=Available Specializations:
-m_strBuy=CHOOSE
-
-[UIChooseSpecializations]
-m_strTitlePool=Choose Specialization
-m_strInventoryLabelPool=Available Specializations:
-m_strTitleChosen=Chosen Specialization
-m_strInventoryLabelChosen=Removable Specializations:
-m_strChoose=CHOOSE
-m_strRemove=REMOVE
-
 [XGLocalizedData_RPG]
 UtilityCatPistol="(Auto-)Pistol"
 UtilityCatSidearm="(Auto-)Pistol"
@@ -105,7 +91,3 @@ strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. P
 
 strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
 strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette and/or Training Roulette."
-
-[UISL_UIShell_RPGO]
-strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to work"
-strSWOInfo="RPGO Public Service Announcement!\nSorry to interrupt you. I just wanted to inform you that <font color='#1bad62'>RPGO has Second Wave Options now!</font>\n You have 3 new options\n\nSpecialization Roulette\nCommanders Choice\nTraining Roulette\n\nIn order to enable them mid campaign you need the mod <font color='#1bad62'>Better Second Wave Mod Support</font>\nYou can use these option separately or in any combination of the three. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.\nSettings like the number of random specs can be changed in <font color='#1bad62'>XComSecondWaveOptions.ini</font>\n\nThanks for your attention\n\nMusashi"
