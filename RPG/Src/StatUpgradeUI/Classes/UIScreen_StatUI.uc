@@ -18,6 +18,7 @@ var localized string m_strSoldierSPLabel, m_StatNameHeader, m_StatValueHeader, m
 simulated function InitArmory(StateObjectReference UnitRef, optional name DispEvent, optional name SoldSpawnEvent, optional name NavBackEvent, optional name HideEvent, optional name RemoveEvent, optional bool bInstant = false, optional XComGameState InitCheckGameState)
 {
 	super.InitArmory(UnitRef, DispEvent, SoldSpawnEvent, NavBackEvent, HideEvent, RemoveEvent, bInstant, InitCheckGameState);
+	bAutoSelectFirstNavigable = `ISCONTROLLERACTIVE;
 	InitPanels();
 
 	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
@@ -32,7 +33,12 @@ function InitPanels()
 	Container.Width = Width;
 	Container.Height = Height;
 	Container.SetPosition((Movie.UI_RES_X - Container.Width) / 2, (Movie.UI_RES_Y- Container.Height) / 2);
-	
+	Container.Navigator.LoopSelection = true;
+	if(!bAutoSelectFirstNavigable)
+	{
+		Container.SetSelectedNavigation();
+	}
+
 	FullBG = Spawn(class'UIBGBox', Container);
 	FullBG.InitBG('', 0, 0, Container.Width, Container.Height);
 
@@ -59,12 +65,16 @@ function InitPanels()
 	NaturalAptitudeText.SetPosition(Container.Width - NaturalAptitudeText.Width - LeftPadding, LeftPadding * 2);
 
 	TitleHeader = Spawn(class'UIX2PanelHeader', Container);
+	TitleHeader.bIsNavigable = false; // Why doesn't UIX2PanelHeader have navigation disabled by default like UITest and UIImage eh, Firaxis?
 	TitleHeader.InitPanelHeader('', "", "");
 	TitleHeader.SetPosition(SCImage.Width + RunningHeaderOffsetX + 10, LeftPadding);
 	TitleHeader.SetWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
 	TitleHeader.SetHeaderWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
 
-	SaveButton = Spawn(class'UIButton', Container).InitButton('SaveButton', "SAVE", Save);
+	SaveButton = Spawn(class'UIButton', Container);
+	SaveButton.bIsNavigable = false;
+	SaveButton.InitButton('SaveButton', "SAVE", Save, eUIButtonStyle_HOTLINK_BUTTON);
+	SaveBUtton.SetGamepadIcon(class'UIUtilities_Input'.const.ICON_X_SQUARE);
 	SaveButton.SetFontSize(FontSize);
 	SaveButton.SetResizeToText(true);
 	SaveButton.SetWidth(150);
@@ -187,8 +197,8 @@ function PopulateSoldierPoints()
 	CurrentSP = Max(GetSoldierSP() - StatPointCostSum, 0);
 	CurrentAP = GetSoldierAP() - AbilityPointCostSum - Min(GetSoldierSP() - StatPointCostSum, 0);
 
-	StatPointsText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(m_strSoldierSPLabel @ string(CurrentSP), eUIState_Normal, FontSize)));
-	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel @ string(CurrentAP), eUIState_Normal, FontSize));
+	StatPointsText.SetHtmlText(class'UIUtilities_Text'.static.AlignRight(class'UIUtilities_Text'.static.GetColoredText(m_strSoldierSPLabel $ ": " $ string(CurrentSP), eUIState_Normal, FontSize)));
+	AbilityPointsText.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(class'UIArmory_PromotionHero'.default.m_strSoldierAPLabel $ ": " $ string(CurrentAP), eUIState_Normal, FontSize));
 }
 
 function int GetSoldierAP()
@@ -284,6 +294,32 @@ simulated function ComfirmStatUpgradeCallback(Name Action)
 	}
 }
 
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	//bsg-jneal (5.23.17): no input when not focused
+	if(!bIsFocused)
+	{
+		return false;
+	}
+	//bsg-jneal (5.23.17): end
+
+	if ( CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
+	{
+		switch( cmd )
+		{
+			case class'UIUtilities_Input'.const.FXS_BUTTON_X:
+				OnAccept();
+				return true;
+			// Want the UIPanel_StatUI_StatLine to handle these, so need to stop
+			// UIArmory::OnUnrealCommand() handling them. So super one further up the chain.
+			case class'UIUtilities_Input'.const.FXS_BUTTON_A:
+			case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
+			case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
+				return super(UIScreen).OnUnrealCommand(cmd, arg);
+		}
+	}
+	return super.OnUnrealCommand(cmd, arg);
+}
 
 function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int StatCost)
 {
@@ -365,6 +401,30 @@ simulated function bool IsAllowedToCycleSoldiers()
 	return false;
 }
 
+// Needed a couple of tweaks from the UIArmoury version, but now heavily cut down
+// since for example, we *know* IsAllowedToCycleSoldiers() will always be false
+simulated function UpdateNavHelp()
+{
+	if(!bIsFocused)
+		return; //bsg-crobinson (5.30.17): If not focused return
+
+	NavHelp.ClearButtonHelp();
+	NavHelp.AddBackButton(OnCancel);
+
+	if( `ISCONTROLLERACTIVE )
+	{
+		NavHelp.AddLeftHelp(class'UIUtilities_Text'.default.m_strGenericAdjust, class'UIUtilities_Input'.const.ICON_DPAD_HORIZONTAL);
+		NavHelp.AddCenterHelp( m_strRotateNavHelp, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_RSTICK); // bsg-jrebar (4/26/17): Armory UI consistency changes, centering buttons, fixing overlaps, removed button inlining
+	}
+	// Don't allow jumping to the geoscape from the armory in the tutorial or when coming from squad select
+	else if(XComHQPresentationLayer(Movie.Pres) != none && class'XComGameState_HeadquartersXCom'.static.GetObjectiveStatus('T0_M7_WelcomeToGeoscape') != eObjectiveState_InProgress &&
+		RemoveMenuEvent == '' && NavigationBackEvent == '' && !`ScreenStack.IsInStack(class'UISquadSelect'))
+	{
+		NavHelp.AddGeoscapeButton();
+	}
+
+	NavHelp.Show();
+}
 
 defaultproperties
 {

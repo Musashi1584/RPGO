@@ -107,13 +107,19 @@ function InitChildPanels(
 	UpgradePontsText.SetX(RunningOffsetX += StatValueText.Width + Padding);
 	UpgradePontsText.SetWidth(UpgradePontsTextWidth);
 
-	MinusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
+	MinusSign = Spawn(class'UIButton', self);
+	MinusSign.bIsNavigable = false;
+	MinusSign.InitButton(name(PanelName $ "Minus"), "-", OnClickedDecrease);
+	MinusSign.SetGamepadIcon(class'UIUtilities_Input'.const.ICON_Y_TRIANGLE);
 	MinusSign.SetFontSize(FontSize);
 	MinusSign.SetResizeToText(true);
 	MinusSign.SetWidth(ButtonWidth);
 	MinusSign.SetX(RunningOffsetX += UpgradePontsText.Width + Padding + 20);
 
-	PlusSign = Spawn(class'UIButton', self).InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
+	PlusSign = Spawn(class'UIButton', self);
+	PlusSign.bIsNavigable = false;
+	PlusSign.InitButton(name(PanelName $ "Plus"), "+", OnClickedIncrease);
+	PlusSign.SetGamepadIcon(class'UIUtilities_Input'.const.ICON_A_X);
 	PlusSign.SetFontSize(FontSize);
 	PlusSign.SetResizeToText(true);
 	PlusSign.SetWidth(ButtonWidth);
@@ -186,6 +192,11 @@ function OnClickedIncrease(UIButton Button)
 		StatValue = NewStatValue;
 		UpdateStatValue(NewStatValue);
 		UpdateUpgradeCostSum();
+		`SOUNDMGR.PlaySoundEvent("Generic_Mouse_Click");
+	}
+	else
+	{
+		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
 	}
 }
 
@@ -202,6 +213,11 @@ function OnClickedDecrease(UIButton Button)
 		StatValue = NewStatValue;
 		UpdateStatValue(StatValue);
 		UpdateUpgradeCostSum();
+		`SOUNDMGR.PlaySoundEvent("Generic_Mouse_Click");
+	}
+	else
+	{
+		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
 	}
 }
 
@@ -344,6 +360,35 @@ function string GetStatIcon()
 	}
 
 	return "";
+}
+
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	switch( cmd )
+	{
+		case class'UIUtilities_Input'.const.FXS_BUTTON_A:
+		case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
+		case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
+		case class'UIUtilities_Input'.const.FXS_ARROW_RIGHT:
+		case class'UIUtilities_Input'.const.FXS_DPAD_RIGHT:
+		case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_RIGHT:
+			OnClickedIncrease(none);
+			return true;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_Y:
+		case class'UIUtilities_Input'.const.FXS_ARROW_LEFT:
+		case class'UIUtilities_Input'.const.FXS_DPAD_LEFT:
+		case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_LEFT:
+			OnClickedDecrease(none);
+			return true;
+	}
+	return Super.OnUnrealCommand(cmd, arg);
+}
+
+simulated function OnReceiveFocus()
+{
+	`log("Given focus!!!");
+	ScriptTrace();
+	super.OnReceiveFocus();
 }
 
 defaultproperties

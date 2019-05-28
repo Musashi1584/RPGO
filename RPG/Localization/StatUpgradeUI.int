@@ -2,8 +2,8 @@
 m_StatNameHeader="STAT"
 m_StatValueHeader="VALUE"
 m_UpgradePointsHeader="POINTS"
-m_StatCostHeader="NEXT LEVEL"
-m_UpgradeCostHeader="SUM COSTS"
+m_StatCostHeader="POINT COST"
+m_UpgradeCostHeader="TOTAL COST"
 m_strSoldierSPLabel="SOLDIER SP"
 
 [UIPanel_StatUI_StatLine]
