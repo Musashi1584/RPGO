@@ -362,6 +362,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
 
 	SquaddieAbilities = UnitState.GetRankAbilities(0);

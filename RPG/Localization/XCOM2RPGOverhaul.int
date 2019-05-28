@@ -89,5 +89,5 @@ strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializatio
 strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
 strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette and/or Commanders Choice."
 
-strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
-strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette and/or Training Roulette."
+strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations and starting perks"
+strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations and starting perks. \n Can be combined with Specialization Roulette and/or Training Roulette."

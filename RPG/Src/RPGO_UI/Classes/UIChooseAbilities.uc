@@ -23,8 +23,12 @@ var localized string m_strTitleChosen;
 var localized string m_strInventoryLabelChosen;
 var localized string m_strChoose;
 var localized string m_strRemove;
+var localized string m_strItemChosen;
+var localized string m_strItemOwned;
+var localized string m_strItemLimitReached;
+var localized string m_strItemNotRemovable;
 
-delegate AcceptAbilities(array<int> SelectedAbiltites);
+delegate AcceptAbilities(array<X2AbilityTemplate> SelectedAbiltites);
 
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
@@ -68,16 +72,13 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 
 simulated function array<X2AbilityTemplate> GetAbilityTemplates(XComGameState_Unit Unit, optional XComGameState CheckGameState)
 {
-	local int i;
 	local X2AbilityTemplate AbilityTemplate;
 	local X2AbilityTemplateManager AbilityTemplateManager;
 	local array<X2AbilityTemplate> AbilityTemplates;
 	local array<SoldierClassRandomAbilityDeck> RandomAbilityDecks;
 	local SoldierClassRandomAbilityDeck Deck;
-	local X2CharacterTemplate CharacterTemplate;
 	local SoldierClassAbilityType AbilityType;
-	local name AbilityName;
-
+	
 	if(Unit.IsSoldier())
 	{
 		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
@@ -93,6 +94,7 @@ simulated function array<X2AbilityTemplate> GetAbilityTemplates(XComGameState_Un
 					!AbilityTemplate.bDontDisplayInAbilitySummary &&
 					AbilityTemplate.ConditionsEverValidForUnit(Unit, true) )
 				{
+					AbilityTemplate.DefaultSourceItemSlot = AbilityType.ApplyToWeaponSlot;
 					AbilityTemplates.AddItem(AbilityTemplate);
 				}
 			}
@@ -103,8 +105,6 @@ simulated function array<X2AbilityTemplate> GetAbilityTemplates(XComGameState_Un
 
 simulated function InitChooseAbiltites(StateObjectReference UnitRef ,int MaxAbilities, optional array<X2AbilityTemplate> OwnedAbiltites, optional delegate<AcceptAbilities> OnAccept)
 {
-	local Commodity Comm;
-
 	`LOG(self.Class.name @ GetFuncName() @ UnitRef.ObjectID,, 'RPG-UIChooseSpecializations');
 	UnitReference = UnitRef;
 	AbilitiesChosen = OwnedAbiltites;
@@ -130,23 +130,22 @@ simulated function OnContinueButtonClick()
 {
 	local UIArmory_PromotionHero HeroScreen;
 	`log(default.class @ GetFuncName(),, 'RPG');
-	Movie.Stack.Pop(self);
-
-	//if (SelectedItems.Length == class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount())
-	//{
-	//	OnAllAbiltiesSelected();
-	//	
-	//	Movie.Stack.Pop(self);
-	//	HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
-	//	if (HeroScreen != none)
-	//	{
-	//		HeroScreen.CycleToSoldier(UnitReference);
-	//	}
-	//}
-	//else
-	//{
-	//	PlayNegativeSound();
-	//}
+	
+	if (AbilitiesChosen.Length == ChooseAbilityMax)
+	{
+		OnAllAbiltiesSelected();
+		
+		Movie.Stack.Pop(self);
+		HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
+		if (HeroScreen != none)
+		{
+			HeroScreen.CycleToSoldier(UnitReference);
+		}
+	}
+	else
+	{
+		PlayNegativeSound();
+	}
 }
 
 
@@ -161,25 +160,24 @@ function bool OnAllAbiltiesSelected()
 	foreach AbilitiesChosen(Ability)
 	{
 		`log(default.class @ GetFuncName() @
-			"Add Specializations for" @ UnitState.SummaryString() @ 
+			"Add Ability for" @ UnitState.SummaryString() @ 
 			Ability.LocFriendlyName
-
 		,, 'RPG');
 	}
 
-	//NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
-	//
-	//class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedItems, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
-	//
-	//UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-	//UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
-	//
-	//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
-	//
-	//if (AcceptAbilities != none)
-	//{
-	//	AcceptAbilities(SelectedItems);
-	//}
+	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Adding chosen starting abilities to unit");
+	
+	class'X2SecondWaveConfigOptions'.static.AddStartingAbilities(UnitState, AbilitiesChosen);
+	
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 1, eCleanup_Never);
+	
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	
+	if (AcceptAbilities != none)
+	{
+		AcceptAbilities(AbilitiesChosen);
+	}
 
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
 	
@@ -215,7 +213,6 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 simulated function array<Commodity> ConvertToCommodities(array<X2AbilityTemplate> Abilities)
 {
 	local X2AbilityTemplate AbilityTemplate;
-	local int i;
 	local array<Commodity> Commodities;
 	local Commodity Comm;
 
@@ -288,18 +285,17 @@ simulated function UpdatePoolListItem(UIInventory_AbilityListItem Item)
 
 	if (IsPicked(Index))
 	{
-		Item.ShouldShowGoodState(true, "You already have a chosen this specialization.");
-		Item.SetDisabled(true);
+		Item.ShouldShowGoodState(true, m_strItemChosen);
 	}
 
 	if (IsOwnedSpec(Index))
 	{
-		Item.SetDisabled(true, "Random specialization.");
+		Item.SetDisabled(true, m_strItemOwned);
 	}
 
 	if (HasReachedSpecLimit())
 	{
-		Item.SetDisabled(true, "You cannot pick any more specialization.");
+		Item.SetDisabled(true, m_strItemLimitReached);
 	}
 }
 
@@ -316,9 +312,9 @@ simulated function PopulateChosen()
 	for(i = 0; i < CommoditiesChosen.Length; i++)
 	{
 		Comm = CommoditiesChosen[i];
-		Template = AbilitiesChosen[GetItemIndex(Comm)];
-		Item = Spawn(class'UIInventory_AbilityListItem', PoolList.itemContainer);
-		Item.InitInventoryListAbility(Template, Comm, , m_strChoose, , , 90);
+		Template = AbilitiesChosen[i];
+		Item = Spawn(class'UIInventory_AbilityListItem', ChosenList.itemContainer);
+		Item.InitInventoryListAbility(Template, Comm, , m_strRemove, , , 90);
 		UpdateChosenListItem(Item);
 	}
 }
@@ -338,7 +334,7 @@ simulated function UpdateChosenListItem(UIInventory_AbilityListItem Item)
 	Item.EnableListItem();
 
 	if (IsOwnedSpec(GetItemIndex(Item.ItemComodity)))
-		Item.SetDisabled(true, "Random specializations cant be removed.");
+		Item.SetDisabled(true, m_strItemNotRemovable);
 }
 
 simulated function UpdateButton()
@@ -357,23 +353,19 @@ simulated function UpdateButton()
 	}
 }
 
-
 simulated function bool IsPicked(int Index)
 {
-	return false;
-	//return SelectedItems.Find(Index) != INDEX_NONE;
+	return CommoditiesChosen.Find('Title', CommodityPool[Index].Title) != INDEX_NONE;
 }
 
 simulated function bool IsOwnedSpec(int Index)
 {
 	return false;
-	//return OwnedItems.Find(Index) != INDEX_NONE;
 }
 
 simulated function bool HasReachedSpecLimit()
-{
-	return false;
-	//return SelectedItems.Length >= ChooseAbilityMax;
+{;
+	return CommoditiesChosen.Length >= ChooseAbilityMax;
 }
 
 simulated function int GetItemIndex(Commodity Item)
@@ -440,14 +432,12 @@ simulated function OnSpecializationsRemoved(UIList kList, int itemIndex)
 
 simulated function AddToChosenList(int Index)
 {
-	//SelectedItems.AddItem(Index);
 	AbilitiesChosen.AddItem(AbilitiesPool[Index]);
 	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
 }
 
 simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 {
-	//SelectedItems.RemoveItem(PoolIndex);
 	AbilitiesChosen.RemoveItem(AbilitiesChosen[ChosenIndex]);
 	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
 }

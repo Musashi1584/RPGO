@@ -2,6 +2,7 @@ class X2SecondWaveConfigOptions extends Object config (SecondWaveOptions);
 
 var config int SpecRouletteRandomSpecCount;
 var config int CommandersChoiceSpecCount;
+var config int CommandersChoiceAbilityCount;
 var config int SpecRouletteRandomSpecCount_Combi;
 var config int CommandersChoiceSpecCount_Combi;
 var config int TrainingRouletteMinRank;
@@ -19,6 +20,11 @@ static function int GetCommandersChoiceCount()
 	return  (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
 		default.CommandersChoiceSpecCount_Combi :
 		default.CommandersChoiceSpecCount;
+}
+
+static function int GetCommandersChoiceAbiltiesCount()
+{
+	return  default.CommandersChoiceAbilityCount;
 }
 
 
@@ -43,6 +49,29 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ RandomAbilitySlotIndices[RandomAbilitySlotIndices.Length - 1],, 'RPG');
 	}
 	return RandomAbilitySlotIndices;
+}
+
+static function AddStartingAbilities(
+	XComGameState_Unit UnitState,
+	array<X2AbilityTemplate> Abilities
+)
+{
+	local X2SoldierClassTemplate ClassTemplate;
+	local SoldierClassAbilityType AbilityType;
+	local X2AbilityTemplate Ability;
+
+	ClassTemplate = UnitState.GetSoldierClassTemplate();
+
+	if(ClassTemplate != none && ClassTemplate.DataName == 'UniversalSoldier')
+	{
+		UnitState.AbilityTree[0].Abilities.Length = 0;
+		foreach Abilities(Ability)
+		{
+			AbilityType.AbilityName = Ability.DataName;
+			AbilityType.ApplyToWeaponSlot = Ability.DefaultSourceItemSlot;
+			UnitState.AbilityTree[0].Abilities.AddItem(AbilityType);
+		}
+	}
 }
 
 static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState, optional bool bRandomizePerkOrder = false)
@@ -70,14 +99,14 @@ static function BuildSpecAbilityTree(
 
 	ClassTemplate = UnitState.GetSoldierClassTemplate();
 
-	// Reset everything above squaddie
-	if (bResetAbilityTree)
+	if(ClassTemplate != none && ClassTemplate.DataName == 'UniversalSoldier')
 	{
-		UnitState.AbilityTree.Length = 1;
-	}
+		// Reset everything above squaddie
+		if (bResetAbilityTree)
+		{
+			UnitState.AbilityTree.Length = 1;
+		}
 	
-	if(ClassTemplate != none)
-	{
 		// Grab random ability decks
 		RandomAbilityDecks = ClassTemplate.RandomAbilityDecks;
 
