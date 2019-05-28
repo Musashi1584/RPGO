@@ -449,6 +449,11 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
 		return false;
 
+	if(cmd == class'UIUtilities_Input'.const.FXS_BUTTON_X)
+	{
+		OnContinueButtonClick();
+		return true;
+	}
 	// Only pay attention to presses or repeats; ignoring other input types
 	// NOTE: Ensure repeats only occur with arrow keys
 

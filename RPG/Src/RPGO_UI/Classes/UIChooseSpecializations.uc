@@ -41,12 +41,9 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	BuildList(ChosenList, ChosenHeader, 'ChosenList', 'ChosenTitleHeader',
 		1200,  m_strTitleChosen, m_strInventoryLabelChosen, eButton_RBumper, true);
 
-	PoolList.BG.OnMouseEventDelegate = OnChildMouseEvent;
-	ChosenList.BG.OnMouseEventDelegate = OnChildMouseEvent;
-
 	PoolList.OnItemDoubleClicked = OnSpecializationsAdded;
 	ChosenList.OnItemDoubleClicked = OnSpecializationsRemoved;
-	
+
 	SpecializationsPool.Length = 0;
 	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
 
@@ -267,18 +264,29 @@ simulated function UpdatePoolList()
 	// Mr. Nice: Enabling and Disabling navigation can mess up navigation order vs actual list order
 	PoolList.Navigator.NavigableControls.Sort(PoolListIndexOrder);
 
-	if(`ISCONTROLLERACTIVE && PoolList.Navigator.NavigableControls.Length == 0 && PoolList.IsSelectedNavigation())
+	if(`ISCONTROLLERACTIVE)
 	{
-		PoolList.SetSelectedIndex(INDEX_NONE);
-		PoolList.Scrollbar.SetThumbAtPercent(SBPos);
-		SwitchList(ChosenList, PoolList, false);
+		if(PoolList.Navigator.NavigableControls.Length == 0 && PoolList.IsSelectedNavigation())
+		{
+			PoolList.SetSelectedIndex(INDEX_NONE);
+			PoolList.Scrollbar.SetThumbAtPercent(SBPos);
+			SwitchList(ChosenList, PoolList, false);
+		}
+		else if (NoSelection)
+		{
+		// Mr. Nice: this *should* mean we are currently navigating the chosen list,
+		// defer resolving "correct" selection until we navigate back to the pool list.
+		// UpdatePoolListItem activity will almost certainly have "validated" the selection...
+			PoolList.SetSelectedIndex(INDEX_NONE);
+		}
 	}
-	else if (NoSelection)
+	else
 	{
-	// Mr. Nice: this *should* mean we are currently navigating the chosen list,
-	// defer resolving "correct" selection until we navigate back to the pool list.
-	// UpdatePoolListItem activity will almost certainly have "validated" the selection...
-		PoolList.SetSelectedIndex(INDEX_NONE);
+		// Mr. Nice: get slight flicker on choosing otherwise, as the next item becomes selected
+		// (because we just disabled navigation), but then on the next the just chosen item gets the green highlight...
+		// (because the mouse is over it, and the mouse doesn't care about navigation status!)
+		PoolList.OnLoseFocus();
+		PoolList.Scrollbar.SetThumbAtPercent(SBPos);
 	}
 }
 
@@ -298,8 +306,11 @@ simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 	// unexepectedly for controllers
 	if (HasReachedSpecLimit())
 	{
-		Item.DisableListItem();
-		Item.ShouldShowGoodState(false, m_strItemLimitReached);
+		// For whatever reason, disabling while good then then taking of good doesn't update correctly
+		// Since *every* item is going disabled though, the navigation order issues are irrelevant,
+		// so ok if picked items technically become navigable again during the update.
+		Item.ShouldShowGoodState(false);
+		Item.DisableListItem(m_strItemLimitReached);
 	}
 	else if (IsOwnedSpec(Index))
 	{
@@ -431,7 +442,7 @@ simulated function UpdateAll()
 
 simulated function OnSpecializationsAdded(UIList kList, int itemIndex)
 {
-	if (!IsPicked(itemIndex))
+	if (!(HasReachedSpecLimit() || IsPicked(itemIndex)))
 	{
 		AddToChosenList(itemIndex);
 		UpdateAll();
@@ -624,17 +635,6 @@ simulated function OnCancel()
 	Movie.Stack.PopFirstInstanceOfClass(class'UIArmory');
 }
 
-simulated function OnChildMouseEvent(UIPanel Control, int Cmd)
-{
-	switch(Cmd)
-	{
-		case class'UIUtilities_Input'.const.FXS_L_MOUSE_OUT:
-			PoolList.ClearSelection();
-			ChosenList.ClearSelection();
-			break;
-	}
-}
-
 //==============================================================================
 
 simulated function OnLoseFocus()
@@ -646,8 +646,7 @@ simulated function OnLoseFocus()
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
-	`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
-	`HQPRES.m_kAvengerHUD.NavHelp.AddBackButton(OnCancel);
+	UpdateNavHelp();
 }
 
 defaultproperties
