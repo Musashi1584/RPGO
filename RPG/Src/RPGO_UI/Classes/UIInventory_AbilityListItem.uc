@@ -31,6 +31,8 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 	`log(default.class @ GetFuncName() @ "IconPanel.Y" @ (Height - IconSize) / 2 @ Height @ IconSize,, 'RPG');
 	
 	RefreshIcon();
+
+	return self;
 }
 
 simulated function RefreshIcon()
