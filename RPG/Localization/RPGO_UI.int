@@ -24,4 +24,5 @@ m_strItemNotRemovable=Ability cant be removed
 
 [UISL_UIShell_RPGO]
 strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to work"
+strIncompatibleModsFound="RPGO found some incompatible mods. Please deactivate them or RPGO will not work properly:\n"
 strSWOInfo="RPGO Public Service Announcement!\nSorry to interrupt you. I just wanted to inform you that <font color='#1bad62'>RPGO has Second Wave Options now!</font>\n You have 3 new options\n\nSpecialization Roulette\nCommanders Choice\nTraining Roulette\n\nIn order to enable them mid campaign you need the mod <font color='#1bad62'>Better Second Wave Mod Support</font>\nYou can use these option separately or in any combination of the three. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.\nSettings like the number of random specs can be changed in <font color='#1bad62'>XComSecondWaveOptions.ini</font>\n\nThanks for your attention\n\nMusashi"

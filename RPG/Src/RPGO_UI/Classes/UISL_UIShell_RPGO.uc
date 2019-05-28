@@ -3,6 +3,7 @@ class UISL_UIShell_RPGO extends UIScreenListener config(RPGO_NullConfig);
 var config bool bDismissedNewSWO;
 
 var localized string strCommunityHighlanderMissing;
+var localized string strIncompatibleModsFound;
 var localized string strSWOInfo;
 
 event OnInit(UIScreen Screen)
@@ -17,6 +18,8 @@ event OnInit(UIScreen Screen)
 		{
 			Screen.SetTimer(1.8f, false, nameof(NewSwoInfo), self);
 		}
+
+		Screen.SetTimer(1.0f, false, nameof(IncompatibleModWarning), self);
 	}
 }
 
@@ -25,9 +28,11 @@ simulated function MakePopupHighlanderMissing()
 	local TDialogueBoxData kDialogData;
 	kDialogData.eType = eDialog_Warning;
 	kDialogData.strText = strCommunityHighlanderMissing;
-	kDialogData.fnCallback = OKClickedHLCB;
+	kDialogData.fnCallback = OKClickedGeneric;
 
 	kDialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericAccept;
+
+	`LOG(default.class @ "ERROR Missing X2WOTCCommunityHighlander",, 'RPG');
 
 	`PRESBASE.UIRaiseDialog(kDialogData);
 }
@@ -44,7 +49,30 @@ simulated function NewSwoInfo()
 	`PRESBASE.UIRaiseDialog(kDialogData);
 }
 
-simulated function OKClickedHLCB(Name eAction)
+simulated function IncompatibleModWarning()
+{
+	local TDialogueBoxData kDialogData;
+	local array<string> FoundIncompatibleMods;
+
+	FoundIncompatibleMods = GetIncompatibleMods();
+
+	`LOG(default.class @ GetFuncName @ Join(FoundIncompatibleMods, ","),, 'RPG');
+
+	if (FoundIncompatibleMods.Length == 0)
+	{
+		return;
+	}
+
+	kDialogData.eType = eDialog_Warning;
+	kDialogData.strText = strIncompatibleModsFound $ Join(FoundIncompatibleMods, "\n");
+	kDialogData.fnCallback = OKClickedGeneric;
+
+	kDialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericAccept;
+	`PRESBASE.UIRaiseDialog(kDialogData);
+}
+
+
+simulated function OKClickedGeneric(Name eAction)
 {
 	`PRESBASE.PlayUISound(eSUISound_MenuSelect);
 }
@@ -56,6 +84,20 @@ simulated function OKClickedSwoCB(Name eAction)
 	self.SaveConfig();
 }
 
+simulated function array<string> GetIncompatibleMods()
+{
+	local string IncompatibleMod;
+	local array<string> FoundIncompatibleMods;
+
+	foreach class'X2DownloadableContentInfo_XCOM2RPGOverhaul'.default.IncompatibleMods(IncompatibleMod)
+	{
+		if (IsDLCInstalled(name(IncompatibleMod)))
+		{
+			FoundIncompatibleMods.AddItem(IncompatibleMod);
+		}
+	}
+	return FoundIncompatibleMods;
+}
 
 static function bool IsDLCInstalled(name DLCName)
 {
@@ -71,4 +113,13 @@ static function bool IsDLCInstalled(name DLCName)
 		}
 	}
 	return false;
+}
+
+function static string Join(array<string> StringArray, optional string Delimiter = ",", optional bool bIgnoreBlanks = true)
+{
+	local string Result;
+
+	JoinArray(StringArray, Result, Delimiter, bIgnoreBlanks);
+
+	return Result;
 }

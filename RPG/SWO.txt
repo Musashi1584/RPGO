@@ -17,8 +17,7 @@ Instead of having the full set of all specializations, soldiers only some random
 Can be combined with Training Roulette and/or Commanders Choice.
 
 [RPGO] Commanders Choice
-Choose a limted number of specializations
-On promotion to squaddie you can choose a limted number of specializations.
+On promotion to squaddie you can choose a limted number of specializations and abilties from starting ability pool.
 Can be combined with Specialization Roulette and/or Training Roulette.
 
 [RPGO] Training Roulette

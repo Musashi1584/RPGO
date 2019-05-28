@@ -19,14 +19,14 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Config\ExtendedUpgrades" />
     <Folder Include="Config\DetailedSoldierListWOTC" />
     <Folder Include="Config\StatUpgradeUI" />
-    <Folder Include="Config\NewPromotionScreenbyDefault" />
+    <Folder Include="Config\RPGO_PromotionScreen" />
     <Folder Include="Content\" />
     <Folder Include="Content\DetailedSoldierListWOTC" />
     <Folder Include="Content\StatUpgradeUI" />
     <Folder Include="Localization\" />
     <Folder Include="Content" />
     <Folder Include="Localization\ExtendedUpgrades" />
-    <Folder Include="Localization\NewPromotionScreenbyDefault" />
+    <Folder Include="Localization\RPGO_PromotionScreen" />
     <Folder Include="Src\" />
     <Folder Include="Src\Debug\Classes" />
     <Folder Include="Src\DetailedSoldierListWOTC\Classes" />
@@ -36,11 +36,11 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\ExtendedUpgrades" />
     <Folder Include="Src\Debug" />
     <Folder Include="Src\DetailedSoldierListWOTC" />
+    <Folder Include="Src\RPGO_PromotionScreen" />
+    <Folder Include="Src\RPGO_PromotionScreen\Classes" />
     <Folder Include="Src\RPGO_UI" />
     <Folder Include="Src\RPGO_UI\Classes" />
     <Folder Include="Src\StatUpgradeUI" />
-    <Folder Include="Src\NewPromotionScreenbyDefault" />
-    <Folder Include="Src\NewPromotionScreenbyDefault\Classes" />
     <Folder Include="Src\StatUpgradeUI\Classes" />
     <Folder Include="Src\XModBase_Interfaces" />
     <Folder Include="Src\XModBase_Interfaces\Classes" />
@@ -64,7 +64,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Config\ExtendedUpgrades\XComGameData.ini">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Config\NewPromotionScreenbyDefault\XComPromotionUIMod.ini">
+    <Content Include="Config\RPGO_PromotionScreen\XComPromotionUIMod.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\StatUpgradeUI\XComStatUpgradeUI.ini">
@@ -101,6 +101,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComStealthOverhaul.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComUI.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\AutoFire_ANIM.upk">
@@ -145,7 +148,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Localization\NewPromotionScreenbyDefault\XComGame.int">
+    <Content Include="Localization\RPGO_PromotionScreen\XComGame.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\RPGO_UI.int">
@@ -208,16 +211,16 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\LW_Tuple\Classes\*.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NewPromotionScreenByDefault_PromotionScreenListener.uc">
+    <Content Include="Src\RPGO_PromotionScreen\Classes\PromotionScreenListener.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NPSBDP_UIArmory_PromotionHero.uc">
+    <Content Include="Src\RPGO_PromotionScreen\Classes\RPGO_UIArmory_PromotionHero.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\NewPromotionScreenbyDefault\Classes\NPSBDP_UIArmory_PromotionHeroColumn.uc">
+    <Content Include="Src\RPGO_PromotionScreen\Classes\RPGO_UIArmory_PromotionHeroColumn.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\NewPromotionScreenbyDefault\Classes\X2DownloadableContentInfo_NewPromotionScreenbyDefault.uc">
+    <Content Include="Src\RPGO_PromotionScreen\Classes\X2DownloadableContentInfo_RPGO_PromotionScreen.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO_UI\Classes\UIChooseAbilities.uc">
