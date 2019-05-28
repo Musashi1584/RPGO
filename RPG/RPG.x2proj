@@ -223,6 +223,15 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\RPGO_PromotionScreen\Classes\X2DownloadableContentInfo_RPGO_PromotionScreen.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO_UI\Classes\RPGOVersion.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\RPGOVersionTemplate.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\RPGO_UI_Helper.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO_UI\Classes\UIChooseAbilities.uc">
       <SubType>Content</SubType>
     </Content>

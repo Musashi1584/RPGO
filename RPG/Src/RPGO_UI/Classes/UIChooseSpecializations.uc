@@ -246,7 +246,7 @@ simulated function PopulatePool()
 
 simulated function UpdatePoolList()
 {
-	local int Index, ItemIndex;
+	local int Index;
 	local float SBPos;
 	local bool NoSelection;
 

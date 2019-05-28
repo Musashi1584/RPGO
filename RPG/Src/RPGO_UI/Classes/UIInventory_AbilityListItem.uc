@@ -28,8 +28,6 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 	IconPanel.SetX(RightColDefaultPadding + 10);
 	IconPanel.SetY((Height - IconSize) / 2);
 
-	`log(default.class @ GetFuncName() @ "IconPanel.Y" @ (Height - IconSize) / 2 @ Height @ IconSize,, 'RPG');
-	
 	RefreshIcon();
 
 	return self;

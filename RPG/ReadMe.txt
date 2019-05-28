@@ -81,7 +81,8 @@ FelineKnave for a lot of great localization
 bstar - adding the mint aptitudes to the fun
 Ziodyne - for the aptitude perks of mint
 DerBK - for some ABB perks bstar "aquired"
-
+AstralDescent - UI Consultant
+Mr. Nice - Controller Support
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters
