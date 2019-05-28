@@ -96,7 +96,7 @@ function RealizeVersionText(UIShell ShellScreen)
 	if (`ISCONTROLLERACTIVE)
 	{
 		VersionTextRPGO.SetHTMLText(class'UIUtilities_Text'.static.InjectImage(class'UIUtilities_Input'.static.GetGamepadIconPrefix() 
-								$ class'UIUtilities_Input'.const.ICON_RSCLICK_R3, 20, 20, -10) 
+								$ class'UIUtilities_Input'.const.ICON_LSCLICK_L3, 20, 20, -10) 
 								@ VersionString, OnTextSizeRealized);
 	}
 	else
@@ -224,7 +224,7 @@ function bool OnInputHook(int iInput, int ActionMask)
 	local UIBGBox TooltipBG;
 	local UIShell ShellScreen;
 
-	if (iInput == class'UIUtilities_Input'.const.FXS_BUTTON_R3 && (ActionMask & class'UIUtilities_Input'.const.FXS_ACTION_RELEASE) != 0
+	if (iInput == class'UIUtilities_Input'.const.FXS_BUTTON_L3 && (ActionMask & class'UIUtilities_Input'.const.FXS_ACTION_RELEASE) != 0
 		&& `SCREENSTACK.IsCurrentScreen(class'UIShell'.Name))
 	{
 		ShellScreen = UIShell(`SCREENSTACK.GetFirstInstanceOf(class'UIShell'));
@@ -243,5 +243,4 @@ function bool OnInputHook(int iInput, int ActionMask)
 defaultProperties
 {
 	ScreenClass = none
-	HelpLink = "https://github.com/X2CommunityCore/X2WOTCCommunityHighlander/wiki/Troubleshooting"
 }

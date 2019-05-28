@@ -235,10 +235,16 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\RPGO_UI\Classes\UIChooseAbilities.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIChooseCommodity.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO_UI\Classes\UIChooseSpecializations.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO_UI\Classes\UIInventory_AbilityListItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIInventory_CommodityListItem.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO_UI\Classes\UIInventory_SpecializationListItem.uc">

@@ -52,6 +52,7 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 }
 
 static function AddStartingAbilities(
+	XComGameState NewGameState,
 	XComGameState_Unit UnitState,
 	array<X2AbilityTemplate> Abilities
 )
@@ -59,6 +60,7 @@ static function AddStartingAbilities(
 	local X2SoldierClassTemplate ClassTemplate;
 	local SoldierClassAbilityType AbilityType;
 	local X2AbilityTemplate Ability;
+	local int iAbilityBranch;
 
 	ClassTemplate = UnitState.GetSoldierClassTemplate();
 
@@ -70,6 +72,9 @@ static function AddStartingAbilities(
 			AbilityType.AbilityName = Ability.DataName;
 			AbilityType.ApplyToWeaponSlot = Ability.DefaultSourceItemSlot;
 			UnitState.AbilityTree[0].Abilities.AddItem(AbilityType);
+			UnitState.BuySoldierProgressionAbility(NewGameState, 0, iAbilityBranch);
+			iAbilityBranch++;
+			
 		}
 	}
 }

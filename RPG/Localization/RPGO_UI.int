@@ -6,12 +6,12 @@ m_strInventoryLabelChosen=Removable Specializations:
 m_strChoose=CHOOSE
 m_strRemove=REMOVE
 m_strItemChosen=You already have chosen this specialization
-m_strItemRandom=Random specialization
+m_strItemOwned=Random specialization
 m_strItemLimitReached=You cannot pick any more specialization
 m_strItemNotRemovable=Random specializations cant be removed
 
 [UIChooseAbilities]
-m_strTitlePool=Choose Abilities
+m_strTitlePool=Choose Starting Abilities
 m_strInventoryLabelPool=Available Abilities:
 m_strTitleChosen=Chosen Abilties
 m_strInventoryLabelChosen=Removable Abilities:

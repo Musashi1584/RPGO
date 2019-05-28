@@ -1,23 +1,7 @@
-class UIInventory_AbilityListItem extends UIInventory_ClassListItem;
+class UIInventory_AbilityListItem extends UIInventory_CommodityListItem;
 
 var UIIcon IconPanel;
-var X2AbilityTemplate Template;
 var privatewrite int IconSize;
-
-simulated function InitInventoryListAbility(X2AbilityTemplate AbilityTemplate,
-											  Commodity initCommodity, 
-											  optional StateObjectReference InitItemRef, 
-											  optional string Confirm, 
-											  optional EUIConfirmButtonStyle InitConfirmButtonStyle = eUIConfirmButtonStyle_Default,
-											  optional int InitRightCol,
-											  optional int InitHeight,
-											  optional bool bIsPsi)
-{
-	Template = AbilityTemplate;
-	
-	super.InitInventoryListCommodity(initCommodity, InitItemRef, Confirm, InitConfirmButtonStyle, InitRightCol, InitHeight, bIsPsi);
-}
-
 
 simulated function UIPanel InitPanel(optional name InitName, optional name InitLibID)
 {
@@ -36,8 +20,7 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 simulated function RefreshIcon()
 {
 	IconPanel.SetBGColorState(eUIState_Normal);
-	IconPanel.LoadIcon(Template.IconImage);
-	//UIAbilityPopup;
+	IconPanel.LoadIcon(ItemComodity.Image);
 }
 
 simulated function PopulateData(optional bool bRealizeDisabled)
@@ -59,45 +42,6 @@ simulated function PopulateData(optional bool bRealizeDisabled)
 
 	if(bRealizeDisabled)
 		RealizeDisabledState();
-}
-
-simulated function RefreshConfirmButtonVisibility()
-{
-	if( ConfirmButton != none )
-	{
-		if( bIsFocused )
-		{
-			// initially it seems as though the visible flag gets stuck to true when it hasn't displayed yet. Turn off and on again.
-			ConfirmButton.SetVisible(false);
-			ConfirmButton.SetVisible(!bIsBad && !bDisabled && !bIsGood);
-			if( bIsBad || bDisabled )
-			{
-				SetRightColPadding( AttentionIconPadding + ConfirmButtonStoredRightCol );
-			}
-			else
-			{
-				SetRightColPadding(ConfirmButton.Width + ConfirmButtonArrowWidth + AttentionIconPadding + ConfirmButtonStoredRightCol);
-			}
-			if( `ISCONTROLLERACTIVE )
-			{
-				ConfirmButton.OnReceiveFocus();
-			}
-		}
-		else
-		{
-			ConfirmButton.SetVisible(false);
-			SetRightColPadding(ConfirmButtonStoredRightCol + AttentionIconPadding);
-			if( `ISCONTROLLERACTIVE )
-			{
-				ConfirmButton.OnLoseFocus();
-			}
-		}
-	}
-	else
-	{
-		SetRightColPadding(ConfirmButtonStoredRightCol + AttentionIconPadding);
-	}
-
 }
 
 defaultproperties

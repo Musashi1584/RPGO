@@ -25,8 +25,6 @@ static function array<string> GetIncompatibleMods()
 
 static function array<string> GetRequiredModsMissing()
 {
-	local string RequiredMod;
-
 	if (default.RequiredModsMissing.Length > 0)
 	{
 		return default.RequiredModsMissing;
