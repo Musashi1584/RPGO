@@ -299,17 +299,17 @@ simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 	if (HasReachedSpecLimit())
 	{
 		Item.DisableListItem();
-		Item.ShouldShowGoodState(false, "You cannot pick any more specialization.");
+		Item.ShouldShowGoodState(false, m_strItemLimitReached);
 	}
 	else if (IsOwnedSpec(Index))
 	{
 		Item.DisableListItem();
-		Item.ShouldShowGoodState(false, "Random specialization.");
+		Item.ShouldShowGoodState(false, m_strItemRandom);
 	}
 	else if (IsPicked(Index))
 	{
 		Item.ShouldShowGoodState(true);
-		Item.SetDisabled(false, "You already have a chosen this specialization.");
+		Item.SetDisabled(false, m_strItemChosen);
 	}
 	else
 	{
