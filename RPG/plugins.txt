@@ -10,12 +10,15 @@ the files and their contents in detail
 
 Add a XComClassData.ini and disable the original class like
 
-(replace <CustomClassName> with whatever class name you are working with)
+(replace CustomClassName with whatever class name you are working with)
 
 [code]
-[<CustomClassName> X2SoldierClassTemplate]
-NumInForcedDeck=0
-NumInDeck=0
+[CustomClassName X2SoldierClassTemplate]
+-NumInForcedDeck=1
+-NumInDeck=4
+
++NumInForcedDeck=0
++NumInDeck=0
 [/code]
 
 [h1]Add the RPGO specialization config[/h1]
@@ -24,18 +27,21 @@ Add a XComRPG.ini and add the following entries
 
 [code]
 [XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
-+Specializations=(Order=1000*, TemplateName=<CustomClassName>)
++Specializations=(Order=1000*, TemplateName=CustomClassName)
 
-[<CustomClassName> X2UniversalSoldierClassInfo]
-ClassSpecializationIcon = "img:///<path_to_the_class_icon>**"
+[CustomClassName X2UniversalSoldierClassInfo]
+ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 
-+AbilitySlots=(AbilityType=(AbilityName="<CorporalAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="<SergeantAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="<LieutenantAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="<CaptainAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="<MajorAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="<ColonelAbility>***"))
-+AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility>***"))
++AbilitySlots=(AbilityType=(AbilityName="CorporalAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="SergeantAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="LieutenantAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="CaptainAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="MajorAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="ColonelAbility***"))
++AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility***"))
+
+[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
++RequiredMods="****DLCNameOriginalClassMod"
 [/code]
 
 * choose an order above 1000
@@ -49,7 +55,56 @@ You can also make additional configs for mutuallly exclusive abilities, prereque
 Add a XCOM2RPGOverhaul.int file with the following entries
 
 [code]
-[<CustomClassName> X2UniversalSoldierClassInfo]
-ClassSpecializationTitle="<MyCustomSpecializationTitle>"
-ClassSpecializationSummary="<MyCustomSpecializationDescription>"
+[CustomClassName X2UniversalSoldierClassInfo]
+ClassSpecializationTitle="MyCustomSpecializationTitle"
+ClassSpecializationSummary="MyCustomSpecializationDescription"
+[/code]
+
+[h1]Real mod example from the samurai class plugin:[/h1]
+
+XComClassData.ini
+[code]
+[Samurai X2UniversalSoldierClassInfo]
+-NumInForcedDeck=1
+-NumInDeck=4
+
++NumInForcedDeck=0
++NumInDeck=0
+[/code]
+
+XComRPG.ini
+[code]
+[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
++Specializations=(Order=800, TemplateName=Samurai)
+
++AbilityWeaponCategoryRestrictions = (AbilityName=Shinigami, WeaponCategories=(sword, combatknife))
++AbilityWeaponCategoryRestrictions = (AbilityName=Unstoppable, WeaponCategories=(sword, combatknife))
++AbilityWeaponCategoryRestrictions = (AbilityName=SwordThrust, WeaponCategories=(sword, combatknife))
++AbilityWeaponCategoryRestrictions = (AbilityName=DragonStrike, WeaponCategories=(sword, combatknife))
++AbilityWeaponCategoryRestrictions = (AbilityName=WhirlwindStrike, WeaponCategories=(sword, combatknife))
+
++AbilityPrerequisites = (PrerequisiteTree=(Shinigami, SwordThrust))
++AbilityPrerequisites = (PrerequisiteTree=(Shinigami, DragonStrike))
++AbilityPrerequisites = (PrerequisiteTree=(Shinigami, WhirlwindStrike))
+
+[Samurai X2UniversalSoldierClassInfo]
+ClassSpecializationIcon = "img:///SamuraiClassMod.SamuraiClassIcon"
+
++AbilitySlots=(AbilityType=(AbilityName="Shinigami", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
++AbilitySlots=(AbilityType=(AbilityName="Unstoppable", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
++AbilitySlots=(AbilityType=(AbilityName="Yamabushi"))
++AbilitySlots=(AbilityType=(AbilityName="SwordThrust", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
++AbilitySlots=(AbilityType=(AbilityName="HawkEye"))
++AbilitySlots=(AbilityType=(AbilityName="DragonStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
++AbilitySlots=(AbilityType=(AbilityName="WhirlwindStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
+
+[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
++RequiredMods="WotCSamuraiClass"
+[/code]
+
+XCOM2RPGOverhaul.int
+[code]
+[Samurai X2UniversalSoldierClassInfo]
+ClassSpecializationTitle="Samurai"
+ClassSpecializationSummary="The way of the samurai is found in death. Meditation on inevitable death should be performed daily. Every day when one's body and mind are at peace, one should meditate upon being ripped apart by arrows, rifles, spears and swords, being carried away by surging waves, being thrown into the midst of a great fire, being struck by lightning, being shaken to death by a great earthquake, falling from thousand-foot cliffs, dying of disease or committing seppuku at the death of one's master. And every day without fail one should consider himself as dead. This is the substance of the way of the samurai."
 [/code]

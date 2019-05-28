@@ -1,15 +1,5 @@
 ﻿[h1]OPEN BETA VERSION[/h1]
 
-[h1]PSA[/h1]
-
-DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
-
-[list]
-[*] [WOTC] Detailed Soldier Lists
-[*] [WOTC] New Promotion Screen by Default
-[*] View Locked Skills - Wotc
-[/list]
-
 [h1]Features[/h1]
 [list]
 [*] Gameplay overhaul that revamps various aspects of the game
@@ -22,6 +12,8 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 [*] Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
 [*] Full support of Primary Secondaries
 [*] Full support of weapon mods like Resistance Firearms
+[*] New second wave options: [RPGO] Specialization Roulette, [RPGO] Commanders Choice, [RPGO] Training Roulette
+[*] Full controller support
 [/list]
 
 I recommend to play this mod with the following mods:
@@ -40,17 +32,22 @@ I recommend to play this mod with the following mods:
 
 [h1]About this overhaul[/h1]
 The idea of this mod was born out of my passion for oldschool rpg games.
+
 I thought it would be cool to develop every single soldier in every way you want and give it every weapon or item you want. 
 
 So here it is. The mod replaces the vanilla class by one class starting as "Soldier".
 
 The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Secondary Weapons).
 
-This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from. I am planning to even expand on this.
+This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from.
+There a lot of plugin mods that you can use to add to this: [url=https://steamcommunity.com/workshop/filedetails/?id=1404633593]plugin in mod collection[/url]
 
 When your soldier evolves your class name and icon changes dynamically to the specialization you have the most perks from.
 
 On squaddie your soldier will get two random starting abilities from a pool to give each soldier an idea to where he/she could be developed.
+
+With second wave options you can limit the available specialization to some randomly chosen or picked (or even a combination of some picked and some random) specializations.
+More info on swo [url=https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1653297026045137844/]HERE[/url]
 
 Any combination of abilities and weapons are possible. For example you can create a cannon wielding medic, a gunslinging grenadier, sniper with ripjack or whatever you can imagine.
 
@@ -60,7 +57,7 @@ Another big change is the possibility to upgrade the soldiers stats with ability
 
 For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachments work.
 
-[url=http://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/]FULL LIST OF FEATURES[/url]
+[url=http://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/]CLICK HERE FOR A FULL LIST OF FEATURES[/url]
 
 [h1]Credits[/h1]
 *Standing on the shoulders of giants*
@@ -81,7 +78,8 @@ FelineKnave for a lot of great localization
 bstar - adding the mint aptitudes to the fun
 Ziodyne - for the aptitude perks of mint
 DerBK - for some ABB perks bstar "aquired"
-AstralDescent - UI Consultant
+Sumajin - making some weapon changes configurable
+Astral Descend - UI Consultant
 Mr. Nice - Controller Support
 
 [h1]Playtesters[/h1]
@@ -111,30 +109,27 @@ DEACTIVATE THE FOLLOWING MODS SINCE THEY ARE ALREADY INTEGRATED IN THIS MOD
 After that delete %User\Documents\My Games\XCOM2 War of the Chosen\XComGame\Config
 
 [b]Will custom class mods work with this?[/b]
-There are some issues with ability restrictions applying to other classes.
-Classes with only custom abilities should works though.
-If you want to remove the ability restrictions you can delete the lines starting with
-+AbilityPrerequisites...
-and
-+MutuallyExclusiveAbilities...
-from the XComRPG.ini 
-This is on your own risk, because some restrictions are there to prevent ability incompatibilities or broken ability combinations.
+Yes
 
 [b]What about Faction Heros, SPARKS, Psi Soldiers?[/b]
 They are not touched by this mod and should work normally
 
-[b]My soldier keep getting promited to basegame/other classes?[/b]
+[b]My soldier keep getting promoted to basegame/other classes?[/b]
 Its a strange bug cause by the config system for some people.
 Use the mod [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1148535137] Disable Any Class Wotc[/url] and disable all classes but UniversalSoldier in the ingame mod options.
 
 [b]I have a lot of plugins and the promotion screen skips specializations when scrolling[/b]
 Use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1131906393] [WoTC] Row-Based Scrolling Speed Wotc[/url]
+or consider using the second wave options to limit the available specs.
 
 [h1]Mod compatibility[/h1]
 Most mods should be compatible. If you have an issue let me know.
 Other Overhaul mods like MINT and A Better Barracks obviously clash in some areas.
 
 Known incompatibilities:
+- [WOTC] Detailed Soldier Lists
+- [WOTC] New Promotion Screen by Default
+- View Locked Skills - Wotc
 - "Configure Upgrade Slots" doesnt work cause this mod set all slots to 3
 - "Hack Plus" leads to insane high hacking stats
 
