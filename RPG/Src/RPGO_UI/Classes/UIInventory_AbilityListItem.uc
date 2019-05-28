@@ -32,6 +32,8 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 	IconPanel.SetY((Height - IconSize) / 2);
 	
 	RefreshIcon();
+
+	return self;
 }
 
 simulated function RefreshIcon()

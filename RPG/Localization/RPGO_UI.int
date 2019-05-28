@@ -1,7 +1,7 @@
 [UIChooseSpecializations]
-m_strTitlePool=Choose Specialization
+m_strTitlePool=Choose Specializations
 m_strInventoryLabelPool=Available Specializations:
-m_strTitleChosen=Chosen Specialization
+m_strTitleChosen=Chosen Specializations
 m_strInventoryLabelChosen=Removable Specializations:
 m_strChoose=CHOOSE
 m_strRemove=REMOVE

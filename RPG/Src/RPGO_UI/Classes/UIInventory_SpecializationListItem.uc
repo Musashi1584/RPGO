@@ -19,3 +19,28 @@ simulated function PopulateData(optional bool bRealizeDisabled)
 	if(bRealizeDisabled)
 		RealizeDisabledState();
 }
+
+simulated function UIListItemString SetDisabled(bool disabled, optional string TooltipText)
+{
+	Super.SetDisabled(disabled, TooltipText);
+	UpdateNavigation();
+	return self;
+}
+
+simulated function ShouldShowGoodState(bool isGood, optional string TooltipText)
+{
+	Super.ShouldShowGoodState(isGood, TooltipText);
+	UpdateNavigation();
+}
+
+simulated function UpdateNavigation()
+{
+	if (bDisabled || bIsGood)
+	{
+		 DisableNavigation();
+	}
+	else
+	{
+		EnableNavigation();
+	}
+}

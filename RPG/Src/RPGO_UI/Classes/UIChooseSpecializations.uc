@@ -2,11 +2,9 @@ class UIChooseSpecializations extends UIInventory;
 
 var array<SoldierSpecialization> SpecializationsPool;
 var array<Commodity>		CommodityPool;
-var int						SelectedIndexPool;
 
 var array<SoldierSpecialization> SpecializationsChosen;
 var array<Commodity>		CommoditiesChosen;
-var int						SelectedIndexChosen;
 
 var int ChooseSpecializationMax;
 var array<int> SelectedItems, OwnedItems;
@@ -34,10 +32,10 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	super.InitScreen(InitController, InitMovie, InitName);
 
 	BuildList(PoolList, PoolHeader, 'PoolList', 'PoolTitleHeader',
-		120, m_strTitlePool, m_strInventoryLabelPool);
+		120, m_strTitlePool, m_strInventoryLabelPool, eButton_LBumper);
 
 	BuildList(ChosenList, ChosenHeader, 'ChosenList', 'ChosenTitleHeader',
-		1200, m_strTitleChosen, m_strInventoryLabelChosen);
+		1200,  m_strTitleChosen, m_strInventoryLabelChosen, eButton_RBumper, true);
 
 	PoolList.BG.OnMouseEventDelegate = OnChildMouseEvent;
 	ChosenList.BG.OnMouseEventDelegate = OnChildMouseEvent;
@@ -60,7 +58,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	ItemCard.Hide();
 	
 	Navigator.SetSelected(PoolList);
-	PoolList.SetSelectedIndex(0);
 
 	//if( bIsIn3D )
 	//	class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
@@ -150,12 +147,15 @@ function bool OnAllSpecSelected()
 }
 
 simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, name ListName, name HeaderName,
-	int PositionX, optional string HeaderTitle = "", optional string HeaderSubtitle = "")
+	int PositionX, optional string HeaderTitle = "", optional string HeaderSubtitle = "", optional eButton NavButton, optional bool NavRight)
 {
+	local string NavStr;
+
 	CommList = Spawn(class'UIList', self);
 	CommList.BGPaddingTop = 90;
 	CommList.BGPaddingRight = 30;
-	CommList.bSelectFirstAvailable = false;
+	CommList.bSelectFirstAvailable = `ISCONTROLLERACTIVE;
+	CommList.bPermitNavigatorToDefocus = true; // Apparently we are in the 1% who need the original behaviour, whee!
 	CommList.bAnimateOnInit = false;
 	CommList.InitList(ListName,
 		PositionX, 230,
@@ -164,7 +164,20 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 	);
 	CommList.BG.SetAlpha(75);
 	CommList.Show();
- 
+	
+	if (NavButton != eButton_None && `ISCONTROLLERACTIVE)
+	{
+		NavStr = class'UIUtilities_Text'.static.InjectImage(class'UIUtilities_Image'.static.GetButtonName(NavButton), 56, 28);
+		if(NavRight)
+		{
+			HeaderTitle @= NavStr;
+		}
+		else
+		{
+			HeaderTitle = NavStr @ HeaderTitle;
+		}
+	}
+
 	Header = Spawn(class'UIX2PanelHeader', self);  
 	Header.bAnimateOnInit = false;
 	Header.InitPanelHeader(HeaderName, HeaderTitle, HeaderSubtitle);
@@ -224,16 +237,50 @@ simulated function PopulatePool()
 		Item.InitInventoryListCommodity(Template, , m_strChoose, , , 126);
 		UpdatePoolListItem(Item);
 	}
+	if(PoolList.bSelectFirstAvailable)
+	{
+		PoolList.SetSelectedIndex(0);
+	}
 }
 
 simulated function UpdatePoolList()
 {
-	local int Index;
+	local int Index, ItemIndex;
+	local float SBPos;
+	local bool NoSelection;
+
+	NoSelection = PoolList.SelectedIndex == INDEX_NONE;
+	if (PoolList.Scrollbar != none)
+	{
+		SBPos = PoolList.Scrollbar.percent;
+	}
 
 	for (Index = 0; Index < PoolList.GetItemCount(); Index++)
 	{
 		UpdatePoolListItem(UIInventory_SpecializationListItem(PoolList.GetItem(Index)));
 	}
+
+	// Mr. Nice: Enabling and Disabling navigation can mess up navigation order vs actual list order
+	PoolList.Navigator.NavigableControls.Sort(PoolListIndexOrder);
+
+	if(`ISCONTROLLERACTIVE && PoolList.Navigator.NavigableControls.Length == 0 && PoolList.IsSelectedNavigation())
+	{
+		PoolList.SetSelectedIndex(INDEX_NONE);
+		PoolList.Scrollbar.SetThumbAtPercent(SBPos);
+		SwitchList(ChosenList, PoolList, false);
+	}
+	else if (NoSelection)
+	{
+	// Mr. Nice: this *should* mean we are currently navigating the chosen list,
+	// defer resolving "correct" selection until we navigate back to the pool list.
+	// UpdatePoolListItem activity will almost certainly have "validated" the selection...
+		PoolList.SetSelectedIndex(INDEX_NONE);
+	}
+}
+
+function int PoolListIndexOrder(UIPanel FirstItem, UIPanel SecondItem)
+{
+	return PoolList.GetItemIndex(SecondItem) - PoolList.GetItemIndex(FirstItem);
 }
 
 simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
@@ -242,34 +289,41 @@ simulated function UpdatePoolListItem(UIInventory_SpecializationListItem Item)
 
 	Index = GetItemIndex(Item.ItemComodity);
 
-	Item.EnableListItem();
-	Item.ShouldShowGoodState(false);
-
-	if (IsPicked(Index))
-	{
-		Item.ShouldShowGoodState(true, "You already have a chosen this specialization.");
-		Item.SetDisabled(true);
-	}
-
-	if (IsOwnedSpec(Index))
-	{
-		Item.SetDisabled(true, "Random specialization.");
-	}
-
+	// Mr. Nice: Order of disable/good state setting avoids any chance of an item having
+	// it's navigation status toggled twice, minimizes chances of selection changing
+	// unexepectedly for controllers
 	if (HasReachedSpecLimit())
 	{
-		Item.SetDisabled(true, "You cannot pick any more specialization.");
+		Item.DisableListItem();
+		Item.ShouldShowGoodState(false, "You cannot pick any more specialization.");
+	}
+	else if (IsOwnedSpec(Index))
+	{
+		Item.DisableListItem();
+		Item.ShouldShowGoodState(false, "Random specialization.");
+	}
+	else if (IsPicked(Index))
+	{
+		Item.ShouldShowGoodState(true);
+		Item.SetDisabled(false, "You already have a chosen this specialization.");
+	}
+	else
+	{
+		Item.EnableListItem();
+		Item.ShouldShowGoodState(false);
 	}
 }
+
 
 simulated function PopulateChosen()
 {
 	local Commodity Template;
-	local int i;
+	local int i, SelectedIndex;
 	local UIInventory_SpecializationListItem Item;
 
 	`LOG(self.Class.name @ GetFuncName(),, 'RPG-UIChooseSpecializations');
 
+	SelectedIndex = clamp(ChosenList.SelectedIndex, 0, CommoditiesChosen.Length-1);
 	ChosenList.ClearItems();
 	for(i = 0; i < CommoditiesChosen.Length; i++)
 	{
@@ -277,6 +331,24 @@ simulated function PopulateChosen()
 		Item = Spawn(class'UIInventory_SpecializationListItem', ChosenList.ItemContainer);
 		Item.InitInventoryListCommodity(Template, , m_strRemove, , , 126);
 		UpdateChosenListItem(Item);
+	}
+
+	if (`ISCONTROLLERACTIVE)
+	{
+		if (CommoditiesChosen.Length != 0)
+		{
+			ChosenList.SetSelectedIndex(SelectedIndex);
+			if(!ChosenList.IsSelectedNavigation())
+			{
+				// Mr. Nice: SetSelectedIndex() calls OnRecieveFocus() for that index,
+				// we don't want that if the ChosenList isn't the current navigation list! so undo it...
+				ChosenList.OnLoseFocus();
+			}
+		}
+		else if(ChosenList.IsSelectedNavigation())
+		{
+			SwitchList(PoolList, ChosenList, false);
+		}
 	}
 }
 
@@ -354,15 +426,11 @@ simulated function UpdateAll()
 
 simulated function OnSpecializationsAdded(UIList kList, int itemIndex)
 {
-	if (itemIndex != SelectedIndexPool)
+	if (!IsPicked(itemIndex))
 	{
-		SelectedIndexPool = itemIndex;
-	}
-
-	if (!IsPicked(SelectedIndexPool))
-	{
-		AddToChosenList(SelectedIndexPool);
+		AddToChosenList(itemIndex);
 		UpdateAll();
+		PlayPositiveSound();
 	}
 	else
 	{
@@ -374,17 +442,13 @@ simulated function OnSpecializationsRemoved(UIList kList, int itemIndex)
 {
 	local int PoolIndex;
 	
-	if (itemIndex != SelectedIndexChosen)
-	{
-		SelectedIndexChosen = itemIndex;
-	}
-
-	PoolIndex = GetItemIndex(UIInventory_SpecializationListItem(ChosenList.GetItem(SelectedIndexChosen)).ItemComodity);
+	PoolIndex = GetItemIndex(UIInventory_SpecializationListItem(ChosenList.GetItem(itemIndex)).ItemComodity);
 
 	if (!IsOwnedSpec(PoolIndex))
 	{
-		RemoveFromChosenList(SelectedIndexChosen, PoolIndex);
+		RemoveFromChosenList(itemIndex, PoolIndex);
 		UpdateAll();
+		PlayPositiveSound();
 	}
 	else
 	{
@@ -412,56 +476,131 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 
 	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
 		return false;
-
 	// Only pay attention to presses or repeats; ignoring other input types
 	// NOTE: Ensure repeats only occur with arrow keys
 
-	bHandled = super.OnUnrealCommand(cmd, arg);
+	switch (cmd)
+	{
+	case class'UIUtilities_Input'.const.FXS_BUTTON_X :
+		OnContinueButtonClick();
+		bHandled = true;
+		break;
 
-	if (bHandled)
-	{
-		if (PoolList.GetSelectedItem() != none)
-			SelectedIndexPool = PoolList.GetItemIndex(PoolList.GetSelectedItem());
+	case class'UIUtilities_Input'.const.FXS_BUTTON_LBUMPER :
+	case class'UIUtilities_Input'.const.FXS_ARROW_LEFT:
+	case class'UIUtilities_Input'.const.FXS_DPAD_LEFT:
+	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_LEFT:
+		SwitchList(PoolList, ChosenList);
+		bHandled = true;
+		break;
+
+	case class'UIUtilities_Input'.const.FXS_BUTTON_RBUMPER :
+	case class'UIUtilities_Input'.const.FXS_ARROW_RIGHT:
+	case class'UIUtilities_Input'.const.FXS_DPAD_RIGHT:
+	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_RIGHT:
+		SwitchList(ChosenList, PoolList);
+		bHandled = true;
+		break;
+
+	case class'UIUtilities_Input'.const.FXS_ARROW_DOWN:
+	case class'UIUtilities_Input'.const.FXS_DPAD_DOWN:
+	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_DOWN:
+	case class'UIUtilities_Input'.const.FXS_ARROW_UP:
+	case class'UIUtilities_Input'.const.FXS_DPAD_UP:
+	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
+		// Mr. Nice: Stop Navigator getting confused, which it is when there are less than 2 items...
+		bHandled = (PoolList.IsSelectedNavigation() ? PoolList : ChosenList).Navigator.NavigableControls.Length <= 1;
+		break;
 	}
-	/* TODO: Fix controller support
-	else
+
+	return bHandled || super.OnUnrealCommand(cmd, arg);
+}
+
+function SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
+{
+	local float SBPos;
+
+	if(ToList.IsSelectedNavigation())
 	{
-		if (`ISCONTROLLERACTIVE && CanTrainSpecialization(SelectedIndexPool))
+		return;
+	}
+
+	if(ToList.Navigator.NavigableControls.Length != 0)
+	{
+		`log(`showvar(ToList.SelectedIndex));
+		if (ToList.SelectedIndex == INDEX_NONE)
 		{
-			switch (cmd)
+			if (PoolList.Scrollbar != none)
 			{
-			case class'UIUtilities_Input'.const.FXS_BUTTON_A :
-				OnSpecializationsAdded(PoolList, SelectedIndexPool);
-				bHandled = true;
-				break;
+				SBPos = PoolList.Scrollbar.percent;
+			}
+			ToList.SetSelectedIndex((ToList.ItemCount - 1) * SBPos);
+			if (!ToList.GetSelectedItem().bIsNavigable)
+			{
+				// Mr. Nice: quick dirty way of getting a valid selection while some what minimizing
+				// scroll position change.
+				ToList.NavigatorSelectionChanged((ToList.Navigator.NavigableControls.Length - 1) * SBPos);
 			}
 		}
+		ToList.SetSelectedNavigation();
+		FromList.OnLoseFocus();
+
+		if(UISound)
+		{
+			PlayNavSound();
+		}
 	}
-	*/
-	return bHandled;
+	else if(UISound)
+	{
+		PlayNegativeSound();
+	}
 }
 
 simulated function UpdateNavHelp()
 {
 	local UINavigationHelp NavHelp;
+	local int iconYOffset;
 
 	NavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
 
 	NavHelp.ClearButtonHelp();
 	NavHelp.bIsVerticalHelp = `ISCONTROLLERACTIVE;
 	NavHelp.AddBackButton(OnCancel);
+	NavHelp.AddSelectNavHelp();
 	NavHelp.AddContinueButton(OnContinueButtonClick);
 
-	if(`ISCONTROLLERACTIVE && !IsPicked(SelectedIndexPool))
+	if(`ISCONTROLLERACTIVE)
 	{
-		NavHelp.AddSelectNavHelp();
+		if( GetLanguage() == "JPN" ) 
+		{
+			iconYOffset = -10;
+		}
+		else if( GetLanguage() == "KOR" )
+		{
+			iconYOffset = -20;
+		}
+		else
+		{
+			iconYOffset = -15;
+		}
+		NavHelp.ContinueButton.SetText(class'UIUtilities_Text'.static.InjectImage(
+			class'UIUtilities_Image'.static.GetButtonName(eButton_X), 28, 28, iconYOffset) @ class'UIUtilities_Text'.default.m_strGenericContinue);
 	}
+}
+
+simulated function PlayPositiveSound()
+{
+	class'UIUtilities_Sound'.static.PlayPositiveSound();
 }
 
 simulated function PlayNegativeSound()
 {
-	if(!`ISCONTROLLERACTIVE)
-		class'UIUtilities_Sound'.static.PlayNegativeSound();
+	class'UIUtilities_Sound'.static.PlayNegativeSound();
+}
+
+simulated function PlayNavSound()
+{
+	PlaySound( SoundCue'SoundUI.MenuScrollCue', true );
 }
 
 simulated function RefreshFacility()

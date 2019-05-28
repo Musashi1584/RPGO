@@ -526,7 +526,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 			{
 				APIcon = Spawn(class'UIIcon', self);
 				APIcon.bAnimateOnInit = false;
-				APIcon.bDisableSelectionBrackets = true;
+				APIcon.bIsNavigable = false;
 				APIcon.InitIcon('APIcon_ListItem_LW', "gfxStrategyComponents.combatIntIcon", false, false);
 			}
 			APIcon.SetScale(IconScale * 0.6);
@@ -545,7 +545,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	{
 		NatAptIcon = Spawn(class'UIIcon', self);
 		NatAptIcon.bAnimateOnInit = false;
-		NatAptIcon.bDisableSelectionBrackets = true;
+		NatAptIcon.bIsNavigable = false;
 		NatAptIcon.InitIcon('NaturalAptitudeIcon', "img:///UILibrary_LWToolbox.UI.NaturalAptitudeIcon", false, false);
 	}
 	IconXPos += IconXDelta;
@@ -591,7 +591,7 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 		{
 			BadTraitIcon.InsertItem(i, Spawn(class'UIIcon', self));
 			BadTraitIcon[i].bAnimateOnInit = false;
-			BadTraitIcon[i].bDisableSelectionBrackets = true;
+			BadTraitIcon[i].bIsNavigable = false;
 			BadTraitIcon[i].InitIcon(name("TraitIcon_ListItem_LW_" $ i), TraitTemplate.IconImage, false, false).SetScale(IconScale).SetPosition(IconXPos, IconYPos+1);
 			BadTraitIcon[i].SetForegroundColor("9acbcb");
 			traitToolTip $= "\n" $ TraitTemplate.TraitFriendlyName @ "-" @ TraitTemplate.TraitDescription;
