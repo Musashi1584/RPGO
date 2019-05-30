@@ -1,19 +1,18 @@
 class UIChooseSpecializations extends UIChooseCommodity;
 
+var UIStartingAbilities StartingAbilities;
 var array<SoldierSpecialization> SpecializationsPool;
 var array<SoldierSpecialization> SpecializationsChosen;
 var array<int> SelectedItems;
 
-//simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
-//{
-//	super.InitScreen(InitController, InitMovie, InitName);
-//
-//	SpecializationsPool.Length = 0;
-//	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
-//	CommodityPool = ConvertToCommodities(SpecializationsPool);
-//	SpecializationsChosen.Length = 0;
-//}
-
+simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
+{
+	super.InitScreen(InitController, InitMovie, InitName);
+	//StartingAbilities.AnchorBottomCenter();
+	StartingAbilities.Width = 300;
+	StartingAbilities.SetX(Movie.UI_RES_Y - StartingAbilities.Width / 2);
+	StartingAbilities.SetY(Movie.UI_RES_Y - 150);
+}
 simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
 	super.InitChooseCommoditiesScreen(
@@ -32,6 +31,9 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
 
 	PopulateData();
+
+	StartingAbilities = Spawn(class'UIStartingAbilities', self);
+	StartingAbilities.InitStartingAbilities(GetUnit());
 }
 
 simulated function OnContinueButtonClick()
@@ -99,6 +101,7 @@ simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecializa
 		Comm.Image = Template.ClassSpecializationIcon;
 		Comm.Desc = Template.ClassSpecializationSummary;
 		Comm.OrderHours = -1;
+		
 		//Comm.OrderHours = class'SpecialTrainingUtilities'.static.GetSpecialTrainingDays() * 24;
 
 		Commodities.AddItem(Comm);
@@ -124,4 +127,5 @@ simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 defaultproperties
 {
 	ListItemClass = class'UIInventory_SpecializationListItem'
+	ConfirmButtonOffset = 146
 }

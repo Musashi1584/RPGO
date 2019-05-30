@@ -232,6 +232,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\RPGO_UI\Classes\RPGO_UI_Helper.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIAbilityIconRow.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO_UI\Classes\UIChooseAbilities.uc">
       <SubType>Content</SubType>
     </Content>
@@ -254,6 +257,12 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO_UI\Classes\UISL_ShellSplash.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\UIStartingAbilities.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO_UI\Classes\X2DownloadableContentInfo_RPGO_UI.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\StatUpgradeUI\Classes\OnStatAssignmentCompleteClosure.uc">

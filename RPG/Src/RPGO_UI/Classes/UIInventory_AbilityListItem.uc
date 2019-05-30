@@ -9,6 +9,7 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 
 	IconPanel = Spawn(class'UIIcon', Self, 'perkIcon');
 	IconPanel.bIsNavigable = false;
+	IconPanel.bDisableSelectionBrackets = true;
 	IconPanel.InitIcon('perkIcon',,,, IconSize);
 	IconPanel.SetX(RightColDefaultPadding + 10);
 	IconPanel.SetY((Height - IconSize) / 2);

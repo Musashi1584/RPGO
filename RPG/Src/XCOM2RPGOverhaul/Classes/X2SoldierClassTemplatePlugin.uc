@@ -11,6 +11,37 @@ struct SoldierSpecialization
 	}
 };
 
+static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameState_Unit UnitState, int Rank)
+{
+	local X2AbilityTemplateManager AbilityTemplateManager;
+	local array<X2AbilityTemplate> Templates;
+	local X2AbilityTemplate Template;
+	local array<SoldierClassAbilityType> AbilityTypes;
+	local SoldierClassAbilityType AbilityType;
+
+	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	AbilityTypes = UnitState.GetRankAbilities(Rank);
+
+	foreach AbilityTypes(AbilityType)
+	{
+		if (AbilityType.AbilityName != 'None')
+		{
+			Template = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
+			if (Template != none)
+			{
+				Templates.AddItem(Template);
+			}
+		}
+	}
+	return Templates;
+}
+
+static function X2UniversalSoldierClassInfo GetSpecializationTemplate(SoldierSpecialization Spec)
+{
+	return new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+}
+
 static function SetupSpecialization(name SoldierClassTemplate)
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -30,7 +61,7 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	for (Index = 0; Index < class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Length; Index++)
 	{
 		TemplateName = class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName;
-		UniversalSoldierClassTemplate = new(None, string(TemplateName))class'X2UniversalSoldierClassInfo';
+		UniversalSoldierClassTemplate = GetSpecializationTemplate(class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index]);
 
 		`LOG("Specialization" @ Index @ TemplateName @
 			class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].bEnabled @
@@ -41,17 +72,22 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	}
 }
 
+static function array<X2AbilityTemplate> GetAbilityTemplatesForSpecializations(SoldierSpecialization Spec)
+{
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	return GetSpecializationTemplate(Spec).GetAbilityTemplates();
+}
+
 static function array<SoldierSpecialization> GetSpecializations()
 {
 	local X2SoldierClassTemplateManager Manager;
 	local X2SoldierClassTemplate Template;
 	local array<SoldierSpecialization> ValidSpecs;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
-	local SoldierClassAbilitySlot Slot;
 	local int Index;
 	local X2AbilityTemplateManager		TemplateManager;
 	local X2AbilityTemplate				Ability;
-	local bool bHasAbilityInDeck;
+	local bool bHasAnyAbilitiesInDeck;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
@@ -66,18 +102,9 @@ static function array<SoldierSpecialization> GetSpecializations()
 		UniversalSoldierClassTemplate = new(None, string(class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
 		if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0 && class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].bEnabled)
 		{
-			bHasAbilityInDeck = false;
-			foreach UniversalSoldierClassTemplate.AbilitySlots(Slot)
-			{
-				Ability = TemplateManager.FindAbilityTemplate(Slot.AbilityType.AbilityName);
-				if (Ability != none)
-				{
-					bHasAbilityInDeck = true;
-					break;
-				}
-			}
+			bHasAnyAbilitiesInDeck = UniversalSoldierClassTemplate.HasAnyAbilitiesInDeck();
 			
-			if (bHasAbilityInDeck && ValidSpecs.Find('TemplateName', class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName) == INDEX_NONE)
+			if (bHasAnyAbilitiesInDeck && ValidSpecs.Find('TemplateName', class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName) == INDEX_NONE)
 			{
 				ValidSpecs.AddItem(class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index]);
 			}

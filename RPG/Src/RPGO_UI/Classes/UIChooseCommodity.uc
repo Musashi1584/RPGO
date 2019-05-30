@@ -132,13 +132,48 @@ simulated function PopulatePool()
 	for(i = 0; i < CommodityPool.Length; i++)
 	{
 		Template = CommodityPool[i];
-		Item = UIInventory_CommodityListItem(Spawn(ListItemClass, PoolList.itemContainer));
+		Item = UIInventory_CommodityListItem(Spawn(ListItemClass, PoolList.ItemContainer));
 		Item.InitInventoryListCommodity(Template, , m_strChoose, , , ConfirmButtonOffset);
 		UpdatePoolListItem(Item);
 	}
 	if(PoolList.bSelectFirstAvailable)
 	{
 		PoolList.SetSelectedIndex(0);
+	}
+}
+
+simulated function PopulateChosen()
+{
+	local Commodity Template;
+	local int i, SelectedIndex;
+	local UIInventory_CommodityListItem Item;
+
+	SelectedIndex = clamp(ChosenList.SelectedIndex, 0, CommoditiesChosen.Length-1);
+	ChosenList.ClearItems();
+	for(i = 0; i < CommoditiesChosen.Length; i++)
+	{
+		Template = CommoditiesChosen[i];
+		Item = UIInventory_CommodityListItem(Spawn(ListItemClass, ChosenList.ItemContainer));
+		Item.InitInventoryListCommodity(Template, , m_strRemove, , , ConfirmButtonOffset);
+		UpdateChosenListItem(Item);
+	}
+
+	if (`ISCONTROLLERACTIVE)
+	{
+		if (CommoditiesChosen.Length != 0)
+		{
+			ChosenList.SetSelectedIndex(SelectedIndex);
+			if(!ChosenList.IsSelectedNavigation())
+			{
+				// Mr. Nice: SetSelectedIndex() calls OnRecieveFocus() for that index,
+				// we don't want that if the ChosenList isn't the current navigation list! so undo it...
+				ChosenList.OnLoseFocus();
+			}
+		}
+		else if(ChosenList.IsSelectedNavigation())
+		{
+			SwitchList(PoolList, ChosenList, false);
+		}
 	}
 }
 
@@ -188,9 +223,14 @@ simulated function UpdatePoolList()
 	}
 }
 
-function int PoolListIndexOrder(UIPanel FirstItem, UIPanel SecondItem)
+simulated function UpdateChosenList()
 {
-	return PoolList.GetItemIndex(SecondItem) - PoolList.GetItemIndex(FirstItem);
+	local int Index;
+
+	for (Index = 0; Index < ChosenList.GetItemCount(); Index++)
+	{
+		UpdateChosenListItem(UIInventory_CommodityListItem(ChosenList.GetItem(Index)));
+	}
 }
 
 simulated function UpdatePoolListItem(UIInventory_CommodityListItem Item)
@@ -227,51 +267,6 @@ simulated function UpdatePoolListItem(UIInventory_CommodityListItem Item)
 	}
 }
 
-simulated function PopulateChosen()
-{
-	local Commodity Template;
-	local int i, SelectedIndex;
-	local UIInventory_CommodityListItem Item;
-
-	SelectedIndex = clamp(ChosenList.SelectedIndex, 0, CommoditiesChosen.Length-1);
-	ChosenList.ClearItems();
-	for(i = 0; i < CommoditiesChosen.Length; i++)
-	{
-		Template = CommoditiesChosen[i];
-		Item = UIInventory_CommodityListItem(Spawn(ListItemClass, ChosenList.ItemContainer));
-		Item.InitInventoryListCommodity(Template, , m_strRemove, , , ConfirmButtonOffset);
-		UpdateChosenListItem(Item);
-	}
-
-	if (`ISCONTROLLERACTIVE)
-	{
-		if (CommoditiesChosen.Length != 0)
-		{
-			ChosenList.SetSelectedIndex(SelectedIndex);
-			if(!ChosenList.IsSelectedNavigation())
-			{
-				// Mr. Nice: SetSelectedIndex() calls OnRecieveFocus() for that index,
-				// we don't want that if the ChosenList isn't the current navigation list! so undo it...
-				ChosenList.OnLoseFocus();
-			}
-		}
-		else if(ChosenList.IsSelectedNavigation())
-		{
-			SwitchList(PoolList, ChosenList, false);
-		}
-	}
-}
-
-simulated function UpdateChosenList()
-{
-	local int Index;
-
-	for (Index = 0; Index < ChosenList.GetItemCount(); Index++)
-	{
-		UpdateChosenListItem(UIInventory_CommodityListItem(ChosenList.GetItem(Index)));
-	}
-}
-
 simulated function UpdateChosenListItem(UIInventory_CommodityListItem Item)
 {
 	Item.EnableListItem();
@@ -279,6 +274,11 @@ simulated function UpdateChosenListItem(UIInventory_CommodityListItem Item)
 
 	if (IsOwnedSpec(GetItemIndex(Item.ItemComodity)))
 		Item.ShouldShowGoodState(true, m_strItemNotRemovable);
+}
+
+function int PoolListIndexOrder(UIPanel FirstItem, UIPanel SecondItem)
+{
+	return PoolList.GetItemIndex(SecondItem) - PoolList.GetItemIndex(FirstItem);
 }
 
 simulated function UpdateButton()
