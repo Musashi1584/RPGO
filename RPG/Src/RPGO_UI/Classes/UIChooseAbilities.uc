@@ -123,7 +123,7 @@ simulated function array<Commodity> ConvertToCommodities(array<X2AbilityTemplate
 	foreach Abilities(AbilityTemplate)
 	{
 		Comm.Title = AbilityTemplate.LocFriendlyName;
-		Comm.Desc = AbilityTemplate.GetMyHelpText();
+		Comm.Desc = AbilityTemplate.GetMyLongDescription();
 		Comm.Image = AbilityTemplate.IconImage;
 		Comm.OrderHours = -1;
 		
