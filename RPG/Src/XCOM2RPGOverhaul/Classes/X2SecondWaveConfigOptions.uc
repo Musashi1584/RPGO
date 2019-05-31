@@ -3,6 +3,7 @@ class X2SecondWaveConfigOptions extends Object config (SecondWaveOptions);
 var config int SpecRouletteRandomSpecCount;
 var config int CommandersChoiceSpecCount;
 var config int CommandersChoiceAbilityCount;
+var config int CommandersChoiceAdditionalRandomAbilties;
 var config int SpecRouletteRandomSpecCount_Combi;
 var config int CommandersChoiceSpecCount_Combi;
 var config int TrainingRouletteMinRank;

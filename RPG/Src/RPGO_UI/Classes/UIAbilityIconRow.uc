@@ -54,6 +54,7 @@ simulated function PopulateIcons(
 	foreach Templates(Template)
 	{
 		PerkIcon = Spawn(class'UIIcon', self);
+		PerkIcon.bIsNavigable = false;
 		PerkIcon.bAnimateOnInit = false;
 		PerkIcon.bDisableSelectionBrackets = true;
 		PerkIcon.InitIcon('', Template.IconImage, true, true, IconSize);
@@ -101,6 +102,7 @@ simulated function int PosOffsetY(int Index, int IconStartY, int IconWidhtHeight
 
 defaultproperties
 {
+	bIsNavigable = false
 	bAnimateOnInit = true
 	EDGE_PADDING = 15
 	InitPosX = 12

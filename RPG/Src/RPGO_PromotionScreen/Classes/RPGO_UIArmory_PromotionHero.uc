@@ -1226,12 +1226,20 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 {
 	local UIChooseAbilities ChooseAbilityScreen;
+	local array<X2AbilityTemplate> RandomTemplates;
+
+
+	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
+		UnitState,
+		class'X2SecondWaveConfigOptions'.default.CommandersChoiceAdditionalRandomAbilties
+	);
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
 	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());
 	ChooseAbilityScreen.InitChooseAbiltites(
 		UnitState.GetReference(),
-		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceAbiltiesCount()
+		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceAbiltiesCount(),
+		RandomTemplates
 	);
 }
 

@@ -58,6 +58,7 @@ simulated function CenterIcons()
 
 defaultproperties
 {
+	bIsNavigable = false
 	bAnimateOnInit = true
 	Width = 300
 	IconSize = 32

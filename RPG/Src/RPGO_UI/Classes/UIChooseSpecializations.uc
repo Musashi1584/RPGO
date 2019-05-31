@@ -5,10 +5,6 @@ var array<SoldierSpecialization> SpecializationsPool;
 var array<SoldierSpecialization> SpecializationsChosen;
 var array<int> SelectedItems;
 
-simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
-{
-	super.InitScreen(InitController, InitMovie, InitName);
-}
 simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
 	super.InitChooseCommoditiesScreen(

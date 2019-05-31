@@ -11,6 +11,37 @@ struct SoldierSpecialization
 	}
 };
 
+static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameState_Unit UnitState, int Count)
+{
+	local X2SoldierClassTemplate ClassTemplate;
+	local array<SoldierClassRandomAbilityDeck> RandomStartingAbilityDecks;
+	local SoldierClassAbilityType AbilityType;
+	local X2AbilityTemplateManager AbilityTemplateManager;
+	local array<X2AbilityTemplate> Templates;
+	local X2AbilityTemplate Template;
+	local int Index;
+
+	AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+	
+	ClassTemplate = UnitState.GetSoldierClassTemplate();
+	RandomStartingAbilityDecks = ClassTemplate.RandomAbilityDecks;
+
+	for(Index = 0; Index < Count; Index++)
+	{
+		AbilityType = class'X2SecondWaveConfigOptions'.static.GetAbilityFromRandomDeck(RandomStartingAbilityDecks[Index % RandomStartingAbilityDecks.Length]);
+		if (AbilityType.AbilityName != 'None')
+		{
+			Template = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
+			if (Template != none)
+			{
+				Templates.AddItem(Template);
+			}
+		}
+	}
+
+	return Templates;
+}
+
 static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameState_Unit UnitState, int Rank)
 {
 	local X2AbilityTemplateManager AbilityTemplateManager;

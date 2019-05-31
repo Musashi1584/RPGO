@@ -3,17 +3,6 @@ class UIChooseAbilities extends UIChooseCommodity;
 var array<X2AbilityTemplate> AbilitiesPool;
 var array<X2AbilityTemplate> AbilitiesChosen;
 
-//simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
-//{
-//	super.InitScreen(InitController, InitMovie, InitName);
-//
-//	AbilitiesPool.Length = 0;
-//	AbilitiesPool = GetAbilityTemplates(GetUnit());
-//	AbilitiesPool.Sort(SortAbiltiesByName);
-//	CommodityPool = ConvertToCommodities(AbilitiesPool);
-//	AbilitiesChosen.Length = 0;
-//}
-
 simulated function InitChooseAbiltites(StateObjectReference UnitRef, int MaxAbilities, optional array<X2AbilityTemplate> OwnedAbiltites, optional delegate<AcceptAbilities> OnAccept)
 {
 	super.InitChooseCommoditiesScreen(
@@ -73,7 +62,7 @@ simulated function OnContinueButtonClick()
 {
 	local UIArmory_PromotionHero HeroScreen;
 	
-	if (AbilitiesChosen.Length == MaxChooseItem)
+	if (AbilitiesChosen.Length - OwnedItems.Length == MaxChooseItem)
 	{
 		OnAllAbiltiesSelected();
 		
