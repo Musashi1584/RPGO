@@ -259,7 +259,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\RPGO_UI\Classes\UISL_ShellSplash.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO_UI\Classes\UIStartingAbilities.uc">
+    <Content Include="Src\RPGO_UI\Classes\UIStartingAbilitiesIconList.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO_UI\Classes\X2DownloadableContentInfo_RPGO_UI.uc">

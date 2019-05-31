@@ -25,7 +25,7 @@ simulated function RealizeSpecializationsIcons()
 	ConfirmButton.SetY(InitPosY);
 
 	AbilityIconRow = Spawn(class'UIAbilityIconRow', self);
-	AbilityIconRow.PopulateIcons(Templates, IconSize);
+	AbilityIconRow.InitAbilityIconRowPanel('SpecIconRow',, IconSize, Templates);
 	AbilityIconRow.SetPosition(InitPosX, InitPosY);
 }
 
@@ -51,7 +51,7 @@ simulated function array<X2AbilityTemplate> GetSpecializationAbilities()
 
 defaultproperties
 {
-	InitPosX = -3
+	InitPosX = 0
 	InitPosY = 146
 	IconSize = 38
 	Height = 196

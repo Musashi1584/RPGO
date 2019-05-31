@@ -67,6 +67,7 @@ static function AddStartingAbilities(
 	if(ClassTemplate != none && ClassTemplate.DataName == 'UniversalSoldier')
 	{
 		UnitState.AbilityTree[0].Abilities.Length = 0;
+		iAbilityBranch = 0;
 		foreach Abilities(Ability)
 		{
 			AbilityType.AbilityName = Ability.DataName;

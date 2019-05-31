@@ -74,7 +74,6 @@ static function SetupSpecialization(name SoldierClassTemplate)
 
 static function array<X2AbilityTemplate> GetAbilityTemplatesForSpecializations(SoldierSpecialization Spec)
 {
-	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
 	return GetSpecializationTemplate(Spec).GetAbilityTemplates();
 }
 
@@ -85,11 +84,7 @@ static function array<SoldierSpecialization> GetSpecializations()
 	local array<SoldierSpecialization> ValidSpecs;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
 	local int Index;
-	local X2AbilityTemplateManager		TemplateManager;
-	local X2AbilityTemplate				Ability;
 	local bool bHasAnyAbilitiesInDeck;
-
-	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
 	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');

@@ -1,6 +1,4 @@
 Random starting ability
-Spec abilities on choose spec screen
-Starting abilities on choose spec screen
 New swo choose weapon proficiencies
 weapon changes
 dodge change3d stat screen

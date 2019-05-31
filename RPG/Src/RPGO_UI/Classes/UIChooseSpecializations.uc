@@ -1,6 +1,6 @@
 class UIChooseSpecializations extends UIChooseCommodity;
 
-var UIStartingAbilities StartingAbilities;
+var UIStartingAbilitiesIconList StartingAbilities;
 var array<SoldierSpecialization> SpecializationsPool;
 var array<SoldierSpecialization> SpecializationsChosen;
 var array<int> SelectedItems;
@@ -8,10 +8,6 @@ var array<int> SelectedItems;
 simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
 {
 	super.InitScreen(InitController, InitMovie, InitName);
-	//StartingAbilities.AnchorBottomCenter();
-	StartingAbilities.Width = 300;
-	StartingAbilities.SetX(Movie.UI_RES_Y - StartingAbilities.Width / 2);
-	StartingAbilities.SetY(Movie.UI_RES_Y - 150);
 }
 simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
@@ -32,9 +28,20 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 
 	PopulateData();
 
-	StartingAbilities = Spawn(class'UIStartingAbilities', self);
-	StartingAbilities.InitStartingAbilities(GetUnit());
+	StartingAbilities = Spawn(class'UIStartingAbilitiesIconList', `HQPRES.m_kAvengerHUD);
+	StartingAbilities.InitStartingAbilitiesIconList('SoldierStartingAbilities',, GetUnit());
+	StartingAbilities.SetX((Movie.UI_RES_X - StartingAbilities.StartingAbiltiesBG.Width) / 2);
+	StartingAbilities.SetY(Movie.UI_RES_Y - 225);
+	StartingAbilities.CenterIcons();
+	
 }
+
+simulated function CloseScreen()
+{
+	StartingAbilities.Remove();
+	super.CloseScreen();
+}
+
 
 simulated function OnContinueButtonClick()
 {
@@ -44,7 +51,7 @@ simulated function OnContinueButtonClick()
 	{
 		OnAllSpecSelected();
 		
-		Movie.Stack.Pop(self);
+		CloseScreen();
 		HeroScreen = UIArmory_PromotionHero(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory_PromotionHero'));
 		if (HeroScreen != none)
 		{
