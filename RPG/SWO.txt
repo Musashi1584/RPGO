@@ -3,7 +3,10 @@
 In order to enable them mid campaign you need the mod:
 Better Second Wave Mod Support
 
-You can use these option separately or in any combination of the three. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.
+You can use these option separately or in any combination of them.
+The console command RPGO_RebuildSelectedSoldierClass also supports these SWO.
+
+Its save to enable or disable them at any time.
 
 Configuration:
 Setting like the number of random specs or the number of specs to pick can be edited in
@@ -30,11 +33,6 @@ Ini Options:
 [code]
 ; How many specs can be chosen on squaddie
 CommandersChoiceSpecCount=3
-; How many of (normally random) starting abilities you want to choose on squaddie
-; 0 means keeping the random mechanic
-OriginsChoiceAbilityCount=2
-; Add this number of random abilties on top of the chose ones
-OriginsAdditionalRandomAbilties=0
 
 ; How many random specs and choosable specs
 ; if spec roulette and commander choice is enabled simultaniously
@@ -56,6 +54,18 @@ TrainingRouletteMinRank=1
 ; Randomize abilities up to and including this rank
 ; 6 = Colonel
 TrainingRouletteMaxRank=6
+[/code]
+
+[h1][RPGO] Origins[/h1]
+On promotion to squaddie you can choose a limted number of starting perks.
+Can be combined with Specialization Roulette, Commanders Choice and Training Roulette.
+
+Ini Options:
+[code]
+; How many of (normally random) starting abilities you want to choose on squaddie
+OriginsChoiceAbilityCount=2
+; Add this number of random abilties on top of the chose ones
+OriginsAdditionalRandomAbilties=0
 [/code]
 
 [url=https://imgur.com/a/9kSAGj5]How to change second wave options[/url]

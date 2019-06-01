@@ -90,7 +90,7 @@ strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perk
 strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette, Origins and Commanders Choice."
 
 strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
-strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette, Origins andr Training Roulette."
+strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette, Origins and Training Roulette."
 
 strSWO_Origins_Description="[RPGO] Origins: Choose the soldiers starting abilities"
-strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice andr Training Roulette."
+strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice and Training Roulette."

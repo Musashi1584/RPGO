@@ -29,6 +29,6 @@ defaultproperties
 {
     MajorVersion = 0;
     MinorVersion = 11;
-    PatchVersion = 0;
+    PatchVersion = 1;
     Commit = "beta";
 }
