@@ -4,6 +4,7 @@ var int EDGE_PADDING;
 var int InitPosX;
 var int InitPosY;
 var int IconSize;
+var bool BlackBracket;
 
 var array<UIIcon> AbilityIcons;
 
@@ -15,7 +16,9 @@ simulated function UIPanel InitAbilityIconRowPanel(
 	)
 {
 	super.InitPanel(InitName, InitLibID);
-
+	Navigator.HorizontalNavigation = true;
+	Navigator.LoopSelection = true;
+	SetSelectedNavigation();
 	if (InIconSize >= 0)
 	{
 		IconSize = InIconSize;
@@ -54,11 +57,10 @@ simulated function PopulateIcons(
 	foreach Templates(Template)
 	{
 		PerkIcon = Spawn(class'UIIcon', self);
-		PerkIcon.bIsNavigable = false;
+		//PerkIcon.bIsNavigable = false;
 		PerkIcon.bAnimateOnInit = false;
-		PerkIcon.bDisableSelectionBrackets = true;
+		PerkIcon.bDisableSelectionBrackets = !`ISCONTROLLERACTIVE;
 		PerkIcon.InitIcon('', Template.IconImage, true, true, IconSize);
-		//PerkIcon.ProcessMouseEvents(OnChildMouseEvent);
 		PerkIcon.SetPosition(
 			PosOffsetX(Index, IconStartX, IconSize, EDGE_PADDING),
 			PosOffsetY(Index, IconStartY, IconSize, EDGE_PADDING)
@@ -68,9 +70,12 @@ simulated function PopulateIcons(
 			Template.LocFriendlyName
 			, 25, 20,,, true, 0.1
 		);
-
-		PerkIcon.SetBGColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
-		PerkIcon.SetForegroundColor(class'UIUtilities_Colors'.const.BLACK_HTML_COLOR);
+		
+		if(BlackBracket)
+		{
+			PerkIcon.SetBGColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
+			PerkIcon.SetForegroundColor(class'UIUtilities_Colors'.const.BLACK_HTML_COLOR);
+		}
 
 		AbilityIcons.AddItem(PerkIcon);
 		
@@ -102,8 +107,11 @@ simulated function int PosOffsetY(int Index, int IconStartY, int IconWidhtHeight
 
 defaultproperties
 {
-	bIsNavigable = false
+	//bIsNavigable = false
 	bAnimateOnInit = true
+	BlackBracket = true
+	bCascadeFocus = false
+	bCascadeSelection = true
 	EDGE_PADDING = 15
 	InitPosX = 12
 	InitPosY = 0

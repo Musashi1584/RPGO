@@ -201,7 +201,7 @@ simulated function UpdatePoolList()
 
 	if(`ISCONTROLLERACTIVE)
 	{
-		if(PoolList.Navigator.NavigableControls.Length == 0 && PoolList.IsSelectedNavigation())
+		if(PoolList.Navigator.Size == 0 && PoolList.IsSelectedNavigation())
 		{
 			PoolList.SetSelectedIndex(INDEX_NONE);
 			PoolList.Scrollbar.SetThumbAtPercent(SBPos);
@@ -385,17 +385,17 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 		break;
 
 	case class'UIUtilities_Input'.const.FXS_BUTTON_LBUMPER :
-	case class'UIUtilities_Input'.const.FXS_ARROW_LEFT:
-	case class'UIUtilities_Input'.const.FXS_DPAD_LEFT:
-	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_LEFT:
+	//case class'UIUtilities_Input'.const.FXS_ARROW_LEFT:
+	//case class'UIUtilities_Input'.const.FXS_DPAD_LEFT:
+	//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_LEFT:
 		SwitchList(PoolList, ChosenList);
 		bHandled = true;
 		break;
 
 	case class'UIUtilities_Input'.const.FXS_BUTTON_RBUMPER :
-	case class'UIUtilities_Input'.const.FXS_ARROW_RIGHT:
-	case class'UIUtilities_Input'.const.FXS_DPAD_RIGHT:
-	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_RIGHT:
+	//case class'UIUtilities_Input'.const.FXS_ARROW_RIGHT:
+	//case class'UIUtilities_Input'.const.FXS_DPAD_RIGHT:
+	//case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_RIGHT:
 		SwitchList(ChosenList, PoolList);
 		bHandled = true;
 		break;
@@ -407,23 +407,23 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	case class'UIUtilities_Input'.const.FXS_DPAD_UP:
 	case class'UIUtilities_Input'.const.FXS_VIRTUAL_LSTICK_UP:
 		// Mr. Nice: Stop Navigator getting confused, which it is when there are less than 2 items...
-		bHandled = (PoolList.IsSelectedNavigation() ? PoolList : ChosenList).Navigator.NavigableControls.Length <= 1;
+		bHandled = (PoolList.IsSelectedNavigation() ? PoolList : ChosenList).Navigator.Size <= 1;
 		break;
 	}
 
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
 
-function SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
+function bool SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
 {
 	local float SBPos;
 
 	if(ToList.IsSelectedNavigation())
 	{
-		return;
+		return false;
 	}
 
-	if(ToList.Navigator.NavigableControls.Length != 0)
+	if(ToList.Navigator.Size != 0)
 	{
 		if (ToList.SelectedIndex == INDEX_NONE)
 		{
@@ -436,7 +436,7 @@ function SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
 			{
 				// Mr. Nice: quick dirty way of getting a valid selection while some what minimizing
 				// scroll position change.
-				ToList.NavigatorSelectionChanged((ToList.Navigator.NavigableControls.Length - 1) * SBPos);
+				ToList.NavigatorSelectionChanged((ToList.Navigator.Size - 1) * SBPos);
 			}
 		}
 		ToList.SetSelectedNavigation();
@@ -446,11 +446,13 @@ function SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
 		{
 			PlayNavSound();
 		}
+		return true;
 	}
 	else if(UISound)
 	{
 		PlayNegativeSound();
 	}
+	return false;
 }
 
 simulated function UpdateNavHelp()

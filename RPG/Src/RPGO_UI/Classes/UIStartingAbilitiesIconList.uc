@@ -19,12 +19,13 @@ simulated function UIPanel InitStartingAbilitiesIconList(
 	StartingAbiltiesBG.InitPanel('BG', class'UIUtilities_Controls'.const.MC_X2Background);
 
 	StartingAbiltiesHeader = Spawn(class'UIX2PanelHeader', self);
-	StartingAbiltiesHeader.InitPanelHeader('StartingAbiltiesHeader', "Starting Abilities");
+	StartingAbiltiesHeader.InitPanelHeader('StartingAbiltiesHeader', class'UIUtilities_Text'.static.InjectImage(class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_LSCLICK_L3, 28, 28) @ "Starting Abilities");
 	StartingAbiltiesHeader.SetPosition(10, 10);
 
 	Templates = class'X2SoldierClassTemplatePlugin'.static.GetAbilityTemplatesForRank(UnitState, 0);
 
 	AbilityIconRow = Spawn(class'UIAbilityIconRow', self);
+	AbilityIconRow.BlackBracket = false;
 	AbilityIconRow.InitAbilityIconRowPanel('StartingAbilitiesIconRow',, IconSize, Templates);
 	AbilityIconRow.SetY(75);
 
@@ -56,7 +57,7 @@ simulated function CenterIcons()
 
 defaultproperties
 {
-	bIsNavigable = false
+	//bIsNavigable = false
 	bAnimateOnInit = true
 	Width = 300
 	IconSize = 32
