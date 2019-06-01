@@ -84,10 +84,13 @@ m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
 
 strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Soldiers start with a limited number of randomized specializations on Squaddie."
-strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette and/or Commanders Choice."
+strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette, Origins and Commanders Choice."
 
 strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
-strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette and/or Commanders Choice."
+strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette, Origins and Commanders Choice."
 
-strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations and starting perks"
-strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations and starting perks. \n Can be combined with Specialization Roulette and/or Training Roulette."
+strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
+strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette, Origins andr Training Roulette."
+
+strSWO_Origins_Description="[RPGO] Origins: Choose the soldiers starting abilities"
+strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice andr Training Roulette."

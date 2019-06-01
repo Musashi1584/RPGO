@@ -1,6 +1,7 @@
 class X2UniversalSoldierClassInfo extends Object PerObjectConfig PerObjectLocalized config (RPG);
 
 var config string ClassSpecializationIcon;
+var config array<name> ForceComplementarySpecializations;
 var config array<SoldierClassAbilitySlot> AbilitySlots;
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
@@ -46,4 +47,62 @@ function array<X2AbilityTemplate> GetAbilityTemplates()
 		}
 	}
 	return Templates;
+}
+
+function int GetComplementarySpecializationCheckSum()
+{
+	local name ComplementarySpecialization;
+	local int CheckSum;
+
+	CheckSum = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(Name);
+
+	if (ForceComplementarySpecializations.Length > 0)
+	{
+		foreach ForceComplementarySpecializations(ComplementarySpecialization)
+		{
+			CheckSum += class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(ComplementarySpecialization);
+		}
+	}
+	return CheckSum;
+}
+
+function string GetComplementarySpecializationInfo()
+{
+	local name ComplementarySpecialization;
+	local array<string> SpecTitles;
+	local string Info;
+	
+	if (ForceComplementarySpecializations.Length > 0)
+	{
+		foreach ForceComplementarySpecializations(ComplementarySpecialization)
+		{
+			SpecTitles.AddItem(
+				class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(ComplementarySpecialization).ClassSpecializationTitle
+			);
+		}
+
+		JoinArray(SpecTitles, Info, ",");
+	}
+
+	return Info;
+}
+
+private function static string MakeBulletList(array<string> List)
+{
+	local string TipText;
+	local int i;
+
+	if (List.Length == 0)
+	{
+		return "";
+	}
+
+	TipText = "<ul>";
+	for(i=0; i<List.Length; i++)
+	{
+		TipText $= "<li>" $ List[i] $ "</li>";
+	}
+	TipText $= "</ul>";
+	
+	return TipText;
 }

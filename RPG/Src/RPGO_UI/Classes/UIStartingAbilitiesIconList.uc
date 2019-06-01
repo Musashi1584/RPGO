@@ -37,8 +37,6 @@ simulated function UIPanel InitStartingAbilitiesIconList(
 
 simulated function AnimateIn(optional float Delay = 0)
 {
-	local TUIStatList_Item StatItem;
-
 	StartingAbiltiesBG.AnimateIn(Delay + class'UIUtilities'.const.INTRO_ANIMATION_TIME);
 	Delay += class'UIUtilities'.const.INTRO_ANIMATION_TIME;
 

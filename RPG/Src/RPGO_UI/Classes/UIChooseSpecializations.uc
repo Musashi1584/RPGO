@@ -5,6 +5,8 @@ var array<SoldierSpecialization> SpecializationsPool;
 var array<SoldierSpecialization> SpecializationsChosen;
 var array<int> SelectedItems;
 
+var localized string m_strComplementarySpecializationInfo;
+
 simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
 	super.InitChooseCommoditiesScreen(
@@ -43,7 +45,7 @@ simulated function OnContinueButtonClick()
 {
 	local UIArmory_PromotionHero HeroScreen;
 
-	if (CommoditiesChosen.Length - OwnedItems.Length == MaxChooseItem)
+	if (CommoditiesChosen.Length - OwnedItems.Length >= MaxChooseItem)
 	{
 		OnAllSpecSelected();
 		
@@ -98,11 +100,12 @@ simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecializa
 	{
 		Spec = Specializations[i];
 		
-		Template = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+		Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(Spec);
 		
 		Comm.Title = Template.ClassSpecializationTitle;
 		Comm.Image = Template.ClassSpecializationIcon;
-		Comm.Desc = Template.ClassSpecializationSummary;
+		Comm.Desc = GetComplementarySpecializationInfo(Template) $ "\n" $
+			Template.ClassSpecializationSummary;
 		Comm.OrderHours = -1;
 		
 		//Comm.OrderHours = class'SpecialTrainingUtilities'.static.GetSpecialTrainingDays() * 24;
@@ -113,18 +116,70 @@ simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecializa
 	return Commodities;
 }
 
+simulated function string GetComplementarySpecializationInfo(X2UniversalSoldierClassInfo Template)
+{
+	local string Info;
+	Info = Template.GetComplementarySpecializationInfo();
+
+	if (Info != "")
+	{
+		Info = m_strComplementarySpecializationInfo $ "\n" $ Info;
+	}
+
+	return Info;
+}
+
 simulated function AddToChosenList(int Index)
 {
+	local array<SoldierSpecialization> ComplementarySpecializations;
+	local SoldierSpecialization ComplementarySpecialization;
+	
 	SelectedItems.AddItem(Index);
 	SpecializationsChosen.AddItem(SpecializationsPool[Index]);
+	
+	ComplementarySpecializations = class'X2SoldierClassTemplatePlugin'.static.GetComplementarySpecializations(
+		SpecializationsPool[Index]
+	);
+
+	if (ComplementarySpecializations.Length > 0)
+	{
+		foreach ComplementarySpecializations(ComplementarySpecialization)
+		{
+			SelectedItems.AddItem(GetSpecIndex(ComplementarySpecialization));
+			SpecializationsChosen.AddItem(ComplementarySpecialization);
+		}
+	}
+
 	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
 }
 
 simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 {
+	local array<SoldierSpecialization> ComplementarySpecializations;
+	local SoldierSpecialization ComplementarySpecialization;
+
 	SelectedItems.RemoveItem(PoolIndex);
 	SpecializationsChosen.RemoveItem(SpecializationsChosen[ChosenIndex]);
+
+	ComplementarySpecializations = class'X2SoldierClassTemplatePlugin'.static.GetComplementarySpecializations(
+		SpecializationsPool[PoolIndex]
+	);
+
+	if (ComplementarySpecializations.Length > 0)
+	{
+		foreach ComplementarySpecializations(ComplementarySpecialization)
+		{
+			SelectedItems.RemoveItem(GetSpecIndex(ComplementarySpecialization));
+			SpecializationsChosen.RemoveItem(ComplementarySpecialization);
+		}
+	}
+
 	CommoditiesChosen = ConvertToCommodities(SpecializationsChosen);
+}
+
+simulated function int GetSpecIndex(SoldierSpecialization Spec)
+{
+	return SpecializationsPool.Find('TemplateName', Spec.TemplateName);
 }
 
 defaultproperties

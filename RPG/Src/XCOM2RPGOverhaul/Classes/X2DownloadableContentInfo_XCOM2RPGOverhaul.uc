@@ -55,27 +55,9 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 static event OnPostTemplatesCreated()
 {
 	`LOG(default.class @ GetFuncName(),, 'DLCSort');
-	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOption(
-		'RPGOSpecRoulette',
-		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Description,
-		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Tooltip
-	);
-	
-	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOption(
-		'RPGOCommandersChoice',
-		class'XGLocalizedData_RPG'.default.strSWO_CommandersChoice_Description,
-		class'XGLocalizedData_RPG'.default.strSWO_CommandersChoice_Tooltip
-	);
-
-	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOption(
-		'RPGOTrainingRoulette',
-		class'XGLocalizedData_RPG'.default.strSWO_TrainingRoulette_Description,
-		class'XGLocalizedData_RPG'.default.strSWO_TrainingRoulette_Tooltip
-	);
-	
-	
-
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
+
+	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();

@@ -175,6 +175,8 @@ simulated function PopulateChosen()
 			SwitchList(PoolList, ChosenList, false);
 		}
 	}
+
+	ChosenHeader.SetText(m_strTitleChosen @ CommoditiesChosen.Length - OwnedItems.Length $ "/" $ MaxChooseItem, m_strInventoryLabelChosen);
 }
 
 simulated function UpdatePoolList()

@@ -2,16 +2,45 @@ class X2SecondWaveConfigOptions extends Object config (SecondWaveOptions);
 
 var config int SpecRouletteRandomSpecCount;
 var config int CommandersChoiceSpecCount;
-var config int CommandersChoiceAbilityCount;
-var config int CommandersChoiceAdditionalRandomAbilties;
+var config int OriginsChoiceAbilityCount;
+var config int OriginsAdditionalRandomAbilties;
 var config int SpecRouletteRandomSpecCount_Combi;
 var config int CommandersChoiceSpecCount_Combi;
 var config int TrainingRouletteMinRank;
 var config int TrainingRouletteMaxRank;
 
+function static bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
+{
+	local UnitValue AbilityChosen, SpecChosen;
+
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceAbilityChosen', AbilityChosen);
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
+
+	return UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+		`SecondWaveEnabled('RPGOCommandersChoice') &&
+		SpecChosen.fValue != 1 &&
+		!ShowChooseAbilityScreen(UnitState);
+}
+
+function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
+{
+	local UnitValue AbilityChosen, SpecChosen;
+
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceAbilityChosen', AbilityChosen);
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
+
+	return UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+		`SecondWaveEnabled('RPGOOrigins') &&
+		AbilityChosen.fValue != 1 &&
+		(class'X2SecondWaveConfigOptions'.static.GetOriginsAbiltiesCount() +
+		 class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount() > 0);
+}
+
+
+
 static function int GetSpecRouletteCount()
 {
-	return  (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
+	return (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
 		default.SpecRouletteRandomSpecCount_Combi :
 		default.SpecRouletteRandomSpecCount;
 }
@@ -23,33 +52,14 @@ static function int GetCommandersChoiceCount()
 		default.CommandersChoiceSpecCount;
 }
 
-static function int GetCommandersChoiceAbiltiesCount()
+static function int GetOriginsAbiltiesCount()
 {
-	return  default.CommandersChoiceAbilityCount;
+	return  default.OriginsChoiceAbilityCount;
 }
 
-
-static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
+static function int GetOriginsRandomAbiltiesCount()
 {
-	local int Count, RandomSlotIndex, Index;
-	local array<int> RandomAbilitySlotIndices;
-
-	Count = GetSpecRouletteCount();
-
-	for (Index = 0; Index < Count; Index++)
-	{
-		while (true)
-		{
-			RandomSlotIndex = `SYNC_RAND_STATIC(UnitState.GetSoldierClassTemplate().AbilityTreeTitles.Length);
-			if (RandomAbilitySlotIndices.Find(RandomSlotIndex) == INDEX_NONE)
-			{
-				break;
-			}
-		}
-		RandomAbilitySlotIndices.AddItem(RandomSlotIndex);
-		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ RandomAbilitySlotIndices[RandomAbilitySlotIndices.Length - 1],, 'RPG');
-	}
-	return RandomAbilitySlotIndices;
+	return  default.OriginsAdditionalRandomAbilties;
 }
 
 static function AddStartingAbilities(
@@ -80,6 +90,63 @@ static function AddStartingAbilities(
 		}
 	}
 }
+
+// Get Random specs for spec roulette
+static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
+{
+	local int Count, RandomSlotIndex, Index, ComplementarySpecIndex;
+	local array<int> RandomAbilitySlotIndices;
+	local X2UniversalSoldierClassInfo SpecTemplate;
+	local name ForceComplementarySpec;
+
+	`LOG(default.class @ GetFuncName() @ "Start profiling",, 'RPG');
+
+	Count = GetSpecRouletteCount();
+
+	for (Index = 0; Index < Count; Index++)
+	{
+		while (true)
+		{
+			RandomSlotIndex = `SYNC_RAND_STATIC(UnitState.GetSoldierClassTemplate().AbilityTreeTitles.Length);
+			if (RandomAbilitySlotIndices.Find(RandomSlotIndex) == INDEX_NONE)
+			{
+				break;
+			}
+		}
+
+		SpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(RandomSlotIndex);
+
+		RandomAbilitySlotIndices.AddItem(RandomSlotIndex);
+
+		if (SpecTemplate.ForceComplementarySpecializations.Length > 0)
+		{
+			foreach SpecTemplate.ForceComplementarySpecializations(ForceComplementarySpec)
+			{
+				ComplementarySpecIndex = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(ForceComplementarySpec);
+				if (RandomAbilitySlotIndices.Find(ComplementarySpecIndex) == INDEX_NONE)
+				{
+					RandomAbilitySlotIndices.AddItem(ComplementarySpecIndex);
+				}
+			}
+		}
+		
+		// if we already reached the limit due to complementary specs break here
+		if (RandomAbilitySlotIndices.Length >= Count)
+		{
+			break;
+		}
+	}
+
+	foreach RandomAbilitySlotIndices(Index)
+	{
+		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ Index @ class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(Index).ClassSpecializationTitle,, 'RPG');
+	}
+
+	`LOG(default.class @ GetFuncName() @ "Stop profiling",, 'RPG');
+
+	return RandomAbilitySlotIndices;
+}
+
 
 static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState, optional bool bRandomizePerkOrder = false)
 {

@@ -48,7 +48,8 @@ simulated function OnInit()
 		MC.FunctionVoid("AnimateIn");
 	}
 
-	if (!ShowChooseSpecScreen(GetUnit()) && !ShowChooseAbilityScreen(GetUnit()))
+	if (!class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(GetUnit()) &&
+		!class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(GetUnit()))
 	{
 		Show();
 	}
@@ -124,13 +125,13 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	Unit = GetUnit();
 
-	if (ShowChooseAbilityScreen(Unit))
+	if (class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(Unit))
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseAbilityScreen",, 'RPG-PromotionScreen');
+		`LOG(default.class @ GetFuncName() @ "RPGOOrigins SpawnChooseAbilityScreen",, 'RPG-PromotionScreen');
 		SpawnChooseAbilityScreen(Unit);
 	}
 
-	if (ShowChooseSpecScreen(Unit))
+	if (class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(Unit))
 	{
 		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseSpecScreen",, 'RPG-PromotionScreen');
 		SpawnChooseSpecScreen(Unit);
@@ -1231,46 +1232,16 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 
 	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
 		UnitState,
-		class'X2SecondWaveConfigOptions'.default.CommandersChoiceAdditionalRandomAbilties
+		class'X2SecondWaveConfigOptions'.default.OriginsAdditionalRandomAbilties
 	);
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
 	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());
 	ChooseAbilityScreen.InitChooseAbiltites(
 		UnitState.GetReference(),
-		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceAbiltiesCount(),
+		class'X2SecondWaveConfigOptions'.static.GetOriginsAbiltiesCount(),
 		RandomTemplates
 	);
 }
 
-
-function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
-{
-	local UnitValue AbilityChosen, SpecChosen;
-
-	UnitState.GetUnitValue('SecondWaveCommandersChoiceAbilityChosen', AbilityChosen);
-	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
-
-	return UnitState.GetMyTemplateName() == 'Soldier' &&
-		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-		`SecondWaveEnabled('RPGOCommandersChoice') &&
-		SelectedSpecs.Length == 0 &&
-		SpecChosen.fValue != 1 &&
-		(AbilityChosen.fValue == 1 || class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceAbiltiesCount() == 0);
-}
-
-function bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
-{
-	local UnitValue AbilityChosen, SpecChosen;
-
-	UnitState.GetUnitValue('SecondWaveCommandersChoiceAbilityChosen', AbilityChosen);
-	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', SpecChosen);
-
-	return UnitState.GetMyTemplateName() == 'Soldier' &&
-		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-		`SecondWaveEnabled('RPGOCommandersChoice') &&
-		AbilityChosen.fValue != 1 &&
-		SpecChosen.fValue == 0 &&
-		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceAbiltiesCount() > 0;
-}
 

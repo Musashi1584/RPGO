@@ -99,6 +99,11 @@ function static string MakeBulletList(array<string> List)
 	local string TipText;
 	local int i;
 
+	if (List.Length == 0)
+	{
+		return "";
+	}
+
 	TipText = "<ul>";
 	for(i=0; i<List.Length; i++)
 	{

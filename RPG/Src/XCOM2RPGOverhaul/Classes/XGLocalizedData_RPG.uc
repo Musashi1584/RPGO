@@ -23,3 +23,5 @@ var localized string strSWO_CommandersChoice_Description;
 var localized string strSWO_CommandersChoice_Tooltip;
 var localized string strSWO_TrainingRoulette_Description;
 var localized string strSWO_TrainingRoulette_Tooltip;
+var localized string strSWO_Origins_Description;
+var localized string strSWO_Origins_Tooltip;

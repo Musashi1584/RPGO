@@ -9,6 +9,7 @@ m_strItemChosen=You already have chosen this specialization
 m_strItemOwned=Random specialization
 m_strItemLimitReached=You cannot pick any more specialization
 m_strItemNotRemovable=Random specializations cant be removed
+m_strComplementarySpecializationInfo=Forced Complementary Specializations:
 
 [UIChooseAbilities]
 m_strTitlePool=Choose Starting Abilities
@@ -18,9 +19,9 @@ m_strInventoryLabelChosen=Removable Abilities:
 m_strChoose=CHOOSE
 m_strRemove=REMOVE
 m_strItemChosen=You already have chosen this ability
-m_strItemOwned=Owned ability
+m_strItemOwned=Random ability
 m_strItemLimitReached=You cannot pick any more abilties
-m_strItemNotRemovable=Ability cant be removed
+m_strItemNotRemovable=Random abilities cant be removed
 
 [RPGOVersionTemplate]
 strRPGOVersion="Musasis RPG Overhaul v%MAJOR.%MINOR.%PATCH"
@@ -31,7 +32,7 @@ strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to wo
 strTitleIncompatibleMod="RPGO detected some INCOMPATIBLE mods"
 strIncompatibleModsFound="Please DEATIVATE the following mods and restart or RPGO will not work properly:"
 strTitleSWOInfo="RPGO Public Service Announcement!"
-strSWOInfo="\nSorry to interrupt you. I just wanted to inform you that <font color='#1bad62'>RPGO has Second Wave (aka Advanced) Options now!</font>\n You have 3 new options\n\nSpecialization Roulette\nCommanders Choice\nTraining Roulette\n\nIn order to enable them mid campaign you need the mod <font color='#1bad62'>Better Second Wave Mod Support</font>\nYou can use these option separately or in any combination of the three. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.\nSettings like the number of random specs can be changed in <font color='#1bad62'>XComSecondWaveOptions.ini</font>\n\nThanks for your attention\n\nMusashi"
+strSWOInfo="\nSorry to interrupt you. I just wanted to inform you that <font color='#1bad62'>RPGO has Second Wave (aka Advanced) Options now!</font>\n You have 4 new options\n\nSpecialization Roulette\nCommanders Choice\nTraining Roulette\nOrigins\n\nIn order to enable them mid campaign you need the mod <font color='#1bad62'>Better Second Wave Mod Support</font>\nYou can use these option separately or in any combination of the four. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.\nSettings like the number of random specs can be changed in <font color='#1bad62'>XComSecondWaveOptions.ini</font>\n\nThanks for your attention\n\nMusashi"
 strTitleRequiredMod="RPGO detected some MISSING REQUIRED mods"
 strRequiredModsMissing="Please ACTIVATE the following mods and restart or RPGO will not work properly:"
 

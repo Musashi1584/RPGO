@@ -71,6 +71,32 @@ static function bool IsPrerequisiteAbility(name AbiliityName)
 	}
 	return false;
 }
+static function AddSecondWaveOptions()
+{
+	AddSecondWaveOption(
+		'RPGOSpecRoulette',
+		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Description,
+		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Tooltip
+	);
+	
+	AddSecondWaveOption(
+		'RPGOCommandersChoice',
+		class'XGLocalizedData_RPG'.default.strSWO_CommandersChoice_Description,
+		class'XGLocalizedData_RPG'.default.strSWO_CommandersChoice_Tooltip
+	);
+
+	AddSecondWaveOption(
+		'RPGOTrainingRoulette',
+		class'XGLocalizedData_RPG'.default.strSWO_TrainingRoulette_Description,
+		class'XGLocalizedData_RPG'.default.strSWO_TrainingRoulette_Tooltip
+	);
+	
+	AddSecondWaveOption(
+		'RPGOOrigins',
+		class'XGLocalizedData_RPG'.default.strSWO_Origins_Description,
+		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
+	);
+}
 
 static function AddSecondWaveOption(name ID, string Description, string Tooltip)
 {
@@ -513,7 +539,6 @@ static function PatchWeapons()
 						break;
 					case 'wristblade':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'Reckoning', true);						
 						break;
 					case 'claymore':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);

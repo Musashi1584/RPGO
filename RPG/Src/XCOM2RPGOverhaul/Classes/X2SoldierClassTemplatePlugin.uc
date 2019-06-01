@@ -1,4 +1,5 @@
-class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate;
+// Subclasses X2SoldierClassTemplate to access some of the private variables
+class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate config (JustForStaticVarHack);
 
 struct SoldierSpecialization
 {
@@ -10,6 +11,10 @@ struct SoldierSpecialization
 		bEnabled = true
 	}
 };
+
+// Static caching for better perfomance
+var config bool bHasProcessedSpecs;
+var config array<SoldierSpecialization> CachedSpecializations;
 
 static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameState_Unit UnitState, int Count)
 {
@@ -42,6 +47,7 @@ static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameStat
 	return Templates;
 }
 
+// Get all owned ability templates for rank
 static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameState_Unit UnitState, int Rank)
 {
 	local X2AbilityTemplateManager AbilityTemplateManager;
@@ -68,11 +74,60 @@ static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameStat
 	return Templates;
 }
 
+// get spec template
 static function X2UniversalSoldierClassInfo GetSpecializationTemplate(SoldierSpecialization Spec)
 {
-	return new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+	return GetSpecializationTemplateByName(Spec.TemplateName);
 }
 
+static function X2UniversalSoldierClassInfo GetSpecializationTemplateByName(name TemplateName)
+{
+	return new(None, string(TemplateName))class'X2UniversalSoldierClassInfo';
+}
+
+static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlotIndex(int SlotIndex)
+{
+	local array<SoldierSpecialization> Specs;
+
+	Specs = GetSpecializations();
+
+	return GetSpecializationTemplate(Specs[SlotIndex]);
+}
+
+static function int GetSpecializationIndex(name SpecTemplateName)
+{
+	local array<SoldierSpecialization> Specs;
+
+	Specs = GetSpecializations();
+
+	return Specs.Find('TemplateName', SpecTemplateName);
+}
+
+static function array<SoldierSpecialization> GetComplementarySpecializations(SoldierSpecialization Spec)
+{
+	local X2UniversalSoldierClassInfo SpecTemplate;
+	local name ForceComplementarySpec;
+	local array<SoldierSpecialization> AllSpecs, ComplementarySpecs;
+	local int ComplementarySpecIndex;
+
+	AllSpecs = GetSpecializations();
+	SpecTemplate = GetSpecializationTemplate(Spec);
+
+	if (SpecTemplate.ForceComplementarySpecializations.Length > 0)
+	{
+		foreach SpecTemplate.ForceComplementarySpecializations(ForceComplementarySpec)
+		{
+			ComplementarySpecIndex = GetSpecializationIndex(ForceComplementarySpec);
+			if (ComplementarySpecIndex != INDEX_NONE)
+			{
+				ComplementarySpecs.AddItem(AllSpecs[ComplementarySpecIndex]);
+			}
+		}
+	}
+
+	return ComplementarySpecs;
+}
+// adds all specializations to the universal soldier class template
 static function SetupSpecialization(name SoldierClassTemplate)
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -103,11 +158,13 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	}
 }
 
+// get all ability templates for a certain spec
 static function array<X2AbilityTemplate> GetAbilityTemplatesForSpecializations(SoldierSpecialization Spec)
 {
 	return GetSpecializationTemplate(Spec).GetAbilityTemplates();
 }
 
+// get all specializations ordered
 static function array<SoldierSpecialization> GetSpecializations()
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -116,6 +173,11 @@ static function array<SoldierSpecialization> GetSpecializations()
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
 	local int Index;
 	local bool bHasAnyAbilitiesInDeck;
+
+	if (default.bHasProcessedSpecs)
+	{
+		return default.CachedSpecializations;
+	}
 
 	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
 	Template = Manager.FindSoldierClassTemplate('UniversalSoldier');
@@ -141,7 +203,10 @@ static function array<SoldierSpecialization> GetSpecializations()
 			class'X2SoldierClassTemplatePlugin'.static.DeleteSpecialization(Template, class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName, Index);
 		}
 	}
-	
+
+	default.CachedSpecializations = ValidSpecs;
+	default.bHasProcessedSpecs = true;
+
 	return ValidSpecs;
 }
 
@@ -150,6 +215,7 @@ function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization 
 	return A.Order > B.Order ? -1 : 0;
 }
 
+// add a specialization to the universal soldier class template
 static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAbilitySlot> AbilitySlots)
 {
 	local X2SoldierClassTemplateManager Manager;
@@ -171,6 +237,7 @@ static function AddAbilityRanks(string SpecializationTitle, array<SoldierClassAb
 	Template.AbilityTreeTitles.AddItem(SpecializationTitle);
 }
 
+// find the spec title for a slot by inspecting the perks in the slot
 static function string GetAbilityTreeTitle(XComGameState_Unit UnitState, int SlotIndex)
 {
 	local X2UniversalSoldierClassInfo Template;

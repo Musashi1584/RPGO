@@ -94,13 +94,17 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	UnitState = XComGameState_Unit(EventData);
 	AllSpecs.Length = 0; // get rid if unused var warning
 
-	`LOG(default.class @ GetFuncName() @ UnitState @ "RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @ "RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ UnitState @
+		"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
+		"RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette') @
+		"RPGOOrigins" @ `SecondWaveEnabled('RPGOOrigins')
+	,, 'RPG');
 
 	if (UnitState != none)
 	{
 		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
 
-		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette" @
+		`LOG(default.class @ GetFuncName() @
 			UnitState.GetMyTemplateName() @
 			UnitState.GetSoldierClassTemplateName() @
 			UnitState.GetSoldierRank() @ 
@@ -128,6 +132,8 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	
 			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
+
+			
 			
 			`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 		}

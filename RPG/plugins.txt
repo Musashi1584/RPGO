@@ -40,6 +40,9 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 +AbilitySlots=(AbilityType=(AbilityName="ColonelAbility***"))
 +AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility***"))
 
+; when you want specs to come in forced "packages" in commanders choice or spec roulette
++ForceComplementarySpecializations=NameOfAnotherSpec
+
 [XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="****DLCNameOriginalClassMod"
 [/code]
