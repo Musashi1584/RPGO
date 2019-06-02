@@ -57,7 +57,7 @@ simulated function PopulateIcons(
 	foreach Templates(Template)
 	{
 		PerkIcon = Spawn(class'UIIcon', self);
-		//PerkIcon.bIsNavigable = false;
+		PerkIcon.bShouldPlayGenericUIAudioEvents = false;
 		PerkIcon.bAnimateOnInit = false;
 		PerkIcon.bDisableSelectionBrackets = !`ISCONTROLLERACTIVE;
 		PerkIcon.InitIcon('', Template.IconImage, true, true, IconSize);
@@ -108,6 +108,7 @@ simulated function int PosOffsetY(int Index, int IconStartY, int IconWidhtHeight
 defaultproperties
 {
 	//bIsNavigable = false
+	bShouldPlayGenericUIAudioEvents = false;
 	bAnimateOnInit = true
 	BlackBracket = true
 	bCascadeFocus = false

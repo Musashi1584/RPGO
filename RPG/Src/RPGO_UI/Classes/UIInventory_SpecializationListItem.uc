@@ -4,6 +4,7 @@ var int InitPosX;
 var int InitPosY;
 var int IconSize;
 var UIAbilityIconRow AbilityIconRow;
+var int iUpdateColor;
 
 simulated function UIPanel InitPanel(optional name InitName, optional name InitLibID)
 {
@@ -55,23 +56,7 @@ simulated function array<X2AbilityTemplate> GetSpecializationAbilities()
 
 simulated function PopulateData(optional bool bRealizeDisabled)
 {
-	MC.BeginFunctionOp("populateData");
-	MC.QueueString(ItemComodity.Image);
-	MC.QueueString(GetColoredText(ItemComodity.Title));
-	if (ItemComodity.OrderHours > -1)
-	{
-		MC.QueueString(class'UIUtilities_text'.static.GetTimeRemainingString(ItemComodity.OrderHours));
-	}
-	else
-	{
-		MC.QueueString("");
-	}
-	MC.QueueString(GetColoredText(ItemComodity.Desc));
-	MC.EndOp();
-
-	if(bRealizeDisabled)
-		RealizeDisabledState();
-
+	super.PopulateData();
 	AS_SetComplemetaryItemColor();
 }
 
@@ -93,16 +78,27 @@ simulated function OnLoseFocus()
 	super.OnLoseFocus();
 	AbilityIconRow.OnLoseFocus();
 	AbilityIconRow.Navigator.SelectedIndex = INDEX_NONE;
-	
-	// use timer to trigger after flashs onLoseFocus()
-	Screen.SetTimer(0.01f, false, nameof(AS_SetComplemetaryItemColor), self);
+	// set tick counter to trigger after flash's onLoseFocus()
+	iUpdateColor = 2;
 }
 
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
-	// use timer to trigger after flashs	onReceiveFocus()
-	Screen.SetTimer(0.01f, false, nameof(AS_SetComplemetaryItemColor), self);
+	// set tick counter to trigger after flash's onLoseFocus()
+	iUpdateColor = 2;
+}
+
+event Tick(float Delta)
+{
+	super.Tick(Delta);
+	if (iUpdateColor != 0)
+	{
+		if (--iUpdateColor == 0)
+		{
+			AS_SetComplemetaryItemColor();
+		}
+	}
 }
 
 simulated function string GetColoredText(string Txt, optional int FontSize = -1)

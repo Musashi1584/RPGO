@@ -31,7 +31,7 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 	StartingAbilities.SetX((Movie.UI_RES_X - StartingAbilities.StartingAbiltiesBG.Width) / 2);
 	StartingAbilities.SetY(Movie.UI_RES_Y - 225);
 	StartingAbilities.CenterIcons();
-	AddChild(StartingAbilities);
+	Navigator.AddControl(StartingAbilities);
 }
 
 simulated function CloseScreen()
@@ -40,6 +40,17 @@ simulated function CloseScreen()
 	super.CloseScreen();
 }
 
+simulated Function Hide()
+{
+	Super.Hide();
+	StartingAbilities.Hide();
+}
+
+simulated function Show()
+{
+	super.Show();
+	StartingAbilities.Show();
+}
 
 simulated function OnContinueButtonClick()
 {
@@ -193,12 +204,12 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 
 	switch (cmd)
 	{
-	case class'UIUtilities_Input'.const.FXS_BUTTON_L3 :
-		Navigator.SetSelected(StartingAbilities);
-		PoolList.OnLoseFocus();
-		ChosenList.OnLoseFocus();
-		bHandled = true;
-		break;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_L3 :
+			Navigator.SetSelected(StartingAbilities);
+			PoolList.OnLoseFocus();
+			ChosenList.OnLoseFocus();
+			bHandled = true;
+			break;
 	}
 
 	return bHandled || super.OnUnrealCommand(cmd, arg);

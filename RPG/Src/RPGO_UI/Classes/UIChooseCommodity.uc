@@ -84,6 +84,7 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 	CommList.BGPaddingRight = 30;
 	CommList.bSelectFirstAvailable = `ISCONTROLLERACTIVE;
 	CommList.bPermitNavigatorToDefocus = true; // Apparently we are in the 1% who need the original behaviour, whee!
+	CommList.bStickyHighlight = false;
 	CommList.bAnimateOnInit = false;
 	CommList.InitList(ListName,
 		PositionX, 230,
