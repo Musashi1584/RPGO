@@ -4,6 +4,7 @@ var int InitPosX;
 var int InitPosY;
 var int IconSize;
 var UIAbilityIconRow AbilityIconRow;
+var int iUpdateColor;
 
 simulated function UIPanel InitPanel(optional name InitName, optional name InitLibID)
 {
@@ -19,12 +20,16 @@ simulated function UIPanel InitPanel(optional name InitName, optional name InitL
 simulated function RealizeSpecializationsIcons()
 {
 	local array<X2AbilityTemplate> Templates;
-	
+	local UIPanel Dummy;
 	Templates = GetSpecializationAbilities();
 
 	ConfirmButton.SetY(InitPosY);
-
-	AbilityIconRow = Spawn(class'UIAbilityIconRow', self);
+	// We need a non-navigable "fire wall" between the list item and the icon row...
+	Dummy = Spawn(class'UIPanel', self);
+	Dummy.bIsNavigable = false;
+	Dummy.bAnimateOnInit = false;
+	Dummy.InitPanel();
+	AbilityIconRow = Spawn(class'UIAbilityIconRow', Dummy);
 	AbilityIconRow.InitAbilityIconRowPanel('SpecIconRow',, IconSize, Templates);
 	AbilityIconRow.SetPosition(InitPosX, InitPosY);
 }
@@ -49,26 +54,9 @@ simulated function array<X2AbilityTemplate> GetSpecializationAbilities()
 	return EmptyList;
 }
 
-
 simulated function PopulateData(optional bool bRealizeDisabled)
 {
-	MC.BeginFunctionOp("populateData");
-	MC.QueueString(ItemComodity.Image);
-	MC.QueueString(GetColoredText(ItemComodity.Title));
-	if (ItemComodity.OrderHours > -1)
-	{
-		MC.QueueString(class'UIUtilities_text'.static.GetTimeRemainingString(ItemComodity.OrderHours));
-	}
-	else
-	{
-		MC.QueueString("");
-	}
-	MC.QueueString(GetColoredText(ItemComodity.Desc));
-	MC.EndOp();
-
-	if(bRealizeDisabled)
-		RealizeDisabledState();
-
+	super.PopulateData();
 	AS_SetComplemetaryItemColor();
 }
 
@@ -88,16 +76,43 @@ simulated function AS_SetComplemetaryItemColor()
 simulated function OnLoseFocus()
 {
 	super.OnLoseFocus();
-	
-	// use timer to trigger after flashs onLoseFocus()
-	Screen.SetTimer(0.01f, false, nameof(AS_SetComplemetaryItemColor), self);
+	AbilityIconRow.OnLoseFocus();
+	// set tick counter to trigger after flash's onLoseFocus()
+	iUpdateColor = 2;//max(2, iUpdateColor);
 }
 
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
-	// use timer to trigger after flashs	onReceiveFocus()
-	Screen.SetTimer(0.01f, false, nameof(AS_SetComplemetaryItemColor), self);
+	
+	if(List.Scrollbar != none)
+	{
+		List.Scrollbar.NotifyPercentChange(OnSBChange);
+		OnSBChange(List.Scrollbar.percent);
+	}
+	else
+	{
+		OnSBChange(0);
+	}
+	// set tick counter to trigger after flash's onLoseFocus()
+	iUpdateColor = 2;//max(2, iUpdateColor);
+}
+
+function OnSBChange(float NewPercent)
+{
+	AbilityIconRow.ToolTipY = List.Y + InitPosY + 0.86 * (Y - NewPercent *  (List.TotalItemSize - List.Height));
+}
+
+event Tick(float Delta)
+{
+	super.Tick(Delta);
+	if (iUpdateColor != 0)
+	{
+		if (--iUpdateColor == 0)
+		{
+			AS_SetComplemetaryItemColor();
+		}
+	}
 }
 
 simulated function string GetColoredText(string Txt, optional int FontSize = -1)
@@ -174,6 +189,12 @@ function string GetComplementarySpecHexColor(X2UniversalSoldierClassInfo Templat
 	SpecColor = ColorPool[Checksum % ColorPool.Length];
 	
 	return SpecColor;
+}
+
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	`log("we got called?");
+	return AbilityIconRow.Navigator.OnUnrealCommand(cmd, arg) || Super.OnUnrealCommand(cmd, arg);
 }
 
 defaultproperties

@@ -3,9 +3,12 @@ class UIAbilityIconRow extends UIPanel;
 var int EDGE_PADDING;
 var int InitPosX;
 var int InitPosY;
-var int IconSize;
-
+var int IconSize; 
+var float ToolTipX, ToolTipY;
+var bool BlackBracket;
+var int TooltipAnchor, ControllerTooltipAnchor;
 var array<UIIcon> AbilityIcons;
+var UITextTooltip ActiveTooltip;
 
 simulated function UIPanel InitAbilityIconRowPanel(
 	optional name InitName,
@@ -15,7 +18,13 @@ simulated function UIPanel InitAbilityIconRowPanel(
 	)
 {
 	super.InitPanel(InitName, InitLibID);
-
+	Navigator.HorizontalNavigation = true;
+	Navigator.LoopSelection = true;
+	if (`ISCONTROLLERACTIVE)
+	{
+		Navigator.OnSelectedIndexChanged = OnSelectionChanged;
+	}
+	SetSelectedNavigation();
 	if (InIconSize >= 0)
 	{
 		IconSize = InIconSize;
@@ -54,23 +63,36 @@ simulated function PopulateIcons(
 	foreach Templates(Template)
 	{
 		PerkIcon = Spawn(class'UIIcon', self);
-		PerkIcon.bIsNavigable = false;
+		PerkIcon.bShouldPlayGenericUIAudioEvents = false;
 		PerkIcon.bAnimateOnInit = false;
-		PerkIcon.bDisableSelectionBrackets = true;
+		PerkIcon.bDisableSelectionBrackets = !`ISCONTROLLERACTIVE;
 		PerkIcon.InitIcon('', Template.IconImage, true, true, IconSize);
-		//PerkIcon.ProcessMouseEvents(OnChildMouseEvent);
 		PerkIcon.SetPosition(
 			PosOffsetX(Index, IconStartX, IconSize, EDGE_PADDING),
 			PosOffsetY(Index, IconStartY, IconSize, EDGE_PADDING)
 		);
-		PerkIcon.SetTooltipText(
-			Template.GetMyLongDescription(),
-			Template.LocFriendlyName
-			, 25, 20,,, true, 0.1
-		);
-
-		PerkIcon.SetBGColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
-		PerkIcon.SetForegroundColor(class'UIUtilities_Colors'.const.BLACK_HTML_COLOR);
+		if(`ISCONTROLLERACTIVE)
+		{
+			PerkIcon.SetTooltipText(
+				Template.GetMyLongDescription(),
+				Template.LocFriendlyName
+				, 0, 0,, ControllerTooltipAnchor, false, 0
+			);
+		}
+		else
+		{
+			PerkIcon.SetTooltipText(
+				Template.GetMyLongDescription(),
+				Template.LocFriendlyName
+				, 25, 20,, TooltipAnchor, true, 0.1
+			);
+		}
+		
+		if(BlackBracket)
+		{
+			PerkIcon.SetBGColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
+			PerkIcon.SetForegroundColor(class'UIUtilities_Colors'.const.BLACK_HTML_COLOR);
+		}
 
 		AbilityIcons.AddItem(PerkIcon);
 		
@@ -100,10 +122,50 @@ simulated function int PosOffsetY(int Index, int IconStartY, int IconWidhtHeight
 	return IconStartY + Spacing; // + Index * (IconWidhtHeight + Spacing);
 }
 
+simulated function OnSelectionChanged(int ItemIndex)
+{
+	local UIPanel Item;
+
+	if (ActiveTooltip != none)
+	{
+		Movie.Pres.m_kTooltipMgr.DeactivateTooltip(ActiveTooltip, true);
+		ActiveTooltip = none;
+	}
+
+	Item = Navigator.GetSelected();
+	if (Item != none)
+	{
+		if (Item.bHasTooltip)
+		{
+			ActiveTooltip = UITextTooltip(Movie.Pres.m_kTooltipMgr.GetTooltipByID(Item.CachedTooltipId));
+			if (ActiveTooltip != none)
+			{
+				ActiveTooltip.SetTooltipPosition(TooltipX, ToolTipY);
+				ActiveTooltip.ShowTooltip();
+				Movie.Pres.m_kTooltipMgr.ActivateTooltip(ActiveTooltip);
+			}
+		}
+	}
+}
+
+simulated function OnLoseFocus()
+{
+	super.OnLoseFocus();
+	Navigator.SelectedIndex = INDEX_NONE;
+	OnSelectionChanged(INDEX_NONE);
+}
+
 defaultproperties
 {
-	bIsNavigable = false
+	//bIsNavigable = false
+	bShouldPlayGenericUIAudioEvents = false;
 	bAnimateOnInit = true
+	BlackBracket = true
+	TooltipAnchor = 1; // class'UIUtilities'.const.ANCHOR_TOP_LEFT; 
+	ControllerTooltipAnchor = 2; // class'UIUtilities'.const.ANCHOR_TOP_CENTER; 
+	ToolTipX = 960;
+	bCascadeFocus = false
+	bCascadeSelection = true
 	EDGE_PADDING = 15
 	InitPosX = 12
 	InitPosY = 0

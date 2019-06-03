@@ -31,7 +31,7 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 	StartingAbilities.SetX((Movie.UI_RES_X - StartingAbilities.StartingAbiltiesBG.Width) / 2);
 	StartingAbilities.SetY(Movie.UI_RES_Y - 225);
 	StartingAbilities.CenterIcons();
-	
+	Navigator.AddControl(StartingAbilities);
 }
 
 simulated function CloseScreen()
@@ -40,6 +40,17 @@ simulated function CloseScreen()
 	super.CloseScreen();
 }
 
+simulated Function Hide()
+{
+	Super.Hide();
+	StartingAbilities.Hide();
+}
+
+simulated function Show()
+{
+	super.Show();
+	StartingAbilities.Show();
+}
 
 simulated function OnContinueButtonClick()
 {
@@ -129,6 +140,12 @@ simulated function string GetComplementarySpecializationInfo(X2UniversalSoldierC
 	return Info;
 }
 
+simulated function PopulateChosen()
+{
+	super.PopulateChosen();
+	UIInventory_SpecializationListItem(ChosenList.GetSelectedItem()).iUpdateColor = 6;
+}
+
 simulated function AddToChosenList(int Index)
 {
 	local array<SoldierSpecialization> ComplementarySpecializations;
@@ -180,6 +197,50 @@ simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 simulated function int GetSpecIndex(SoldierSpecialization Spec)
 {
 	return SpecializationsPool.Find('TemplateName', Spec.TemplateName);
+}
+
+simulated function UpdateNavHelp()
+{
+	Super.UpdateNavHelp();
+	`HQPRES.m_kAvengerHUD.NavHelp.AddLeftHelp(class'UIArmory_Promotion'.default.m_strInfo, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $class'UIUtilities_Input'.const.ICON_DPAD_HORIZONTAL);
+}
+
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	local bool bHandled;
+
+	if (!CheckInputIsReleaseOrDirectionRepeat(cmd, arg))
+		return false;
+	// Only pay attention to presses or repeats; ignoring other input types
+	// NOTE: Ensure repeats only occur with arrow keys
+
+	switch (cmd)
+	{
+		case class'UIUtilities_Input'.const.FXS_BUTTON_L3 :
+			Navigator.SetSelected(StartingAbilities);
+			PoolList.OnLoseFocus();
+			ChosenList.OnLoseFocus();
+			PlaySound( SoundCue'SoundUI.MenuScrollCue', true );
+			if(ShowSelect != false)
+			{
+				ShowSelect = false;
+				UpdateNavHelp();
+			}
+			bHandled = true;
+			break;
+	}
+
+	return bHandled || super.OnUnrealCommand(cmd, arg);
+}
+
+function bool SwitchList(UIList ToList, UIList FromList, optional bool UISound=true)
+{
+	if(Super.SwitchList(ToList, FromList, UISound))
+	{
+		StartingAbilities.OnLoseFocus();
+		return true;
+	}
+	return false;
 }
 
 defaultproperties
