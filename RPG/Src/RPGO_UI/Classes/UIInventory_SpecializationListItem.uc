@@ -193,7 +193,6 @@ function string GetComplementarySpecHexColor(X2UniversalSoldierClassInfo Templat
 
 simulated function bool OnUnrealCommand(int cmd, int arg)
 {
-	`log("we got called?");
 	return AbilityIconRow.Navigator.OnUnrealCommand(cmd, arg) || Super.OnUnrealCommand(cmd, arg);
 }
 

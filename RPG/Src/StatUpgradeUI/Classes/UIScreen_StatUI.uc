@@ -23,7 +23,7 @@ simulated function InitArmory(StateObjectReference UnitRef, optional name DispEv
 	super.InitArmory(UnitRef, DispEvent, SoldSpawnEvent, NavBackEvent, HideEvent, RemoveEvent, bInstant, InitCheckGameState);
 	bAutoSelectFirstNavigable = `ISCONTROLLERACTIVE;
 	InitPanels();
-
+	CreateSoldierPawn();
 	`LOG(self.class.name @ GetFuncName() @ UnitState.GetFullName(), bLog, 'RPG');
 }
 
@@ -451,7 +451,7 @@ simulated function UpdateNavHelp()
 		}
 
 		NavHelp.AddLeftHelp(class'UIUtilities_Text'.default.m_strGenericAdjust, class'UIUtilities_Input'.const.ICON_DPAD_HORIZONTAL);
-		NavHelp.AddCenterHelp( m_strRotateNavHelp, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_RSTICK); // bsg-jrebar (4/26/17): Armory UI consistency changes, centering buttons, fixing overlaps, removed button inlining
+		NavHelp.AddRightHelp( m_strRotateNavHelp, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_RSTICK); // bsg-jrebar (4/26/17): Armory UI consistency changes, centering buttons, fixing overlaps, removed button inlining
 		NavHelp.ContinueButton.SetText(class'UIUtilities_Text'.static.InjectImage(
 			class'UIUtilities_Image'.static.GetButtonName(eButton_X), 28, 28, iconYOffset) @ class'UIUtilities_Text'.default.m_strGenericConfirm);
 	}

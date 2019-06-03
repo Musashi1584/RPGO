@@ -11,6 +11,7 @@ var UIList PoolList;
 var UIX2PanelHeader ChosenHeader;
 var UIList ChosenList;
 
+var Actor ActorPawn;
 var StateObjectReference UnitReference;
 var class<Actor> ListItemClass;
 var bool ShowSelect;
@@ -52,9 +53,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	ItemCard.Hide();
 	
 	Navigator.SetSelected(PoolList);
-
-	//if(bIsIn3D)
-	//	class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
 
 
@@ -70,6 +68,7 @@ simulated function InitChooseCommoditiesScreen(
 	AcceptAbilities = OnAccept;
 	CommoditiesChosen = OwnedItems;
 
+	CreateSoldierPawn();
 	//PopulateData();
 }
 
@@ -489,6 +488,9 @@ simulated function UpdateNavHelp()
 
 	if(`ISCONTROLLERACTIVE)
 	{
+		NavHelp.bIsVerticalHelp = false;
+		NavHelp.AddRightHelp( class'UIArmory'.default.m_strRotateNavHelp, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_RSTICK); // bsg-jrebar (4/26/17): Armory UI consistency changes, centering buttons, fixing overlaps, removed button inlining
+		NavHelp.bIsVerticalHelp = true;
 		if( GetLanguage() == "JPN" ) 
 		{
 			iconYOffset = -10;
@@ -555,17 +557,112 @@ simulated function OnReceiveFocus()
 	UpdateNavHelp();
 }
 
+simulated function CreateSoldierPawn(optional Rotator DesiredRotation)
+{
+	local Rotator NoneRotation;
+	
+	// Don't do anything if we don't have a valid UnitReference
+	if( UnitReference.ObjectID == 0 ) return;
+
+	if( DesiredRotation == NoneRotation )
+	{
+		if( ActorPawn != none )
+			DesiredRotation = ActorPawn.Rotation;
+		else
+			DesiredRotation.Yaw = -16384;
+	}
+
+	RequestPawn(DesiredRotation);
+	XComUnitPawn(ActorPawn).CreateVisualInventoryAttachments(Movie.Pres.GetUIPawnMgr(), GetUnit());
+	
+	if(GetUnit().UseLargeArmoryScale())
+	{
+		XComUnitPawn(ActorPawn).Mesh.SetScale(0.84);
+	}
+
+	// Prevent the pawn from obstructing mouse raycasts that are used to determine the position of the mouse cursor in 3D screens.
+	XComHumanPawn(ActorPawn).bIgnoreFor3DCursorCollision = true;
+
+	UIMouseGuard_RotatePawn(`SCREENSTACK.GetFirstInstanceOf(class'UIMouseGuard_RotatePawn')).SetActorPawn(ActorPawn);
+}
+
+simulated function PointInSpace GetPlacementActor()
+{
+	local Actor TmpActor;
+	local array<Actor> Actors;
+	local XComBlueprint Blueprint;
+	local PointInSpace PlacementActor;
+
+	foreach WorldInfo.AllActors(class'PointInSpace', PlacementActor)
+	{
+		if (PlacementActor != none && PlacementActor.Tag == 'UIPawnLocation_Armory')
+			break;
+	}
+
+	if(PlacementActor == none)
+	{
+		foreach WorldInfo.AllActors(class'XComBlueprint', Blueprint)
+		{
+			if (Blueprint.Tag == 'UIPawnLocation_Armory')
+			{
+				Blueprint.GetLoadedLevelActors(Actors);
+				foreach Actors(TmpActor)
+				{
+					PlacementActor = PointInSpace(TmpActor);
+					if(PlacementActor != none)
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return PlacementActor;
+}
+
+simulated function RequestPawn(optional Rotator DesiredRotation)
+{
+	local XComGameState_Unit UnitState;
+	local name IdleAnimName;
+
+	ActorPawn = Movie.Pres.GetUIPawnMgr().RequestPawnByID(self, UnitReference.ObjectID, GetPlacementActor().Location, DesiredRotation);
+	ActorPawn.GotoState('CharacterCustomization');
+	UnitState = GetUnit();
+	if(!UnitState.IsInjured() || UnitState.bRecoveryBoosted)
+	{
+		IdleAnimName = UnitState.GetMyTemplate().CustomizationManagerClass.default.StandingStillAnimName;
+
+		// Play the "By The Book" idle to minimize character overlap with UI elements
+		XComHumanPawn(ActorPawn).PlayHQIdleAnim(IdleAnimName);
+
+		// Cache desired animation in case the pawn hasn't loaded the customization animation set
+		XComHumanPawn(ActorPawn).CustomizationIdleAnim = IdleAnimName;
+	}
+}
+
+simulated function OnRemoved()
+{
+	super.OnRemoved();
+	
+	// Only destroy the pawn when all UIArmory screens are closed
+	if(ActorPawn != none)
+	{		
+		if(bIsIn3D) Movie.Pres.Get3DMovie().HideDisplay(DisplayTag);
+		Movie.Pres.GetUIPawnMgr().ReleasePawn(self, UnitReference.ObjectID);
+	}
+}
+
 defaultproperties
 {
 	ListItemClass = class'UIInventory_CommodityListItem'
 	ConfirmButtonOffset = 126
 
 	bAutoSelectFirstNavigable = false
-	bHideOnLoseFocus = true
 	ShowSelect = true;
 
-	InputState = eInputState_Consume
-	
 	DisplayTag = "UIBlueprint_Promotion"
 	CameraTag = "UIBlueprint_Promotion"
+	bConsumeMouseEvents = true;
+	MouseGuardClass = class'UIMouseGuard_RotatePawn';
 }
