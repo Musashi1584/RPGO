@@ -96,7 +96,7 @@ simulated function OnLoseFocus()
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
-	// use timer to trigger after flashs	onReceiveFocus()
+	// use timer to trigger after flashs onReceiveFocus()
 	Screen.SetTimer(0.01f, false, nameof(AS_SetComplemetaryItemColor), self);
 }
 

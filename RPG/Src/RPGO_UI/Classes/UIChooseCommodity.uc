@@ -512,7 +512,7 @@ simulated function RefreshFacility()
 simulated function OnCancelButton(UIButton kButton) { OnCancel(); }
 simulated function OnCancel()
 {
-	CloseScreen();
+	super.OnCancel();
 	Movie.Stack.PopFirstInstanceOfClass(class'UIArmory');
 }
 
