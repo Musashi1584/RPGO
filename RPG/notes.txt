@@ -1,11 +1,25 @@
-Random starting ability
+
+
 New swo choose weapon proficiencies
 weapon changes
 dodge changes
 stat screen
 add a covert op similar to "Increase Combat Intelligence" that improves natural aptitude
 
-Version 0.11.0
+cannon mobility cap -> check
+	X2Effect_PersistentStatChangeRestoreDefault
+	UnitState.SetBaseMaxStat
+	UnitState.GetStatModifiers
+
+	UnitState.GetStatModifiers(eStat_CritChance, StatMods, StatModValues);
+	for (i = 0; i < StatMods.Length; ++i)
+	{
+		AddModifier(int(StatModValues[i]), StatMods[i].GetX2Effect().FriendlyName, m_ShotBreakdown, eHit_Crit, bDebugLog);
+	}
+
+	override / hl X2Effect_ModifyStats
+
+Version 0.11.1
 - Added support for specialization "packages" (ForceComplementarySpecializations). 
 - Choosing starting perks is a separate option (RPGO Origins) now.
 - Removed ripjack giving reckoning
@@ -13,3 +27,6 @@ Version 0.11.0
 - The two Gauntlet specs have been overhauled, they no longer depend on Heavy Armaments, which makes them able to be picked seperately with the new SWO options:
 - The Purifier spec now starts with High Pressure Tanks, which restores the gauntlet's flamethrower charges back to two. Phosphorus was removed to make space for this perk, as it was one of the weakest perks. Napalm-X was moved to rank 4 (Captain) because it was a bit strong in its previous position.
 - The Rocketeer spec now starts with Shock and Awe, which adds the rocket to the Gauntlet and is required for all other perks. There is also a new perk: HEAT Warheads, which adds pierce and shred to both the rocket and any other explosives the soldier uses.
+
+Version 0.12.0
+- Decreased aim stat progression lamda to 95 resulting in higher stat costs for aim from 70 on

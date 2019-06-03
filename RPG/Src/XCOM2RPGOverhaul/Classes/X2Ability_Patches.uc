@@ -70,32 +70,39 @@ static function X2AbilityTemplate BlueMoveSlash()
 static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 {
 	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalStatChange Effect;
 	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
+	local X2Effect_CapStat CapStatEffect;
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
+	// Regular cap without SyntheticLegMuscles
 	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
 	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
-
-	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR, MODOP_PostMultiplication);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-
-	Template.AddTargetEffect(Effect);
-
+	
+	CapStatEffect = new class'X2Effect_CapStat';
+	CapStatEffect.AddStatCap(eStat_Mobility, 15);
+	CapStatEffect.AddStatCap(eStat_Offense, 50);
+	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	CapStatEffect.TargetConditions.AddItem(SourceAbilitiesCondition);
+	CapStatEffect.EffectName = 'CapStatEffectRegular';
+	Template.AddTargetEffect(CapStatEffect);
+	
+	// Higher cap with SyntheticLegMuscles
 	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
 	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
-
-	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED, MODOP_PostMultiplication);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-
+	
+	CapStatEffect = new class'X2Effect_CapStat';
+	CapStatEffect.AddStatCap(eStat_Mobility, 20);
+	CapStatEffect.AddStatCap(eStat_Offense, 70);
+	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	CapStatEffect.TargetConditions.AddItem(SourceAbilitiesCondition);
+	CapStatEffect.EffectName = 'CapStatEffectIncreased';
+	Template.AddTargetEffect(CapStatEffect);
 
 	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
-	Template.AddTargetEffect(Effect);
+	
 
 	return Template;
 }
