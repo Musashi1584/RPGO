@@ -140,6 +140,12 @@ simulated function string GetComplementarySpecializationInfo(X2UniversalSoldierC
 	return Info;
 }
 
+simulated function PopulateChosen()
+{
+	super.PopulateChosen();
+	UIInventory_SpecializationListItem(ChosenList.GetSelectedItem()).iUpdateColor = 6;
+}
+
 simulated function AddToChosenList(int Index)
 {
 	local array<SoldierSpecialization> ComplementarySpecializations;
@@ -193,6 +199,12 @@ simulated function int GetSpecIndex(SoldierSpecialization Spec)
 	return SpecializationsPool.Find('TemplateName', Spec.TemplateName);
 }
 
+simulated function UpdateNavHelp()
+{
+	Super.UpdateNavHelp();
+	`HQPRES.m_kAvengerHUD.NavHelp.AddLeftHelp(class'UIArmory_Promotion'.default.m_strInfo, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $class'UIUtilities_Input'.const.ICON_DPAD_HORIZONTAL);
+}
+
 simulated function bool OnUnrealCommand(int cmd, int arg)
 {
 	local bool bHandled;
@@ -208,6 +220,12 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 			Navigator.SetSelected(StartingAbilities);
 			PoolList.OnLoseFocus();
 			ChosenList.OnLoseFocus();
+			PlaySound( SoundCue'SoundUI.MenuScrollCue', true );
+			if(ShowSelect != false)
+			{
+				ShowSelect = false;
+				UpdateNavHelp();
+			}
 			bHandled = true;
 			break;
 	}

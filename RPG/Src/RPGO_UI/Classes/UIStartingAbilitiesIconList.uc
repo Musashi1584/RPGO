@@ -31,6 +31,9 @@ simulated function UIPanel InitStartingAbilitiesIconList(
 
 	AbilityIconRow = Spawn(class'UIAbilityIconRow', self);
 	AbilityIconRow.BlackBracket = false;
+	AbilityIconRow.TooltipAnchor = class'UIUtilities'.const.ANCHOR_BOTTOM_LEFT;
+	ABilityIconRow.ControllerTooltipAnchor = class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER;
+	ABilityIconRow.ToolTipY = Y;
 	AbilityIconRow.InitAbilityIconRowPanel('StartingAbilitiesIconRow',, IconSize, Templates);
 	AbilityIconRow.SetY(75);
 
@@ -39,6 +42,18 @@ simulated function UIPanel InitStartingAbilitiesIconList(
 	StartingAbiltiesHeader.SetHeaderWidth(StartingAbiltiesBG.Width - 20);
 
 	return self;
+}
+
+simulated function SetY(float NewY)
+{
+	super.SetY(NewY);
+	ABilityIconRow.ToolTipY = NewY;
+}
+
+simulated function OnReceiveFocus()
+{
+	super.OnReceiveFocus();
+	AbilityIconRow.OnSelectionChanged(0);
 }
 
 simulated function AnimateIn(optional float Delay = 0)

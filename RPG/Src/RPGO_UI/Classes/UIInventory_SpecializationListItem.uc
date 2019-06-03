@@ -77,16 +77,30 @@ simulated function OnLoseFocus()
 {
 	super.OnLoseFocus();
 	AbilityIconRow.OnLoseFocus();
-	AbilityIconRow.Navigator.SelectedIndex = INDEX_NONE;
 	// set tick counter to trigger after flash's onLoseFocus()
-	iUpdateColor = 2;
+	iUpdateColor = 2;//max(2, iUpdateColor);
 }
 
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
+	
+	if(List.Scrollbar != none)
+	{
+		List.Scrollbar.NotifyPercentChange(OnSBChange);
+		OnSBChange(List.Scrollbar.percent);
+	}
+	else
+	{
+		OnSBChange(0);
+	}
 	// set tick counter to trigger after flash's onLoseFocus()
-	iUpdateColor = 2;
+	iUpdateColor = 2;//max(2, iUpdateColor);
+}
+
+function OnSBChange(float NewPercent)
+{
+	AbilityIconRow.ToolTipY = List.Y + InitPosY + 0.86 * (Y - NewPercent *  (List.TotalItemSize - List.Height));
 }
 
 event Tick(float Delta)

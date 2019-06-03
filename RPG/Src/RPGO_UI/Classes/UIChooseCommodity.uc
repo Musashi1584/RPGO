@@ -13,6 +13,7 @@ var UIList ChosenList;
 
 var StateObjectReference UnitReference;
 var class<Actor> ListItemClass;
+var bool ShowSelect;
 
 var localized string m_strTitlePool;
 var localized string m_strInventoryLabelPool;
@@ -45,8 +46,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	PoolList.OnItemDoubleClicked = OnItemAdded;
 	ChosenList.OnItemDoubleClicked = OnItemRemoved;
 
-	UpdateNavHelp();
-	
 	SetBuiltLabel("");
 	SetCategory("");
 	ListContainer.Hide();
@@ -86,6 +85,14 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 	CommList.bPermitNavigatorToDefocus = true; // Apparently we are in the 1% who need the original behaviour, whee!
 	CommList.bStickyHighlight = false;
 	CommList.bAnimateOnInit = false;
+	if(`ISCONTROLLERACTIVE)
+	{
+		CommList.OnSelectionChanged = OnItemChanged;
+	}
+	else
+	{
+		CommList.bSelectFirstAvailable = false;
+	}
 	CommList.InitList(ListName,
 		PositionX, 230,
 		568, 710,
@@ -115,11 +122,19 @@ simulated function BuildList(out UIList CommList, out UIX2PanelHeader Header, na
 	Header.Show();
 }
 
+function OnItemChanged(UIList ContainerList, int ItemIndex)
+{
+	if(	ShowSelect != UIInventory_CommodityListItem(ContainerList.GetSelectedItem()).ConfirmButton.bIsVisible)
+	{
+		ShowSelect = !ShowSelect;
+		UpdateNavHelp();
+	}
+}
 
 simulated function PopulateData()
 {
-	PopulatePool();
 	PopulateChosen();
+	PopulatePool();
 	UpdateButton();
 }
 
@@ -134,12 +149,14 @@ simulated function PopulatePool()
 	{
 		Template = CommodityPool[i];
 		Item = UIInventory_CommodityListItem(Spawn(ListItemClass, PoolList.ItemContainer));
+		Item.AutoNavigable = true;
 		Item.InitInventoryListCommodity(Template, , m_strChoose, , , ConfirmButtonOffset);
 		UpdatePoolListItem(Item);
 	}
 	if(PoolList.bSelectFirstAvailable)
 	{
-		PoolList.SetSelectedIndex(0);
+		PoolLIst.SelectedIndex = INDEX_NONE;
+		PoolList.Navigator.SelectFirstAvailable();
 	}
 }
 
@@ -442,7 +459,8 @@ function bool SwitchList(UIList ToList, UIList FromList, optional bool UISound=t
 		}
 		ToList.SetSelectedNavigation();
 		FromList.OnLoseFocus();
-
+		if(`ISCONTROLLERACTIVE)
+			OnItemChanged(ToList,ToList.SelectedIndex);
 		if(UISound)
 		{
 			PlayNavSound();
@@ -466,7 +484,7 @@ simulated function UpdateNavHelp()
 	NavHelp.ClearButtonHelp();
 	NavHelp.bIsVerticalHelp = `ISCONTROLLERACTIVE;
 	NavHelp.AddBackButton(OnCancel);
-	NavHelp.AddSelectNavHelp();
+	if (ShowSelect) NavHelp.AddSelectNavHelp();
 	NavHelp.AddContinueButton(OnContinueButtonClick);
 
 	if(`ISCONTROLLERACTIVE)
@@ -544,7 +562,8 @@ defaultproperties
 
 	bAutoSelectFirstNavigable = false
 	bHideOnLoseFocus = true
-	
+	ShowSelect = true;
+
 	InputState = eInputState_Consume
 	
 	DisplayTag = "UIBlueprint_Promotion"
