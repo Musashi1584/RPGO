@@ -1,5 +1,7 @@
 class UIInventory_CommodityListItem extends UIInventory_ClassListItem;
 
+var bool AutoNavigable;
+
 simulated function PopulateData(optional bool bRealizeDisabled)
 {
 	MC.BeginFunctionOp("populateData");
@@ -35,6 +37,8 @@ simulated function ShouldShowGoodState(bool isGood, optional string TooltipText)
 
 simulated function UpdateNavigation()
 {
+	if (!AutoNavigable) return;
+
 	if (bDisabled || bIsGood)
 	{
 		 DisableNavigation();
