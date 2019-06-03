@@ -157,7 +157,7 @@ simulated function OnSoldierStats(UIButton kButton)
 	if (`SCREENSTACK.IsNotInStack(class'UIScreen_StatUI'))
 	{
 		//StatScreen = UIScreen_StatUI(HQPres.ScreenStack.Push(HQPres.Spawn(class'UIScreen_StatUI', HQPres), HQPres.Get3DMovie()));
-		StatScreen = UIScreen_StatUI(HQPres.ScreenStack.Push(HQPres.Spawn(class'UIScreen_StatUI', HQPres)));
+		StatScreen = UIScreen_StatUI(HQPres.ScreenStack.Push(HQPres.Spawn(class'UIScreen_StatUI', HQPres), HQPres.Get3DMovie()));
 		StatScreen.InitArmory(MainMenu.GetUnitRef());
 	}
 

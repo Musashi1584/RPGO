@@ -65,8 +65,15 @@ simulated function UIPanel_StatUI_StatLine InitStatLine(
 
 	CustomOnClickedIncreaseFn = OnClickedIncreaseFn;
 	CustomOnClickedDecreaseFn = OnClickedDecreaseFn;
-
-	InitChildPanels(PanelName, 150, 80, 60, 150, 100, 120);
+	
+	InitChildPanels(PanelName,
+		UIScreen_StatUI(ParentPanel.Screen).StatNameHeader.Width - 100,
+		UIScreen_StatUI(ParentPanel.Screen).StatValueHeader.Width + 20,
+		UIScreen_StatUI(ParentPanel.Screen).UpgradePointsHeader.Width - 20,
+		150,
+		UIScreen_StatUI(ParentPanel.Screen).StatCostHeader.Width,
+		UIScreen_StatUI(ParentPanel.Screen).UpgradeCostHeader.Width
+	);
 
 	UpdateStatValue(StatValue);
 	UpdateUpgradeCostSum();
@@ -92,6 +99,7 @@ function InitChildPanels(
 	Image = Spawn(class'UIImage', self).InitImage(name(PanelName $ '_Image'), GetStatIcon());
 	Image.SetSize(IconSize, IconSize);
 	Image.SetColor(class'UIUtilities_Colors'.const.NORMAL_HTML_COLOR);
+	Image.SetY(3);
 	Image.SetX(RunningOffsetX);
 
 	StatName = Spawn(class'UIText', self).InitText(PanelName);
@@ -398,5 +406,5 @@ defaultproperties
 	Padding=20
 	IconSize=32
 	FontSize=32
-	bLog=true
+	bLog=false
 }

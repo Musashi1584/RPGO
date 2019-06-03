@@ -11,7 +11,10 @@ var array<UIPanel_StatUI_StatLine> StatLines;
 var bool bLog;
 
 var XComGameState_Unit UnitState;
-var int StatPointCostSum, AbilityPointCostSum, FontSize, Padding, LeftPadding, StatOffsetY;
+var int StatPointCostSum, AbilityPointCostSum, FontSize, Padding, LeftPadding, StatOffsetY, RowOffsetX, RowOffsetY;
+var int StatNameHeaderWidth, StatValueHeaderWidth, UpgradePointsHeaderWidth, StatCostHeaderWidth, UpgradeCostHeaderWidth;
+var int ButtonOffset;
+var float BackgroundAlpha;
 
 var localized string m_strSoldierSPLabel, m_StatNameHeader, m_StatValueHeader, m_UpgradePointsHeader, m_StatCostHeader, m_UpgradeCostHeader;
 
@@ -32,19 +35,24 @@ function InitPanels()
 	Container = Spawn(class'UIPanel', self).InitPanel('theContainer');
 	Container.Width = Width;
 	Container.Height = Height;
-	Container.SetPosition((Movie.UI_RES_X - Container.Width) / 2, (Movie.UI_RES_Y- Container.Height) / 2);
+	//(Movie.UI_RES_X - Container.Width) / 2
+	Container.SetPosition((Movie.UI_RES_X - Container.Width) / 5, (Movie.UI_RES_Y- Container.Height) / 2);
 	Container.Navigator.LoopSelection = true;
 	if(!bAutoSelectFirstNavigable)
 	{
 		Container.SetSelectedNavigation();
 	}
 
+	`LOG(self.class.name @ GetFuncName() @ Container.X @ Container.Y @ "/" @ Container.Width @ Container.Height, bLog, 'RPG');
+
 	FullBG = Spawn(class'UIBGBox', Container);
 	FullBG.InitBG('', 0, 0, Container.Width, Container.Height);
+	FullBG.SetAlpha(BackgroundAlpha);
 
 	PanelBG = Spawn(class'UIBGBox', Container);
 	PanelBG.LibID = class'UIUtilities_Controls'.const.MC_X2Background;
 	PanelBG.InitBG('theBG', 0, 0, Container.Width, Container.Height);
+	PanelBG.SetAlpha(BackgroundAlpha);
 
 	RunningHeaderOffsetX = LeftPadding;
 
@@ -71,28 +79,23 @@ function InitPanels()
 	TitleHeader.SetWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
 	TitleHeader.SetHeaderWidth(Container.Width - AbilityPointsText.Width - (LeftPadding * 2) - RunningHeaderOffsetX);
 
-	SaveButton = Spawn(class'UIButton', Container);
-	SaveButton.bIsNavigable = false;
-	SaveButton.InitButton('SaveButton', "SAVE", Save, eUIButtonStyle_HOTLINK_BUTTON);
-	SaveBUtton.SetGamepadIcon(class'UIUtilities_Input'.const.ICON_X_SQUARE);
-	SaveButton.SetFontSize(FontSize);
-	SaveButton.SetResizeToText(true);
-	SaveButton.SetWidth(150);
-	SaveButton.SetPosition(Width / 2 - SaveButton.Width / 2, Height - SaveButton.Height - 30);
+	//SaveButton = Spawn(class'UIButton', Container);
+	//SaveButton.bIsNavigable = false;
+	//SaveButton.InitButton('SaveButton', "SAVE", Save, eUIButtonStyle_HOTLINK_BUTTON);
+	//SaveBUtton.SetGamepadIcon(class'UIUtilities_Input'.const.ICON_X_SQUARE);
+	//SaveButton.SetFontSize(FontSize);
+	//SaveButton.SetResizeToText(true);
+	//SaveButton.SetWidth(150);
+	//SaveButton.SetPosition(Width / 2 - SaveButton.Width / 2, Height - SaveButton.Height - 30);
 
-	InitStatHeaders(250, 60, 80, 100, 120);
+	InitStatHeaders();
 	InitStatLines();
 
 	PopulateHeaderData();
 	PopulateSoldierPoints();
 }
 
-function InitStatHeaders(
-	int StatNameHeaderWidth,
-	int StatValueHeaderWidth,
-	int UpgradePointsHeaderWidth,
-	int StatCostHeaderWidth,
-	int UpgradeCostHeaderWidth)
+function InitStatHeaders()
 {
 	local int RunningOffsetX, OffsetY;
 
@@ -122,14 +125,14 @@ function InitStatHeaders(
 	StatNameHeader.SetPosition(RunningOffsetX, OffsetY);
 	StatValueHeader.SetPosition(RunningOffsetX += StatNameHeader.Width + Padding, OffsetY);
 	UpgradePointsHeader.SetPosition(RunningOffsetX += StatValueHeader.Width + Padding, OffsetY);
-	StatCostHeader.SetPosition(RunningOffsetX += 350 + UpgradePointsHeader.Width + Padding, OffsetY);
+	StatCostHeader.SetPosition(RunningOffsetX += ButtonOffset + UpgradePointsHeader.Width + Padding, OffsetY);
 	UpgradeCostHeader.SetPosition(RunningOffsetX += UpgradeCostHeader.Width + Padding, OffsetY);
 }
 
 function InitStatLines()
 {
 	local UIPanel_StatUI_StatLine StatLine;
-	local int Index, OffsetX, OffsetY;
+	local int Index;
 	local bool bUseBetaStrikeHealthProgression;
 
 	bUseBetaStrikeHealthProgression = UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier';
@@ -164,9 +167,7 @@ function InitStatLines()
 	Index = 0;
 	foreach StatLines(StatLine)
 	{
-		OffsetX = 40;
-		OffsetY = 30;
-		StatLine.SetPosition(OffsetX, StatOffsetY + (OffsetY * Index));
+		StatLine.SetPosition(RowOffsetX, StatOffsetY + (RowOffsetY * Index));
 		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName @ FontSize, bLog, 'RPG');
 		Index++;
 	}
@@ -330,7 +331,7 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 	
 	PointsLeft = GetSoldierSP() + GetSoldierAP() - AbilityPointCostSum - StatPointCostSum - StatCost;
 
-	//`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
+	`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
 
 	bCanIncrease = (PointsLeft >= 0);	
 	if (bCanIncrease)
@@ -349,8 +350,9 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 		}
 		PopulateSoldierPoints();
 	}
+	UpdateConfirmButton();
 
-	//`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ PointsLeft @ bCanIncrease, bLog, 'RPG');
+	`LOG(self.Class.name @ GetFuncName() @ GetSoldierAP() @ StatCost @ AbilityPointCostSum @ PointsLeft @ bCanIncrease, bLog, 'RPG');
 
 	return bCanIncrease;
 }
@@ -376,6 +378,7 @@ function bool OnClickedDecrease(ECharStatType StatType, int NewStatValue, int St
 		}
 		PopulateSoldierPoints();
 	}
+	UpdateConfirmButton();
 
 	return bCanDecrease;
 }
@@ -401,20 +404,56 @@ simulated function bool IsAllowedToCycleSoldiers()
 	return false;
 }
 
+simulated function UpdateConfirmButton()
+{
+	local UINavigationHelp NavHelp;
+
+	NavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
+
+	if (AbilityPointCostSum + StatPointCostSum > 0)
+	{
+		NavHelp.ContinueButton.EnableButton();
+	}
+	else
+	{
+		NavHelp.ContinueButton.DisableButton();
+	}
+}
+
 // Needed a couple of tweaks from the UIArmoury version, but now heavily cut down
 // since for example, we *know* IsAllowedToCycleSoldiers() will always be false
 simulated function UpdateNavHelp()
 {
+	local int iconYOffset;
+
 	if(!bIsFocused)
 		return; //bsg-crobinson (5.30.17): If not focused return
 
 	NavHelp.ClearButtonHelp();
 	NavHelp.AddBackButton(OnCancel);
+	NavHelp.AddContinueButton(OnAccept);
+	NavHelp.ContinueButton.SetText(class'UIUtilities_Text'.default.m_strGenericConfirm);
+	UpdateConfirmButton();
 
 	if( `ISCONTROLLERACTIVE )
 	{
+		if( GetLanguage() == "JPN" ) 
+		{
+			iconYOffset = -10;
+		}
+		else if( GetLanguage() == "KOR" )
+		{
+			iconYOffset = -20;
+		}
+		else
+		{
+			iconYOffset = -15;
+		}
+
 		NavHelp.AddLeftHelp(class'UIUtilities_Text'.default.m_strGenericAdjust, class'UIUtilities_Input'.const.ICON_DPAD_HORIZONTAL);
 		NavHelp.AddCenterHelp( m_strRotateNavHelp, class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_RSTICK); // bsg-jrebar (4/26/17): Armory UI consistency changes, centering buttons, fixing overlaps, removed button inlining
+		NavHelp.ContinueButton.SetText(class'UIUtilities_Text'.static.InjectImage(
+			class'UIUtilities_Image'.static.GetButtonName(eButton_X), 28, 28, iconYOffset) @ class'UIUtilities_Text'.default.m_strGenericConfirm);
 	}
 	// Don't allow jumping to the geoscape from the armory in the tutorial or when coming from squad select
 	else if(XComHQPresentationLayer(Movie.Pres) != none && class'XComGameState_HeadquartersXCom'.static.GetObjectiveStatus('T0_M7_WelcomeToGeoscape') != eObjectiveState_InProgress &&
@@ -428,11 +467,25 @@ simulated function UpdateNavHelp()
 
 defaultproperties
 {
+	DisplayTag = "UIBlueprint_Promotion_Hero"
+	CameraTag = "UIBlueprint_Promotion_Hero"
+	BackgroundAlpha=0.7
 	StatOffsetY=90
 	LeftPadding=40
-	Padding=20
+	Padding=40
 	FontSize=32
-	Width=1120
+	Width=1250
 	Height=750
-	bLog=true
+
+	RowOffsetX = 40
+	RowOffsetY = 35
+
+	StatNameHeaderWidth = 270
+	StatValueHeaderWidth = 100
+	UpgradePointsHeaderWidth = 120
+	StatCostHeaderWidth = 120
+	UpgradeCostHeaderWidth = 120
+	ButtonOffset = 300
+
+	bLog=false
 }

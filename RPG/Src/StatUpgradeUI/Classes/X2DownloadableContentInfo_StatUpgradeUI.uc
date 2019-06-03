@@ -491,45 +491,64 @@ private function bool ValidateAbility(name AbilityName)
 }
 
 
-exec function DebugStatUIHeader(
-	int StatNameHeaderWidth,
-	int StatValueHeaderWidth,
-	int UpgradePointsHeaderWidth,
-	int StatCostHeaderWidth,
-	int UpgradeCostHeaderWidth
-)
+//exec function StatUIDebugHeader(
+//	int StatNameHeaderWidth,
+//	int StatValueHeaderWidth,
+//	int UpgradePointsHeaderWidth,
+//	int StatCostHeaderWidth,
+//	int UpgradeCostHeaderWidth
+//)
+//{
+//	local UIScreen_StatUI UI;
+//	UI = UIScreen_StatUI(`SCREENSTACK.GetFirstInstanceOf(class'UIScreen_StatUI'));
+//	UI.InitStatHeaders();
+//}
+
+exec function StatUIScreenSet(int X, int Y, int Width, int Height)
 {
 	local UIScreen_StatUI UI;
+
 	UI = UIScreen_StatUI(`SCREENSTACK.GetFirstInstanceOf(class'UIScreen_StatUI'));
-	UI.InitStatHeaders(StatNameHeaderWidth, StatValueHeaderWidth, UpgradePointsHeaderWidth, StatCostHeaderWidth, UpgradeCostHeaderWidth);
+
+	//UI.SetSize(Width, Height);
+	UI.Container.SetSize(Width, Height);
+	UI.Container.SetPosition(X, Y);
+
+	UI.FullBG.SetSize(Width, Height);
+	UI.PanelBG.SetSize(Width, Height);
 }
 
-exec function DebugStatUI(
-	int OffsetY = 100,
-	int RowHeight = 30,
-	int StatNameWidth = 260,
-	int StatValueTextWidth = 100,
-	int UpgradePointsWidth = 100,
-	int ButtonWidth = 150,
-	int StatCostTextWidth = 200,
-	int UpgradeCostSumWidth = 140)
+// 270 100 120 120 120 300
+exec function StatUITest(
+	optional int StatNameWidth = 150,
+	optional int StatValueTextWidth = 80,
+	optional int UpgradePointsWidth = 60,
+	optional int StatCostTextWidth = 100,
+	optional int UpgradeCostSumWidth = 120,
+	optional int ButtonOffset = 150)
 {
+	local XComHQPresentationLayer HQPres;
 	local UIScreen_StatUI UI;
 	local UIPanel_StatUI_StatLine StatLine;
+	local StateObjectReference UnitRef;
 	local int Index, OffsetX;
 
+	HQPres = `HQPRES;
+
 	UI = UIScreen_StatUI(`SCREENSTACK.GetFirstInstanceOf(class'UIScreen_StatUI'));
-	
-	Index = 0;
-	foreach UI.StatLines(StatLine)
-	{
-		OffsetX = 40;
-		StatLine.InitChildPanels(UI.MCName, StatNameWidth, StatValueTextWidth, UpgradePointsWidth, ButtonWidth, StatCostTextWidth, UpgradeCostSumWidth);
-		StatLine.SetPosition(OffsetX, OffsetY + (RowHeight * Index));
-		
-		`LOG(self.class.name @ GetFuncName() @ StatLine.MCName, , 'RPG');
-		Index++;
-	}
+	UnitRef = UI.GetUnitRef();
+	UI.OnCancel();
+
+	UI = UIScreen_StatUI(HQPres.ScreenStack.Push(HQPres.Spawn(class'UIScreen_StatUI', HQPres), HQPres.Get3DMovie()));
+
+	UI.StatNameHeaderWidth = StatNameWidth;
+	UI.StatValueHeaderWidth = StatValueTextWidth;
+	UI.UpgradePointsHeaderWidth = UpgradePointsWidth;
+	UI.StatCostHeaderWidth = StatCostTextWidth;
+	UI.UpgradeCostHeaderWidth = UpgradeCostSumWidth;
+	UI.ButtonOffset = ButtonOffset;
+
+	UI.InitArmory(UnitRef);
 }
 
 // Testing non linear stat progression
