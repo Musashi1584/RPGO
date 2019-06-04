@@ -28,6 +28,8 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_OnStateSubmitted);
+	// compatibility with Commanders Choice Wotc
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_Immediate);
 	`LOG("Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
 
 	return Template;
@@ -94,7 +96,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	UnitState = XComGameState_Unit(EventData);
 	AllSpecs.Length = 0; // get rid if unused var warning
 
-	`LOG(default.class @ GetFuncName() @ UnitState @
+	`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
 		"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
 		"RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette') @
 		"RPGOOrigins" @ `SecondWaveEnabled('RPGOOrigins')
@@ -111,8 +113,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			"AddedRandomSpecs" @ AddedRandomSpecs.fValue
 			,, 'RPG');
 
-		if (UnitState.GetMyTemplateName() == 'Soldier' &&
-			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
 			AddedRandomSpecs.fValue != 1 &&
 			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette'))
 		)
@@ -133,8 +134,6 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
 
-			
-			
 			`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 		}
 	}

@@ -278,6 +278,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	local array<name>						SquaddieAbilityNames;
 	local bool								bChangeClass;
 	local int								i, NumRanks, iXP;
+	local array<SCATProgression>			SoldierProgressionAbilties;
 	
 	History = `XCOMHISTORY;
 
@@ -385,7 +386,22 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 		}
 		SetSquaddieAbilites(NewGameState, UnitState, SquaddieAbilityNames);
 	}
-
+	// Remove squaddie abilites if origins was selected
+	else if (`SecondWaveEnabled('RPGOOrigins'))
+	{
+		UnitState.ResetSoldierAbilities();
+		SoldierProgressionAbilties = UnitState.m_SoldierProgressionAbilties;
+		for (i = SoldierProgressionAbilties.Length; i >= 0; i--)
+		{
+			`LOG(GetFuncName() @ "Rank:" @ SoldierProgressionAbilties[i].iRank @ "Branch:" @ SoldierProgressionAbilties[i].iBranch,, 'RPG');
+			`LOG(GetFuncName() @ "------------------------------------------------------------------------------------------",, 'RPG');
+			if (SoldierProgressionAbilties[i].iRank == 0)
+			{
+				SoldierProgressionAbilties.Remove(i, 1);
+			}
+		}
+		UnitState.SetSoldierProgression(SoldierProgressionAbilties);
+	}
 	UnitState.ApplySquaddieLoadout(NewGameState, XComHQ);
 
 	// Reapply Stat Modifiers (Beta Strike HP, etc.)

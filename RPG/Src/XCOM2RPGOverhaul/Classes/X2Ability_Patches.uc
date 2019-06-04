@@ -66,8 +66,41 @@ static function X2AbilityTemplate BlueMoveSlash()
 	return Template;
 }
 
-
 static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
+{
+	local X2AbilityTemplate Template;
+	local XMBEffect_ConditionalStatChange Effect;
+	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
+
+	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+
+	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
+
+	Effect = new class'XMBEffect_ConditionalStatChange';
+	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR, MODOP_PostMultiplication);
+	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+
+	Template.AddTargetEffect(Effect);
+
+	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
+
+	Effect = new class'XMBEffect_ConditionalStatChange';
+	Effect.AddPersistentStatChange(eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED, MODOP_PostMultiplication);
+	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+
+
+	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
+	Template.AddTargetEffect(Effect);
+
+	return Template;
+}
+
+
+static function X2AbilityTemplate EquipmentStatCaps()
 {
 	local X2AbilityTemplate Template;
 	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;

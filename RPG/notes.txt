@@ -29,4 +29,11 @@ Version 0.11.1
 - The Rocketeer spec now starts with Shock and Awe, which adds the rocket to the Gauntlet and is required for all other perks. There is also a new perk: HEAT Warheads, which adds pierce and shred to both the rocket and any other explosives the soldier uses.
 
 Version 0.12.0
+- New 3D layout for stats upgrade screen
 - Decreased aim stat progression lamda to 95 resulting in higher stat costs for aim from 70 on
+- Compatibility fix for [WOTC] Choose My Class and Commanders Choice [WOTC & Vanilla]
+- Rotating soldiers on stats/abilities/specs screens (Credits to Mr. Nice)
+- Controller tool tips for spec abilities (Credits to Mr. Nice)
+- fixed prodigy and synthetic genes not applying properly (this time for good)
+- Reduced cannon mobility penalty to 15%. Will be completely replaced with a differenct mechanic soon.
+- RPGO_RebuildSelectedSoldier called with OPTIONAL_PreserveSquaddiePerks=false and with SWO Origins enabled no removes squaddie abilites properly
