@@ -549,12 +549,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\RPGO\Classes\XMBValue_Ammo.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\MCM_API_CfgHelpers.uci">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\MCM_API_Includes.uci">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_Defaults.uc">
       <SubType>Content</SubType>
     </Content>
