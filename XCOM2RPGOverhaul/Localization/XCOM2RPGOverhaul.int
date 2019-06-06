@@ -1,0 +1,145 @@
+[Assault X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Assault
+ClassSpecializationSummary="The first and last units on the ground, these troops are dedicated, determined, and destructive. Expect rapid response and reconnaissance when you bring Assault Specialists to the fray. "
+
+[Infantry X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Infantry
+ClassSpecializationSummary="Got a rifle on my shoulder and a grenade on my belt. The Infantryman might not be the shiniest soldier around but you can count on him to hold the line."
+
+[Sentinel X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Sentinel
+ClassSpecializationSummary="Eye on the horizon, hand on the trigger. The sentinel is ever watchful for enemy activity and ready to intercept with a well considered double tap to vulnerable extremities."
+
+[Gunner X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Gunner
+ClassSpecializationSummary="Tripods, high capacity magazines, and a rain of empty shells. If you want something locked down or full of holes call the Gunner and stay behind him."
+
+[Grenadier X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Grenadier
+ClassSpecializationSummary="Ever since man found a way to pack explosives into a conveniently portable container for ready use the Grenadier has been there to make someone's day miserable. Whether Blackpowder or Hi-Ex the result is all the same."
+
+[Sniper X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Sniper
+ClassSpecializationSummary="One Shot, One Kill, if there's man or beast that needs to be put down you can count on a Sniper to get the job done. Give him the high ground and he'll give you the battlefield."
+
+[Ranger X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Ranger
+ClassSpecializationSummary="Hand on blade, feet on the ground. Sometimes you have a problem that can only be solved with old fashioned ultraviolence and it doesn't get more old school than a blade in the gut."
+
+[Hacker X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Hacker
+ClassSpecializationSummary="In this modern world of interconnected technology, 24/7 surveillance, and automated security you need a specialist who can make the complex simple. Call for the hacker when you want those turrets shut down or robots off your back."
+
+[Scout X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Scout
+ClassSpecializationSummary="Quick, quiet, and observant the scout is very good at letting you know what lies over that next hill. When you absolutely need to know that there be monsters bring a scout."
+
+[Medic X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Medic
+ClassSpecializationSummary="A Medic is the difference between a sky ranger full of rookies and a seasoned team of veterans. Poisoned, Paralyzed, Shot, Stabbed? They've got a solution for that."
+
+[Gunslinger X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Gunslinger
+ClassSpecializationSummary="Pistols are perhaps overlooked in this age of observation drones and automated anti-material rifles but a gunslinger's grasp of triggernometry can help turn the tide when it comes down to the clutch."
+
+[Skirmisher X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Skirmisher
+ClassSpecializationSummary="Nothing like a Ripjack to ruin an Xray's day. The Skirmisher is all about high octane offensives favoring gun and claw. Doesn't matter what the enemy brings to the fight, he'll be ready to carry the day."
+
+[Saboteur X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Saboteur
+ClassSpecializationSummary="Sometimes its not enough to just bring a rocket launcher to the field. No you need a specialist who can properly calibrate a proximity mine or mix up X4 in a basement chemlab. Call in the Saboteur when a grenade just won't cut it."
+
+[Spotter X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Spotter
+ClassSpecializationSummary="Every group of dedicated insurgents needs someone to watch their back. Traps, Tricks, and Treats are the name of their game, find it, mark it, and make sure the Op goes smooth."
+
+[RpgRocketeer X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Rocketeer
+ClassSpecializationSummary="Our Rocketeers are trained to use the gauntlet's rocket launcher to devastating effect, dealing damage to large groups of enemies, shredding armor and leveleling whole buildings."
+
+[RpgPurifier X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Purifier
+ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flamethrower to devastating effect, setting aflame the battlefield and all foes that come too close."
+
+[Enforcer X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Enforcer
+ClassSpecializationSummary="The Enforcer utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Enforcer's allies take aim."
+
+[UIPersonnel_SoldierListItemDetailed]
+m_strServeredHead="<font color='#bf1e2e'><b>Needs Head Augmentation</b></font>"
+m_strServeredTorso="<font color='#bf1e2e'><b>Needs Torso Augmentation</b></font>"
+m_strServeredArms="<font color='#bf1e2e'><b>Needs Arm Augmention</b></font>"
+m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"
+
+[XGLocalizedData_RPG]
+UtilityCatPistol="(Auto-)Pistol"
+UtilityCatSidearm="(Auto-)Pistol"
+UtilityCatSword="Melee Weapon"
+UtilityCatGremlin="Gremlin"
+UtilityCatPsiamp="PsiAmp"
+UtilityCatGrenadeLauncher="Grenade Launcher"
+UtilityCatClaymore="Claymore"
+UtilityCatWristblade="Ripjack"
+UtilityCatArcthrower="Arc Thrower"
+UtilityCatCombatknife="Melee Weapon"
+UtilityCatHolotargeter="Holotargeter"
+UtilityCatSawedoffshotgun="Sawed-Off Shotgun"
+UtilityCatLWGauntlet="XCOM Gauntlet"
+m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
+m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
+
+strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Soldiers start with a limited number of randomized specializations on Squaddie."
+strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette, Origins and Commanders Choice."
+
+strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
+strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette, Origins and Commanders Choice."
+
+strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
+strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limted number of specializations. \n Can be combined with Specialization Roulette, Origins and Training Roulette."
+
+strSWO_Origins_Description="[RPGO] Origins: Choose the soldiers starting abilities"
+strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice and Training Roulette."
+
+[UIChooseSpecializations]
+m_strTitlePool=Choose Specializations
+m_strInventoryLabelPool=Available Specializations:
+m_strTitleChosen=Chosen Specializations
+m_strInventoryLabelChosen=Removable Specializations:
+m_strChoose=CHOOSE
+m_strRemove=REMOVE
+m_strItemChosen=You already have chosen this specialization
+m_strItemOwned=Random specialization
+m_strItemLimitReached=You cannot pick any more specialization
+m_strItemNotRemovable=Random specializations cant be removed
+m_strComplementarySpecializationInfo=Forced Complementary Specializations:
+
+[UIChooseAbilities]
+m_strTitlePool=Choose Starting Abilities
+m_strInventoryLabelPool=Available Abilities:
+m_strTitleChosen=Chosen Abilties
+m_strInventoryLabelChosen=Removable Abilities:
+m_strChoose=CHOOSE
+m_strRemove=REMOVE
+m_strItemChosen=You already have chosen this ability
+m_strItemOwned=Random ability
+m_strItemLimitReached=You cannot pick any more abilties
+m_strItemNotRemovable=Random abilities cant be removed
+
+[RPGOVersionTemplate]
+strRPGOVersion="Musasis RPG Overhaul v%MAJOR.%MINOR.%PATCH"
+
+[UISL_UIShell_RPGO]
+strTitleCommunityHighlanderMissing="Missing X2WotCCommunityHighlander"
+strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to work. Make sure the highlander mod is enabled before you start or load a campaign."
+strTitleIncompatibleMod="RPGO detected some INCOMPATIBLE mods"
+strIncompatibleModsFound="Please DEATIVATE the following mods and restart or RPGO will not work properly:"
+strTitleSWOInfo="RPGO Public Service Announcement!"
+strSWOInfo="\nSorry to interrupt you. I just wanted to inform you that <font color='#1bad62'>RPGO has Second Wave (aka Advanced) Options now!</font>\n You have 4 new options\n\nSpecialization Roulette\nCommanders Choice\nTraining Roulette\nOrigins\n\nIn order to enable them mid campaign you need the mod <font color='#1bad62'>Better Second Wave Mod Support</font>\nYou can use these option separately or in any combination of the four. The console command RPGO_RebuildSelectedSoldierClass also supports these SWO and its save to enable or disable them at any time.\nSettings like the number of random specs can be changed in <font color='#1bad62'>XComSecondWaveOptions.ini</font>\n\nThanks for your attention\n\nMusashi"
+strTitleRequiredMod="RPGO detected some MISSING REQUIRED mods"
+strRequiredModsMissing="Please ACTIVATE the following mods and restart or RPGO will not work properly:"
+
+[UISL_ShellSplash]
+strRequiredModsTooltip="Missing required mods:"
+strIncompatibleModsTooltip="Detected incompatible mods:"
+strRequiredLoadedModsTooltip="Loaded required mods:"
