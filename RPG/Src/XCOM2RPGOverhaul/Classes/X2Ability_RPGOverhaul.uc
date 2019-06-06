@@ -3,7 +3,6 @@ class X2Ability_RPGOverhaul extends XMBAbility config(RPG);
 var localized string SuppressionTargetEffectDesc;
 var localized string SuppressionSourceEffectDesc;
 
-var config float AREA_SUPPRESSION_RADIUS;
 var config int DANGERSENSE_RADIUS;
 var config int HOTSHOT_BONUS;
 var config int EAGLEEYE_BONUS;
@@ -35,10 +34,19 @@ var config int SPOT_WEAKNESS_PIERCE_MG;
 var config int SPOT_WEAKNESS_PIERCE_BM;
 var config int SPOT_WEAKNESS_CRIT;
 
+static function CreatePropertyCache()
+{
+	class'DefaultPropertiesCache'.static.SetString("DANGERSENSE_RADIUS", default.DANGERSENSE_RADIUS);
+	class'DefaultPropertiesCache'.static.SetString("STALKER_BONUS", int(default.STALKER_BONUS * 100));
+	class'DefaultPropertiesCache'.static.SetString("SCOUT_BATTLESCANNER_RANGE_SCALAR", int(default.SCOUT_BATTLESCANNER_RANGE_SCALAR * 100 - 100));
+}
+
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
+
+	CreatePropertyCache();
 	
 	// Random Starting Abilities
 	Templates.AddItem(XenoBiologist());

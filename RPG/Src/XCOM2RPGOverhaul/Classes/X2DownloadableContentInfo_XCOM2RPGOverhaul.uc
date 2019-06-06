@@ -99,6 +99,14 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 static function bool AbilityTagExpandHandler(string InString, out string OutString)
 {
 	local name Type;
+	local string PossibleValue;
+
+	PossibleValue = class'DefaultPropertiesCache'.static.GetString(InString);
+	if (PossibleValue != "")
+	{
+		OutString = PossibleValue;
+		return true;
+	}
 
 	Type = name(InString);
 	switch(Type)
@@ -115,4 +123,34 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		default: 
 			return false;
 	}
+}
+
+static function bool AbilityTagExpandHandler_CH(string InString, out string OutString, Object ParseObj, Object StrategyParseOb, XComGameState GameState)
+{
+	local XComGameStateHistory History;
+	local XComGameState_Effect EffectState;
+	local XComGameState_Ability AbilityState;
+	local X2AbilityTemplate AbilityTemplate;
+	
+
+	History = `XCOMHISTORY;
+
+	EffectState = XComGameState_Effect(ParseObj);
+	AbilityState = XComGameState_Ability(ParseObj);
+	AbilityTemplate = X2AbilityTemplate(ParseObj);
+
+	//`LOG(GetFuncName() @ InString @ "1" @ EffectState @ AbilityState @ AbilityTemplate,, 'RPGO');
+
+	if (EffectState != none)
+	{
+		AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
+	}
+	if (AbilityState != none)
+	{
+		AbilityTemplate = AbilityState.GetMyTemplate();
+	}
+
+	//`LOG(GetFuncName() @ InString @ "2" @ EffectState @ AbilityState @ AbilityTemplate,, 'RPGO');
+		
+	return false;
 }

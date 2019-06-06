@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Guid>1b8fb28c-9435-4c10-902b-314829ed9108</Guid>
-    <Name>XCOM 2 RPG Overhaul</Name>
+    <Name>RPGO</Name>
     <Description>XCOM 2 Overhaul for more freedom in character developement.
 
 tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
@@ -36,6 +36,10 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\ExtendedUpgrades" />
     <Folder Include="Src\Debug" />
     <Folder Include="Src\DetailedSoldierListWOTC" />
+    <Folder Include="Src\ModConfigMenuAPI\" />
+    <Folder Include="Src\ModConfigMenuAPI\Classes\" />
+    <Folder Include="Src\RPGO" />
+    <Folder Include="Src\RPGO\Classes" />
     <Folder Include="Src\RPGO_PromotionScreen" />
     <Folder Include="Src\RPGO_PromotionScreen\Classes" />
     <Folder Include="Src\RPGO_UI" />
@@ -95,6 +99,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComRPG.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Config\XComRPGO_DEFAULT.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComSecondWaveOptions.ini">
@@ -211,6 +218,57 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\LW_Tuple\Classes\*.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Button.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Checkbox.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Dropdown.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Instance.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Label.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Setting.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_SettingsGroup.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_SettingsPage.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Slider.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_API_Spinner.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\Classes\MCM_OptionsScreen.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\MCM_API_CfgHelpers.uci">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_Defaults.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_MCMScreen.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_MCMScreenListener.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO_PromotionScreen\Classes\PromotionScreenListener.uc">
       <SubType>Content</SubType>
     </Content>
@@ -281,6 +339,9 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\DefaultPropertiesCache.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
