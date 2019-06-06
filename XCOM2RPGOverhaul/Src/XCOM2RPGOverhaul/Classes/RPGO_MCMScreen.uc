@@ -13,13 +13,13 @@ var localized string ModName;
 var localized string PageTitle;
 var localized string GroupHeader;
 
-`include(RPGO\Src\ModConfigMenuAPI\MCM_API_Includes.uci)
+`include(XCOM2RPGOverhaul/Src/ModConfigMenuAPI/MCM_API_Includes.uci)
 
 /***************************************
 Insert `MCM_API_Auto????Vars macros here
 ***************************************/
 
-`include(RPGO\Src\ModConfigMenuAPI\MCM_API_CfgHelpers.uci)
+`include(XCOM2RPGOverhaul/Src/ModConfigMenuAPI/MCM_API_CfgHelpers.uci)
 
 /********************************************************************
 Insert `MCM_API_Auto????Fns and MCM_API_AutoButtonHandler macros here

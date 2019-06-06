@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Guid>1b8fb28c-9435-4c10-902b-314829ed9108</Guid>
-    <Name>RPGO</Name>
+    <Name>XCOM2RPGOverhaul</Name>
     <Description>XCOM 2 Overhaul for more freedom in character developement.
 
 tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
@@ -46,6 +46,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\RPGO_UI\Classes" />
     <Folder Include="Src\StatUpgradeUI" />
     <Folder Include="Src\StatUpgradeUI\Classes" />
+    <Folder Include="Src\XCOM2RPGOverhaul\Classes" />
     <Folder Include="Src\XModBase_Interfaces" />
     <Folder Include="Src\XModBase_Interfaces\Classes" />
     <Folder Include="Src\XModBase_Core_2_0_1" />
@@ -53,7 +54,7 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Folder Include="Src\XModBase_Lib" />
     <Folder Include="Src\XModBase_Lib\Classes" />
     <Folder Include="Src\XCOM2RPGOverhaul\" />
-    <Folder Include="Src\XCOM2RPGOverhaul\Classes\" />
+    <Folder Include="Src\RPGO\Classes\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\DetailedSoldierListWOTC\XComEngine.ini">
@@ -260,15 +261,6 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\RPGO_Defaults.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\RPGO_MCMScreen.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\RPGO_MCMScreenListener.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\RPGO_PromotionScreen\Classes\PromotionScreenListener.uc">
       <SubType>Content</SubType>
     </Content>
@@ -341,220 +333,235 @@ tags=Gameplay, Soldier Class, Overhaul, RPG, Weapon, Item</Description>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\DefaultPropertiesCache.uc">
+    <Content Include="Src\RPGO\Classes\DefaultPropertiesCache.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_RescueProtocol.uc">
+    <Content Include="Src\RPGO\Classes\X2AbilityCharges_RescueProtocol.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCost_ActionPointsExtended.uc">
+    <Content Include="Src\RPGO\Classes\X2AbilityCost_ActionPointsExtended.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_ABB.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_ABB.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_Aptitudes.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_Aptitudes.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_LW2WotC_PassiveAbilitySet.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_LW2WotC_PassiveAbilitySet.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_SecondaryWeaponPerks.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_SecondaryWeaponPerks.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_ShadowOps.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_ShadowOps.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Action_Airstrike.uc">
+    <Content Include="Src\RPGO\Classes\X2Action_Airstrike.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2ConditionDisabled.uc">
+    <Content Include="Src\RPGO\Classes\X2ConditionDisabled.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_ArcthrowerAbilities.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_ArcthrowerAbilities.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_Fade.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_Fade.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_MissionData.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_MissionData.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NearestAlly.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NearestAlly.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotFlankable.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NotFlankable.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotConcealed.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NotConcealed.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotMoved.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NotMoved.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NotVisibeToEnemies.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NotVisibeToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_TargetAutopsy.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_TargetAutopsy.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_UnitAffectedByAcidBurn.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_UnitAffectedByAcidBurn.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_AddGrenade.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_AddGrenade.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_BlueMoveSlash.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_BlueMoveSlash.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CapStat.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_CapStat.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseandPersonal.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_CloseandPersonal.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_CloseEncounters.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_CloseEncounters.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DamageModifierCoverType.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_DamageModifierCoverType.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DangerousGame.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_DangerousGame.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DeathFromAboveRPG.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_DeathFromAboveRPG.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DefendingDamage.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_DefendingDamage.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_DropLoot.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_DropLoot.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_EquipmentStatCaps.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_EquipmentStatCaps.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Failsafe.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Failsafe.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LightEmUp.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_LightEmUp.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_HitandRun.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_HitandRun.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Infighter.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Infighter.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Latent.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Latent.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LowProfile_LW.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_LowProfile_LW.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LW2WotC_HEATGrenades.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_LW2WotC_HEATGrenades.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LW2WotC_Sentinel.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_LW2WotC_Sentinel.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_MaybeApplyDirectionalWorldDamage.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_MaybeApplyDirectionalWorldDamage.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Mercenary.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Mercenary.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_NoSquadsightPenalities.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_NoSquadsightPenalities.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Prevail.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Prevail.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RangeMultiplier.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_RangeMultiplier.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ReducedRecoveryTime.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_ReducedRecoveryTime.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_ShotgunDamageModifierRange.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_ShotgunDamageModifierRange.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_SpareBattery.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_SpareBattery.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_StealthTactics.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_StealthTactics.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2AbilityCharges_Interference.uc">
+    <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_LongWar.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_LongWar.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_Patches.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_Patches.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_RPGOverhaul.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_RPGOverhaul.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Ability_WeaponProficiencies.uc">
+    <Content Include="Src\RPGO\Classes\X2Ability_WeaponProficiencies.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_WeaponCategory.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_WeaponCategory.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2DownloadableContentInfo_XCOM2RPGOverhaul.uc">
+    <Content Include="Src\RPGO\Classes\X2DownloadableContentInfo_XCOM2RPGOverhaul.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Cutthroat.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Cutthroat.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_Interference.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_Interference.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_LockdownDamage.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_LockdownDamage.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_QuickFeet.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_QuickFeet.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_RevealUnit.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_RevealUnit.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Effect_SystemUplink.uc">
+    <Content Include="Src\RPGO\Classes\X2Effect_SystemUplink.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_StrategyListener.uc">
+    <Content Include="Src\RPGO\Classes\X2EventListener_RPG_StrategyListener.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2EventListener_RPG_TacticalListener.uc">
+    <Content Include="Src\RPGO\Classes\X2EventListener_RPG_TacticalListener.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2SecondWaveConfigOptions.uc">
+    <Content Include="Src\RPGO\Classes\X2SecondWaveConfigOptions.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2SoldierClassTemplatePlugin.uc">
+    <Content Include="Src\RPGO\Classes\X2SoldierClassTemplatePlugin.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TargetingMethod_AreaSuppression.uc">
+    <Content Include="Src\RPGO\Classes\X2TargetingMethod_AreaSuppression.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2Condition_NoReactionFire.uc">
+    <Content Include="Src\RPGO\Classes\X2Condition_NoReactionFire.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TemplateHelper_RPGOverhaul.uc">
+    <Content Include="Src\RPGO\Classes\X2TemplateHelper_RPGOverhaul.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2UniversalSoldierClassInfo.uc">
+    <Content Include="Src\RPGO\Classes\X2UniversalSoldierClassInfo.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\XGLocalizedData_RPG.uc">
+    <Content Include="Src\RPGO\Classes\XGLocalizedData_RPG.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\XMBValue_Ammo.uc">
+    <Content Include="Src\RPGO\Classes\XMBValue_Ammo.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\MCM_API_CfgHelpers.uci">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\MCM_API_Includes.uci">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_Defaults.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_MCMScreen.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_MCMScreenListener.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XModBase_Core_2_0_1\Classes\XMBAbilityCost_ActionPoints.uc">

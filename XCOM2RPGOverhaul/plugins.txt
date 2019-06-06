@@ -26,7 +26,7 @@ Add a XComClassData.ini and disable the original class like
 Add a XComRPG.ini and add the following entries
 
 [code]
-[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
+[RPGO.X2TemplateHelper_RPGOverhaul]
 +Specializations=(Order=1000*, TemplateName=CustomClassName)
 
 [CustomClassName X2UniversalSoldierClassInfo]
@@ -43,7 +43,7 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 ; when you want specs to come in forced "packages" in commanders choice or spec roulette
 +ForceComplementarySpecializations=NameOfAnotherSpec
 
-[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
+[RPGO.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="****DLCNameOriginalClassMod"
 [/code]
 
@@ -77,7 +77,7 @@ XComClassData.ini
 
 XComRPG.ini
 [code]
-[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
+[RPGO.X2TemplateHelper_RPGOverhaul]
 +Specializations=(Order=800, TemplateName=Samurai)
 
 +AbilityWeaponCategoryRestrictions = (AbilityName=Shinigami, WeaponCategories=(sword, combatknife))
@@ -101,7 +101,7 @@ ClassSpecializationIcon = "img:///SamuraiClassMod.SamuraiClassIcon"
 +AbilitySlots=(AbilityType=(AbilityName="DragonStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
 +AbilitySlots=(AbilityType=(AbilityName="WhirlwindStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
 
-[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
+[RPGO.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="WotCSamuraiClass"
 [/code]
 
