@@ -384,7 +384,7 @@ static function DeleteSpecialization(X2SoldierClassTemplate Template, name Speci
 
 	for(Index = 1; Index < Template.SoldierRanks.Length; Index++)
 	{
-		`LOG("Removing" @ SpecializationIndex @ Template.SoldierRanks[Index].AbilitySlots[SpecializationIndex].AbilityType.AbilityName,, 'RPG');
+		//`LOG("Removing" @ SpecializationIndex @ Template.SoldierRanks[Index].AbilitySlots[SpecializationIndex].AbilityType.AbilityName,, 'RPG');
 		Template.SoldierRanks[Index].AbilitySlots.Remove(SpecializationIndex, 1);
 		Template.SoldierRanks[Index].aStatProgression.Remove(SpecializationIndex, 1);
 	}

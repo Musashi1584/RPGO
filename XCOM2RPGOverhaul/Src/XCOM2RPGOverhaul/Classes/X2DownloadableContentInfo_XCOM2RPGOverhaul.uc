@@ -55,6 +55,9 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 static event OnPostTemplatesCreated()
 {
 	`LOG(default.class @ GetFuncName(),, 'DLCSort');
+
+	class'Config_Manager'.static.GetConfigFloatValue("KILLEMALL_TILE_WIDTH");
+
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 
 	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
@@ -101,7 +104,7 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 	local name Type;
 	local string PossibleValue;
 
-	PossibleValue = class'DefaultPropertiesCache'.static.GetString(InString);
+	PossibleValue = class'Config_Manager'.static.GetConfigTagValue(InString);
 	if (PossibleValue != "")
 	{
 		OutString = PossibleValue;

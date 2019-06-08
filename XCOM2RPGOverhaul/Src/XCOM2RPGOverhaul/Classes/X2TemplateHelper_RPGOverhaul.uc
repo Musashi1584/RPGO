@@ -365,7 +365,9 @@ static function PatchWeapons()
 	local X2DataTemplate ItemTemplate;
 	local X2WeaponTemplate WeaponTemplate;
 	local X2GremlinTemplate GremlinTemplate;
+	local array<string> AutofireWeaponCategories;
 	
+	AutofireWeaponCategories = class'Config_Manager'.static.GetConfigArrayValue("AUTOFIRE_WEAPON_CATEGORIES");
 
 	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
 
@@ -410,33 +412,12 @@ static function PatchWeapons()
 						break;
 					case 'rifle':
 					case 'sparkrifle':
-						if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE && default.bPatchFullAutoFire)
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-							if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
-							if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
-							if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
-						}
 						if (default.bPatchDefaultWeaponUpgradeSlots)
 						{
 							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 						}
 						break;
 					case 'bullpup':
-						if (default.bPatchFullAutoFire)
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-							if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
-							if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
-							if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
-								WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
-						}
-						
 						if (default.bPatchBullpups)
 						{
 							WeaponTemplate.iClipSize += 1;
@@ -549,6 +530,19 @@ static function PatchWeapons()
 					default:
 						//`LOG(GetFuncName() @ WeaponTemplate.GetItemFriendlyName() @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "ignored",, 'RPG');
 						break;
+				}
+
+				if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE &&
+					default.bPatchFullAutoFire &&
+					AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
+					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
+					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
+					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
 				}
 			}
 

@@ -1,23 +1,11 @@
-
-
 New swo choose weapon proficiencies
 weapon changes
 dodge changes
 stat screen
 add a covert op similar to "Increase Combat Intelligence" that improves natural aptitude
-
-cannon mobility cap -> check
-	X2Effect_PersistentStatChangeRestoreDefault
-	UnitState.SetBaseMaxStat
-	UnitState.GetStatModifiers
-
-	UnitState.GetStatModifiers(eStat_CritChance, StatMods, StatModValues);
-	for (i = 0; i < StatMods.Length; ++i)
-	{
-		AddModifier(int(StatModValues[i]), StatMods[i].GetX2Effect().FriendlyName, m_ShotBreakdown, eHit_Crit, bDebugLog);
-	}
-
-	override / hl X2Effect_ModifyStats
+exclude specs from random 
+add weight to specs for randomization
+limited random pool of specs and starting abilities
 
 Version 0.11.1
 - Added support for specialization "packages" (ForceComplementarySpecializations). 
@@ -37,3 +25,9 @@ Version 0.12.0
 - fixed prodigy and synthetic genes not applying properly (this time for good)
 - Reduced cannon mobility penalty to 15%. Will be completely replaced with a differenct mechanic soon.
 - RPGO_RebuildSelectedSoldier called with OPTIONAL_PreserveSquaddiePerks=false and with SWO Origins enabled no removes squaddie abilites properly
+
+Version 0.2.0
+- Reworked config system and added localization tags to all abilities so config changes are now correctly reflected in ability descriptions
+- Added MCM support
+- Removed mobility penalty from cannons
+- Removed autofire from rifles and bullpups

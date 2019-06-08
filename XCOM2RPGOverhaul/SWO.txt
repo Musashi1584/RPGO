@@ -26,7 +26,7 @@ SpecRouletteRandomSpecCount=3
 [/code]
 
 [h1][RPGO] Commanders Choice[/h1]
-On promotion to squaddie you can choose a limted number of specializations and abilties from the starting ability pool.
+On promotion to squaddie you can choose a limited number of specializations from the starting ability pool.
 Can be combined with Specialization Roulette and/or Training Roulette.
 
 Ini Options:

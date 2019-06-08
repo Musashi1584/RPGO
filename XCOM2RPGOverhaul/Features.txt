@@ -43,9 +43,9 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [h1]Changes to weapons[/h1]
 [list]
 [*] All weapons get 3 upgrade slots
-[*] Assault Rifles get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated.).
-[*] Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP).
-[*] Cannons get Autofire and Suppression ability, have increased damage and clip size but get a -25% mobility penalty.
+[*] Assault Rifles TODO.
+[*] Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP) but Squadsight is lost if the sniper moves that turn.
+[*] Cannons get get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated) and Suppression ability, have increased damage and clip size but get a -10% mobility penalty.
 [*] Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 [*] Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
 [*] Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending

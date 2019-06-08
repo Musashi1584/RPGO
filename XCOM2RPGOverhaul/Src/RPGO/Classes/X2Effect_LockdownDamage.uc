@@ -22,7 +22,7 @@ function GetToHitModifiers(XComGameState_Effect EffectState, XComGameState_Unit 
 			{
 				ShotInfo.ModType = eHit_Success;
 				ShotInfo.Reason = FriendlyName;
-				ShotInfo.Value = default.LOCKDOWN_TOHIT_BONUS / (1-class'X2AbilityToHitCalc_StandardAim'.default.REACTION_FINALMOD);
+				ShotInfo.Value = class'Config_Manager'.static.GetConfigIntValue("LOCKDOWN_TOHIT_BONUS") / (1-class'X2AbilityToHitCalc_StandardAim'.default.REACTION_FINALMOD);
 				ShotModifiers.AddItem(ShotInfo);
 			}
         }

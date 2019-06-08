@@ -277,7 +277,7 @@ static function EventListenerReturn OnGetItemRangeScout(Object EventData, Object
 	// make sure the weapon is battlescanner
 	if(WeaponTemplate.DataName == 'Battlescanner')
 	{
-		OverrideTuple.Data[1].i *= class'X2Ability_RPGOverhaul'.default.SCOUT_BATTLESCANNER_RANGE_SCALAR;
+		OverrideTuple.Data[1].i *= class'Config_Manager'.static.GetConfigFloatValue("SCOUT_BATTLESCANNER_RANGE_SCALAR");
 	}
 
 	return ELR_NoInterrupt;

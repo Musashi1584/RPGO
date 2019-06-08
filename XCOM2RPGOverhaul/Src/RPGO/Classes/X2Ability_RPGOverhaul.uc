@@ -3,7 +3,6 @@ class X2Ability_RPGOverhaul extends XMBAbility config(RPG);
 var localized string SuppressionTargetEffectDesc;
 var localized string SuppressionSourceEffectDesc;
 
-var config int DANGERSENSE_RADIUS;
 var config int HOTSHOT_BONUS;
 var config int EAGLEEYE_BONUS;
 var config int RUNNER_BONUS;
@@ -11,43 +10,22 @@ var config int PREATORIAN_BONUS;
 var config int MOVINGTARGET_BONUS;
 var config int CYBERADEPT_BONUS;
 var config int IRONWILL_BONUS;
-var config float STALKER_BONUS;
 var config int JUGGERNAUT_BONUS;
 var config int BULLETPROOF_BONUS;
 var config int HITMAN_BONUS;
 var config int SABOTAGE_DAMAGE_BONUS;
 var config int DEADEYE_CRIT_BONUS;
 var config int DEADEYE_HIT_BONUS;
-var config int KILLEMALL_COOLDOWN;
-var config int KILLEMALL_TILE_WIDTH;
 var config int PANOPTIC_SIGHTRANGE_BONUS;
 var config int DAMN_GOOD_GROUND_AIM_BONUS;
 var config int DAMN_GOOD_GROUND_DEFENSE_BONUS;
-var config float SCOUT_BATTLESCANNER_RANGE_SCALAR;
 var config int XENO_BIOLOGIST_DMG_BONUS;
-var config int AUTOFIRE_ENVIRONMENTAL_DAMAGE;
-var config int AUTOFIRE_DESTRUCTION_CHANCE;
-var config int AUTOFIRE_FULLCOVER_MALUS;
-var config int AUTOFIRE_HALFCOVER_MALUS;
-var config int SPOT_WEAKNESS_PIERCE_CV;
-var config int SPOT_WEAKNESS_PIERCE_MG;
-var config int SPOT_WEAKNESS_PIERCE_BM;
 var config int SPOT_WEAKNESS_CRIT;
-
-static function CreatePropertyCache()
-{
-	class'DefaultPropertiesCache'.static.SetString("DANGERSENSE_RADIUS", default.DANGERSENSE_RADIUS);
-	class'DefaultPropertiesCache'.static.SetString("STALKER_BONUS", int(default.STALKER_BONUS * 100));
-	class'DefaultPropertiesCache'.static.SetString("SCOUT_BATTLESCANNER_RANGE_SCALAR", int(default.SCOUT_BATTLESCANNER_RANGE_SCALAR * 100 - 100));
-}
-
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
-	CreatePropertyCache();
-	
 	// Random Starting Abilities
 	Templates.AddItem(XenoBiologist());
 	Templates.AddItem(Scout());
@@ -253,7 +231,7 @@ static function X2AbilityTemplate Stalker()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_DetectionModifier, default.STALKER_BONUS);
+	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'Config_Manager'.static.GetConfigFloatValue("STALKER_BONUS"));
 	
 	return Passive('Stalker', "img:///Texture2D'UILibrary_RPG.UIPerk_Stalker'", true, Effect);
 }
@@ -436,7 +414,7 @@ static function X2AbilityTemplate DangerSenseTrigger()
 	Template.AbilityTargetStyle = default.SelfTarget;
 
 	RadiusMultiTarget = new class'X2AbilityMultiTarget_Radius';
-	RadiusMultiTarget.fTargetRadius = default.DANGERSENSE_RADIUS;
+	RadiusMultiTarget.fTargetRadius = class'Config_Manager'.static.GetConfigFloatValue("DANGERSENSE_RADIUS");
 	RadiusMultiTarget.bIgnoreBlockingCover = true;
 	Template.AbilityMultiTargetStyle = RadiusMultiTarget;
 
@@ -507,7 +485,7 @@ static function X2AbilityTemplate DangerSenseSpawnTrigger()
 	TargetProperty.FailOnNonUnits = true;
 	TargetProperty.ExcludeFriendlyToSource = false;
 	TargetProperty.RequireWithinRange = true;
-	TargetProperty.WithinRange = default.DANGERSENSE_RADIUS * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER;
+	TargetProperty.WithinRange = class'Config_Manager'.static.GetConfigIntValue("DANGERSENSE_RADIUS") * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER;
 	Template.AbilityTargetConditions.AddItem(TargetProperty);
 
 	TrackingEffect = new class'X2Effect_RevealUnit';
@@ -683,21 +661,21 @@ static function X2AbilityTemplate FullAutoFire()
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_SHOT_PRIORITY + 10;
 	Template.IconImage = "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'";
 
-	GetAbilityCostActionPoints(Template).iNumPoints = 2;
+	GetAbilityCostActionPoints(Template).iNumPoints = class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_ACTIONPOINTS");
 	AmmoCost = X2AbilityCost_Ammo(GetAbilityCostByClassName(Template, 'X2AbilityCost_Ammo'));
-	AmmoCost.iAmmo += 2;
+	AmmoCost.iAmmo += class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_MIN_AMMO");
 	AmmoCost.bConsumeAllAmmo = true;
 
 	WorldDamage = new class'X2Effect_MaybeApplyDirectionalWorldDamage';
 	WorldDamage.bUseWeaponDamageType = true;
 	WorldDamage.bUseWeaponEnvironmentalDamage = false;
-	WorldDamage.EnvironmentalDamageAmount = default.AUTOFIRE_ENVIRONMENTAL_DAMAGE;
-	WorldDamage.ApplyChance = default.AUTOFIRE_DESTRUCTION_CHANCE;
-	WorldDamage.bApplyOnHit = true;
-	WorldDamage.bApplyOnMiss = false;
+	WorldDamage.EnvironmentalDamageAmount = class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_ENVIRONMENTAL_DAMAGE");
+	WorldDamage.ApplyChance = class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_DESTRUCTION_CHANCE");
+	WorldDamage.bApplyOnHit =  class'Config_Manager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_HIT");
+	WorldDamage.bApplyOnMiss = class'Config_Manager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_MISS");
 	WorldDamage.bApplyToWorldOnHit = true;
 	WorldDamage.bApplyToWorldOnMiss = true;
-	WorldDamage.bHitAdjacentDestructibles = true;
+	WorldDamage.bHitAdjacentDestructibles = class'Config_Manager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_HIT_ADJACENT_DESTRUCTIBLES");
 	WorldDamage.PlusNumZTiles = 1;
 	WorldDamage.bHitTargetTile = true;
 	Template.AddTargetEffect(WorldDamage);
@@ -714,19 +692,24 @@ static function X2AbilityTemplate AutoFireModifications()
 	local XMBEffect_ConditionalBonus	DamageBonus;
 	local X2Condition_WeaponCategory	WeaponCondition;
 	local XMBCondition_AbilityName		AbilityCondition;
+	local array<string>					WeaponCategories;
+	local string						WeaponCategory;
 
 	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
 
 	WeaponCondition = new class'X2Condition_WeaponCategory';
-	WeaponCondition.IncludeWeaponCategories.AddItem('bullpup');
-	WeaponCondition.IncludeWeaponCategories.AddItem('rifle');
-	WeaponCondition.IncludeWeaponCategories.AddItem('cannon');
+	WeaponCategories = class'Config_Manager'.static.GetConfigArrayValue("AUTOFIRE_WEAPON_CATEGORIES");
+	foreach WeaponCategories(WeaponCategory)
+	{
+		`LOG(default.class @ GetFuncName() @ "adding WeaponCategory" @ WeaponCategory,, 'RPG');
+		WeaponCondition.IncludeWeaponCategories.AddItem(name(WeaponCategory));
+	}
 
 	AbilityCondition = new class'XMBCondition_AbilityName';
 	AbilityCondition.IncludeAbilityNames.AddItem('FullAutoFire');
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(-100, eHit_Graze);
+	HitEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_TARGET_DODGE_PENALTY"), eHit_Graze);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -736,7 +719,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(default.AUTOFIRE_FULLCOVER_MALUS, eHit_Success);
+	HitEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_FULLCOVER_MALUS"), eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -747,7 +730,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(default.AUTOFIRE_HALFCOVER_MALUS, eHit_Success);
+	HitEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_HALFCOVER_MALUS"), eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -760,7 +743,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	DamageBonus = new class'XMBEffect_ConditionalBonus';
 	DamageBonus.BuildPersistentEffect(1, false, false, false);
 	DamageBonus.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
-	DamageBonus.AddDamageModifier(1);
+	DamageBonus.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("AUTOFIRE_DAMAGE_PER_AMMO"));
 	DamageBonus.ScaleValue = new class'XMBValue_Ammo';
 	DamageBonus.ScaleMax = 5;
 	DamageBonus.AbilityTargetConditions.AddItem(WeaponCondition);
@@ -907,7 +890,7 @@ static function X2AbilityTemplate KillEmAll()
 	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.KILLEMALL_COOLDOWN;
+	Cooldown.iNumTurns = class'Config_Manager'.static.GetConfigIntValue("KILLEMALL_COOLDOWN");
 	Template.AbilityCooldown = Cooldown;
 
 	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
@@ -928,7 +911,7 @@ static function X2AbilityTemplate KillEmAll()
 
 	ConeMultiTarget = new class'X2AbilityMultiTarget_Cone';
 	ConeMultiTarget.bExcludeSelfAsTargetIfWithinRadius = true;
-	ConeMultiTarget.ConeEndDiameter = default.KILLEMALL_TILE_WIDTH * class'XComWorldData'.const.WORLD_StepSize;
+	ConeMultiTarget.ConeEndDiameter = class'Config_Manager'.static.GetConfigIntValue("KILLEMALL_TILE_WIDTH", "TagValueTilesToUnits");
 	ConeMultiTarget.bUseWeaponRangeForLength = true;
 	ConeMultiTarget.fTargetRadius = 99;     //  large number to handle weapon range - targets will get filtered according to cone constraints
 	ConeMultiTarget.bIgnoreBlockingCover = true;
@@ -1278,9 +1261,9 @@ static function X2AbilityTemplate SpotWeakness()
 
 	// Create an effect that adds +15 to crit and +1/2/3 armor piercing
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_CV, eHit_Success, 'conventional');
-	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_MG, eHit_Success, 'magnetic');
-	Effect.AddArmorPiercingModifier(default.SPOT_WEAKNESS_PIERCE_BM, eHit_Success, 'beam');
+	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_CV"), eHit_Success, 'conventional');
+	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_MG"), eHit_Success, 'magnetic');
+	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_BM"), eHit_Success, 'beam');
 	Effect.AddToHitModifier(default.SPOT_WEAKNESS_CRIT, eHit_Crit);
 
 	// Restrict to the weapon matching this ability
