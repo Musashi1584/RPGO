@@ -20,7 +20,16 @@ var protectedwrite bool bIsArray;
 
 public function string GetTagParam()
 {
-	return TagParam;;
+	local string PropertyRefValue;
+
+	// Check if the tag param is referencing a property value
+	PropertyRefValue = class'Config_Manager'.static.GetConfigStringValue(TagParam);
+
+	if (PropertyRefValue != "")
+	{
+		return PropertyRefValue;
+	}
+	return TagParam;
 }
 
 public function string GetValue(optional string TagFunction)
@@ -89,6 +98,7 @@ function string GetTagFunctionValueImmediate(string TagFunction)
 	return Value;
 }
 
+// Used for tag values at runtime for better extensibility
 function string GetTagFunctionValueByEvent(string TagFunction)
 {
 	local LWTuple Tuple;

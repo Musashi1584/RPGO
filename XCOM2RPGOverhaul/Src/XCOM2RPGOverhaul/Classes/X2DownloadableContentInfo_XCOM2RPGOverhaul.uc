@@ -56,7 +56,7 @@ static event OnPostTemplatesCreated()
 {
 	`LOG(default.class @ GetFuncName(),, 'DLCSort');
 
-	class'Config_Manager'.static.GetConfigFloatValue("KILLEMALL_TILE_WIDTH");
+	//`LOG(default.class @ GetFuncName() @ class'Config_Manager'.static.GetConfigTagValue("AGRESSION_SCALE_MAX"),, 'RPG');
 
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 

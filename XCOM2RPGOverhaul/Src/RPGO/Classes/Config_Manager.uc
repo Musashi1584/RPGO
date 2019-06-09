@@ -1,13 +1,60 @@
 class Config_Manager extends JsonObject config (RPGO_SoldierSkills);
 
+struct ConfigPropertyMapEntry
+{
+	var string PropertyName;
+	var Config_TaggedConfigProperty ConfigProperty;
+};
+
 var config array<string> ConfigProperties;
+
+var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
 
 static function Config_Manager GetConfigManager()
 {
+	local Config_Manager ConfigManager;
+
+	ConfigManager = Config_Manager(class'Engine'.static.FindClassDefaultObject("Config_Manager"));
+
+	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
+	{
+		ConfigManager.DeserializeConfig();
+	}
+
 	return Config_Manager(class'Engine'.static.FindClassDefaultObject("Config_Manager"));
 }
 
-static function SetConfigString(string PropertyName, coerce string Value)
+private function DeserializeConfig()
+{
+	local Config_Manager ConfigManager;
+	local ConfigPropertyMapEntry MapEntry;
+	local JSonObject JSonObject, JSonObjectProperty;
+	local Config_TaggedConfigProperty ConfigProperty;
+	local string SerializedConfigProperty, PropertyName;
+
+	foreach ConfigProperties(SerializedConfigProperty)
+	{
+		PropertyName = GetObjectKey(SanitizeJson(SerializedConfigProperty));
+		JSonObject = class'JSonObject'.static.DecodeJson(SanitizeJson(SerializedConfigProperty));
+
+		if (JSonObject != none && PropertyName != "")
+		{
+			JSonObjectProperty = JSonObject.GetObject(PropertyName);
+
+			if (JSonObjectProperty != none &&
+				DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName) == INDEX_NONE)
+			{
+				ConfigProperty = new class'Config_TaggedConfigProperty';
+				ConfigProperty.Deserialize(JSonObjectProperty);
+				MapEntry.PropertyName = PropertyName;
+				MapEntry.ConfigProperty = ConfigProperty;
+				DeserialzedConfigPropertyMap.AddItem(MapEntry);
+			}
+		}
+	}
+}
+
+static public function SetConfigString(string PropertyName, coerce string Value)
 {
 	local Config_Manager ConfigManager;
 
@@ -15,32 +62,32 @@ static function SetConfigString(string PropertyName, coerce string Value)
 	ConfigManager.SetStringValue(PropertyName, Value);
 }
 
-static function int GetConfigIntValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function int GetConfigIntValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return int(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static function int GetConfigFloatValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function int GetConfigFloatValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return float(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static function name GetConfigNameValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function name GetConfigNameValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return name(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static function int GetConfigByteValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function int GetConfigByteValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return byte(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static function bool GetConfigBoolValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function bool GetConfigBoolValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return bool(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	local Config_TaggedConfigProperty ConfigProperty;
 
@@ -55,7 +102,7 @@ static function vector GetConfigVectorValue(coerce string PropertyName, optional
 }
 
 
-static function array<string> GetConfigArrayValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function array<string> GetConfigArrayValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	local Config_TaggedConfigProperty ConfigProperty;
 	local array<string> EmptyArray;
@@ -73,7 +120,7 @@ static function array<string> GetConfigArrayValue(coerce string PropertyName, op
 }
 
 
-static function string GetConfigStringValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function string GetConfigStringValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	local Config_TaggedConfigProperty ConfigProperty;
 	local string Value;
@@ -89,7 +136,7 @@ static function string GetConfigStringValue(coerce string PropertyName, optional
 	return  Value;
 }
 
-static function string GetConfigTagValue(coerce string PropertyName, optional string Namespace)
+static public function string GetConfigTagValue(coerce string PropertyName, optional string Namespace)
 {
 	local Config_TaggedConfigProperty ConfigProperty;
 
@@ -104,45 +151,25 @@ static function string GetConfigTagValue(coerce string PropertyName, optional st
 }
 
 
-static function Config_TaggedConfigProperty GetConfigProperty(
+static public function Config_TaggedConfigProperty GetConfigProperty(
 	coerce string PropertyName,
 	optional string Namespace
 )
 {
 	local Config_Manager ConfigManager;
-	local JSonObject JSonObject, JSonObjectProperty;
-	local Config_TaggedConfigProperty ConfigProperty;
-	local string SerializedConfigProperty;
+	local int Index;
 
 	ConfigManager = GetConfigManager();
-
-	//`LOG(default.class @ GetFuncName() @ ConfigManager @ `ShowVar(PropertyName) @ `ShowVar(Namespace),, 'RPG');
 
 	if (Namespace != "")
 	{
 		PropertyName $= ":" $ Namespace;
 	}
 
-	foreach ConfigManager.ConfigProperties(SerializedConfigProperty)
+	Index = ConfigManager.DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName);
+	if (Index != INDEX_NONE)
 	{
-		//`LOG(default.class @ GetFuncName() @ `ShowVar(SerializedConfigProperty),, 'RPG');
-
-		JSonObject = class'JSonObject'.static.DecodeJson(SanitizeJson(SerializedConfigProperty));
-
-		//`LOG(default.class @ GetFuncName() @ `ShowObj(JSonObject),, 'RPG');
-
-		if (JSonObject != none)
-		{
-			ConfigProperty = new class'Config_TaggedConfigProperty';
-			JSonObjectProperty = JSonObject.GetObject(PropertyName);
-
-			if (JSonObjectProperty != none)
-			{
-				//`LOG(default.class @ GetFuncName() @ `ShowObj(JSonObjectProperty),, 'RPG');
-				ConfigProperty.Deserialize(JSonObjectProperty);
-				return ConfigProperty;
-			}
-		}
+		return ConfigManager.DeserialzedConfigPropertyMap[Index].ConfigProperty;
 	}
 
 	`LOG(default.class @ GetFuncName() @ "could not find config property for" @ PropertyName,, 'RPG');
@@ -150,7 +177,7 @@ static function Config_TaggedConfigProperty GetConfigProperty(
 	return none;
 }
 
-static function string SanitizeJson(string Json)
+static public function string SanitizeJson(string Json)
 {
 	local string Buffer;
 
@@ -167,7 +194,7 @@ static function string SanitizeJson(string Json)
 	return Buffer;
 }
 
-static final function int CountCharacters(coerce string S, string Character)
+static public final function int CountCharacters(coerce string S, string Character)
 {
 	local int Count, Index, Max;
 	local string copy;
@@ -188,15 +215,45 @@ static final function int CountCharacters(coerce string S, string Character)
 	return Count;
 }
 
-static final function string LTrimToFirstBracket(coerce string S)
+static public final function string LTrimToFirstBracket(coerce string S)
 {
 	while (Left(S, 1) != "{")
 		S = Right(S, Len(S) - 1);
 	return S;
 }
-static final function string RTrimToFirstBracket(coerce string S)
+static public final function string RTrimToFirstBracket(coerce string S)
 {
 	while (Right(S, 1) != "}")
 		S = Left(S, Len(S) - 1);
 	return S;
+}
+
+static public final function string GetObjectKey(coerce string S)
+{
+	local int Count, Index, Max, DoubleQuoteUnicode;
+	local string Key;
+	local bool bStart, bEnd;
+
+	Max = Len(S);
+	DoubleQuoteUnicode = 34;
+
+	for (Index = 0; Index < Max; Index++)
+	{
+		if (Asc(Left(S, 1)) == DoubleQuoteUnicode)
+		{
+			if (bStart)
+				break;
+			if (!bStart)
+				bStart = true;
+		}
+
+		if (bStart && Asc(Left(S, 1)) != DoubleQuoteUnicode)
+		{
+			Key $= Left(S, 1);
+		}
+
+		S = Right(S, Len(S) - 1);
+	}
+
+	return Key;
 }

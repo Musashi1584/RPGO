@@ -370,7 +370,7 @@ static function X2AbilityTemplate ZoneOfControlReturnFire()
 	Template = class'X2Ability_DefaultAbilitySet'.static.PistolReturnFire('ZoneOfControlReturnFire');
 	Template.IconImage = "img:///Texture2D'UILibrary_RPG.LW_AbilityDangerZone'";
 	// Restrict the shot to units within 7 tiles
-	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(7));
+	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(class'Config_Manager'.static.GetConfigIntValue("ZONE_OF_CONTROL_TARGET_WITHIN_TILES")));
 
 	return Template;
 }

@@ -5,18 +5,12 @@ var config int INTERFERENCE_MG_CHARGES;
 var config int INTERFERENCE_BM_CHARGES;
 var config int INTERFERENCE_ACTION_POINTS;
 
-var config int CUTTHROAT_BONUS_CRIT_CHANCE;
-var config int CUTTHROAT_BONUS_CRIT_DAMAGE;
-
 var config int RESCUE_CV_CHARGES;
 var config int RESCUE_MG_CHARGES;
 var config int RESCUE_BM_CHARGES;
 
 var config int BOMBARD_BONUS_RANGE_TILES;
 var config int FAILSAFE_PCT_CHANCE;
-
-var config int TACTICAL_SENSE_DEFENSE;
-var config int TACTICAL_SENSE_SCALE_MAX;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -283,24 +277,16 @@ static function X2AbilityTemplate Aggression()
 	local XMBEffect_ConditionalBonus Effect;
 	local XMBValue_Visibility Value;
 	 
-	// Create a value that will count the number of visible units
 	Value = new class'XMBValue_Visibility';
 	Value.bCountEnemies = true;
 
-	// Create a conditional bonus effect
 	Effect = new class'XMBEffect_ConditionalBonus';
-
-	// The effect adds +3 defense per enemy unit
-	Effect.AddToHitModifier(5, eHit_Crit);
-
-	// The effect scales with the number of visible enemy units, to a maximum of 6 (for +30 Crit).
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("AGRESSION_CRIT_CHANCE"), eHit_Crit);
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = 6;
-
-	// Create the template using a helper function
+	Effect.ScaleMax = class'Config_Manager'.static.GetConfigIntValue("AGRESSION_SCALE_MAX");
+	
 	return Passive('RpgAggression', "img:///UILibrary_RPG.LW_AbilityAggression", true, Effect);
 }
-
 
 static function X2AbilityTemplate TacticalSense()
 {
@@ -314,12 +300,12 @@ static function X2AbilityTemplate TacticalSense()
 	// Create a conditional bonus effect
 	Effect = new class'XMBEffect_ConditionalBonus';
 
-	// The effect adds +10 Dodge per enemy unit
-	Effect.AddToHitAsTargetModifier(default.TACTICAL_SENSE_DEFENSE, eHit_Success);
+	// The effect adds x defense per enemy unit
+	Effect.AddToHitAsTargetModifier(class'Config_Manager'.static.GetConfigIntValue("TACTICAL_SENSE_DEFENSE") * -1, eHit_Success);
 
 	// The effect scales with the number of visible enemy units, to a maximum of 5 (for +15 Defense).
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = default.TACTICAL_SENSE_SCALE_MAX;
+	Effect.ScaleMax = class'Config_Manager'.static.GetConfigIntValue("TACTICAL_SENSE_SCALE_MAX");
 
 	// Create the template using a helper function
 	return Passive('RpgTacticalSense', "img:///UILibrary_RPG.LW_AbilityTacticalSense", true, Effect);
@@ -343,8 +329,8 @@ static function X2AbilityTemplate AddCutthroatAbility()
 	Template.bCrossClassEligible = false;
 	ArmorPiercingBonus = new class 'X2Effect_Cutthroat';
 	ArmorPiercingBonus.BuildPersistentEffect (1, true, false);
-	ArmorPiercingBonus.Bonus_Crit_Chance = default.CUTTHROAT_BONUS_CRIT_CHANCE;
-	ArmorPiercingBonus.Bonus_Crit_Damage = default.CUTTHROAT_BONUS_CRIT_DAMAGE;
+	ArmorPiercingBonus.Bonus_Crit_Chance = class'Config_Manager'.static.GetConfigIntValue("CUTTHROAT_BONUS_CRIT_CHANCE");
+	ArmorPiercingBonus.Bonus_Crit_Damage = class'Config_Manager'.static.GetConfigIntValue("CUTTHROAT_BONUS_CRIT_DAMAGE");
 	ArmorPiercingBonus.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
 	Template.AddTargetEffect (ArmorPiercingBonus);
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;	
