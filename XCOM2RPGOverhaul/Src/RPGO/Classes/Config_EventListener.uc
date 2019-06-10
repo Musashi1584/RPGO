@@ -34,6 +34,7 @@ static function EventListenerReturn OnTagValue(Object EventData, Object EventSou
 	local LWTuple Tuple;
 	local Config_TaggedConfigProperty Prop;
 	local int Value;
+	local array<string> ArrayValue;
 
 	Tuple = LWTuple(EventData);
 	Prop = Config_TaggedConfigProperty(EventSource);
@@ -65,6 +66,11 @@ static function EventListenerReturn OnTagValue(Object EventData, Object EventSou
 		case 'TagValueParamMultiplication':
 			 Value = int(Prop.GetValue()) * int(Prop.GetTagParam());
 			 break;
+		case 'TagArrayValue':
+			ArrayValue = Prop.GetArrayValue();
+			Tuple.Data[0].s = ArrayValue[int(Prop.GetTagParam())];
+			return ELR_NoInterrupt;
+			break;
 		default:
 			break;
 	}

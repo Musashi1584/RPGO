@@ -1,26 +1,7 @@
-class X2Ability_RPGOverhaul extends XMBAbility config(RPG);
+class X2Ability_RPGOverhaul extends XMBAbility;
 
 var localized string SuppressionTargetEffectDesc;
 var localized string SuppressionSourceEffectDesc;
-
-var config int HOTSHOT_BONUS;
-var config int EAGLEEYE_BONUS;
-var config int RUNNER_BONUS;
-var config int PREATORIAN_BONUS;
-var config int MOVINGTARGET_BONUS;
-var config int CYBERADEPT_BONUS;
-var config int IRONWILL_BONUS;
-var config int JUGGERNAUT_BONUS;
-var config int BULLETPROOF_BONUS;
-var config int HITMAN_BONUS;
-var config int SABOTAGE_DAMAGE_BONUS;
-var config int DEADEYE_CRIT_BONUS;
-var config int DEADEYE_HIT_BONUS;
-var config int PANOPTIC_SIGHTRANGE_BONUS;
-var config int DAMN_GOOD_GROUND_AIM_BONUS;
-var config int DAMN_GOOD_GROUND_DEFENSE_BONUS;
-var config int XENO_BIOLOGIST_DMG_BONUS;
-var config int SPOT_WEAKNESS_CRIT;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -83,7 +64,7 @@ static function X2AbilityTemplate XenoBiologist()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.XENO_BIOLOGIST_DMG_BONUS);
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("XENO_BIOLOGIST_DMG_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
 
 	return Passive('XenoBiologist', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
@@ -107,8 +88,8 @@ static function X2AbilityTemplate DamnGoodGround()
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.EffectName = 'DamnGoodGround';
 
-	Effect.AddToHitModifier(default.DAMN_GOOD_GROUND_AIM_BONUS);
-	Effect.AddToHitAsTargetModifier(default.DAMN_GOOD_GROUND_DEFENSE_BONUS * -1);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("DAMN_GOOD_GROUND_AIM_BONUS"));
+	Effect.AddToHitAsTargetModifier(class'Config_Manager'.static.GetConfigIntValue("DAMN_GOOD_GROUND_DEFENSE_BONUS") * -1);
 
 	Effect.AbilityTargetConditions.AddItem(default.HeightDisadvantageCondition);
 	Effect.AbilityTargetConditionsAsTarget.AddItem(default.HeightAdvantageCondition);
@@ -124,7 +105,7 @@ static function X2AbilityTemplate Panoptic()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_SightRadius, default.PANOPTIC_SIGHTRANGE_BONUS);
+	Effect.AddPersistentStatChange(eStat_SightRadius, class'Config_Manager'.static.GetConfigIntValue("PANOPTIC_SIGHTRANGE_BONUS"));
 
 	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPG.UIPerk_Panoptic'", false, Effect);
 }
@@ -134,7 +115,7 @@ static function X2AbilityTemplate Hitman()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(default.HITMAN_BONUS, eHit_Crit);
+	BonusEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("HITMAN_BONUS"), eHit_Crit);
 	BonusEffect.AbilityTargetConditions.AddItem(default.FlankedCondition);
 
 	return Passive('Hitman', "img:///Texture2D'UILibrary_RPG.UIPerk_Hitman'", false, BonusEffect);
@@ -204,9 +185,9 @@ static function X2AbilityTemplate Bulletproof()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Defense, default.BULLETPROOF_BONUS);
+	Effect.AddPersistentStatChange(eStat_Defense, class'Config_Manager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
 	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPG.UIPerk_Bulletproof'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, default.BULLETPROOF_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'Config_Manager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
 
 	return Template;
 }
@@ -218,10 +199,10 @@ static function X2AbilityTemplate Juggernaut()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_HP, default.JUGGERNAUT_BONUS);
+	Effect.AddPersistentStatChange(eStat_HP, class'Config_Manager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
 	
 	Template = Passive('Juggernaut', "img:///Texture2D'UILibrary_RPG.UIPerk_Juggernaught'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, default.JUGGERNAUT_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, class'Config_Manager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
 
 	return Template;
 }
@@ -242,9 +223,9 @@ static function X2AbilityTemplate IronWill()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Will, default.IRONWILL_BONUS);
+	Effect.AddPersistentStatChange(eStat_Will, class'Config_Manager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPG.UIPerk_IronWill'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, default.IRONWILL_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'Config_Manager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 
 	return Template;
 }
@@ -255,9 +236,9 @@ static function X2AbilityTemplate CyberAdept()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Hacking, default.CYBERADEPT_BONUS);
+	Effect.AddPersistentStatChange(eStat_Hacking, class'Config_Manager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPG.UIPerk_CyberAdept'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, default.CYBERADEPT_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'Config_Manager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 
 	return Template;
 }
@@ -268,9 +249,9 @@ static function X2AbilityTemplate MovingTarget()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Dodge, default.MOVINGTARGET_BONUS);
+	Effect.AddPersistentStatChange(eStat_Dodge, class'Config_Manager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPG.UIPerk_MovingTarget'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, default.MOVINGTARGET_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'Config_Manager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 
 	return Template;
 }
@@ -280,7 +261,7 @@ static function X2AbilityTemplate Praetorian()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(default.PREATORIAN_BONUS, eHit_Success);
+	BonusEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("PREATORIAN_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.MeleeCondition);
 
 	return Passive('Praetorian', "img:///Texture2D'UILibrary_RPG.UIPerk_Praetorian'", false, BonusEffect);
@@ -293,10 +274,10 @@ static function X2AbilityTemplate Runner()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, default.RUNNER_BONUS);
+	Effect.AddPersistentStatChange(eStat_Mobility, class'Config_Manager'.static.GetConfigIntValue("RUNNER_BONUS"));
 
 	Template = Passive('Runner', "img:///UILibrary_RPG.UIPerk_Runner", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.RUNNER_BONUS);
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, class'Config_Manager'.static.GetConfigIntValue("RUNNER_BONUS"));
 
 	return Template;
 }
@@ -307,7 +288,7 @@ static function X2AbilityTemplate EagleEye()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(default.EAGLEEYE_BONUS, eHit_Success);
+	BonusEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("EAGLEEYE_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(new class'X2Condition_NoReactionFire');
 
 	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPG.UIPerk_EagleEye'", false, BonusEffect);
@@ -321,7 +302,7 @@ static function X2AbilityTemplate HotShot()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(default.HOTSHOT_BONUS, eHit_Success);
+	BonusEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("HOTSHOT_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
 
 	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPG.UIPerk_Hotshot'", false, BonusEffect);
@@ -600,7 +581,7 @@ static function X2AbilityTemplate Sabotage()
 	// Create a conditional bonus
 	Effect = new class'XMBEffect_ConditionalBonus';
 
-	Effect.AddDamageModifier(default.SABOTAGE_DAMAGE_BONUS);
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SABOTAGE_DAMAGE_BONUS"));
 
 	// The bonus only applies to attacks with the weapon associated with this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
@@ -698,7 +679,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
 
 	WeaponCondition = new class'X2Condition_WeaponCategory';
-	WeaponCategories = class'Config_Manager'.static.GetConfigArrayValue("AUTOFIRE_WEAPON_CATEGORIES");
+	WeaponCategories = class'Config_Manager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
 	foreach WeaponCategories(WeaponCategory)
 	{
 		`LOG(default.class @ GetFuncName() @ "adding WeaponCategory" @ WeaponCategory,, 'RPG');
@@ -864,8 +845,8 @@ static function X2AbilityTemplate DeadeyeAbility()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddToHitModifier(default.DEADEYE_CRIT_BONUS, eHit_Crit);
-	Effect.AddToHitModifier(default.DEADEYE_HIT_BONUS, eHit_Success);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("DEADEYE_CRIT_BONUS"), eHit_Crit);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("DEADEYE_HIT_BONUS"), eHit_Success);
 	Effect.AbilityTargetConditions.AddItem(new class'X2Condition_NotFlankable');
 
 	return Passive('Deadeye', "img:///UILibrary_RPG.UIPerk_deadeye", true, Effect);
@@ -1264,7 +1245,7 @@ static function X2AbilityTemplate SpotWeakness()
 	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_CV"), eHit_Success, 'conventional');
 	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_MG"), eHit_Success, 'magnetic');
 	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_BM"), eHit_Success, 'beam');
-	Effect.AddToHitModifier(default.SPOT_WEAKNESS_CRIT, eHit_Crit);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("SPOT_WEAKNESS_CRIT"), eHit_Crit);
 
 	// Restrict to the weapon matching this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);

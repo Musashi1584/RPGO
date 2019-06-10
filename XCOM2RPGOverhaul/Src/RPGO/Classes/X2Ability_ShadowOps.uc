@@ -1,7 +1,4 @@
-class X2Ability_ShadowOps extends XMBAbility config(RPG);
-
-var config WeaponDamageValue AIRSTRIKEDAMAGE;
-var config int AIRSTRIKECHARGES;
+class X2Ability_ShadowOps extends XMBAbility;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -108,7 +105,7 @@ static function X2AbilityTemplate Airstrike()
 	Template.AbilityMultiTargetStyle = MultiTarget;
 	
 	Effect = new class'X2Effect_ApplyWeaponDamage';
-	Effect.EffectDamageValue = default.AIRSTRIKEDAMAGE;
+	Effect.EffectDamageValue = class'Config_Manager'.static.GetConfigDamageValue("AIRSTRIKEDAMAGE");
 	Effect.bExplosiveDamage = true;
 	Effect.bIgnoreBaseDamage = true;
 	Effect.EnvironmentalDamageAmount = 40;
@@ -136,7 +133,7 @@ static function X2AbilityTemplate Airstrike()
 
 	Template.bCrossClassEligible = false;
 
-	AddCharges(Template, default.AIRSTRIKECHARGES);
+	AddCharges(Template, class'Config_Manager'.static.GetConfigIntValue("AIRSTRIKECHARGES"));
 
 	return Template;	
 }

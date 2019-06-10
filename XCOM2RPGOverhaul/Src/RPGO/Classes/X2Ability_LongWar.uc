@@ -1,21 +1,11 @@
-class X2Ability_LongWar extends XMBAbility config(RPG);
-
-var config int INTERFERENCE_CV_CHARGES;
-var config int INTERFERENCE_MG_CHARGES;
-var config int INTERFERENCE_BM_CHARGES;
-var config int INTERFERENCE_ACTION_POINTS;
-
-var config int RESCUE_CV_CHARGES;
-var config int RESCUE_MG_CHARGES;
-var config int RESCUE_BM_CHARGES;
-
-var config int BOMBARD_BONUS_RANGE_TILES;
-var config int FAILSAFE_PCT_CHANCE;
+class X2Ability_LongWar extends XMBAbility;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
+	Templates.AddItem(Sentinel());
+	Templates.AddItem(HEATWarheads());
 	Templates.AddItem(FieldSurgeon());
 	Templates.AddItem(Bombard());
 	Templates.AddItem(Failsafe());
@@ -36,6 +26,44 @@ static function array<X2DataTemplate> CreateTemplates()
 
 	return Templates;
 }
+
+
+// Perk name:		Sentinel
+// Perk effect:		When in overwatch, you may take additional reaction shots.
+// Localized text:	"When in overwatch, you may take <Ability:SENTINEL_LW_USES_PER_TURN/> reaction shots."
+// Config:			(AbilityName="LW2WotC_Sentinel", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+static function X2AbilityTemplate Sentinel()
+{
+	local X2AbilityTemplate                 Template;	
+	local X2Effect_LW2WotC_Sentinel			PersistentEffect;
+
+	// Sentinel effect
+	PersistentEffect = new class'X2Effect_LW2WotC_Sentinel';
+
+	// Create the template using a helper function
+	Template = Passive('LW2WotC_Sentinel', "img:///UILibrary_LW_PerkPack.LW_AbilitySentinel", false, PersistentEffect);
+	Template.bIsPassive = false;
+
+	return Template;
+}
+
+// Perk name:		HEAT Warheads
+// Perk effect:		Your grenades now pierce and shred some armor.
+// Localized text:	"Your grenades now pierce up to <Ability:HEAT_WARHEADS_PIERCE> points of armor and shred <Ability:HEAT_WARHEADS_SHRED> additional point of armor."
+// Config:			(AbilityName="LW2WotC_HEATWarheads")
+static function X2AbilityTemplate HEATWarheads()
+{
+	local X2Effect_LW2WotC_HEATGrenades			HEATEffect;
+
+	// Effect granting bonus pierce and shred to grenades
+	HEATEffect = new class 'X2Effect_LW2WotC_HEATGrenades';
+	HEATEffect.Pierce = class'Config_Manager'.static.GetConfigIntValue("HEAT_WARHEADS_PIERCE");
+	HEATEffect.Shred = class'Config_Manager'.static.GetConfigIntValue("HEAT_WARHEADS_SHRED");
+
+	// Create the template using a helper function
+	return Passive('LW2WotC_HEATWarheads', "img:///UILibrary_LW_PerkPack.LW_AbilityHEATWarheads", false, HEATEffect);
+}
+
 
 static function X2AbilityTemplate FieldSurgeon()
 {
@@ -112,8 +140,7 @@ static function X2AbilityTemplate Lethal()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(2);
-	//Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("LETHAL_DAMAGE_BONUS"));
 
 	return Passive('Lethal', "img:///Texture2D'UILibrary_RPG.LW_AbilityKinetic'", true, Effect);
 }
@@ -150,9 +177,9 @@ static function X2AbilityTemplate BringEmOn()
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	
-	Effect.AddDamageModifier(0.5, eHit_Crit);
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigFloatValue("BRING_EM_ON_CRIT_DAMAGE"), eHit_Crit);
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = 8;
+	Effect.ScaleMax = class'Config_Manager'.static.GetConfigIntValue("BRING_EM_ON_CRIT_SCALE_MAX");
 
 	return Passive('BringEmOn', "img:///Texture2D'UILibrary_RPG.LW_AbilityBringEmOn'", true, Effect);
 }
@@ -229,9 +256,9 @@ static function X2AbilityTemplate AddInterferenceAbility()
 	Template.bCrossClassEligible = false;
 
 	Charges = new class 'X2AbilityCharges_Interference';
-	Charges.CV_Charges = default.INTERFERENCE_CV_CHARGES;
-	Charges.MG_Charges = default.INTERFERENCE_MG_CHARGES;
-	Charges.BM_Charges = default.INTERFERENCE_BM_CHARGES;
+	Charges.CV_Charges = class'Config_Manager'.static.GetConfigIntValue("INTERFERENCE_CV_CHARGES");
+	Charges.MG_Charges = class'Config_Manager'.static.GetConfigIntValue("INTERFERENCE_MG_CHARGES");
+	Charges.BM_Charges = class'Config_Manager'.static.GetConfigIntValue("INTERFERENCE_BM_CHARGES");
 	Template.AbilityCharges = Charges;
 
 	ChargeCost = new class'X2AbilityCost_Charges';
@@ -243,7 +270,7 @@ static function X2AbilityTemplate AddInterferenceAbility()
 	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
 
 	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = default.INTERFERENCE_ACTION_POINTS;
+	ActionPointCost.iNumPoints = class'Config_Manager'.static.GetConfigIntValue("INTERFERENCE_ACTION_POINTS");
 	ActionPointCost.bConsumeAllPoints = false;
 	Template.AbilityCosts.AddItem(ActionPointCost);
 
@@ -424,9 +451,9 @@ static function X2AbilityTemplate AddRescueProtocol()
 	Template.bCrossClassEligible = false;
 
 	Charges = new class 'X2AbilityCharges_RescueProtocol';
-	Charges.CV_Charges = default.RESCUE_CV_CHARGES;
-	Charges.MG_Charges = default.RESCUE_MG_CHARGES;
-	Charges.BM_Charges = default.RESCUE_BM_CHARGES;
+	Charges.CV_Charges = class'Config_Manager'.static.GetConfigIntValue("RESCUE_CV_CHARGES");
+	Charges.MG_Charges = class'Config_Manager'.static.GetConfigIntValue("RESCUE_MG_CHARGES");
+	Charges.BM_Charges = class'Config_Manager'.static.GetConfigIntValue("RESCUE_BM_CHARGES");
 	Template.AbilityCharges = Charges;
 
 	ChargeCost = new class'X2AbilityCost_Charges';
@@ -543,7 +570,6 @@ static function X2AbilityTemplate HitandRun()
 	HitandRunEffect.BuildPersistentEffect(1, true, false, false);
 	HitandRunEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 	HitandRunEffect.DuplicateResponse = eDupe_Ignore;
-	HitandRunEffect.HITANDRUN_FULLACTION = true;
 	Template.AddTargetEffect(HitandRunEffect);
 	Template.bCrossClassEligible = false;
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;

@@ -367,7 +367,7 @@ static function PatchWeapons()
 	local X2GremlinTemplate GremlinTemplate;
 	local array<string> AutofireWeaponCategories;
 	
-	AutofireWeaponCategories = class'Config_Manager'.static.GetConfigArrayValue("AUTOFIRE_WEAPON_CATEGORIES");
+	AutofireWeaponCategories = class'Config_Manager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
 
 	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
 

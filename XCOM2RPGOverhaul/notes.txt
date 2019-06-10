@@ -7,6 +7,18 @@ exclude specs from random
 add weight to specs for randomization
 limited random pool of specs and starting abilities
 
+Regex for config replacement:
+search: ^([A-Z_]{2,})+(=)+([-0-9\.0-9f]*)
+replace: +ConfigProperties = {"$1":{"Value":"$3"}}
+
+In abilities (attention which properties are replaced)
+search: default\.([A-Z_]+)
+replace: class'Config_Manager'.static.GetConfigIntValue("$1")
+
+Surround with ability tag:
+search: ([A-Z_]{2,}) 
+replace: <Ability:$1/>
+
 Version 0.11.1
 - Added support for specialization "packages" (ForceComplementarySpecializations). 
 - Choosing starting perks is a separate option (RPGO Origins) now.
@@ -31,3 +43,7 @@ Version 0.2.0
 - Added MCM support
 - Removed mobility penalty from cannons
 - Removed autofire from rifles and bullpups
+
+ LONE_WARRIOR_MOBILITY 
+
+ INFORMANT_CRIT 

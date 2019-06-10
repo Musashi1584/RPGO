@@ -1,84 +1,4 @@
-class X2Ability_Aptitudes extends XMBAbility config(MINTAptitudes);
-
-var config int GUTTERSNIPE_CRIT;
-var config int GUTTERSNIPE_SHRED_CV;
-var config int GUTTERSNIPE_SHRED_MG;
-var config int GUTTERSNIPE_SHRED_BM;
-var config int WARDEN_REACTION_AIM;
-var config int ACTIVIST_DETECTION_MOD;
-var config int WAR_HERO_DAMAGE_BONUS;
-var config int LONE_WARRIOR_CRIT;
-var config int LONE_WARRIOR_RADIUS;
-var config float LONE_WARRIOR_DETECTION_MOD;
-var config int LONE_WARRIOR_MOBILITY;
-var config int OLD_GUARD_DAMAGE_BONUS;
-var config int OLD_GUARD_CRIT_DAMAGE_BONUS;
-var config int OLD_GUARD_ARMOR_PIERCE;
-var config float MILITIA_RANGE_MULTIPLIER;
-var config int MILITIA_AIM;
-var config int MILITIA_SIGHT_RADIUS;
-var config int INFORMANT_CRIT;
-var config int INFORMANT_HACK;
-var config int INFORMANT_MOBILITY;
-var config int GUERILLA_AIM;
-var config int GUERILLA_PIERCE_CV;
-var config int GUERILLA_PIERCE_MG;
-var config int GUERILLA_PIERCE_BM;
-var config int GUERILLA_DEFENSE;
-var config int SURVIVOR_DAMAGE_THRESHOLD;
-var config int SURVIVOR_DAMAGE_BONUS;
-var config int OUTCAST_FLANKING_AIM;
-var config int OUTCAST_DODGE;
-var config int REVOLUTIONARY_DAMAGE_CV;
-var config int REVOLUTIONARY_DAMAGE_MG;
-var config int REVOLUTIONARY_DAMAGE_BM;
-var config int SYSADMIN_DAMAGE_CV;
-var config int SYSADMIN_DAMAGE_MG;
-var config int SYSADMIN_DAMAGE_BM;
-var config int SYSADMIN_ROBOT_DEFENSE;
-var config int SYSADMIN_HACKING;
-var config int PACIFIST_DEFENSE;
-var config int PACIFIST_DAMAGE_MOD;
-var config int ANARCHIST_CHARGES;
-var config int ANARCHIST_CRIT;
-var config int ANARCHIST_CRIT_MAX;
-var config int VANGUARD_DODGE;
-var config int VANGUARD_AIM;
-var config int VANGUARD_CRIT;
-var config int VANGUARD_RANGE;
-var config int REBEL_DAMAGE_CV;
-var config int REBEL_DAMAGE_MG;
-var config int REBEL_DAMAGE_BM;
-var config int INSURGENT_ARMOR_PIERCE;
-var config int XENOPHOBE_DAMAGE_CV;
-var config int XENOPHOBE_DAMAGE_MG;
-var config int XENOPHOBE_DAMAGE_BM;
-var config float FORTUNE_HUNTER_DAMAGE_MOD;
-var config int RENEGADE_CRIT;
-var config float RENEGADE_DAMAGE_REDUCTION;
-var config int PIONEER_DAMAGE_LASER;
-var config int PIONEER_DAMAGE_MG;
-var config int PIONEER_DAMAGE_COIL;
-var config int PIONEER_DAMAGE_BM;
-var config int PROFESSIONAL_DAMAGE_BONUS;
-var config int TACTICIAN_DAMAGE_CV;
-var config int TACTICIAN_DAMAGE_MG;
-var config int TACTICIAN_DAMAGE_BM;
-var config int MERCENARY_CRIT_CAP;
-var config int MERCENARY_CRIT_SUPPLY_FACTOR;
-var config int SABOTEUR_CRIT_CAP;
-var config int SABOTEUR_CRIT_INTEL_FACTOR;
-var config int SCRAPPER_CRIT;
-var config int HERETIC_DAMAGE_BONUS;
-var config int OVERSEER_SHRED;
-var config int VIGILANTE_CRIT_DAMAGE_BONUS;
-var config int TOXICOLOGIST_DAMAGE_BONUS;
-var config int ELECTRICIAN_DAMAGE_BONUS;
-var config int CHEMIST_DAMAGE_BONUS;
-var config int CHEMIST_SHRED_BONUS_CV;
-var config int CHEMIST_SHRED_BONUS_MG;
-var config int CHEMIST_SHRED_BONUS_BM;
-var config int PYROMANIAC_DAMAGE_BONUS;
+class X2Ability_Aptitudes extends XMBAbility;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -146,10 +66,10 @@ static function X2AbilityTemplate Guttersnipe()
 	local X2Condition_MissionData Condition;
 
 	FlankEffect = new class'XMBEffect_ConditionalBonus';
-	FlankEffect.AddToHitModifier(default.GUTTERSNIPE_CRIT, eHit_Crit);
-	FlankEffect.AddShredModifier(default.GUTTERSNIPE_SHRED_CV, eHit_Success, 'conventional');
-	FlankEffect.AddShredModifier(default.GUTTERSNIPE_SHRED_MG, eHit_Success, 'magnetic');
-	FlankEffect.AddShredModifier(default.GUTTERSNIPE_SHRED_BM, eHit_Success, 'beam');
+	FlankEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("GUTTERSNIPE_CRIT"), eHit_Crit);
+	FlankEffect.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("GUTTERSNIPE_SHRED_CV"), eHit_Success, 'conventional');
+	FlankEffect.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("GUTTERSNIPE_SHRED_MG"), eHit_Success, 'magnetic');
+	FlankEffect.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("GUTTERSNIPE_SHRED_BM"), eHit_Success, 'beam');
 
 	FlankEffect.AbilityTargetConditions.AddItem(default.FlankedCondition);
 
@@ -157,7 +77,7 @@ static function X2AbilityTemplate Guttersnipe()
 
 	Effect = new class 'X2Effect_PersistentStatChange';
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_Mobility, 3);
+	Effect.AddPersistentStatChange(eStat_Mobility, class'Config_Manager'.static.GetConfigIntValue("GUTTERSNIPE_MOBILITY"));
 	Condition = new class'X2Condition_MissionData';
 	Condition.bSupply = true;
 	Condition.AllowedPlots.AddItem("Shanty");
@@ -179,7 +99,7 @@ static function X2AbilityTemplate Warden()
 
 	// Create a conditional bonus
 	ReactionFire = new class'X2Effect_ModifyReactionFire';
-	ReactionFire.ReactionModifier = default.WARDEN_REACTION_AIM;
+	ReactionFire.ReactionModifier = class'Config_Manager'.static.GetConfigIntValue("WARDEN_REACTION_AIM");
 
 	return Passive('APT_Warden', "img:///UILibrary_PerkIcons.UIPerk_opportunist", true, ReactionFire);
 }
@@ -213,7 +133,7 @@ static function X2AbilityTemplate Activist()
 	Effect = new class'X2Effect_PersistentStatChange';
 	Effect.EffectName = 'Activist';
 
-	Effect.AddPersistentStatChange(eStat_DetectionRadius, default.ACTIVIST_DETECTION_MOD);
+	Effect.AddPersistentStatChange(eStat_DetectionRadius, class'Config_Manager'.static.GetConfigIntValue("ACTIVIST_DETECTION_MOD"));
 	Effect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, true, , Template.AbilitySourceName);
 	Effect.BuildPersistentEffect(1, true, false);
 	Effect.DuplicateResponse = eDupe_Ignore;
@@ -232,7 +152,7 @@ static function X2AbilityTemplate Activist()
 
 	Effect = new class 'X2Effect_PersistentStatChange';
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_DetectionRadius, 0.5);
+	Effect.AddPersistentStatChange(eStat_DetectionRadius, class'Config_Manager'.static.GetConfigFloatValue("ACTIVIST_DETECTION_MOD_CIVS"));
 	
 	Condition = new class'X2Condition_MissionData';
 	Condition.AllowedPlots.AddItem("CityCenter");
@@ -255,7 +175,7 @@ static function X2AbilityTemplate NobleScion()
 	Effect = new class'X2Effect_SystemUplink';
 	Effect.EffectName = 'APT_NobleScion';
 	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.AddPercentDamageModifier(default.WAR_HERO_DAMAGE_BONUS);
+	Effect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("WAR_HERO_DAMAGE_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
 
 	return SquadPassive('APT_NobleScion', "img:///UILibrary_PerkIcons.UIPerk_advent_commandaura", false, Effect);
@@ -273,11 +193,11 @@ static function X2AbilityTemplate LoneWolf()
 	local X2Condition_MissionData Condition2;
 
 	AllyEffect = new class'XMBEffect_ConditionalBonus';
-	AllyEffect.AddToHitModifier(default.LONE_WARRIOR_CRIT, eHit_Crit);
+	AllyEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("LONE_WARRIOR_CRIT"), eHit_Crit);
 	
 	Condition = new class 'X2Condition_NearestAlly';
 	Condition.bBeyond = true;
-	Condition.TileDistance = default.LONE_WARRIOR_RADIUS;
+	Condition.TileDistance = class'Config_Manager'.static.GetConfigIntValue("LONE_WARRIOR_RADIUS");
 	AllyEffect.AbilityShooterConditions.AddItem(Condition);
 	
 	// Create the template using a helper function
@@ -286,8 +206,8 @@ static function X2AbilityTemplate LoneWolf()
 	Effect = new class 'X2Effect_PersistentStatChange';
 
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_DetectionModifier, default.LONE_WARRIOR_DETECTION_MOD);
-	Effect.AddPersistentStatChange(eStat_Mobility, default.LONE_WARRIOR_MOBILITY);
+	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'Config_Manager'.static.GetConfigFloatValue("LONE_WARRIOR_DETECTION_MOD"));
+	Effect.AddPersistentStatChange(eStat_Mobility, class'Config_Manager'.static.GetConfigIntValue("LONE_WARRIOR_MOBILITY"));
 	Condition2 = new class'X2Condition_MissionData';
 	Condition2.bNeutralize = true;
 	Effect.TargetConditions.AddItem(Condition2);
@@ -304,9 +224,9 @@ static function X2AbilityTemplate OldGuard()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.OLD_GUARD_DAMAGE_BONUS, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.OLD_GUARD_CRIT_DAMAGE_BONUS, eHit_Crit, 'conventional');
-	Effect.AddArmorPiercingModifier(default.OLD_GUARD_ARMOR_PIERCE, eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("OLD_GUARD_DAMAGE_BONUS"), eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("OLD_GUARD_CRIT_DAMAGE_BONUS"), eHit_Crit, 'conventional');
+	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("OLD_GUARD_ARMOR_PIERCE"), eHit_Success, 'conventional');
 
 	return Passive('APT_OldGuard', "img:///UILibrary_PerkIcons.UIPerk_Timeshift", true, Effect);
 }
@@ -322,14 +242,14 @@ static function X2AbilityTemplate Militia()
 	local X2Effect_PersistentStatChange		Effect;
 
 	RangeEffect = new class'X2Effect_RangeMultiplier';
-	RangeEffect.RangeMultiplier=default.MILITIA_RANGE_MULTIPLIER;
+	RangeEffect.RangeMultiplier=class'Config_Manager'.static.GetConfigFloatValue("MILITIA_RANGE_MULTIPLIER");
 	RangeEffect.BuildPersistentEffect(1, true, false, false);
 
 	Template = Passive('APT_Militia', "img:///UILibrary_PerkIcons.UIPerk_Urban_Aim", true, RangeEffect);
 
 	Effect = new class'X2Effect_PersistentStatChange';
-	Effect.AddPersistentStatChange(eStat_Offense, default.MILITIA_AIM);
-	Effect.AddPersistentStatChange(eStat_SightRadius, default.MILITIA_SIGHT_RADIUS);
+	Effect.AddPersistentStatChange(eStat_Offense, class'Config_Manager'.static.GetConfigIntValue("MILITIA_AIM"));
+	Effect.AddPersistentStatChange(eStat_SightRadius, class'Config_Manager'.static.GetConfigIntValue("MILITIA_SIGHT_RADIUS"));
 
 	AddSecondaryEffect(Template, Effect);
 
@@ -348,7 +268,7 @@ static function X2AbilityTemplate Informant()
 	local X2Condition_MissionData			Condition;
 	
 	ADVEffect = new class'XMBEffect_ConditionalBonus';
-	ADVEffect.AddToHitModifier(default.INFORMANT_CRIT, eHit_Crit);
+	ADVEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("INFORMANT_CRIT"), eHit_Crit);
 	
 	UnitProperty = new class 'X2Condition_UnitProperty';
 	UnitProperty.ExcludeFriendlyToSource = true;
@@ -361,8 +281,8 @@ static function X2AbilityTemplate Informant()
 
 	Effect.EffectName = 'Informant';
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_Hacking, default.INFORMANT_HACK);
-	Effect.AddPersistentStatChange(eStat_Mobility, default.INFORMANT_MOBILITY);
+	Effect.AddPersistentStatChange(eStat_Hacking, class'Config_Manager'.static.GetConfigIntValue("INFORMANT_HACK"));
+	Effect.AddPersistentStatChange(eStat_Mobility, class'Config_Manager'.static.GetConfigIntValue("INFORMANT_MOBILITY"));
 	Condition = new class'X2Condition_MissionData';
 	Condition.bSupply = true;
 	Condition.bRecovery = true;
@@ -386,10 +306,10 @@ static function X2AbilityTemplate Guerilla()
 	local X2Condition_MissionData Condition;
 
 	FlankEffect = new class'XMBEffect_ConditionalBonus';
-	FlankEffect.AddToHitModifier(default.GUERILLA_AIM, eHit_Crit);
-	FlankEffect.AddArmorPiercingModifier(default.GUERILLA_PIERCE_CV, eHit_Success, 'conventional');
-	FlankEffect.AddArmorPiercingModifier(default.GUERILLA_PIERCE_MG, eHit_Success, 'magnetic');
-	FlankEffect.AddArmorPiercingModifier(default.GUERILLA_PIERCE_BM, eHit_Success, 'beam');
+	FlankEffect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("GUERILLA_CRIT"), eHit_Crit);
+	FlankEffect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("GUERILLA_PIERCE_CV"), eHit_Success, 'conventional');
+	FlankEffect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("GUERILLA_PIERCE_MG"), eHit_Success, 'magnetic');
+	FlankEffect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("GUERILLA_PIERCE_BM"), eHit_Success, 'beam');
 
 	FlankEffect.AbilityTargetConditions.AddItem(default.FlankedCondition);
 
@@ -397,7 +317,7 @@ static function X2AbilityTemplate Guerilla()
 
 	Effect = new class 'X2Effect_PersistentStatChange';
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_Defense, default.GUERILLA_DEFENSE);
+	Effect.AddPersistentStatChange(eStat_Defense, class'Config_Manager'.static.GetConfigIntValue("GUERILLA_DEFENSE"));
 	Condition = new class'X2Condition_MissionData';
 	Condition.bSabotage = true;
 	Condition.AllowedPlots.AddItem("Shanty");
@@ -420,10 +340,10 @@ static function X2AbilityTemplate Survivor()
 	local X2Condition_MissionData MapCondition;
 
 	Condition = new class'X2Condition_UnitStatCheck';
-	Condition.AddCheckStat(eStat_HP, default.SURVIVOR_DAMAGE_THRESHOLD, eCheck_LessThan,,, true);
+	Condition.AddCheckStat(eStat_HP, class'Config_Manager'.static.GetConfigIntValue("SURVIVOR_DAMAGE_THRESHOLD"), eCheck_LessThan,,, true);
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddPercentDamageModifier(default.SURVIVOR_DAMAGE_BONUS);
+	Effect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SURVIVOR_DAMAGE_BONUS"));
 	Effect.AbilityShooterConditions.AddItem(Condition);
 	
 	// Create the template using a helper function
@@ -432,7 +352,7 @@ static function X2AbilityTemplate Survivor()
 	MapCondition = new class'X2Condition_MissionData';
 	MapCondition.bDefend = true;
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddPercentDamageModifier(default.SURVIVOR_DAMAGE_BONUS);
+	Effect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SURVIVOR_DAMAGE_BONUS"));
 	Effect.TargetConditions.AddItem(MapCondition);
 
 	AddSecondaryEffect(Template, Effect);
@@ -450,14 +370,14 @@ static function X2AbilityTemplate Outcast()
 	local X2Condition_MissionData Condition;
 
 	Effect = new class'X2Effect_PersistentStatChange';
-	Effect.AddPersistentStatChange(eStat_FlankingAimBonus, default.OUTCAST_FLANKING_AIM);
+	Effect.AddPersistentStatChange(eStat_FlankingAimBonus, class'Config_Manager'.static.GetConfigIntValue("OUTCAST_FLANKING_AIM"));
 	
 	Template = Passive('APT_Outcast', "img:///UILibrary_PerkIcons.UIPerk_nation_aim", true, Effect);
 	
 	Effect = new class 'X2Effect_PersistentStatChange';
 
 	Effect.BuildPersistentEffect(1, true, false, false);
-	Effect.AddPersistentStatChange(eStat_Dodge, default.OUTCAST_DODGE);
+	Effect.AddPersistentStatChange(eStat_Dodge, class'Config_Manager'.static.GetConfigIntValue("OUTCAST_DODGE"));
 	Condition = new class'X2Condition_MissionData';
 	Condition.bSupply = true;
 	Condition.AllowedPlots.AddItem("Wilderness");
@@ -481,9 +401,9 @@ static function X2AbilityTemplate Revolutionary()
 	Condition.AddCheckStat(eStat_HP, 100, eCheck_Exact,,, true);
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.REVOLUTIONARY_DAMAGE_CV, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.REVOLUTIONARY_DAMAGE_MG, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.REVOLUTIONARY_DAMAGE_BM, eHit_Success, 'beam');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REVOLUTIONARY_DAMAGE_CV"), eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REVOLUTIONARY_DAMAGE_MG"), eHit_Success, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REVOLUTIONARY_DAMAGE_BM"), eHit_Success, 'beam');
 
 	// The effect only applies while both you and target are unharmed
 	Effect.AbilityTargetConditions.AddItem(Condition);
@@ -506,10 +426,10 @@ static function X2AbilityTemplate SysAdmin()
 	local X2Condition_MissionData Condition;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.SYSADMIN_DAMAGE_CV, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.SYSADMIN_DAMAGE_MG, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.SYSADMIN_DAMAGE_BM, eHit_Success, 'beam');
-	Effect.AddToHitAsTargetModifier(default.SYSADMIN_ROBOT_DEFENSE, eHit_Success);
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SYSADMIN_DAMAGE_CV"), eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SYSADMIN_DAMAGE_MG"), eHit_Success, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("SYSADMIN_DAMAGE_BM"), eHit_Success, 'beam');
+	Effect.AddToHitAsTargetModifier(class'Config_Manager'.static.GetConfigIntValue("SYSADMIN_ROBOT_DEFENSE"), eHit_Success);
 
 	UnitProperty = new class 'X2Condition_UnitProperty';
 	UnitProperty.ExcludeFriendlyToSource = true;
@@ -521,7 +441,7 @@ static function X2AbilityTemplate SysAdmin()
 	
 	StatEffect = new class 'X2Effect_PersistentStatChange';
 	StatEffect.BuildPersistentEffect(1, true, false, false);
-	StatEffect.AddPersistentStatChange(eStat_Hacking, default.SYSADMIN_HACKING);
+	StatEffect.AddPersistentStatChange(eStat_Hacking, class'Config_Manager'.static.GetConfigIntValue("SYSADMIN_HACKING"));
 
 	Condition = new class'X2Condition_MissionData';
 	Condition.bHack = true;
@@ -543,7 +463,7 @@ static function X2AbilityTemplate Pacifist()
 
 	MobEffect = new class 'X2Effect_PersistentStatChange';
 	MobEffect.BuildPersistentEffect(1, true, false, false);
-	MobEffect.AddPersistentStatChange(eStat_Defense, default.PACIFIST_DEFENSE);
+	MobEffect.AddPersistentStatChange(eStat_Defense, class'Config_Manager'.static.GetConfigIntValue("PACIFIST_DEFENSE"));
 
 	// Create the template using a helper function
 	Template = SquadPassive('APT_Pacifist', "img:///UILibrary_PerkIcons.UIPerk_helpinghand", true, MobEffect);
@@ -558,7 +478,7 @@ static function X2AbilityTemplate Pacifist_Dmg()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddPercentDamageModifier(default.PACIFIST_DAMAGE_MOD);
+	Effect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PACIFIST_DAMAGE_MOD"));
 	Effect.BuildPersistentEffect(1, true, false, false);
 	
 	return SelfTargetTrigger('APT_Pacifist_Dmg', "img:///UILibrary_PerkIcons.UIPerk_helpinghand", false, Effect, 'KillMail');
@@ -577,7 +497,7 @@ static function X2AbilityTemplate Anarchist()
 	
 	PyroEffect = new class 'XMBEffect_AddUtilityItem';
 	PyroEffect.DataName = 'FragGrenade';
-	PyroEffect.BaseCharges = default.ANARCHIST_CHARGES;
+	PyroEffect.BaseCharges = class'Config_Manager'.static.GetConfigIntValue("ANARCHIST_CHARGES");
 
 	Template = Passive('APT_Anarchist', "img:///UILibrary_PerkIcons.UIPerk_equalizer", true, PyroEffect);
  
@@ -586,9 +506,9 @@ static function X2AbilityTemplate Anarchist()
 	Value.bCountEnemies = true;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddToHitModifier(default.ANARCHIST_CRIT, eHit_Crit);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("ANARCHIST_CRIT"), eHit_Crit);
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = default.ANARCHIST_CRIT_MAX;
+	Effect.ScaleMax = class'Config_Manager'.static.GetConfigIntValue("ANARCHIST_CRIT_MAX");
 
 	AddSecondaryEffect(Template, Effect);
 
@@ -603,10 +523,10 @@ static function X2AbilityTemplate Vanguard()
 	local X2Effect_Infighter Effect;
 	 
 	Effect = new class'X2Effect_Infighter';
-	Effect.DodgeMod = default.VANGUARD_DODGE;
-	Effect.HitMod = default.VANGUARD_AIM;
-	Effect.CritMod = default.VANGUARD_CRIT;
-	Effect.TileRange = default.VANGUARD_RANGE;
+	Effect.DodgeMod = class'Config_Manager'.static.GetConfigIntValue("VANGUARD_DODGE");
+	Effect.HitMod = class'Config_Manager'.static.GetConfigIntValue("VANGUARD_AIM");
+	Effect.CritMod = class'Config_Manager'.static.GetConfigIntValue("VANGUARD_CRIT");
+	Effect.TileRange = class'Config_Manager'.static.GetConfigIntValue("VANGUARD_RANGE");
 	Effect.bWithin = true;
 
 	return Passive('APT_Vanguard', "img:///UILibrary_PerkIcons.UIPerk_Adventstunlancer_charge", true, Effect);
@@ -624,9 +544,9 @@ static function X2AbilityTemplate Rebel()
 	Condition.AddCheckStat(eStat_HP, 100, eCheck_LessThan,,, true);
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.REBEL_DAMAGE_CV, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.REBEL_DAMAGE_MG, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.REBEL_DAMAGE_BM, eHit_Success, 'beam');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REBEL_DAMAGE_CV"), eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REBEL_DAMAGE_MG"), eHit_Success, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("REBEL_DAMAGE_BM"), eHit_Success, 'beam');
 	
 	Effect.AbilityTargetConditions.AddItem(Condition);
 	Effect.AbilityShooterConditions.AddItem(Condition);
@@ -645,7 +565,7 @@ static function X2AbilityTemplate Insurgent()
 	Effect = new class'X2Effect_SystemUplink';
 	Effect.EffectName = 'APT_Insurgent';
 	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.AddArmorPiercingModifier(default.INSURGENT_ARMOR_PIERCE);
+	Effect.AddArmorPiercingModifier(class'Config_Manager'.static.GetConfigIntValue("INSURGENT_ARMOR_PIERCE"));
 	Effect.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
 
 	return SquadPassive('APT_Insurgent', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_ambush", true, Effect);
@@ -660,9 +580,9 @@ static function X2AbilityTemplate Xenophobe()
 	local X2Condition_UnitProperty UnitProperty;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.XENOPHOBE_DAMAGE_CV, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.XENOPHOBE_DAMAGE_MG, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.XENOPHOBE_DAMAGE_BM, eHit_Success, 'beam');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("XENOPHOBE_DAMAGE_CV"), eHit_Success, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("XENOPHOBE_DAMAGE_MG"), eHit_Success, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("XENOPHOBE_DAMAGE_BM"), eHit_Success, 'beam');
 
 	UnitProperty = new class 'X2Condition_UnitProperty';
 	UnitProperty.ExcludeFriendlyToSource=true;
@@ -681,7 +601,7 @@ static function X2AbilityTemplate FortuneHunter()
 	local X2Effect_DangerousGame	Effect;
 
 	Effect = new class'X2Effect_DangerousGame';
-	Effect.DamageMod = default.FORTUNE_HUNTER_DAMAGE_MOD;
+	Effect.DamageMod = class'Config_Manager'.static.GetConfigFloatValue("FORTUNE_HUNTER_DAMAGE_MOD");
 
 	// Create the template using a helper function
 	return Passive('APT_FortuneHunter', "img:///UILibrary_XPACK_Common.PerkIcons.UIPerk_vektorrifle", true, Effect);
@@ -695,8 +615,8 @@ static function X2AbilityTemplate Renegade()
 	local X2Effect_Prevail			Effect;
 
 	Effect = new class'X2Effect_Prevail';
-	Effect.CritMod = default.RENEGADE_CRIT;
-	Effect.DamageReduction = default.RENEGADE_DAMAGE_REDUCTION;
+	Effect.CritMod = class'Config_Manager'.static.GetConfigIntValue("RENEGADE_CRIT");
+	Effect.DamageReduction = class'Config_Manager'.static.GetConfigFloatValue("RENEGADE_DAMAGE_REDUCTION");
 
 	// Create the template using a helper function
 	return Passive('APT_Renegade', "img:///UILibrary_PerkIcons.UIPerk_riposte", true, Effect);
@@ -731,7 +651,7 @@ static function X2AbilityTemplate Irregular()
 
 	DamageTaken = new class 'X2Effect_DefendingDamage';
 	DamageTaken.PercentDamage=true;
-	DamageTaken.PercentDamageMod=0.5;
+	DamageTaken.PercentDamageMod = class'Config_Manager'.static.GetConfigFloatValue("IRREGULAR_DAMAGE_MALUS");
 
 	return Template;
 }
@@ -746,10 +666,10 @@ static function X2AbilityTemplate Pioneer()
 	// Create a conditional bonus
 	Effect = new class'XMBEffect_ConditionalBonus';
 
-	Effect.AddDamageModifier(default.PIONEER_DAMAGE_LASER, eHit_Success, 'laser');
-	Effect.AddDamageModifier(default.PIONEER_DAMAGE_MG, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.PIONEER_DAMAGE_COIL, eHit_Success, 'coil');
-	Effect.AddDamageModifier(default.PIONEER_DAMAGE_BM, eHit_Success, 'beam');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PIONEER_DAMAGE_LASER"), eHit_Success, 'laser');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PIONEER_DAMAGE_MG"), eHit_Success, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PIONEER_DAMAGE_COIL"), eHit_Success, 'coil');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PIONEER_DAMAGE_BM"), eHit_Success, 'beam');
 
 	// The bonus only applies to attacks with the weapon associated with this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
@@ -767,7 +687,7 @@ static function X2AbilityTemplate Professional()
 	
 	// Create a conditional bonus
 	ReactionFire = new class'XMBEffect_ConditionalBonus';
-	ReactionFire.AddPercentDamageModifier(default.PROFESSIONAL_DAMAGE_BONUS, eHit_Success);
+	ReactionFire.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("PROFESSIONAL_DAMAGE_BONUS"), eHit_Success);
 	ReactionFire.AbilityShooterConditions.AddItem(default.ReactionFireCondition);
 
 	return Passive('APT_Professional', "img:///XPerkIconPack.UIPerk_overwatch_plus", true, ReactionFire);
@@ -795,9 +715,9 @@ static function X2AbilityTemplate Tactician()
 	local XMBEffect_ConditionalBonus Effect;
 	// Create a conditional bonus
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(default.TACTICIAN_DAMAGE_CV, eHit_Miss, 'conventional');
-	Effect.AddDamageModifier(default.TACTICIAN_DAMAGE_MG, eHit_Miss, 'magnetic');
-	Effect.AddDamageModifier(default.TACTICIAN_DAMAGE_BM, eHit_Miss, 'beam');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("TACTICIAN_DAMAGE_CV"), eHit_Miss, 'conventional');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("TACTICIAN_DAMAGE_MG"), eHit_Miss, 'magnetic');
+	Effect.AddDamageModifier(class'Config_Manager'.static.GetConfigIntValue("TACTICIAN_DAMAGE_BM"), eHit_Miss, 'beam');
 	
 	// The bonus only applies to attacks with the weapon associated with this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
@@ -817,8 +737,8 @@ static function X2AbilityTemplate Mercenary()
 	Effect = new class'X2Effect_Mercenary';
 	Effect.bSupplies = true;
 	Effect.bIntel = false;
-	Effect.Cap = default.MERCENARY_CRIT_CAP;
-	Effect.Factor = default.MERCENARY_CRIT_SUPPLY_FACTOR;
+	Effect.Cap = class'Config_Manager'.static.GetConfigIntValue("MERCENARY_CRIT_CAP");
+	Effect.Factor = class'Config_Manager'.static.GetConfigIntValue("MERCENARY_CRIT_SUPPLY_FACTOR");
 	
 	// Create the template using a helper function
 	return Passive('APT_Mercenary', "img:///UILibrary_PerkIcons.UIPerk_star_hire", true, Effect);
@@ -834,8 +754,8 @@ static function X2AbilityTemplate Saboteur()
 	Effect = new class'X2Effect_Mercenary';
 	Effect.bSupplies = false;
 	Effect.bIntel = true;
-	Effect.Cap = default.SABOTEUR_CRIT_CAP;
-	Effect.Factor = default.SABOTEUR_CRIT_INTEL_FACTOR;
+	Effect.Cap = class'Config_Manager'.static.GetConfigIntValue("SABOTEUR_CRIT_CAP");
+	Effect.Factor = class'Config_Manager'.static.GetConfigIntValue("SABOTEUR_CRIT_INTEL_FACTOR");
 	
 	// Create the template using a helper function
 	return Passive('APT_Saboteur', "img:///UILibrary_PerkIcons.UIPerk_defuse", true, Effect);
@@ -849,7 +769,7 @@ static function X2AbilityTemplate Scrapper()
 	local XMBEffect_ConditionalBonus	Effect;
 	
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddToHitModifier(default.SCRAPPER_CRIT, eHit_Crit);
+	Effect.AddToHitModifier(class'Config_Manager'.static.GetConfigIntValue("SCRAPPER_CRIT"), eHit_Crit);
 	Effect.BuildPersistentEffect(2, true, true, false, eGameRule_PlayerTurnBegin);
 	Effect.DuplicateResponse = eDupe_Allow;
 
@@ -865,7 +785,7 @@ static function X2AbilityTemplate Heretic()
 	local X2Condition_UnitProperty TargetProperty;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddPercentDamageModifier(default.HERETIC_DAMAGE_BONUS);
+	Effect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("HERETIC_DAMAGE_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 	TargetProperty = new class 'X2Condition_UnitProperty';
 	TargetProperty.ExcludeNonPsionic = true;
@@ -885,7 +805,7 @@ static function X2AbilityTemplate Overseer()
 	Effect = new class'X2Effect_SystemUplink';
 	Effect.EffectName = 'APT_Overseer';
 	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.AddShredModifier(default.OVERSEER_SHRED);
+	Effect.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("OVERSEER_SHRED"));
 	Effect.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
 
 	return SquadPassive('APT_Overseer', "img:///XPerkIconPack.UIPerk_hack_chevron_x3", true, Effect);
@@ -900,7 +820,7 @@ static function X2AbilityTemplate Vigilante()
 	local X2Condition_UnitProperty		UnitProperty;
 
 	ADVEffect = new class'XMBEffect_ConditionalBonus';
-	ADVEffect.AddPercentDamageModifier(default.VIGILANTE_CRIT_DAMAGE_BONUS, eHit_Crit);
+	ADVEffect.AddPercentDamageModifier(class'Config_Manager'.static.GetConfigIntValue("VIGILANTE_CRIT_DAMAGE_BONUS"), eHit_Crit);
 	
 	UnitProperty = new class 'X2Condition_UnitProperty';
 	UnitProperty.ExcludeFriendlyToSource = true;
@@ -929,7 +849,7 @@ static function X2AbilityTemplate Toxicologist()
 	Effect = new class'XMBEffect_BonusDamageByDamageType';
 	Effect.EffectName = 'Toxicologist';
 	Effect.RequiredDamageTypes.AddItem('Poison');
-	Effect.DamageBonus = default.TOXICOLOGIST_DAMAGE_BONUS;
+	Effect.DamageBonus = class'Config_Manager'.static.GetConfigIntValue("TOXICOLOGIST_DAMAGE_BONUS");
 
 	// Create the template using a helper function
 	Template = Passive('RpgToxicologist', "img:///UILibrary_RPG.UIPerk_Toxicologist_Aptitude", true, Effect);
@@ -962,7 +882,7 @@ static function X2AbilityTemplate Electrician()
 	Effect.EffectName = 'Electrician';
 	Effect.RequiredDamageTypes.AddItem('Electricity'); // check if this is correct terminology
 	Effect.RequiredDamageTypes.AddItem('Electrical');
-	Effect.DamageBonus = default.ELECTRICIAN_DAMAGE_BONUS;
+	Effect.DamageBonus = class'Config_Manager'.static.GetConfigIntValue("ELECTRICIAN_DAMAGE_BONUS");
 
 	// Create the template using a helper function
 	Template = Passive('RpgElectrician', "img:///UILibrary_RPG.UIPerk_Electrician_Aptitude", true, Effect);
@@ -996,14 +916,14 @@ static function X2AbilityTemplate Chemist()
 	Effect = new class'XMBEffect_BonusDamageByDamageType';
 	Effect.EffectName = 'Chemist';
 	Effect.RequiredDamageTypes.AddItem('Acid');
-	Effect.DamageBonus = default.CHEMIST_DAMAGE_BONUS;
+	Effect.DamageBonus = class'Config_Manager'.static.GetConfigIntValue("CHEMIST_DAMAGE_BONUS");
 
 	// Create an effect that make
 	Effect2 = new class'XMBEffect_ConditionalBonus';
 	Effect2.EffectName = 'RpgChemist_Bonuses';
-	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_CV, eHit_Success, 'conventional');
-	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_MG, eHit_Success, 'magnetic');
-	Effect2.AddShredModifier(default.CHEMIST_SHRED_BONUS_BM, eHit_Success, 'beam');
+	Effect2.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("CHEMIST_SHRED_BONUS_CV"), eHit_Success, 'conventional');
+	Effect2.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("CHEMIST_SHRED_BONUS_MG"), eHit_Success, 'magnetic');
+	Effect2.AddShredModifier(class'Config_Manager'.static.GetConfigIntValue("CHEMIST_SHRED_BONUS_BM"), eHit_Success, 'beam');
 	
 	// Add a condition that the target must suffer from a acid burn
     Condition = new class'X2Condition_UnitAffectedByAcidBurn';
@@ -1042,7 +962,7 @@ static function X2AbilityTemplate Pyromaniac()
 	Effect.EffectName = 'Pyromaniac';
 	Effect.RequiredDamageTypes.AddItem('fire');
 	Effect.RequiredDamageTypes.AddItem('Napalm');
-	Effect.DamageBonus = default.PYROMANIAC_DAMAGE_BONUS;
+	Effect.DamageBonus = class'Config_Manager'.static.GetConfigIntValue("PYROMANIAC_DAMAGE_BONUS");
 
 	// Create the template using a helper function
 	Template = Passive('RpgPyromaniac', "img:///UILibrary_RPG.UIPerk_Pyromaniac_Aptitude", true, Effect);

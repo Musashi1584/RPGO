@@ -6,9 +6,11 @@
 
 class Config_TaggedConfigProperty extends Object;
 
-var protectedwrite vector VectorValue;
 var protectedwrite string Value;
+var protectedwrite vector VectorValue;
 var protectedwrite array<string> ArrayValue;
+var protectedwrite WeaponDamageValue DamageValue;
+
 var protectedwrite string Namespace;
 var protectedwrite string TagFunction;
 var protectedwrite string TagParam;
@@ -17,6 +19,7 @@ var protectedwrite string TagSuffix;
 
 var protectedwrite bool bIsVector;
 var protectedwrite bool bIsArray;
+var protectedwrite bool bIsDamageValue;
 
 public function string GetTagParam()
 {
@@ -32,9 +35,9 @@ public function string GetTagParam()
 	return TagParam;
 }
 
-public function string GetValue(optional string TagFunction)
+public function string GetValue(optional string TagFunctionIn)
 {
-	return GetTagFunctionValueImmediate(TagFunction);
+	return GetTagFunctionValueImmediate(TagFunctionIn);
 }
 
 public function vector GetVectorValue()
@@ -44,8 +47,12 @@ public function vector GetVectorValue()
 
 public function array<string> GetArrayValue()
 {
-	`LOG(default.class @ GetFuncName() @ `ShowVar(ArrayValue[0]),, 'RPG');
 	return ArrayValue;
+}
+
+public function WeaponDamageValue GetDamageValue()
+{
+	return DamageValue;
 }
 
 public function string GetTagValue()
@@ -59,6 +66,12 @@ public function string GetTagValue()
 	else if (bIsArray && ArrayValue.Length > 0)
 	{
 		TagValue = Join(ArrayValue, ", ");
+	}
+	else if (bIsDamageValue)
+	{
+		// @TODO make proper damage preview function
+		TagValue = (DamageValue.Damage - DamageValue.Spread) $ "-" $
+				   (DamageValue.Damage + DamageValue.Spread);
 	}
 	else
 	{
@@ -75,14 +88,14 @@ public function string GetTagValue()
 }
 
 // Used for direct access because the event system is not working at template creation
-function string GetTagFunctionValueImmediate(string TagFunction)
+function string GetTagFunctionValueImmediate(string TagFunctionIn)
 {
 	local LWTuple Tuple;
 
-	if (TagFunction != "")
+	if (TagFunctionIn != "")
 	{
 		Tuple = new class'LWTuple';
-		Tuple.Id = name(TagFunction);
+		Tuple.Id = name(TagFunctionIn);
 		Tuple.Data.Add(1);
 		Tuple.Data[0].kind = LWTVString;
 		Tuple.Data[0].s = "";
@@ -99,19 +112,19 @@ function string GetTagFunctionValueImmediate(string TagFunction)
 }
 
 // Used for tag values at runtime for better extensibility
-function string GetTagFunctionValueByEvent(string TagFunction)
+function string GetTagFunctionValueByEvent(string TagFunctionIn)
 {
 	local LWTuple Tuple;
 
-	if (TagFunction != "")
+	if (TagFunctionIn != "")
 	{
 		Tuple = new class'LWTuple';
-		Tuple.Id = name(TagFunction);
+		Tuple.Id = name(TagFunctionIn);
 		Tuple.Data.Add(1);
 		Tuple.Data[0].kind = LWTVString;
 		Tuple.Data[0].s = "";
 
-		`LOG(default.class @ GetFuncName() @ "trigger event" @ TagFunction,, 'RPG');
+		`LOG(default.class @ GetFuncName() @ "trigger event" @ TagFunctionIn,, 'RPG');
 
 		`XEVENTMGR.TriggerEvent('ConfigTagFunction', Tuple, self);
 
@@ -138,6 +151,16 @@ function JSonObject Serialize()
 	}
 	
 	JSonObject.SetStringValue("VectorValue", "{\"X\":" $ VectorValue.X $ ",\"Y\":" $ VectorValue.Y $ ",\"Z\":" $ VectorValue.Z $ "}");
+	JSonObject.SetStringValue("DamageValue", "{\"Damage\":" $ DamageValue.Damage $
+											 ",\"Spread\":" $ DamageValue.Spread $
+											 ",\"PlusOne\":" $ DamageValue.PlusOne $
+											 ",\"Crit\":" $ DamageValue.Crit $
+											 ",\"Pierce\":" $ DamageValue.Pierce $
+											 ",\"Rupture\":" $ DamageValue.Rupture $
+											 ",\"Shred\":" $ DamageValue.Shred $
+											 ",\"Tag\":\"" $ DamageValue.Tag $ "\"" $
+											 ",\"DamageType\":\"" $ DamageValue.DamageType $ "\"" $
+											 "}");
 	JSonObject.SetStringValue("Value", Value);
 	JSonObject.SetStringValue("Namespace", Namespace);
 	JSonObject.SetStringValue("TagFunction", TagFunction);
@@ -150,7 +173,7 @@ function JSonObject Serialize()
 
 function Deserialize(JSonObject Data)
 {
-	local JSonObject VectorJson;
+	local JSonObject VectorJson, DamageValueJson;
 	local string UnserializedArrayValue;
 
 	VectorJson = Data.GetObject("VectorValue");
@@ -169,7 +192,23 @@ function Deserialize(JSonObject Data)
 		bIsArray = true;
 	}
 
+	DamageValueJson = Data.GetObject("DamageValue");
+	if (DamageValueJson != none)
+	{
+		DamageValue.Damage = DamageValueJson.GetIntValue("Damage");
+		DamageValue.Spread = DamageValueJson.GetIntValue("Spread");
+		DamageValue.PlusOne = DamageValueJson.GetIntValue("PlusOne");
+		DamageValue.Crit = DamageValueJson.GetIntValue("Crit");
+		DamageValue.Pierce = DamageValueJson.GetIntValue("Pierce");
+		DamageValue.Rupture = DamageValueJson.GetIntValue("Rupture");
+		DamageValue.Shred = DamageValueJson.GetIntValue("Shred");
+		DamageValue.Tag = name(DamageValueJson.GetStringValue("Tag"));
+		DamageValue.DamageType = name(DamageValueJson.GetStringValue("DamageType"));
+		bIsDamageValue = true;
+	}
+
 	Value = Data.GetStringValue("Value");
+
 	Namespace = Data.GetStringValue("Namespace");
 	TagFunction = Data.GetStringValue("TagFunction");
 	TagParam = Data.GetStringValue("TagParam");

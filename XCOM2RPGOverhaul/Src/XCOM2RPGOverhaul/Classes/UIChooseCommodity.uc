@@ -547,14 +547,45 @@ simulated function XComGameState_Unit GetUnit()
 
 simulated function OnLoseFocus()
 {
+	local UINavigationHelp LocalNavHelp;
+
+	LocalNavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
+	
+	LocalNavHelp.ContinueButton.EnableButton();
+	LocalNavHelp.ClearButtonHelp();
+
+	// Immediately process commands to prevent 1 frame delay of screens hiding when navigating the armory
+	Movie.ProcessQueuedCommands();
+
 	super.OnLoseFocus();
-	`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
 }
 
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
 	UpdateNavHelp();
+}
+
+simulated function OnRemoved()
+{
+	local UINavigationHelp LocalNavHelp;
+
+	LocalNavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
+	
+	LocalNavHelp.ContinueButton.EnableButton();
+	LocalNavHelp.ClearButtonHelp();
+
+	// Immediately process commands to prevent 1 frame delay of screens hiding when navigating the armory
+	Movie.ProcessQueuedCommands();
+
+	// Only destroy the pawn when all UIArmory screens are closed
+	if(ActorPawn != none)
+	{		
+		if(bIsIn3D) Movie.Pres.Get3DMovie().HideDisplay(DisplayTag);
+		Movie.Pres.GetUIPawnMgr().ReleasePawn(self, UnitReference.ObjectID);
+	}
+
+	super.OnRemoved();
 }
 
 simulated function CreateSoldierPawn(optional Rotator DesiredRotation)
@@ -638,18 +669,6 @@ simulated function RequestPawn(optional Rotator DesiredRotation)
 
 		// Cache desired animation in case the pawn hasn't loaded the customization animation set
 		XComHumanPawn(ActorPawn).CustomizationIdleAnim = IdleAnimName;
-	}
-}
-
-simulated function OnRemoved()
-{
-	super.OnRemoved();
-	
-	// Only destroy the pawn when all UIArmory screens are closed
-	if(ActorPawn != none)
-	{		
-		if(bIsIn3D) Movie.Pres.Get3DMovie().HideDisplay(DisplayTag);
-		Movie.Pres.GetUIPawnMgr().ReleasePawn(self, UnitReference.ObjectID);
 	}
 }
 

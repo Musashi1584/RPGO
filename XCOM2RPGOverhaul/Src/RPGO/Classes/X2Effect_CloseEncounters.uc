@@ -1,9 +1,5 @@
 class X2Effect_CloseEncounters extends X2Effect_Persistent config (RPG);
 
-var config int CE_USES_PER_TURN;
-var config array<name> CE_ABILITYNAMES;
-var config int CE_MAX_TILES;
-
 function RegisterForEvents(XComGameState_Effect EffectGameState)
 {
 	local X2EventManager			EventMgr;
@@ -23,6 +19,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local UnitValue								CEUsesThisTurn;
 	local int									iUsesThisTurn;
 	local bool									bLog;
+	local array<name>							ValidAbilities;
 
 	bLog = false;
 
@@ -58,7 +55,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	SourceUnit.GetUnitValue ('CloseEncountersUses', CEUsesThisTurn);
 	iUsesThisTurn = int(CEUsesThisTurn.fValue);
 
-	if (iUsesThisTurn >= default.CE_USES_PER_TURN)
+	if (iUsesThisTurn >= class'Config_Manager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_USES_PER_TURN"))
 	{
 		`LOG(self.Class.Name @ GetFuncName() @ "iUsesThisTurn", bLog, 'RPG');
 		return false;
@@ -72,7 +69,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		return false;
 	}
 
-	if (SourceUnit.TileDistanceBetween(TargetUnit) > default.CE_MAX_TILES + 1)
+	if (SourceUnit.TileDistanceBetween(TargetUnit) > class'Config_Manager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_MAX_TILES") + 1)
 	{
 		`LOG(self.Class.Name @ GetFuncName() @ "TileDistanceBetween", bLog, 'RPG');
 		return false;
@@ -88,7 +85,9 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	if (AbilityState != none)
 	{
-		if (default.CE_ABILITYNAMES.Find(kAbility.GetMyTemplateName()) != -1)
+		ValidAbilities = class'Config_Manager'.static.GetConfigNameArray("CLOSE_ENCOUNTERS_ABILITYNAMES");
+
+		if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != -1)
 		{
 			if (SourceUnit.NumActionPoints() < 2 && PreCostActionPoints.Length > 0)
 			{

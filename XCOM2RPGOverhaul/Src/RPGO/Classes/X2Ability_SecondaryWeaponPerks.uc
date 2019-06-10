@@ -1,7 +1,4 @@
-class X2Ability_SecondaryWeaponPerks extends XMBAbility config(RPG);
-
-var config int RAPID_STUN_COOLDOWN;
-var config int SPARE_BATTERY_COOLDOWN; 
+class X2Ability_SecondaryWeaponPerks extends XMBAbility;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -46,7 +43,7 @@ static function X2AbilityTemplate RapidStun()
 
 	// Create activated ability that adds the refund effect
 	Template = SelfTargetActivated('RpgRapidStun', "img:///UILibrary_RPG.UIPerk_RapidStun", true, Effect,, eCost_Free);
-	AddCooldown(Template, default.RAPID_STUN_COOLDOWN);
+	AddCooldown(Template, class'Config_Manager'.static.GetConfigIntValue("RAPID_STUN_COOLDOWN"));
 
 	// Cannot be used while burning, etc.
 	Template.AddShooterEffectExclusions();
@@ -100,7 +97,7 @@ static function X2AbilityTemplate SpareBattery()
 	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.SPARE_BATTERY_COOLDOWN;
+	Cooldown.iNumTurns = class'Config_Manager'.static.GetConfigIntValue("SPARE_BATTERY_COOLDOWN");
 	Template.AbilityCooldown = Cooldown;
 
 	ActionPointCost = new class'X2AbilityCost_ActionPoints';

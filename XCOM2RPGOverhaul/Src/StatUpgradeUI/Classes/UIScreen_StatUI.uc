@@ -95,6 +95,33 @@ function InitPanels()
 	PopulateSoldierPoints();
 }
 
+simulated function CloseScreen()
+{
+	NavHelp.ContinueButton.EnableButton();
+	NavHelp.ClearButtonHelp();
+
+	super.CloseScreen();
+}
+
+simulated function OnLoseFocus()
+{
+	NavHelp.ContinueButton.EnableButton();
+	NavHelp.ClearButtonHelp();
+	
+	// Immediately process commands to prevent 1 frame delay of screens hiding when navigating the armory
+	Movie.ProcessQueuedCommands();
+
+	super.OnLoseFocus();
+}
+
+simulated function OnRemoved()
+{
+	NavHelp.ContinueButton.EnableButton();
+	NavHelp.ClearButtonHelp();
+
+	super.OnRemoved();
+}
+
 function InitStatHeaders()
 {
 	local int RunningOffsetX, OffsetY;
@@ -406,10 +433,6 @@ simulated function bool IsAllowedToCycleSoldiers()
 
 simulated function UpdateConfirmButton()
 {
-	local UINavigationHelp NavHelp;
-
-	NavHelp = `HQPRES.m_kAvengerHUD.NavHelp;
-
 	if (AbilityPointCostSum + StatPointCostSum > 0)
 	{
 		NavHelp.ContinueButton.EnableButton();

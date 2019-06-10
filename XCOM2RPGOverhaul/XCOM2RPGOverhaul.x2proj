@@ -85,12 +85,6 @@
     <Content Include="Config\XComGameData_XpData.ini">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Config\XComLW_SoldierSkills.ini">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Config\XComMINTAptitudes.ini">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Config\XComRPG.ini">
       <SubType>Content</SubType>
     </Content>
@@ -269,9 +263,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Ability_LongWar.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\X2Ability_LW2WotC_PassiveAbilitySet.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Ability_Patches.uc">

@@ -1,8 +1,4 @@
-class X2Effect_HitandRun extends X2Effect_Persistent config (RPG);
-
-var bool HITANDRUN_FULLACTION;
-var config array<name> HNR_ABILITYNAMES;
-var config int HNR_USES_PER_TURN;
+class X2Effect_HitandRun extends X2Effect_Persistent;
 
 function RegisterForEvents(XComGameState_Effect EffectGameState)
 {
@@ -24,6 +20,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local GameRulesCache_VisibilityInfo			VisInfo;
 	local int									iUsesThisTurn;
 	local UnitValue								HnRUsesThisTurn;
+	local array<name>							ValidAbilities;
 
 	//  if under the effect of Serial, let that handle restoring the full action cost - will this work?
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
@@ -35,7 +32,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	SourceUnit.GetUnitValue ('HitandRunUses', HnRUsesThisTurn);
 	iUsesThisTurn = int(HnRUsesThisTurn.fValue);
 
-	if (iUsesThisTurn >= default.HNR_USES_PER_TURN)
+	if (iUsesThisTurn >= class'Config_Manager'.static.GetConfigIntValue("HITANDRUN_USES_PER_TURN"))
 		return false;
 
 	//  match the weapon associated with Hit and Run to the attacking weapon
@@ -49,7 +46,9 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 			{
 				if (TargetUnit.IsEnemyUnit(SourceUnit) && SourceUnit.CanFlank() && TargetUnit.GetMyTemplate().bCanTakeCover && (VisInfo.TargetCover == CT_None || TargetUnit.GetCurrentStat(eStat_AlertLevel) == 0))
 				{
-					if (default.HNR_ABILITYNAMES.Find(kAbility.GetMyTemplateName()) != -1)
+					ValidAbilities = class'Config_Manager'.static.GetConfigNameArray("HITANDRUN_ABILITYNAMES");
+
+					if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != -1)
 					{
 						if (SourceUnit.NumActionPoints() < 2 && PreCostActionPoints.Length > 0)
 						{
@@ -57,7 +56,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 							if (AbilityState != none)
 							{
 								SourceUnit.SetUnitFloatValue ('HitandRunUses', iUsesThisTurn + 1.0, eCleanup_BeginTurn);
-								if (!HITANDRUN_FULLACTION)
+								if (!class'Config_Manager'.static.GetConfigBoolValue("HITANDRUN_FULLACTION"))
 								{
 									SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.MoveActionPoint);
 								}

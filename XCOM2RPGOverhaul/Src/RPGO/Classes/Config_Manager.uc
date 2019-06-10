@@ -26,7 +26,6 @@ static function Config_Manager GetConfigManager()
 
 private function DeserializeConfig()
 {
-	local Config_Manager ConfigManager;
 	local ConfigPropertyMapEntry MapEntry;
 	local JSonObject JSonObject, JSonObjectProperty;
 	local Config_TaggedConfigProperty ConfigProperty;
@@ -67,7 +66,7 @@ static public function int GetConfigIntValue(coerce string PropertyName, optiona
 	return int(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static public function int GetConfigFloatValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function float GetConfigFloatValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	return float(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
@@ -101,8 +100,7 @@ static public function vector GetConfigVectorValue(coerce string PropertyName, o
 	return vect(0, 0, 0);
 }
 
-
-static public function array<string> GetConfigArrayValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+static public function array<string> GetConfigStringArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	local Config_TaggedConfigProperty ConfigProperty;
 	local array<string> EmptyArray;
@@ -119,6 +117,69 @@ static public function array<string> GetConfigArrayValue(coerce string PropertyN
 	return EmptyArray;
 }
 
+static public function array<int> GetConfigIntArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+{
+	local array<string> StringArray;
+	local string Value;
+	local array<int> IntArray;
+
+	StringArray = GetConfigStringArray(PropertyName, TagFunction, Namespace);
+
+	foreach StringArray(Value)
+	{
+		IntArray.AddItem(int(Value));
+	}
+
+	return IntArray;
+}
+
+static public function array<float> GetConfigFloatArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+{
+	local array<string> StringArray;
+	local string Value;
+	local array<float> FloatArray;
+
+	StringArray = GetConfigStringArray(PropertyName, TagFunction, Namespace);
+
+	foreach StringArray(Value)
+	{
+		FloatArray.AddItem(float(Value));
+	}
+
+	return FloatArray;
+}
+
+static public function array<name> GetConfigNameArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+{
+	local array<string> StringArray;
+	local string Value;
+	local array<name> NameArray;
+
+	StringArray = GetConfigStringArray(PropertyName, TagFunction, Namespace);
+
+	foreach StringArray(Value)
+	{
+		NameArray.AddItem(name(Value));
+	}
+
+	return NameArray;
+}
+
+static public function WeaponDamageValue GetConfigDamageValue(coerce string PropertyName, optional string Namespace)
+{
+	local Config_TaggedConfigProperty ConfigProperty;
+	local WeaponDamageValue Value;
+
+	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
+
+	if (ConfigProperty != none)
+	{
+		Value =  ConfigProperty.GetDamageValue();
+		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ `ShowVar(Value.Damage) @ `ShowVar(Namespace),, 'RPG');
+	}
+
+	return Value;
+}
 
 static public function string GetConfigStringValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
@@ -133,7 +194,7 @@ static public function string GetConfigStringValue(coerce string PropertyName, o
 		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ `ShowVar(Value) @ `ShowVar(TagFunction) @ `ShowVar(Namespace),, 'RPG');
 	}
 
-	return  Value;
+	return Value;
 }
 
 static public function string GetConfigTagValue(coerce string PropertyName, optional string Namespace)
@@ -230,9 +291,9 @@ static public final function string RTrimToFirstBracket(coerce string S)
 
 static public final function string GetObjectKey(coerce string S)
 {
-	local int Count, Index, Max, DoubleQuoteUnicode;
+	local int Index, Max, DoubleQuoteUnicode;
 	local string Key;
-	local bool bStart, bEnd;
+	local bool bStart;
 
 	Max = Len(S);
 	DoubleQuoteUnicode = 34;
