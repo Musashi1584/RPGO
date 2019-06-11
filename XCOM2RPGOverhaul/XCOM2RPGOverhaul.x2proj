@@ -142,6 +142,9 @@
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\NewPromotionScreenbyDefault.int">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\StatUpgradeUI.int">
       <SubType>Content</SubType>
     </Content>
