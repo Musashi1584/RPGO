@@ -1,9 +1,9 @@
 //-----------------------------------------------------------
-//	Class:	Config_EventListener
+//	Class:	JsonConfig_EventListener
 //	Author: Musashi
 //	EventListener for tag value calculation
 //-----------------------------------------------------------
-class Config_EventListener extends X2EventListener;
+class JsonConfig_EventListener extends X2EventListener;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -32,12 +32,12 @@ static function CHEventListenerTemplate CreateListenerTemplate()
 static function EventListenerReturn OnTagValue(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local LWTuple Tuple;
-	local Config_TaggedConfigProperty Prop;
+	local JsonConfig_TaggedConfigProperty Prop;
 	local int Value;
 	local array<string> ArrayValue;
 
 	Tuple = LWTuple(EventData);
-	Prop = Config_TaggedConfigProperty(EventSource);
+	Prop = JsonConfig_TaggedConfigProperty(EventSource);
 
 	switch (Tuple.Id)
 	{
@@ -48,23 +48,23 @@ static function EventListenerReturn OnTagValue(Object EventData, Object EventSou
 			Value = int(float(Prop.GetValue()) * 100 - 100);
 			break;
 		case 'TagValueMetersToTiles':
-			Value = int(Prop.GetValue()) * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER / class'XComWorldData'.const.WORLD_StepSize;
+			Value = int(float(Prop.GetValue()) * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER / class'XComWorldData'.const.WORLD_StepSize);
 			break;
 		case 'TagValueTilesToMeters':
-			Value = int(Prop.GetValue()) * class'XComWorldData'.const.WORLD_StepSize / class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER;
+			Value = int(float(Prop.GetValue()) * class'XComWorldData'.const.WORLD_StepSize / class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER);
 			break;
 		case 'TagValueTilesToUnits':
 			`LOG(default.class @ GetFuncName() @ int(Prop.GetValue()) @ class'XComWorldData'.const.WORLD_StepSize,, 'RPG');
-			Value = int(Prop.GetValue()) * class'XComWorldData'.const.WORLD_StepSize;
+			Value = int(float(Prop.GetValue()) * class'XComWorldData'.const.WORLD_StepSize);
 			break;
 		case 'TagValueLockDown':
 			 Value = int(Prop.GetValue()) / (1 - class'X2AbilityToHitCalc_StandardAim'.default.REACTION_FINALMOD);
 			 break;
 		case 'TagValueParamAddition':
-			 Value = int(Prop.GetValue()) + int(Prop.GetTagParam());
+			 Value = int(float(Prop.GetValue()) + float(Prop.GetTagParam()));
 			 break;
 		case 'TagValueParamMultiplication':
-			 Value = int(Prop.GetValue()) * int(Prop.GetTagParam());
+			 Value = int(float(Prop.GetValue()) * float(Prop.GetTagParam()));
 			 break;
 		case 'TagArrayValue':
 			ArrayValue = Prop.GetArrayValue();

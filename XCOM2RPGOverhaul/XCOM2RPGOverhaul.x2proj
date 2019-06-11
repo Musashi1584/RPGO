@@ -8,6 +8,9 @@
     <AssemblyName>XCOM2RPGOverhaul</AssemblyName>
     <RootNamespace>XCOM2RPGOverhaul</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Config\DetailedSoldierListWOTC" />
@@ -110,9 +113,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\DetailedSoldierListWOTC\UILibrary_LWToolbox.upk">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Content\NewPromotionScreenbyDefault.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\Perk_MintFX.upk">
@@ -247,7 +247,10 @@
     <Content Include="Src\RPGO\Classes\Config_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\Config_Manager.uc">
+    <Content Include="Src\RPGO\Classes\JsonConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">

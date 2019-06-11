@@ -3,15 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # XCOM ModBuddy Solution File, Format Version 11.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "XCOM2RPGOverhaul", "XCOM2RPGOverhaul\XCOM2RPGOverhaul.x2proj", "{248FEF05-0702-426B-84B8-474B50760751}"
+Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "XCOM2RPGOverhaul", "XCOM2RPGOverhaul\XCOM2RPGOverhaul.x2proj", "{3124DEC2-E438-44F3-B8B8-51B26ED951FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|XCOM 2 = Debug|XCOM 2
 		Default|XCOM 2 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{248FEF05-0702-426B-84B8-474B50760751}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
-		{248FEF05-0702-426B-84B8-474B50760751}.Default|XCOM 2.Build.0 = Default|XCOM 2
+		{3124DEC2-E438-44F3-B8B8-51B26ED951FC}.Debug|XCOM 2.ActiveCfg = Debug|XCOM 2
+		{3124DEC2-E438-44F3-B8B8-51B26ED951FC}.Debug|XCOM 2.Build.0 = Debug|XCOM 2
+		{3124DEC2-E438-44F3-B8B8-51B26ED951FC}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
+		{3124DEC2-E438-44F3-B8B8-51B26ED951FC}.Default|XCOM 2.Build.0 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -55,7 +55,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	SourceUnit.GetUnitValue ('CloseEncountersUses', CEUsesThisTurn);
 	iUsesThisTurn = int(CEUsesThisTurn.fValue);
 
-	if (iUsesThisTurn >= class'Config_Manager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_USES_PER_TURN"))
+	if (iUsesThisTurn >= class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_USES_PER_TURN"))
 	{
 		`LOG(self.Class.Name @ GetFuncName() @ "iUsesThisTurn", bLog, 'RPG');
 		return false;
@@ -69,7 +69,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		return false;
 	}
 
-	if (SourceUnit.TileDistanceBetween(TargetUnit) > class'Config_Manager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_MAX_TILES") + 1)
+	if (SourceUnit.TileDistanceBetween(TargetUnit) > class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CLOSE_ENCOUNTERS_MAX_TILES") + 1)
 	{
 		`LOG(self.Class.Name @ GetFuncName() @ "TileDistanceBetween", bLog, 'RPG');
 		return false;
@@ -85,7 +85,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	if (AbilityState != none)
 	{
-		ValidAbilities = class'Config_Manager'.static.GetConfigNameArray("CLOSE_ENCOUNTERS_ABILITYNAMES");
+		ValidAbilities = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("CLOSE_ENCOUNTERS_ABILITYNAMES");
 
 		if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != -1)
 		{

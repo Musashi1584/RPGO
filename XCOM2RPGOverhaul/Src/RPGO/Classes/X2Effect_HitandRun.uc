@@ -32,7 +32,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	SourceUnit.GetUnitValue ('HitandRunUses', HnRUsesThisTurn);
 	iUsesThisTurn = int(HnRUsesThisTurn.fValue);
 
-	if (iUsesThisTurn >= class'Config_Manager'.static.GetConfigIntValue("HITANDRUN_USES_PER_TURN"))
+	if (iUsesThisTurn >= class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HITANDRUN_USES_PER_TURN"))
 		return false;
 
 	//  match the weapon associated with Hit and Run to the attacking weapon
@@ -46,7 +46,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 			{
 				if (TargetUnit.IsEnemyUnit(SourceUnit) && SourceUnit.CanFlank() && TargetUnit.GetMyTemplate().bCanTakeCover && (VisInfo.TargetCover == CT_None || TargetUnit.GetCurrentStat(eStat_AlertLevel) == 0))
 				{
-					ValidAbilities = class'Config_Manager'.static.GetConfigNameArray("HITANDRUN_ABILITYNAMES");
+					ValidAbilities = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("HITANDRUN_ABILITYNAMES");
 
 					if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != -1)
 					{
@@ -56,7 +56,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 							if (AbilityState != none)
 							{
 								SourceUnit.SetUnitFloatValue ('HitandRunUses', iUsesThisTurn + 1.0, eCleanup_BeginTurn);
-								if (!class'Config_Manager'.static.GetConfigBoolValue("HITANDRUN_FULLACTION"))
+								if (!class'RPGOAbilityConfigManager'.static.GetConfigBoolValue("HITANDRUN_FULLACTION"))
 								{
 									SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.MoveActionPoint);
 								}

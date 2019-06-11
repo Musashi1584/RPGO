@@ -75,7 +75,7 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility,class'Config_Manager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR"), MODOP_PostMultiplication);
+	Effect.AddPersistentStatChange(eStat_Mobility,class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR"), MODOP_PostMultiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
 	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
 
@@ -85,7 +85,7 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, class'Config_Manager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED"), MODOP_PostMultiplication);
+	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED"), MODOP_PostMultiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
 	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
 

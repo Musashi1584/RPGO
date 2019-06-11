@@ -226,7 +226,7 @@ static function EventListenerReturn OnGetItemRangeBombard(Object EventData, Obje
 	// make sure the weapon is either a grenade or a grenade launcher
 	if(X2GrenadeTemplate(WeaponTemplate) != none || X2GrenadeLauncherTemplate(WeaponTemplate) != none || WeaponTemplate.DataName == 'Battlescanner')
 	{
-		OverrideTuple.Data[1].i += class'Config_Manager'.static.GetConfigIntValue("BOMBARD_BONUS_RANGE_TILES");
+		OverrideTuple.Data[1].i += class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BOMBARD_BONUS_RANGE_TILES");
 	}
 
 	return ELR_NoInterrupt;
@@ -277,7 +277,7 @@ static function EventListenerReturn OnGetItemRangeScout(Object EventData, Object
 	// make sure the weapon is battlescanner
 	if(WeaponTemplate.DataName == 'Battlescanner')
 	{
-		OverrideTuple.Data[1].i *= class'Config_Manager'.static.GetConfigFloatValue("SCOUT_BATTLESCANNER_RANGE_SCALAR");
+		OverrideTuple.Data[1].i *= class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("SCOUT_BATTLESCANNER_RANGE_SCALAR");
 	}
 
 	return ELR_NoInterrupt;
@@ -318,7 +318,7 @@ static function EventListenerReturn OnPreAcquiredHackReward(Object EventData, Ob
 
 	if(HackTemplate.bBadThing)
 	{
-		if(Rand(100) < class'Config_Manager'.static.GetConfigIntValue("FAILSAFE_PCT_CHANCE"))
+		if(Rand(100) < class'RPGOAbilityConfigManager'.static.GetConfigIntValue("FAILSAFE_PCT_CHANCE"))
 		{
 			OverrideHackRewardTuple.Data[0].b = true;
 			//AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(GetOwningEffect().ApplyEffectParameters.AbilityStateObjectRef.ObjectID));

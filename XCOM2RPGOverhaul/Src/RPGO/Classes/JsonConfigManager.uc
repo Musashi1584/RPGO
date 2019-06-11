@@ -1,37 +1,39 @@
-class Config_Manager extends JsonObject config (RPGO_SoldierSkills);
+class JsonConfigManager extends JsonObject config(GameData);
 
 struct ConfigPropertyMapEntry
 {
 	var string PropertyName;
-	var Config_TaggedConfigProperty ConfigProperty;
+	var JsonConfig_TaggedConfigProperty ConfigProperty;
 };
 
 var config array<string> ConfigProperties;
 
 var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
 
-static function Config_Manager GetConfigManager()
+static function JsonConfigManager GetConfigManager()
 {
-	local Config_Manager ConfigManager;
+	local JsonConfigManager ConfigManager;
 
-	ConfigManager = Config_Manager(class'Engine'.static.FindClassDefaultObject("Config_Manager"));
-
+	ConfigManager = JsonConfigManager(class'Engine'.static.FindClassDefaultObject(string(default.class)));
+	
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
 	{
 		ConfigManager.DeserializeConfig();
 	}
 
-	return Config_Manager(class'Engine'.static.FindClassDefaultObject("Config_Manager"));
+	return ConfigManager;
 }
 
 private function DeserializeConfig()
 {
 	local ConfigPropertyMapEntry MapEntry;
 	local JSonObject JSonObject, JSonObjectProperty;
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 	local string SerializedConfigProperty, PropertyName;
 
-	foreach ConfigProperties(SerializedConfigProperty)
+	`LOG(default.class @ GetFuncName() @ "found entries:" @ default.ConfigProperties.Length,, 'RPG');
+
+	foreach default.ConfigProperties(SerializedConfigProperty)
 	{
 		PropertyName = GetObjectKey(SanitizeJson(SerializedConfigProperty));
 		JSonObject = class'JSonObject'.static.DecodeJson(SanitizeJson(SerializedConfigProperty));
@@ -43,7 +45,8 @@ private function DeserializeConfig()
 			if (JSonObjectProperty != none &&
 				DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName) == INDEX_NONE)
 			{
-				ConfigProperty = new class'Config_TaggedConfigProperty';
+				ConfigProperty = new class'JsonConfig_TaggedConfigProperty';
+				ConfigProperty.ManagerInstance = self;
 				ConfigProperty.Deserialize(JSonObjectProperty);
 				MapEntry.PropertyName = PropertyName;
 				MapEntry.ConfigProperty = ConfigProperty;
@@ -53,9 +56,16 @@ private function DeserializeConfig()
 	}
 }
 
+static public function bool HasConfigProperty(coerce string PropertyName, optional string Namespace)
+{
+	PropertyName = GetPropertyName(PropertyName, Namespace);
+
+	return GetConfigManager().DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName) != INDEX_NONE;
+}
+
 static public function SetConfigString(string PropertyName, coerce string Value)
 {
-	local Config_Manager ConfigManager;
+	local JsonConfigManager ConfigManager;
 
 	ConfigManager = GetConfigManager();
 	ConfigManager.SetStringValue(PropertyName, Value);
@@ -88,7 +98,7 @@ static public function bool GetConfigBoolValue(coerce string PropertyName, optio
 
 static public function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 
 	ConfigProperty = GetConfigProperty(PropertyName);
 
@@ -102,7 +112,7 @@ static public function vector GetConfigVectorValue(coerce string PropertyName, o
 
 static public function array<string> GetConfigStringArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 	local array<string> EmptyArray;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -167,7 +177,7 @@ static public function array<name> GetConfigNameArray(coerce string PropertyName
 
 static public function WeaponDamageValue GetConfigDamageValue(coerce string PropertyName, optional string Namespace)
 {
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 	local WeaponDamageValue Value;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -183,7 +193,7 @@ static public function WeaponDamageValue GetConfigDamageValue(coerce string Prop
 
 static public function string GetConfigStringValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 	local string Value;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -199,7 +209,7 @@ static public function string GetConfigStringValue(coerce string PropertyName, o
 
 static public function string GetConfigTagValue(coerce string PropertyName, optional string Namespace)
 {
-	local Config_TaggedConfigProperty ConfigProperty;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
 
@@ -212,20 +222,17 @@ static public function string GetConfigTagValue(coerce string PropertyName, opti
 }
 
 
-static public function Config_TaggedConfigProperty GetConfigProperty(
+static public function JsonConfig_TaggedConfigProperty GetConfigProperty(
 	coerce string PropertyName,
 	optional string Namespace
 )
 {
-	local Config_Manager ConfigManager;
+	local JsonConfigManager ConfigManager;
 	local int Index;
 
 	ConfigManager = GetConfigManager();
 
-	if (Namespace != "")
-	{
-		PropertyName $= ":" $ Namespace;
-	}
+	PropertyName = GetPropertyName(PropertyName, Namespace);
 
 	Index = ConfigManager.DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName);
 	if (Index != INDEX_NONE)
@@ -236,6 +243,16 @@ static public function Config_TaggedConfigProperty GetConfigProperty(
 	`LOG(default.class @ GetFuncName() @ "could not find config property for" @ PropertyName,, 'RPG');
 
 	return none;
+}
+
+static private function string GetPropertyName(coerce string PropertyName, optional string Namespace)
+{
+	if (Namespace != "")
+	{
+		PropertyName $= ":" $ Namespace;
+	}
+
+	return PropertyName;
 }
 
 static public function string SanitizeJson(string Json)

@@ -7,7 +7,7 @@ function GetToHitModifiers(XComGameState_Effect EffectState, XComGameState_Unit 
 	local ShotModifierInfo ShotInfo;
 	local array<int> Critboost;
 
-	Critboost = class'Config_Manager'.static.GetConfigIntArray("CLOSE_AND_PERSONAL_CRIT_BOOST");
+	Critboost = class'RPGOAbilityConfigManager'.static.GetConfigIntArray("CLOSE_AND_PERSONAL_CRIT_BOOST");
 
 	SourceWeapon = AbilityState.GetSourceWeapon();
 	if(SourceWeapon != none)

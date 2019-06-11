@@ -1,11 +1,12 @@
 //-----------------------------------------------------------
-//	Class:	Config_TaggedConfigProperty
+//	Class:	JsonConfig_TaggedConfigProperty
 //	Author: Musashi
 //	Defines a config entry for a config value with meta information for automatic localization tags
 //-----------------------------------------------------------
 
-class Config_TaggedConfigProperty extends Object;
+class JsonConfig_TaggedConfigProperty extends Object;
 
+var JsonConfigManager ManagerInstance;
 var protectedwrite string Value;
 var protectedwrite vector VectorValue;
 var protectedwrite array<string> ArrayValue;
@@ -25,13 +26,17 @@ public function string GetTagParam()
 {
 	local string PropertyRefValue;
 
-	// Check if the tag param is referencing a property value
-	PropertyRefValue = class'Config_Manager'.static.GetConfigStringValue(TagParam);
-
-	if (PropertyRefValue != "")
+	// Check if the tag param is referencing another property value
+	if (ManagerInstance.static.HasConfigProperty(TagParam))
 	{
-		return PropertyRefValue;
+		PropertyRefValue = ManagerInstance.static.GetConfigStringValue(TagParam);
+
+		if (PropertyRefValue != "")
+		{
+			return PropertyRefValue;
+		}
 	}
+
 	return TagParam;
 }
 
@@ -100,7 +105,7 @@ function string GetTagFunctionValueImmediate(string TagFunctionIn)
 		Tuple.Data[0].kind = LWTVString;
 		Tuple.Data[0].s = "";
 
-		class'Config_EventListener'.static.OnTagValue(Tuple, self, none, 'ConfigTagFunction', none);
+		class'JsonConfig_EventListener'.static.OnTagValue(Tuple, self, none, 'ConfigTagFunction', none);
 
 		if (Tuple.Data[0].s != "")
 		{
