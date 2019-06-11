@@ -1,4 +1,4 @@
-class JsonConfigManager extends JsonObject config(GameData);
+class JsonConfigManager extends JsonObject config(GameData) abstract;
 
 struct ConfigPropertyMapEntry
 {
@@ -7,8 +7,15 @@ struct ConfigPropertyMapEntry
 };
 
 var config array<string> ConfigProperties;
-
 var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
+var array< Delegate<TagFunctionDelegate> > OnTagFunctions;
+
+delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
+
+//
+// override in subclasses
+//
+function bool OnTagFunction(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
 static function JsonConfigManager GetConfigManager()
 {
@@ -19,6 +26,7 @@ static function JsonConfigManager GetConfigManager()
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
 	{
 		ConfigManager.DeserializeConfig();
+		ConfigManager.OnTagFunctions.AddItem(OnTagFunction);
 	}
 
 	return ConfigManager;
@@ -96,37 +104,6 @@ static public function bool GetConfigBoolValue(coerce string PropertyName, optio
 	return bool(GetConfigStringValue(PropertyName, TagFunction, Namespace));
 }
 
-static public function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
-{
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
-
-	ConfigProperty = GetConfigProperty(PropertyName);
-
-	if (ConfigProperty != none)
-	{
-		return ConfigProperty.GetVectorValue();
-	}
-
-	return vect(0, 0, 0);
-}
-
-static public function array<string> GetConfigStringArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
-{
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
-	local array<string> EmptyArray;
-
-	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
-
-	if (ConfigProperty != none)
-	{
-		return ConfigProperty.GetArrayValue();
-	}
-
-	EmptyArray.Length = 0; // Prevent unassigned warning
-
-	return EmptyArray;
-}
-
 static public function array<int> GetConfigIntArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
 	local array<string> StringArray;
@@ -175,6 +152,39 @@ static public function array<name> GetConfigNameArray(coerce string PropertyName
 	return NameArray;
 }
 
+static public function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+{
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
+
+	ConfigProperty = GetConfigProperty(PropertyName);
+
+	if (ConfigProperty != none)
+	{
+		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.VectorValue.ToString() @ `ShowVar(Namespace),, 'RPG');
+		return ConfigProperty.GetVectorValue();
+	}
+
+	return vect(0, 0, 0);
+}
+
+static public function array<string> GetConfigStringArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
+{
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local array<string> EmptyArray;
+
+	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
+
+	if (ConfigProperty != none)
+	{
+		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.ArrayValue.ToString() @ `ShowVar(Namespace),, 'RPG');
+		return ConfigProperty.GetArrayValue();
+	}
+
+	EmptyArray.Length = 0; // Prevent unassigned warning
+
+	return EmptyArray;
+}
+
 static public function WeaponDamageValue GetConfigDamageValue(coerce string PropertyName, optional string Namespace)
 {
 	local JsonConfig_TaggedConfigProperty ConfigProperty;
@@ -185,7 +195,7 @@ static public function WeaponDamageValue GetConfigDamageValue(coerce string Prop
 	if (ConfigProperty != none)
 	{
 		Value =  ConfigProperty.GetDamageValue();
-		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ `ShowVar(Value.Damage) @ `ShowVar(Namespace),, 'RPG');
+		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.DamageValue.ToString() @ `ShowVar(Namespace),, 'RPG');
 	}
 
 	return Value;
@@ -258,16 +268,22 @@ static private function string GetPropertyName(coerce string PropertyName, optio
 static public function string SanitizeJson(string Json)
 {
 	local string Buffer;
+	local int CountBracketsOpen, CountBracketsClose, CountDoubleQuotes;
 
 	Buffer = Repl(Repl(Repl(Json, "\n", ""), " ", ""), "	", "");
+	Buffer = LTrimToFirstBracket(RTrimToFirstBracket(Buffer));
 
-	if (CountCharacters(Buffer, "{") != CountCharacters(Buffer, "}"))
+	CountBracketsOpen  = CountCharacters(Buffer, "{");
+	CountBracketsClose = CountCharacters(Buffer, "}");
+	CountDoubleQuotes = CountCharacters(Buffer, "\"");
+
+	if (CountBracketsOpen != CountBracketsClose ||
+		InStr(Buffer, "\"{") != INDEX_NONE ||
+		CountDoubleQuotes % 2 != 0)
 	{
 		`LOG(default.class @ GetFuncName() @ "Warning: invalid json" @ Buffer,, 'RPG');
 		return "";
-	} 
-
-	Buffer = LTrimToFirstBracket(RTrimToFirstBracket(Buffer));
+	}
 
 	return Buffer;
 }

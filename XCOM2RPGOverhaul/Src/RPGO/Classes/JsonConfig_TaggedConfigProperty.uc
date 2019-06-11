@@ -4,13 +4,13 @@
 //	Defines a config entry for a config value with meta information for automatic localization tags
 //-----------------------------------------------------------
 
-class JsonConfig_TaggedConfigProperty extends Object;
+class JsonConfig_TaggedConfigProperty extends Object dependson(JsonConfigManager);
 
 var JsonConfigManager ManagerInstance;
 var protectedwrite string Value;
-var protectedwrite vector VectorValue;
-var protectedwrite array<string> ArrayValue;
-var protectedwrite WeaponDamageValue DamageValue;
+var protectedwrite JsonConfig_Vector VectorValue;
+var protectedwrite JsonConfig_Array ArrayValue;
+var protectedwrite JsonConfig_WeaponDamageValue DamageValue;
 
 var protectedwrite string Namespace;
 var protectedwrite string TagFunction;
@@ -42,22 +42,27 @@ public function string GetTagParam()
 
 public function string GetValue(optional string TagFunctionIn)
 {
-	return GetTagFunctionValueImmediate(TagFunctionIn);
+	if (TagFunctionIn != "")
+	{
+		return GetTagFunctionValue(TagFunctionIn);
+	}
+
+	return Value;
 }
 
 public function vector GetVectorValue()
 {
-	return VectorValue;
+	return VectorValue.GetVectorValue();
 }
 
 public function array<string> GetArrayValue()
 {
-	return ArrayValue;
+	return ArrayValue.GetArrayValue();
 }
 
 public function WeaponDamageValue GetDamageValue()
 {
-	return DamageValue;
+	return DamageValue.GetDamageValue();
 }
 
 public function string GetTagValue()
@@ -66,17 +71,15 @@ public function string GetTagValue()
 
 	if (bIsVector)
 	{
-		TagValue = VectorValue.X $ "," $ VectorValue.Y $ "," $ VectorValue.Z;
+		TagValue = VectorValue.ToString();
 	}
-	else if (bIsArray && ArrayValue.Length > 0)
+	else if (bIsArray)
 	{
-		TagValue = Join(ArrayValue, ", ");
+		TagValue = ArrayValue.ToString();
 	}
 	else if (bIsDamageValue)
 	{
-		// @TODO make proper damage preview function
-		TagValue = (DamageValue.Damage - DamageValue.Spread) $ "-" $
-				   (DamageValue.Damage + DamageValue.Spread);
+		DamageValue.ToString();
 	}
 	else
 	{
@@ -86,60 +89,59 @@ public function string GetTagValue()
 	if (!bIsVector &&
 		TagFunction != "")
 	{
-		TagValue = GetTagFunctionValueByEvent(TagFunction);
+		TagValue = GetTagFunctionValue(TagFunction);
 	}
 
 	return TagPrefix $ TagValue $ TagSuffix;
 }
 
-// Used for direct access because the event system is not working at template creation
-function string GetTagFunctionValueImmediate(string TagFunctionIn)
+function string GetTagFunctionValue(string TagFunctionIn)
 {
-	local LWTuple Tuple;
+	local int OutValue;
+	local string DelegateValue;
+	local array<string> LocalArrayValue;
+	local delegate<JsonConfigManager.TagFunctionDelegate> TagFunctionCB;
 
-	if (TagFunctionIn != "")
+	foreach ManagerInstance.OnTagFunctions(TagFunctionCB)
 	{
-		Tuple = new class'LWTuple';
-		Tuple.Id = name(TagFunctionIn);
-		Tuple.Data.Add(1);
-		Tuple.Data[0].kind = LWTVString;
-		Tuple.Data[0].s = "";
-
-		class'JsonConfig_EventListener'.static.OnTagValue(Tuple, self, none, 'ConfigTagFunction', none);
-
-		if (Tuple.Data[0].s != "")
+		if (TagFunctionCB(name(TagFunctionIn), self, DelegateValue))
 		{
-			return Tuple.Data[0].s;
+			return DelegateValue;
 		}
 	}
 
-	return Value;
-}
-
-// Used for tag values at runtime for better extensibility
-function string GetTagFunctionValueByEvent(string TagFunctionIn)
-{
-	local LWTuple Tuple;
-
-	if (TagFunctionIn != "")
+	switch (name(TagFunctionIn))
 	{
-		Tuple = new class'LWTuple';
-		Tuple.Id = name(TagFunctionIn);
-		Tuple.Data.Add(1);
-		Tuple.Data[0].kind = LWTVString;
-		Tuple.Data[0].s = "";
-
-		`LOG(default.class @ GetFuncName() @ "trigger event" @ TagFunctionIn,, 'RPG');
-
-		`XEVENTMGR.TriggerEvent('ConfigTagFunction', Tuple, self);
-
-		if (Tuple.Data[0].s != "")
-		{
-			return Tuple.Data[0].s;
-		}
+		case 'TagValueToPercent':
+			OutValue = int(float(Value) * 100);
+			break;
+		case 'TagValueToPercentMinusHundred':
+			OutValue = int(float(Value) * 100 - 100);
+			break;
+		case 'TagValueMetersToTiles':
+			OutValue = int(float(Value) * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER / class'XComWorldData'.const.WORLD_StepSize);
+			break;
+		case 'TagValueTilesToMeters':
+			OutValue = int(float(Value) * class'XComWorldData'.const.WORLD_StepSize / class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER);
+			break;
+		case 'TagValueTilesToUnits':
+			OutValue = int(float(Value) * class'XComWorldData'.const.WORLD_StepSize);
+			break;
+		case 'TagValueParamAddition':
+			 OutValue = int(float(Value) + float(GetTagParam()));
+			 break;
+		case 'TagValueParamMultiplication':
+			 OutValue = int(float(Value) * float(GetTagParam()));
+			 break;
+		case 'TagArrayValue':
+			LocalArrayValue = GetArrayValue();
+			return  LocalArrayValue[int(GetTagParam())];
+			break;
+		default:
+			break;
 	}
 
-	return Value;
+	return string(OutValue);
 }
 
 
@@ -149,23 +151,10 @@ function JSonObject Serialize()
 
 	JSonObject = new () class'JsonObject';
 
-	if (ArrayValue.Length > 0)
-	{
-		bIsArray = true;
-		JSonObject.SetStringValue("ArrayValue", Join(ArrayValue, ", "));
-	}
+	ArrayValue.Serialize(JSonObject, "VectorValue");
+	VectorValue.Serialize(JSonObject, "ArrayValue");
+	DamageValue.Serialize(JSonObject, "DamageValue");
 	
-	JSonObject.SetStringValue("VectorValue", "{\"X\":" $ VectorValue.X $ ",\"Y\":" $ VectorValue.Y $ ",\"Z\":" $ VectorValue.Z $ "}");
-	JSonObject.SetStringValue("DamageValue", "{\"Damage\":" $ DamageValue.Damage $
-											 ",\"Spread\":" $ DamageValue.Spread $
-											 ",\"PlusOne\":" $ DamageValue.PlusOne $
-											 ",\"Crit\":" $ DamageValue.Crit $
-											 ",\"Pierce\":" $ DamageValue.Pierce $
-											 ",\"Rupture\":" $ DamageValue.Rupture $
-											 ",\"Shred\":" $ DamageValue.Shred $
-											 ",\"Tag\":\"" $ DamageValue.Tag $ "\"" $
-											 ",\"DamageType\":\"" $ DamageValue.DamageType $ "\"" $
-											 "}");
 	JSonObject.SetStringValue("Value", Value);
 	JSonObject.SetStringValue("Namespace", Namespace);
 	JSonObject.SetStringValue("TagFunction", TagFunction);
@@ -178,39 +167,9 @@ function JSonObject Serialize()
 
 function Deserialize(JSonObject Data)
 {
-	local JSonObject VectorJson, DamageValueJson;
-	local string UnserializedArrayValue;
-
-	VectorJson = Data.GetObject("VectorValue");
-	if (VectorJson != none)
-	{
-		bIsVector = true;
-		VectorValue.X = VectorJson.GetIntValue("X");
-		VectorValue.Y = VectorJson.GetIntValue("Y");
-		VectorValue.Z = VectorJson.GetIntValue("Z");
-	}
-
-	UnserializedArrayValue = Data.GetStringValue("ArrayValue");
-	if (UnserializedArrayValue != "")
-	{
-		ArrayValue = SplitString(Repl(Repl(UnserializedArrayValue, " ", ""), "	", ""), ",", true);
-		bIsArray = true;
-	}
-
-	DamageValueJson = Data.GetObject("DamageValue");
-	if (DamageValueJson != none)
-	{
-		DamageValue.Damage = DamageValueJson.GetIntValue("Damage");
-		DamageValue.Spread = DamageValueJson.GetIntValue("Spread");
-		DamageValue.PlusOne = DamageValueJson.GetIntValue("PlusOne");
-		DamageValue.Crit = DamageValueJson.GetIntValue("Crit");
-		DamageValue.Pierce = DamageValueJson.GetIntValue("Pierce");
-		DamageValue.Rupture = DamageValueJson.GetIntValue("Rupture");
-		DamageValue.Shred = DamageValueJson.GetIntValue("Shred");
-		DamageValue.Tag = name(DamageValueJson.GetStringValue("Tag"));
-		DamageValue.DamageType = name(DamageValueJson.GetStringValue("DamageType"));
-		bIsDamageValue = true;
-	}
+	bIsVector = VectorValue.Deserialize(Data, "VectorValue");
+	bIsArray = ArrayValue.Deserialize(Data, "ArrayValue");
+	bIsDamageValue = DamageValue.Deserialize(Data, "DamageValue");
 
 	Value = Data.GetStringValue("Value");
 
@@ -221,12 +180,17 @@ function Deserialize(JSonObject Data)
 	TagSuffix = Data.GetStringValue("TagSuffix");
 }
 
-
-function static string Join(array<string> StringArray, optional string Delimiter = ",", optional bool bIgnoreBlanks = true)
+defaultproperties
 {
-	local string Result;
+	Begin Object Class=JsonConfig_Vector Name=DefaultJsonConfig_Vector
+	End Object
+	VectorValue = DefaultJsonConfig_Vector;
 
-	JoinArray(StringArray, Result, Delimiter, bIgnoreBlanks);
+	Begin Object Class=JsonConfig_Array Name=DefaultJsonConfig_Array
+	End Object
+	ArrayValue = DefaultJsonConfig_Array;
 
-	return Result;
+	Begin Object Class=JsonConfig_WeaponDamageValue Name=DefaultJsonConfig_WeaponDamageValue
+	End Object
+	DamageValue = DefaultJsonConfig_WeaponDamageValue;
 }

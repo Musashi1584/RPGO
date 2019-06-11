@@ -56,7 +56,7 @@ static event OnPostTemplatesCreated()
 {
 	`LOG(default.class @ GetFuncName(),, 'DLCSort');
 
-	//`LOG(default.class @ GetFuncName() @ class'RPGOAbilityConfigManager'.static.GetConfigTagValue("AGRESSION_SCALE_MAX"),, 'RPG');
+	//`LOG(default.class @ GetFuncName() @ class'RPGOAbilityConfigManager'.static.GetConfigTagValue("LOCKDOWN_TOHIT_BONUS"),, 'RPG');
 
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 
@@ -101,7 +101,6 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 
 static function bool AbilityTagExpandHandler(string InString, out string OutString)
 {
-	local name Type;
 	local string PossibleValue;
 
 	PossibleValue = class'RPGOAbilityConfigManager'.static.GetConfigTagValue(InString);

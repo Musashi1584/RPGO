@@ -238,16 +238,22 @@
     <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\Config_EventListener.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\Config_TaggedConfigProperty.uc">
+    <Content Include="Src\RPGO\Classes\JsonConfig_Array.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\Config_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\JsonConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_TaggedConfigProperty.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_Vector.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_WeaponDamageValue.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
