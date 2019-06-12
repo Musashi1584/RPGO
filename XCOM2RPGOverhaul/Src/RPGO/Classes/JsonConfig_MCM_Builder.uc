@@ -14,16 +14,11 @@ static public function JsonConfig_MCM_Builder GetMCMBuilder()
 	local JsonConfig_MCM_Builder MCMBuilder;
 
 	MCMBuilder = JsonConfig_MCM_Builder(class'Engine'.static.FindClassDefaultObject(string(default.class)));
-	
-	`LOG(default.class @ GetFuncName() @ "1",, 'RPG');
 
 	if (MCMBuilder.DeserialzedPagesMap.Length == 0)
 	{
-		`LOG(default.class @ GetFuncName() @ "2",, 'RPG');
 		MCMBuilder.DeserializeConfig();
 	}
-
-	`LOG(default.class @ GetFuncName() @ "3",, 'RPG');
 
 	return MCMBuilder;
 }
@@ -37,11 +32,11 @@ static public function BuildMCM(
 	local MCMConfigMapEntry MCMConfig;
 	local JsonConfig_MCM_Page MCMPageConfig;
 	local JsonConfig_MCM_Group MCMGroupConfig;
-	local JsonConfig_MCM_Checkbox MCMCheckboxConfig;
-	local JsonConfig_Manager SaveConfigManager;
-
+	local JsonConfig_MCM_Element MCMElementConfig;
+	local JsonConfig_Manager SaveConfigManager;	
 	local MCM_API_SettingsPage Page;
 	local MCM_API_SettingsGroup Group;
+	local name SetttingName;
 	
 	Builder = GetMCMBuilder();
 
@@ -59,21 +54,123 @@ static public function BuildMCM(
 		{
 			Group = Page.AddGroup(name(MCMGroupConfig.GetGroupName()), MCMGroupConfig.GetGroupLabel());
 			
-			foreach MCMGroupConfig.Checkboxes(MCMCheckboxConfig)
+			foreach MCMGroupConfig.Elements(MCMElementConfig)
 			{
-				Group.AddCheckbox(
-					name(MCMCheckboxConfig.SettingName),
-					MCMCheckboxConfig.Label,
-					MCMCheckboxConfig.Tooltip,
-					SaveConfigManager.GetConfigBoolValue(MCMCheckboxConfig.SettingName),
-					CheckboxSaveHandler
-				);
+				SetttingName = name(Caps(MCMElementConfig.SettingName));
+
+				switch (MCMElementConfig.Type)
+				{
+					case "Label":
+						Group.AddLabel(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip
+						);
+						break;
+					case "Button":
+						Group.AddButton(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip,
+							MCMElementConfig.ButtonLabel,
+							ButtonClickHandler
+						);
+						break;
+					case "Checkbox":
+						Group.AddCheckbox(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip,
+							SaveConfigManager.GetConfigBoolValue(MCMElementConfig.SettingName),
+							BoolSaveHandler,
+							BoolChangeHandler
+						);
+						break;
+					case "Slider":
+						Group.AddSlider(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip,
+							float(MCMElementConfig.SliderMin),
+							float(MCMElementConfig.SliderMax),
+							float(MCMElementConfig.SliderStep),
+							SaveConfigManager.GetConfigFloatValue(MCMElementConfig.SettingName),
+							FloatSaveHandler,
+							FloatChangeHandler
+						);
+						break;
+					case "Spinner":
+						Group.AddSpinner(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip,
+							MCMElementConfig.Options.GetArrayValue(),
+							SaveConfigManager.GetConfigStringValue(MCMElementConfig.SettingName),
+							StringSaveHandler,
+							StringChangeHandler
+						);
+						break;
+					case "Dropdown":
+						Group.AddDropdown(
+							SetttingName,
+							MCMElementConfig.Label,
+							MCMElementConfig.Tooltip,
+							MCMElementConfig.Options.GetArrayValue(),
+							SaveConfigManager.GetConfigStringValue(MCMElementConfig.SettingName),
+							StringSaveHandler,
+							StringChangeHandler
+						);
+						break;
+					default:
+						`LOG(default.class @ GetFuncName() @ "unknown MCM element type" @ MCMElementConfig.Type);
+						break;
+				}
 			}
 		}
 		
 		Page.ShowSettings();
 		Page.SetSaveHandler(SaveButtonClicked);
 	}
+}
+
+simulated function ButtonClickHandler(MCM_API_Setting Setting);
+
+simulated function BoolChangeHandler(MCM_API_Setting Setting, bool SettingValue);
+simulated function BoolSaveHandler(MCM_API_Setting Setting, bool SettingValue)
+{
+	ElementSaveHandler(Setting, SettingValue);
+}
+
+simulated function FloatChangeHandler(MCM_API_Setting Setting, float SettingValue);
+simulated function FloatSaveHandler(MCM_API_Setting Setting, float SettingValue)
+{
+	ElementSaveHandler(Setting, SettingValue);
+}
+
+simulated function StringChangeHandler(MCM_API_Setting Setting, string SettingValue);
+simulated function StringSaveHandler(MCM_API_Setting Setting, string SettingValue)
+{
+	ElementSaveHandler(Setting, SettingValue);
+}
+
+simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string SettingValue)
+{
+	local JsonConfig_MCM_Page Page;
+	local JsonConfig_Manager SaveConfigManager;
+
+	Page = GetPage(Setting.GetParentGroup().GetParentPage().GetPageId());
+	SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(Page.SaveConfigManager));
+	SaveConfigManager.static.SetConfigString(Caps(string(Setting.GetName())), SettingValue);
+}
+
+simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
+{
+	local JsonConfig_MCM_Page ConfigPage;
+	local JsonConfig_Manager SaveConfigManager;
+
+	ConfigPage = GetPage(Page.GetPageId());
+	SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigPage.SaveConfigManager));
+	SaveConfigManager.static.SerializeAndSaveConfig();
 }
 
 static public function JsonConfig_MCM_Page GetPage(int PageID)
@@ -119,76 +216,33 @@ static public function JsonConfig_MCM_Group GetGroup(int PageID, name GroupName)
 	return none;
 }
 
-static public function JsonConfig_MCM_Checkbox GetCheckbox(int PageID, name GroupName, name SettingName)
+static public function JsonConfig_MCM_Element GetElement(int PageID, name GroupName, name SettingName)
 {
 	local JsonConfig_MCM_Group Group;
-	local JsonConfig_MCM_Checkbox Checkbox;
+	local JsonConfig_MCM_Element Element;
 
 	Group = GetGroup(PageID, GroupName);
 
-	foreach Group.Checkboxes(Checkbox)
+	foreach Group.Elements(Element)
 	{
-		if (name(Checkbox.SettingName) == SettingName)
+		if (name(Element.SettingName) == SettingName)
 		{
-			return Checkbox;
+			return Element;
 		}
 	}
 
-	`LOG(default.class @ GetFuncName() @ "could not find JsonConfig_MCM_Checkbox for" @ PageID @ GroupName @ SettingName,, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "could not find JsonConfig_MCM_Element for" @ PageID @ GroupName @ SettingName,, 'RPG');
 
 	return none;
 }
 
-
-public static function bool GetMCMBoolValue(
-	string PropertyName,
-	JsonConfig_Manager DefaultManager,
-	JsonConfig_Manager SaveManager
-)
+public static function SerializeAndSaveBuilderConfig()
 {
-	if (SaveManager.static.HasConfigProperty(PropertyName))
-	{
-		return SaveManager.static.GetConfigBoolValue(PropertyName);
-	}
+	local JsonConfig_MCM_Builder Builder;
 
-	if (DefaultManager.static.HasConfigProperty(PropertyName))
-	{
-		return DefaultManager.static.GetConfigBoolValue(PropertyName);
-	}
-
-	return false;
-}
-
-simulated function CheckboxSaveHandler(MCM_API_Setting _Setting, bool _SettingValue)
-{
-	local JsonConfig_MCM_Page Page;
-	//local JsonConfig_Manager DefaultConfigManager;
-	local JsonConfig_Manager SaveConfigManager;
-
-	Page = GetPage(_Setting.GetParentGroup().GetParentPage().GetPageId());
-
-	//DefaultConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(Page.DefaultConfigManager));
-	SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(Page.SaveConfigManager));
-
-	SaveConfigManager.static.SetConfigString(string(_Setting.GetName()), _SettingValue);
-	`LOG(default.class @ GetFuncName() @ _Setting.GetName() @ _SettingValue,, 'RPG');
-
-	//GetCheckbox(
-	//	_Setting.GetParentGroup().GetParentPage().GetPageId(),
-	//	_Setting.GetParentGroup().GetName(),
-	//	_Setting.GetName());
-}
-
-simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
-{
-	local JsonConfig_MCM_Page ConfigPage;
-	local JsonConfig_Manager SaveConfigManager;
-
-	ConfigPage = GetPage(Page.GetPageId());
-	SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigPage.SaveConfigManager));
-
-	//SaveConfigManager.static.SetConfigString("VERSION_CFG", `MCM_CH_GetCompositeVersion());
-	SaveConfigManager.static.SerializeAndSaveConfig();
+	Builder = GetMCMBuilder();
+	Builder.SerializeConfig();
+	Builder.SaveConfig();
 }
 
 private function DeserializeConfig()
@@ -220,17 +274,17 @@ private function DeserializeConfig()
 	}
 }
 
-//	Builder = new class'Config_MCM_Builder';
-//	Builder.Page = 1;
-//	Builder.Group = "My Group";
-//	Builder.Type = "My Type";
-//	ConfigManager.SetObject("Builder", Builder.Serialize());
-//
-//	ConfigManager.PropCache = class'JSonObject'.static.EncodeJson(ConfigManager);
-//	ConfigManager.SaveConfig();
+private function SerializeConfig()
+{
+	local MCMConfigMapEntry MapEntry;
+	local JSonObject JSonObject;
 
+	MCMPages.Length = 0;
 
-//	Builder = new class'Config_MCM_Builder';
-//	Builder.Deserialize(JSonObject.GetObject("Builder"));
-//	`LOG(default.class @ GetFuncName() @ JSonObject @ "PropertyName:" @ Builder @ "Value:" @ Builder.Page @ Builder.Group @ Builder.Type,, 'RPGO');
-
+	foreach DeserialzedPagesMap(MapEntry)
+	{
+		JSonObject = new () class'JsonObject';
+		MapEntry.MCMConfigPage.Serialize(JSonObject, MapEntry.PageID);
+		MCMPages.AddItem(class'JSonObject'.static.EncodeJson(JSonObject));
+	}
+}

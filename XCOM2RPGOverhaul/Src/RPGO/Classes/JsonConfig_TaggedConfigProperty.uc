@@ -205,11 +205,11 @@ function JSonObject Serialize()
 
 	if (bIsArray)
 	{
-		ArrayValue.Serialize(JSonObject, "VectorValue");
+		ArrayValue.Serialize(JSonObject, "ArrayValue");
 	}
 	else if (bIsVector)
 	{
-		VectorValue.Serialize(JSonObject, "ArrayValue");
+		VectorValue.Serialize(JSonObject, "VectorValue");
 	}
 	else if (bIsDamageValue)
 	{

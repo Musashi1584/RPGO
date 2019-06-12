@@ -256,7 +256,7 @@
     <Content Include="Src\RPGO\Classes\JsonConfig_Interface.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Checkbox.uc">
+    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Element.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Group.uc">

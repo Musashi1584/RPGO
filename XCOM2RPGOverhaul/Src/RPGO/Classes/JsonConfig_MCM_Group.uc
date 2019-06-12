@@ -8,7 +8,7 @@ class JsonConfig_MCM_Group extends Object implements (JsonConfig_Interface);
 var protectedwrite string GroupName;
 var protectedwrite string GroupLabel;
 
-var array<JsonConfig_MCM_Checkbox> Checkboxes;
+var array<JsonConfig_MCM_Element> Elements;
 
 public function SetGroupName(string GroupNameParam)
 {
@@ -51,25 +51,25 @@ public function bool Deserialize(JSonObject Data, string PropertyName)
 		GroupName = GroupJson.GetStringValue("GroupName");
 		GroupLabel = GroupJson.GetStringValue("GroupLabel");
 
-		DeserializeCheckboxes(GroupJson);
+		DeserializeElements(GroupJson);
 
 		return true;
 	}
 	return false;
 }
 
-private function DeserializeCheckboxes(JsonObject GroupJson)
+private function DeserializeElements(JsonObject GroupJson)
 {
 	local int Index;
-	local JsonConfig_MCM_Checkbox Checkbox;
+	local JsonConfig_MCM_Element Element;
 
 	Index = 1;
 	while(true && Index <= 20)
 	{
-		Checkbox = new class'JsonConfig_MCM_Checkbox';
-		if(Checkbox.Deserialize(GroupJson, "Checkbox" $ Index))
+		Element = new class'JsonConfig_MCM_Element';
+		if(Element.Deserialize(GroupJson, "Element" $ Index))
 		{
-			Checkboxes.AddItem(Checkbox);
+			Elements.AddItem(Element);
 		}
 		else
 		{
