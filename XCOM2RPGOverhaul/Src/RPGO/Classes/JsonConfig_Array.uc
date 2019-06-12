@@ -3,7 +3,7 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_Array extends Object;
+class JsonConfig_Array extends Object implements (JsonConfig_Interface);
 
 var protectedwrite array<string> ArrayValue;
 

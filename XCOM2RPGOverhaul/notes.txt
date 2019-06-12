@@ -6,6 +6,7 @@ add a covert op similar to "Increase Combat Intelligence" that improves natural 
 exclude specs from random 
 add weight to specs for randomization
 limited random pool of specs and starting abilities
+mod add squaddie perks
 
 Regex for config replacement:
 search: ^([A-Z_]{2,})+(=)+([-0-9\.0-9f]*)

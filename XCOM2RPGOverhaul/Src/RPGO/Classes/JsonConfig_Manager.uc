@@ -1,4 +1,4 @@
-class JsonConfigManager extends JsonObject config(GameData) abstract;
+class JsonConfig_Manager extends JsonConfig config(GameData) abstract;
 
 struct ConfigPropertyMapEntry
 {
@@ -9,6 +9,8 @@ struct ConfigPropertyMapEntry
 var config array<string> ConfigProperties;
 var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
 var array< Delegate<TagFunctionDelegate> > OnTagFunctions;
+var string DefaultConfigManagerClassName;
+var private JsonConfig_Manager DefaultConfigManager;
 
 delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
@@ -17,11 +19,16 @@ delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigP
 //
 function bool OnTagFunction(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
-static function JsonConfigManager GetConfigManager()
+public static function JsonConfig_Manager GetConfigManager()
 {
-	local JsonConfigManager ConfigManager;
+	local JsonConfig_Manager ConfigManager;
 
-	ConfigManager = JsonConfigManager(class'Engine'.static.FindClassDefaultObject(string(default.class)));
+	ConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(string(default.class)));
+	
+	if (ConfigManager.DefaultConfigManagerClassName != "")
+	{
+		ConfigManager.DefaultConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigManager.DefaultConfigManagerClassName));
+	}
 	
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
 	{
@@ -30,6 +37,15 @@ static function JsonConfigManager GetConfigManager()
 	}
 
 	return ConfigManager;
+}
+
+public static function SerializeAndSaveConfig()
+{
+	local JsonConfig_Manager ConfigManager;
+
+	ConfigManager = GetConfigManager();
+	ConfigManager.SerializeConfig();
+	ConfigManager.SaveConfig();
 }
 
 private function DeserializeConfig()
@@ -64,6 +80,21 @@ private function DeserializeConfig()
 	}
 }
 
+private function SerializeConfig()
+{
+	local ConfigPropertyMapEntry MapEntry;
+	local JSonObject JSonObject;
+
+	ConfigProperties.Length = 0;
+
+	foreach DeserialzedConfigPropertyMap(MapEntry)
+	{
+		JSonObject = new () class'JsonObject';
+		JSonObject.SetObject(MapEntry.PropertyName, MapEntry.ConfigProperty.Serialize());
+		ConfigProperties.AddItem(class'JSonObject'.static.EncodeJson(JSonObject));
+	}
+}
+
 static public function bool HasConfigProperty(coerce string PropertyName, optional string Namespace)
 {
 	PropertyName = GetPropertyName(PropertyName, Namespace);
@@ -73,10 +104,28 @@ static public function bool HasConfigProperty(coerce string PropertyName, option
 
 static public function SetConfigString(string PropertyName, coerce string Value)
 {
-	local JsonConfigManager ConfigManager;
+	local JsonConfig_Manager ConfigManager;
+	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local ConfigPropertyMapEntry MapEntry;
 
 	ConfigManager = GetConfigManager();
-	ConfigManager.SetStringValue(PropertyName, Value);
+
+	if (ConfigManager.static.HasConfigProperty(PropertyName))
+	{
+		ConfigProperty = ConfigManager.static.GetConfigProperty(PropertyName);
+		ConfigProperty.SetValue(Value);
+	}
+	else
+	{
+		ConfigProperty = new class'JsonConfig_TaggedConfigProperty';
+		ConfigProperty.ManagerInstance = ConfigManager;
+		ConfigProperty.SetValue(Value);
+
+		MapEntry.PropertyName = PropertyName;
+		MapEntry.ConfigProperty = ConfigProperty;
+
+		ConfigManager.DeserialzedConfigPropertyMap.AddItem(MapEntry);
+	}
 }
 
 static public function int GetConfigIntValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
@@ -237,7 +286,7 @@ static public function JsonConfig_TaggedConfigProperty GetConfigProperty(
 	optional string Namespace
 )
 {
-	local JsonConfigManager ConfigManager;
+	local JsonConfig_Manager ConfigManager;
 	local int Index;
 
 	ConfigManager = GetConfigManager();
@@ -250,104 +299,12 @@ static public function JsonConfig_TaggedConfigProperty GetConfigProperty(
 		return ConfigManager.DeserialzedConfigPropertyMap[Index].ConfigProperty;
 	}
 
+	if (ConfigManager.DefaultConfigManager != none)
+	{
+		return ConfigManager.DefaultConfigManager.GetConfigProperty(PropertyName, Namespace);
+	}
+
 	`LOG(default.class @ GetFuncName() @ "could not find config property for" @ PropertyName,, 'RPG');
 
 	return none;
-}
-
-static private function string GetPropertyName(coerce string PropertyName, optional string Namespace)
-{
-	if (Namespace != "")
-	{
-		PropertyName $= ":" $ Namespace;
-	}
-
-	return PropertyName;
-}
-
-static public function string SanitizeJson(string Json)
-{
-	local string Buffer;
-	local int CountBracketsOpen, CountBracketsClose, CountDoubleQuotes;
-
-	Buffer = Repl(Repl(Repl(Json, "\n", ""), " ", ""), "	", "");
-	Buffer = LTrimToFirstBracket(RTrimToFirstBracket(Buffer));
-
-	CountBracketsOpen  = CountCharacters(Buffer, "{");
-	CountBracketsClose = CountCharacters(Buffer, "}");
-	CountDoubleQuotes = CountCharacters(Buffer, "\"");
-
-	if (CountBracketsOpen != CountBracketsClose ||
-		InStr(Buffer, "\"{") != INDEX_NONE ||
-		CountDoubleQuotes % 2 != 0)
-	{
-		`LOG(default.class @ GetFuncName() @ "Warning: invalid json" @ Buffer,, 'RPG');
-		return "";
-	}
-
-	return Buffer;
-}
-
-static public final function int CountCharacters(coerce string S, string Character)
-{
-	local int Count, Index, Max;
-	local string copy;
-
-	copy = S;
-
-	Max = Len(copy);
-
-	for (Index = 0; Index < Max; Index++)
-	{
-		if (Left(copy, 1) == Character)
-		{
-			Count++;
-		}
-		copy = Right(copy, Len(copy) - 1);
-	}
-
-	return Count;
-}
-
-static public final function string LTrimToFirstBracket(coerce string S)
-{
-	while (Left(S, 1) != "{")
-		S = Right(S, Len(S) - 1);
-	return S;
-}
-static public final function string RTrimToFirstBracket(coerce string S)
-{
-	while (Right(S, 1) != "}")
-		S = Left(S, Len(S) - 1);
-	return S;
-}
-
-static public final function string GetObjectKey(coerce string S)
-{
-	local int Index, Max, DoubleQuoteUnicode;
-	local string Key;
-	local bool bStart;
-
-	Max = Len(S);
-	DoubleQuoteUnicode = 34;
-
-	for (Index = 0; Index < Max; Index++)
-	{
-		if (Asc(Left(S, 1)) == DoubleQuoteUnicode)
-		{
-			if (bStart)
-				break;
-			if (!bStart)
-				bStart = true;
-		}
-
-		if (bStart && Asc(Left(S, 1)) != DoubleQuoteUnicode)
-		{
-			Key $= Left(S, 1);
-		}
-
-		S = Right(S, Len(S) - 1);
-	}
-
-	return Key;
 }

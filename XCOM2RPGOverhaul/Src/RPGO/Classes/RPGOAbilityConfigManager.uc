@@ -3,7 +3,7 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class RPGOAbilityConfigManager extends JsonConfigManager config (RPGO_SoldierSkills);
+class RPGOAbilityConfigManager extends JsonConfig_Manager config (RPGO_SoldierSkills);
 
 function bool OnTagFunction(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue)
 {

@@ -1,10 +1,7 @@
 //-----------------------------------------------------------
-//	Class:	RPGO_Defaults
+//	Class:	RPGO_MCM_Builder
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-
-class RPGO_Defaults extends object config(RPGO_DEFAULT);
-
-var config int VERSION_CFG;
+class RPGO_MCM_Builder extends JsonConfig_MCM_Builder config(MCM);
 

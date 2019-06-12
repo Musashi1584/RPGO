@@ -143,3 +143,11 @@ strRequiredModsMissing="Please ACTIVATE the following mods and restart or RPGO w
 strRequiredModsTooltip="Missing required mods:"
 strIncompatibleModsTooltip="Detected incompatible mods:"
 strRequiredLoadedModsTooltip="Loaded required mods:"
+
+
+[RPGO_MCMScreen]
+ModName="RPGO"
+PageTitle1="PageTitle1"
+PageTitle2="PageTitle2"
+GroupHeader1="GroupHeader1"
+GroupHeader2="GroupHeader2"

@@ -4,19 +4,19 @@
 //	Defines a config entry for a config value with meta information for automatic localization tags
 //-----------------------------------------------------------
 
-class JsonConfig_TaggedConfigProperty extends Object dependson(JsonConfigManager);
+class JsonConfig_TaggedConfigProperty extends Object dependson(JsonConfig_Manager);
 
-var JsonConfigManager ManagerInstance;
-var protectedwrite string Value;
+var JsonConfig_Manager ManagerInstance;
+var protected string Value;
 var protectedwrite JsonConfig_Vector VectorValue;
 var protectedwrite JsonConfig_Array ArrayValue;
 var protectedwrite JsonConfig_WeaponDamageValue DamageValue;
 
-var protectedwrite string Namespace;
-var protectedwrite string TagFunction;
-var protectedwrite string TagParam;
-var protectedwrite string TagPrefix;
-var protectedwrite string TagSuffix;
+var protected string Namespace;
+var protected string TagFunction;
+var protected string TagParam;
+var protected string TagPrefix;
+var protected string TagSuffix;
 
 var protectedwrite bool bIsVector;
 var protectedwrite bool bIsArray;
@@ -44,10 +44,18 @@ public function string GetValue(optional string TagFunctionIn)
 {
 	if (TagFunctionIn != "")
 	{
-		return GetTagFunctionValue(TagFunctionIn);
+		return GetTagValueModifiedByTagFunction(TagFunctionIn);
 	}
 
 	return Value;
+}
+
+public function SetValue(string ValueParam)
+{
+	bIsVector = false;
+	bIsArray = false;
+	bIsDamageValue = false;
+	Value = ValueParam;
 }
 
 public function vector GetVectorValue()
@@ -55,14 +63,58 @@ public function vector GetVectorValue()
 	return VectorValue.GetVectorValue();
 }
 
+public function SetVectorValue(vector VectorParam)
+{
+	bIsVector = true;
+	bIsArray = false;
+	bIsDamageValue = false;
+	VectorValue.SetVectorValue(VectorParam);
+}
+
 public function array<string> GetArrayValue()
 {
 	return ArrayValue.GetArrayValue();
 }
 
+public function SetArrayValue(array<string> ArrayValueParam)
+{
+	bIsVector = false;
+	bIsArray = true;
+	bIsDamageValue = false;
+	ArrayValue.SetArrayValue(ArrayValueParam);
+}
+
 public function WeaponDamageValue GetDamageValue()
 {
 	return DamageValue.GetDamageValue();
+}
+
+public function SetDamageValue(WeaponDamageValue DamageValueParam)
+{
+	bIsVector = false;
+	bIsArray = false;
+	bIsDamageValue = true;
+	DamageValue.SetDamageValue(DamageValueParam);
+}
+
+public function string GetTagFunctionValue()
+{
+	return TagFunction;
+}
+
+public function SetTagFunctionValue(string TagFunctionParam)
+{
+	TagFunction = TagFunctionParam;
+}
+
+public function SetTagParamValue(string TagParamParam)
+{
+	TagParam = TagParamParam;
+}
+
+public function string GetTagParamValue()
+{
+	return TagParam;
 }
 
 public function string GetTagValue()
@@ -89,18 +141,18 @@ public function string GetTagValue()
 	if (!bIsVector &&
 		TagFunction != "")
 	{
-		TagValue = GetTagFunctionValue(TagFunction);
+		TagValue = GetTagValueModifiedByTagFunction(TagFunction);
 	}
 
 	return TagPrefix $ TagValue $ TagSuffix;
 }
 
-function string GetTagFunctionValue(string TagFunctionIn)
+function string GetTagValueModifiedByTagFunction(string TagFunctionIn)
 {
 	local int OutValue;
 	local string DelegateValue;
 	local array<string> LocalArrayValue;
-	local delegate<JsonConfigManager.TagFunctionDelegate> TagFunctionCB;
+	local delegate<JsonConfig_Manager.TagFunctionDelegate> TagFunctionCB;
 
 	foreach ManagerInstance.OnTagFunctions(TagFunctionCB)
 	{
@@ -151,16 +203,43 @@ function JSonObject Serialize()
 
 	JSonObject = new () class'JsonObject';
 
-	ArrayValue.Serialize(JSonObject, "VectorValue");
-	VectorValue.Serialize(JSonObject, "ArrayValue");
-	DamageValue.Serialize(JSonObject, "DamageValue");
-	
-	JSonObject.SetStringValue("Value", Value);
-	JSonObject.SetStringValue("Namespace", Namespace);
-	JSonObject.SetStringValue("TagFunction", TagFunction);
-	JSonObject.SetStringValue("TagParam", TagParam);
-	JSonObject.SetStringValue("TagPrefix", TagPrefix);
-	JSonObject.SetStringValue("TagSuffix", TagSuffix);
+	if (bIsArray)
+	{
+		ArrayValue.Serialize(JSonObject, "VectorValue");
+	}
+	else if (bIsVector)
+	{
+		VectorValue.Serialize(JSonObject, "ArrayValue");
+	}
+	else if (bIsDamageValue)
+	{
+		DamageValue.Serialize(JSonObject, "DamageValue");
+	}
+	else
+	{
+		JSonObject.SetStringValue("Value", Value);
+	}
+
+	if (Namespace != "")
+	{
+		JSonObject.SetStringValue("Namespace", Namespace);
+	}
+	if (TagFunction != "")
+	{
+		JSonObject.SetStringValue("TagFunction", TagFunction);
+	}
+	if (TagParam != "")
+	{
+		JSonObject.SetStringValue("TagParam", TagParam);
+	}
+	if (TagPrefix != "")
+	{
+		JSonObject.SetStringValue("TagPrefix", TagPrefix);
+	}
+	if (TagSuffix != "")
+	{
+		JSonObject.SetStringValue("TagSuffix", TagSuffix);
+	}
 
 	return JSonObject;
 }

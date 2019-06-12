@@ -3,7 +3,7 @@
 //	Author: Muasshi
 //	
 //-----------------------------------------------------------
-class JsonConfig_Vector extends Object;
+class JsonConfig_Vector extends Object implements(JsonConfig_Interface);
 
 var protectedwrite vector VectorValue;
 
@@ -24,7 +24,14 @@ public function string ToString()
 
 public function Serialize(out JsonObject JsonObject, string PropertyName)
 {
-	JSonObject.SetStringValue(PropertyName, "{\"X\":" $ VectorValue.X $ ",\"Y\":" $ VectorValue.Y $ ",\"Z\":" $ VectorValue.Z $ "}");
+	local JsonObject JsonSubObject;
+
+	JsonSubObject = new () class'JsonObject';
+	JsonSubObject.SetIntValue("X", VectorValue.X);
+	JsonSubObject.SetIntValue("Y", VectorValue.X);
+	JsonSubObject.SetIntValue("Z", VectorValue.X);
+
+	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
 public function bool Deserialize(JSonObject Data, string PropertyName)

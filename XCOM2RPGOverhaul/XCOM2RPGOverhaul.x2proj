@@ -88,10 +88,13 @@
     <Content Include="Config\XComGameData_XpData.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComMCM.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComRPG.ini">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Config\XComRPGO_DEFAULT.ini">
+    <Content Include="Config\XComRPGODefaultSettings.ini">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Config\XComRPGO_SoldierSkills.ini">
@@ -238,13 +241,28 @@
     <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\JsonConfig_Array.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\Config_MCM_Builder.uc">
+    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfigManager.uc">
+    <Content Include="Src\RPGO\Classes\JsonConfig_Manager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_Interface.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Checkbox.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Group.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Page.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\JsonConfig_TaggedConfigProperty.uc">
@@ -257,6 +275,15 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGODefaultSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGOUserSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
