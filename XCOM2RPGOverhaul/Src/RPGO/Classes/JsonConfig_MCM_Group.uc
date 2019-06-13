@@ -3,10 +3,12 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_MCM_Group extends Object implements (JsonConfig_Interface);
+class JsonConfig_MCM_Group extends Object;
 
+var JsonConfig_MCM_Builder Builder;
 var protectedwrite string GroupName;
 var protectedwrite string GroupLabel;
+var string ConfigKey;
 
 var array<JsonConfig_MCM_Element> Elements;
 
@@ -17,7 +19,12 @@ public function SetGroupName(string GroupNameParam)
 
 public function string GetGroupName()
 {
-	return GroupName;
+	if (GroupName != "")
+	{
+		return GroupName;
+	}
+
+	return ConfigKey;
 }
 
 public function SetGroupLabel(string GroupLabelParam)
@@ -27,12 +34,19 @@ public function SetGroupLabel(string GroupLabelParam)
 
 public function string GetGroupLabel()
 {
-	return GroupLabel;
+	if (GroupLabel != "")
+	{
+		return GroupLabel;
+	}
+
+	return Builder.LocalizeItem(ConfigKey $ "_LABEL");
 }
 
 public function Serialize(out JsonObject JsonObject, string PropertyName)
 {
 	local JsonObject JsonSubObject;
+
+	ConfigKey = PropertyName;
 
 	JsonSubObject = new () class'JsonObject';
 	JsonSubObject.SetStringValue("GroupName", GroupName);
@@ -41,16 +55,18 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
-public function bool Deserialize(JSonObject Data, string PropertyName)
+public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
 {
 	local JsonObject GroupJson;
+
+	ConfigKey = PropertyName;
 
 	GroupJson = Data.GetObject(PropertyName);
 	if (GroupJson != none)
 	{
 		GroupName = GroupJson.GetStringValue("GroupName");
 		GroupLabel = GroupJson.GetStringValue("GroupLabel");
-
+		Builder = BuilderParam;
 		DeserializeElements(GroupJson);
 
 		return true;
@@ -67,7 +83,7 @@ private function DeserializeElements(JsonObject GroupJson)
 	while(true && Index <= 20)
 	{
 		Element = new class'JsonConfig_MCM_Element';
-		if(Element.Deserialize(GroupJson, "Element" $ Index))
+		if(Element.Deserialize(GroupJson, "ELEMENT" $ Index, Builder))
 		{
 			Elements.AddItem(Element);
 		}

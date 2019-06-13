@@ -145,9 +145,9 @@ strIncompatibleModsTooltip="Detected incompatible mods:"
 strRequiredLoadedModsTooltip="Loaded required mods:"
 
 
-[RPGO_MCMScreen]
-ModName="RPGO"
-PageTitle1="PageTitle1"
-PageTitle2="PageTitle2"
-GroupHeader1="GroupHeader1"
-GroupHeader2="GroupHeader2"
+[RPGO_MCM_Builder]
+PAGE1_TITLE="RPGO"
+PAGE1_LABEL="RPGO Label"
+GROUP1_LABEL="RPGO Settings"
+CHECKBOX1_LABEL="God or Bad?"
+CHECKBOX1_TOOLTIP="Yes or Now?"

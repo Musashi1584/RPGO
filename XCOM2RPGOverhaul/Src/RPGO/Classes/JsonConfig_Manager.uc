@@ -10,7 +10,7 @@ var config array<string> ConfigProperties;
 var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
 var array< Delegate<TagFunctionDelegate> > OnTagFunctions;
 var string DefaultConfigManagerClassName;
-var private JsonConfig_Manager DefaultConfigManager;
+var JsonConfig_Manager DefaultConfigManager;
 
 delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 

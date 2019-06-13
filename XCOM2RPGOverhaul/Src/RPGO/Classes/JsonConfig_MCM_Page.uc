@@ -3,13 +3,21 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_MCM_Page extends Object implements (JsonConfig_Interface);
+class JsonConfig_MCM_Page extends Object;
 
+var JsonConfig_MCM_Builder Builder;
 var int MCMPageId;
+var string ConfigKey;
 var string PageTitle;
 var string TabLabel;
+var string EnableResetButton;
 var string SaveConfigManager;
 var array<JsonConfig_MCM_Group> Groups;
+
+public function bool ShouldEnableResetButton()
+{
+	return bool(EnableResetButton);
+}
 
 public function SetPageTitle(string PageTitleParam)
 {
@@ -18,7 +26,12 @@ public function SetPageTitle(string PageTitleParam)
 
 public function string GetPageTitle()
 {
-	return PageTitle;
+	if (PageTitle != "")
+	{
+		return PageTitle;
+	}
+
+	return Builder.LocalizeItem(ConfigKey $ "_TITLE");
 }
 
 public function SetTabLabel(string TabLabelParam)
@@ -28,31 +41,43 @@ public function SetTabLabel(string TabLabelParam)
 
 public function string GetTabLabel()
 {
-	return TabLabel;
+	if (TabLabel != "")
+	{
+		return TabLabel;
+	}
+
+	return Builder.LocalizeItem(ConfigKey $ "_LABEL");
 }
 
 public function Serialize(out JsonObject JsonObject, string PropertyName)
 {
 	local JsonObject JsonSubObject;
 
+	ConfigKey = PropertyName;
+
 	JsonSubObject = new () class'JsonObject';
 	JsonSubObject.SetStringValue("PageTitle", PageTitle);
 	JsonSubObject.SetStringValue("TabLabel", TabLabel);
+	JsonSubObject.SetStringValue("EnableResetButton", EnableResetButton);
 	JsonSubObject.SetStringValue("SaveConfigManager", SaveConfigManager);
 
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
-public function bool Deserialize(JSonObject Data, string PropertyName)
+public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
 {
 	local JsonObject PageJson;
+
+	ConfigKey = PropertyName;
 
 	PageJson = Data.GetObject(PropertyName);
 	if (PageJson != none)
 	{
 		PageTitle = PageJson.GetStringValue("PageTitle");
 		TabLabel = PageJson.GetStringValue("TabLabel");
+		EnableResetButton = PageJson.GetStringValue("EnableResetButton");
 		SaveConfigManager = PageJson.GetStringValue("SaveConfigManager");
+		Builder = BuilderParam;
 
 		DeserializeGroups(PageJson);
 		
@@ -71,7 +96,7 @@ private function DeserializeGroups(JsonObject PageJson)
 	while(true && Index <= 20)
 	{
 		Group = new class'JsonConfig_MCM_Group';
-		if(Group.Deserialize(PageJson, "Group" $ Index))
+		if(Group.Deserialize(PageJson, "GROUP" $ Index, Builder))
 		{
 			Groups.AddItem(Group);
 		}

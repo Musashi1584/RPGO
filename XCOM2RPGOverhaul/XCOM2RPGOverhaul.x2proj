@@ -277,15 +277,6 @@
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\RPGODefaultSettingsConfigManager.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\RPGOUserSettingsConfigManager.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\RPGO\Classes\RPGO_MCM_Builder.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
       <SubType>Content</SubType>
     </Content>
@@ -502,6 +493,12 @@
     <Content Include="Src\XCOM2RPGOverhaul\Classes\PromotionScreenListener.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGODefaultSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGOUserSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGOVersion.uc">
       <SubType>Content</SubType>
     </Content>
@@ -515,6 +512,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_MCMScreenListener.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_UIArmory_PromotionHero.uc">
