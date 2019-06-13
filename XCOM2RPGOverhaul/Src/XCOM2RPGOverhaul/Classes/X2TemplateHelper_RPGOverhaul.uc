@@ -50,7 +50,6 @@ var config bool bPatchShotguns;
 var config bool bPatchCannons;
 var config bool bPatchPistols;
 var config bool bPatchAutoPistols;
-var config bool bPatchDefaultWeaponUpgradeSlots;
 var config bool bPatchHeavyWeaponMobility;
 var config bool bPatchFullAutoFire;
 
@@ -363,11 +362,12 @@ static function PatchWeapons()
 	local array<X2DataTemplate> DifficultyVariants;
 	local name TemplateName;
 	local X2DataTemplate ItemTemplate;
-	local X2WeaponTemplate WeaponTemplate;
+	local X2WeaponTemplate WeaponTemplate, UnpatchedTemplate;
 	local X2GremlinTemplate GremlinTemplate;
-	local array<string> AutofireWeaponCategories;
+	local array<string> AutofireWeaponCategories, PatchUpgradeSlotWeaponCategories;
 	
 	AutofireWeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
+	PatchUpgradeSlotWeaponCategories = class'RPGODefaultSettingsConfigManager'.static.GetConfigStringArray("PATCH_UPGRADESLOT_WEAPON_CATEGORIES");
 
 	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
 
@@ -383,13 +383,8 @@ static function PatchWeapons()
 			WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 			if (WeaponTemplate != none)
 			{
-				//if (WeaponTemplate.BaseDamage.Damage > 0
-				//	&& WeaponTemplate.WeaponCat != 'shotgun'
-				//	&& WeaponTemplate.iRange == INDEX_NONE)
-				//{
-				//	`LOG(GetFuncName() @ "Add DamageModifierCoverType to" @ WeaponTemplate.DataName,, 'RPG');
-				//	AddAbilityToWeaponTemplate(WeaponTemplate, 'DamageModifierCoverType');
-				//}
+				class'WeaponTemplateCache'.static.AddTemplate(WeaponTemplate);
+				UnpatchedTemplate = class'WeaponTemplateCache'.static.GetTemplate(WeaponTemplate.DataName);
 
 				// @TODO Patch enviromental damage
 				if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)
@@ -412,108 +407,101 @@ static function PatchWeapons()
 						break;
 					case 'rifle':
 					case 'sparkrifle':
-						if (default.bPatchDefaultWeaponUpgradeSlots)
-						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
-						}
 						break;
 					case 'bullpup':
-						if (default.bPatchBullpups)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_BULLPUPS"))
 						{
-							WeaponTemplate.iClipSize += 1;
+							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 1;
+							AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
 						}
-						
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
-						
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						else
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
 						}
 						break;
 					case 'sniper_rifle':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
-
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
+						}
+						else
+						{
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Squadsight');
 						}
 						break;
 					case 'vektor_rifle':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
-
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+						}
+						else
+						{
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
 						}
 						break;
 					case 'shotgun':
-						if (default.bPatchShotguns)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SHOTGUNS"))
 						{					
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
 							
-							WeaponTemplate.CritChance += default.ShotgunCritBonus;
-							WeaponTemplate.Aim += default.ShotgunAimBonus;
+							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.ShotgunCritBonus;
+							WeaponTemplate.Aim = UnpatchedTemplate.Aim + default.ShotgunAimBonus;
 						}
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						else
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
+
+							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
+							WeaponTemplate.Aim = UnpatchedTemplate.Aim;
 						}
 						break;
 					case 'cannon':
-						if (default.bPatchFullAutoFire)
-						{					
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-						}
-						
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
-						
-						if (default.bPatchCannons)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_CANNONS"))
 						{
-							WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
-							WeaponTemplate.iClipSize += 2;
-						}
-						if (default.bPatchHeavyWeaponMobility)
-						{
+							AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-						}						
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+							WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
+							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 2;
+						}
+						else
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Suppression');
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
+							WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage;
+							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
 						}
 						break;
 					case 'pistol':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
-						if (default.bPatchPistols)
+						
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
 						{
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 						}
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						else
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
 						}
 						break;
 					case 'sidearm':
-						if (default.bPatchPistols)
+						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
 						{
 							AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
-						}
-						if (default.bPatchAutoPistols)
-						{
 							WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
-							WeaponTemplate.CritChance += default.AutoPistolCritChanceBonus;
+							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.AutoPistolCritChanceBonus;
 						}
-						if (default.bPatchDefaultWeaponUpgradeSlots)
+						else
 						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
+							WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
+							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
 						}
 						break;
 					case 'sword':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
-						if (default.bPatchDefaultWeaponUpgradeSlots)
-						{
-							WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
-						}
 						break;
 					case 'grenade_launcher':
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
@@ -533,7 +521,7 @@ static function PatchWeapons()
 				}
 
 				if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE &&
-					default.bPatchFullAutoFire &&
+					class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
 					AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
@@ -543,6 +531,26 @@ static function PatchWeapons()
 						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
 					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
 						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+				}
+				else if (WeaponTemplate.Abilities.Find('FullAutoFire') != INDEX_NONE)
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'FullAutoFire');
+					WeaponTemplate.AbilitySpecificAnimations.Remove(
+						WeaponTemplate.AbilitySpecificAnimations.Find('AbilityName', 'FullAutoFire'),
+						1
+					);
+				}
+
+				if (PatchUpgradeSlotWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
+				{
+					if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_DEFAULTWEAPON_UPGRADESLOTS"))
+					{
+						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+					}
+					else
+					{
+						WeaponTemplate.NumUpgradeSlots = UnpatchedTemplate.NumUpgradeSlots;
+					}
 				}
 			}
 
@@ -1188,6 +1196,14 @@ static function EInventorySlot FindInventorySlotForItemCategory(
 static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
 {
 	return (X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate()).iRange == 0);
+}
+
+static function RemoveAbilityFromWeaponTemplate(out X2WeaponTemplate Template, name Ability)
+{
+	if (Template.Abilities.Find(Ability) != INDEX_NONE)
+	{
+		Template.Abilities.RemoveItem(Ability);
+	}
 }
 
 static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability, bool bShowInTactical = false)

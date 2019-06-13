@@ -218,7 +218,9 @@ simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string Set
 	local JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
-		
+	
+	bOverrideDefaultHandler = false;
+
 	Tuple = new class'XComLWTuple';
 	Tuple.Id = 'MCM_SaveHandler';
 	Tuple.Data.Add(3);
@@ -246,6 +248,8 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 	local JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
+
+	bOverrideDefaultHandler = false;
 		
 	Tuple = new class'XComLWTuple';
 	Tuple.Id = 'MCM_SaveButtonClicked';
@@ -262,6 +266,9 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 		ConfigPage = GetPage(Page.GetPageId());
 		SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigPage.SaveConfigManager));
 		SaveConfigManager.static.SerializeAndSaveConfig();
+		`XEVENTMGR.TriggerEvent('MCM_ConfigSaved', Page, GetBuilder(Page.GetPageId()), none);
+		// todo move to even listener
+		class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
 	}
 }
 
@@ -279,6 +286,8 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 	local MCM_API_Dropdown Dropdown;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
+
+	bOverrideDefaultHandler = false;
 		
 	Tuple = new class'XComLWTuple';
 	Tuple.Id = 'ResetButtonClicked';
@@ -324,6 +333,8 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 				}
 			}
 		}
+
+		`XEVENTMGR.TriggerEvent('MCM_ConfigResetted', Page, GetBuilder(Page.GetPageId()), none);
 	}
 }
 

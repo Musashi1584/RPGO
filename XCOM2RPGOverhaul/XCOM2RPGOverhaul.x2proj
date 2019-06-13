@@ -277,6 +277,9 @@
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\WeaponTemplateCache.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
       <SubType>Content</SubType>
     </Content>

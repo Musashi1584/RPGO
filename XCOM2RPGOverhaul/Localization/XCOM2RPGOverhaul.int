@@ -147,7 +147,35 @@ strRequiredLoadedModsTooltip="Loaded required mods:"
 
 [RPGO_MCM_Builder]
 PAGE1_TITLE="RPGO"
-PAGE1_LABEL="RPGO Label"
-GROUP1_LABEL="RPGO Settings"
-CHECKBOX1_LABEL="God or Bad?"
-CHECKBOX1_TOOLTIP="Yes or Now?"
+PAGE1_LABEL="RPGO Settings"
+
+GROUP1_LABEL="Weapon Changes"
+
+PATCH_BULLPUPS_LABEL="Change Bullpups"
+PATCH_BULLPUPS_TOOLTIP="Apply RPGO changes to bullpups"
+
+PATCH_SHOTGUNS_LABEL="Change Shotguns"
+PATCH_SHOTGUNS_TOOLTIP="Apply RPGO changes to shotguns"
+
+PATCH_CANNONS_LABEL="Change Cannons"
+PATCH_CANNONS_TOOLTIP="Apply RPGO changes to cannons"
+
+PATCH_SNIPER_RIFLES_LABEL="Change Sniper Rifles"
+PATCH_SNIPER_RIFLES_TOOLTIP="Apply RPGO changes to sniper rifles"
+
+PATCH_PISTOLS_LABEL="Change Pistols"
+PATCH_PISTOLS_TOOLTIP="Apply RPGO changes to pistols"
+
+PATCH_AUTO_PISTOLS_LABEL="Change Auto Pistols"
+PATCH_AUTO_PISTOLS_TOOLTIP="Apply RPGO changes to auto pistols"
+
+PATCH_VECTOR_RIFLES_LABEL="Change Vector Rifles"
+PATCH_VECTOR_RIFLES_TOOLTIP="Apply RPGO changes to vector rifles"
+
+PATCH_DEFAULTWEAPON_UPGRADESLOTS_LABEL="Change default upgrade slots"
+PATCH_DEFAULTWEAPON_UPGRADESLOTS_TOOLTIP="Set all upgrade slots to 3"
+
+PATCH_FULLAUTOFIRE_LABEL="Add autofire ability"
+PATCH_FULLAUTOFIRE_TOOLTIP="Add autofire abilities to all weapons matching AutofireWeaponCategories"
+
+
