@@ -1,14 +1,5 @@
 class X2SecondWaveConfigOptions extends Object config (SecondWaveOptions);
 
-var config int SpecRouletteRandomSpecCount;
-var config int CommandersChoiceSpecCount;
-var config int OriginsChoiceAbilityCount;
-var config int OriginsAdditionalRandomAbilties;
-var config int SpecRouletteRandomSpecCount_Combi;
-var config int CommandersChoiceSpecCount_Combi;
-var config int TrainingRouletteMinRank;
-var config int TrainingRouletteMaxRank;
-
 function static bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 {
 	local UnitValue AbilityChosen, SpecChosen;
@@ -41,25 +32,25 @@ function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
 static function int GetSpecRouletteCount()
 {
 	return (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
-		default.SpecRouletteRandomSpecCount_Combi :
-		default.SpecRouletteRandomSpecCount;
+		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI") :
+		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT");
 }
 
 static function int GetCommandersChoiceCount()
 {
 	return  (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
-		default.CommandersChoiceSpecCount_Combi :
-		default.CommandersChoiceSpecCount;
+		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT_COMBI") :
+		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT");
 }
 
 static function int GetOriginsAbiltiesCount()
 {
-	return  default.OriginsChoiceAbilityCount;
+	return  class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_CHOICE_ABILITY_COUNT");
 }
 
 static function int GetOriginsRandomAbiltiesCount()
 {
-	return  default.OriginsAdditionalRandomAbilties;
+	return  class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES");
 }
 
 static function AddStartingAbilities(
@@ -151,7 +142,7 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 
 static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState, optional bool bRandomizePerkOrder = false)
 {
-	`LOG(default.class @ GetFuncName() @ "SpecRouletteRandomSpecCount" @ GetSpecRouletteCount(),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "SPEC_ROULETTE_RANDOM_SPEC_COUNT" @ GetSpecRouletteCount(),, 'RPG');
 	BuildSpecAbilityTree(UnitState, GetRandomSpecIndices(UnitState), true, bRandomizePerkOrder);
 }
 
@@ -208,8 +199,8 @@ static function BuildSpecAbilityTree(
 				AbilitySlot = AllAbilitySlots[SlotIndex];
 
 				if (bRandomizePerkOrder &&
-					RankIndex >= Max(1, default.TrainingRouletteMinRank) &&
-					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, default.TrainingRouletteMaxRank) &&
+					RankIndex >= Max(1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")) &&
+					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")) &&
 					!class'X2TemplateHelper_RPGOverhaul'.static.IsPrerequisiteAbility(AbilitySlot.AbilityType.AbilityName)
 				)
 				{
@@ -273,7 +264,7 @@ static function AddSWORandomizedAbilityDecks(
 	local SoldierClassRandomAbilityDeck SWORandomDeck;
 	local int RankIndex, SlotIndex, DeckIndex;
 	
-	for(RankIndex = Max(1, default.TrainingRouletteMinRank); RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, default.TrainingRouletteMaxRank); RankIndex++)
+	for(RankIndex = Max(1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")); RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")); RankIndex++)
 	{
 		AllAbilitySlots = ClassTemplate.GetAbilitySlots(RankIndex);
 

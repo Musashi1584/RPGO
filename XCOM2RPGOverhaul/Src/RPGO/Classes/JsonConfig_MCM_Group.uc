@@ -76,22 +76,18 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 private function DeserializeElements(JsonObject GroupJson)
 {
-	local int Index;
 	local JsonConfig_MCM_Element Element;
+	local ObjectKey ObjKey;
 
-	Index = 1;
-	while(true && Index <= 20)
+	foreach Builder.ObjectKeys(ObjKey)
 	{
-		Element = new class'JsonConfig_MCM_Element';
-		if(Element.Deserialize(GroupJson, "ELEMENT" $ Index, Builder))
+		if (ObjKey.ParentKey == ConfigKey)
 		{
-			Elements.AddItem(Element);
+			Element = new class'JsonConfig_MCM_Element';
+			if(Element.Deserialize(GroupJson, ObjKey.Key, Builder))
+			{
+				Elements.AddItem(Element);
+			}
 		}
-		else
-		{
-			break;
-		}
-
-		Index++;
 	}
 }

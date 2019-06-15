@@ -89,22 +89,18 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 private function DeserializeGroups(JsonObject PageJson)
 {
-	local int Index;
 	local JsonConfig_MCM_Group Group;
+	local ObjectKey ObjKey;
 
-	Index = 1;
-	while(true && Index <= 20)
+	foreach Builder.ObjectKeys(ObjKey)
 	{
-		Group = new class'JsonConfig_MCM_Group';
-		if(Group.Deserialize(PageJson, "GROUP" $ Index, Builder))
+		if (ObjKey.ParentKey == ConfigKey)
 		{
-			Groups.AddItem(Group);
+			Group = new class'JsonConfig_MCM_Group';
+			if(Group.Deserialize(PageJson, ObjKey.Key, Builder))
+			{
+				Groups.AddItem(Group);
+			}
 		}
-		else
-		{
-			break;
-		}
-
-		Index++;
 	}
 }

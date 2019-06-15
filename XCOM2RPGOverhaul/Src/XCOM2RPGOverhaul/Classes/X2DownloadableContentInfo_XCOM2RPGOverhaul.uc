@@ -56,8 +56,9 @@ static event OnPostTemplatesCreated()
 {
 	`LOG(default.class @ GetFuncName(),, 'DLCSort');
 
-	//`LOG(default.class @ GetFuncName() @ class'RPGOAbilityConfigManager'.static.GetConfigTagValue("LOCKDOWN_TOHIT_BONUS"),, 'RPG');
 
+	//`LOG(default.class @ GetFuncName() @ class'RPGOAbilityConfigManager'.static.GetConfigTagValue("LOCKDOWN_TOHIT_BONUS"),, 'RPG');
+	
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');

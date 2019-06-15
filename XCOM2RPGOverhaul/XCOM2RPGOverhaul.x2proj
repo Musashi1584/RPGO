@@ -520,6 +520,12 @@
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_SWO_DefaultSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_SWO_UserSettingsConfigManager.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_UIArmory_PromotionHero.uc">
       <SubType>Content</SubType>
     </Content>

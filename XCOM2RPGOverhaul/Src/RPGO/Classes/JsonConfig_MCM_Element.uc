@@ -44,7 +44,7 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	ConfigKey = PropertyName;
 
 	JsonSubObject = new () class'JsonObject';
-	JsonSubObject.SetStringValue("SettingName", SettingName);
+	JsonSubObject.SetStringValue("SettingName", ConfigKey);
 	JsonSubObject.SetStringValue("Type", Type);
 	JsonSubObject.SetStringValue("Label", Label);
 	JsonSubObject.SetStringValue("Tooltip", Tooltip);
@@ -52,32 +52,40 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JsonSubObject.SetStringValue("SliderMax", SliderMax);
 	JsonSubObject.SetStringValue("SliderStep", SliderStep);
 	JsonSubObject.SetStringValue("ButtonLabel", ButtonLabel);
-	Options.Serialize(JSonObject, "Options");
+	Options.Serialize(JsonSubObject, "Options");
 
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
 public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
 {
-	local JsonObject GroupJson;
+	local JsonObject ElementJson;
 
 	ConfigKey = PropertyName;
 
-	GroupJson = Data.GetObject(PropertyName);
-	if (GroupJson != none)
+	ElementJson = Data.GetObject(PropertyName);
+	if (ElementJson != none)
 	{
 		Builder = BuilderParam;
-		SettingName = GroupJson.GetStringValue("SettingName");
-		Type = GroupJson.GetStringValue("Type");
-		Label = GroupJson.GetStringValue("Label");
-		Tooltip = GroupJson.GetStringValue("Tooltip");
-		SliderMin = GroupJson.GetStringValue("SliderMin");
-		SliderMax = GroupJson.GetStringValue("SliderMax");
-		SliderStep = GroupJson.GetStringValue("SliderStep");
-		ButtonLabel = GroupJson.GetStringValue("ButtonLabel");
-		Options.Deserialize(Data, "Options");
+		SettingName = ConfigKey;
+		Type = ElementJson.GetStringValue("Type");
+		Label = ElementJson.GetStringValue("Label");
+		Tooltip = ElementJson.GetStringValue("Tooltip");
+		SliderMin = ElementJson.GetStringValue("SliderMin");
+		SliderMax = ElementJson.GetStringValue("SliderMax");
+		SliderStep = ElementJson.GetStringValue("SliderStep");
+		ButtonLabel = ElementJson.GetStringValue("ButtonLabel");
+		Options.Deserialize(ElementJson, "Options");
 
 		return true;
 	}
 	return false;
+}
+
+
+defaultproperties
+{
+	Begin Object Class=JsonConfig_Array Name=DefaultJsonConfig_Array
+	End Object
+	Options = DefaultJsonConfig_Array;
 }

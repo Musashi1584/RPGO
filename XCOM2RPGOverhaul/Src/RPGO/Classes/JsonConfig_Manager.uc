@@ -19,15 +19,20 @@ delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigP
 //
 function bool OnTagFunction(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
-public static function JsonConfig_Manager GetConfigManager()
+public static function JsonConfig_Manager GetConfigManager(optional string ClassNameParam)
 {
 	local JsonConfig_Manager ConfigManager;
 
-	ConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(string(default.class)));
+	if (ClassNameParam == "")
+	{
+		ClassNameParam = string(default.class);
+	}
+
+	ConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ClassNameParam));
 	
 	if (ConfigManager.DefaultConfigManagerClassName != "")
 	{
-		ConfigManager.DefaultConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigManager.DefaultConfigManagerClassName));
+		ConfigManager.DefaultConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigManager.DefaultConfigManagerClassName);
 	}
 	
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)

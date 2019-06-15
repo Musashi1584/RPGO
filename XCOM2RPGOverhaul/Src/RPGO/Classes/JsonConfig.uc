@@ -5,6 +5,12 @@
 //-----------------------------------------------------------
 class JsonConfig extends JsonObject;
 
+struct ObjectKey
+{
+	var string Key;
+	var string ParentKey;
+};
+
 static public final function string GetPropertyName(coerce string PropertyName, optional string Namespace)
 {
 	if (Namespace != "")
@@ -76,6 +82,55 @@ static public final function string RTrimToFirstBracket(coerce string S)
 		S = Left(S, Len(S) - 1);
 	}
 	return S;
+}
+
+static public final function array<ObjectKey> GetAllObjectKeys(coerce string Str)
+{
+	local array<string> Chunks;
+	local string Chunk, ParentKey, GrandParentKey;
+	local array<ObjectKey> Keys;
+	local ObjectKey ObjKey, EmptyKey;
+
+	Str = Repl(Str, "\":{", "$$$\":{");
+	Str = Repl(Str, "\"}}", "}\"}");
+	Str = Repl(Str, "},", "}\"");
+
+	Chunks = SplitString(Str, "\"", true);
+
+	foreach Chunks(Chunk)
+	{
+		if (InStr(Chunk, "$$$") != INDEX_NONE)
+		{
+			ObjKey = EmptyKey;
+			ObjKey.ParentKey = ParentKey;
+			ObjKey.Key = Repl(Chunk, "$$$", "");
+			Keys.AddItem(ObjKey);
+		}
+
+		if (InStr(Chunk, "{") != INDEX_NONE)
+		{
+			if (ParentKey != "")
+			{
+				GrandParentKey = ParentKey;
+			}
+			ParentKey = ObjKey.Key;
+		}
+
+		// Last level
+		if (InStr(Chunk, "}") != INDEX_NONE && ObjKey.Key == ParentKey)
+		{
+			ParentKey = GrandParentKey;
+			GrandParentKey = "";
+			ObjKey = EmptyKey;
+		}
+		else if (InStr(Chunk, "}") != INDEX_NONE && ParentKey != "")
+		{
+			ParentKey = Keys[Keys.Find('Key', ParentKey)].ParentKey;
+			ObjKey = EmptyKey;
+		}
+	}
+
+	return Keys;
 }
 
 static public final function string GetObjectKey(coerce string S)

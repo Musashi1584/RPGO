@@ -1232,7 +1232,7 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 
 	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
 		UnitState,
-		class'X2SecondWaveConfigOptions'.default.OriginsAdditionalRandomAbilties
+		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES")
 	);
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);

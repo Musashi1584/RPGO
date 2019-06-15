@@ -285,6 +285,8 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	Armory = GetArmory();
 	UnitState = GetSelectedUnit();
 
+	`LOG(UnitState @ UnitState.ObjectID);
+
 	if (UnitState == none || Armory == none)
 		return;
 	

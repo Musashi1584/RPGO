@@ -9,6 +9,7 @@ struct MCMConfigMapEntry
 var config array<string> MCMPages;
 var protectedwrite array<MCMConfigMapEntry> DeserialzedPagesMap;
 var string BuilderClassName;
+var array<ObjectKey> ObjectKeys;
 
 static public function JsonConfig_MCM_Builder GetMCMBuilder(optional string BuilderClassNameParam)
 {
@@ -33,9 +34,17 @@ static public function JsonConfig_MCM_Builder GetMCMBuilder(optional string Buil
 
 function string LocalizeItem(string Key)
 {
-	`LOG(default.class @ GetFuncName() @ string(GetPackageName()) $ "." $ BuilderClassName $ "." $ Key,, 'RPG');
-	return ParseLocalizedPropertyPath(string(GetPackageName()) $ "." $ BuilderClassName $ "." $ Key);
-	//return Localize(BuilderClassName, Key, string(GetPackageName()));
+	local string Locale, Path;
+	
+	Path = string(GetPackageName()) $ "." $ BuilderClassName $ "." $ Key;
+	Locale =  ParseLocalizedPropertyPath(Path);
+
+	if (Locale == "")
+	{
+		`LOG(default.class @ GetFuncName() @ "Warning localization not found:" @ Path,, 'RPG');
+	}
+	
+	return Locale;
 }
 
 public static function SerializeAndSaveBuilderConfig()
@@ -52,25 +61,34 @@ private function DeserializeConfig()
 	local MCMConfigMapEntry MapEntry;
 	local JSonObject JSonObject;
 	local JsonConfig_MCM_Page MCMPage;
-	local string SerializedMCMPage, PageID;
+	local ObjectKey ObjKey;
+	local string SanitizedJsonString, SerializedMCMPage;
 
 	`LOG(default.class @ GetFuncName() @ "found entries:" @ default.MCMPages.Length,, 'RPG');
 
 	foreach default.MCMPages(SerializedMCMPage)
 	{
-		PageID = GetObjectKey(SanitizeJson(SerializedMCMPage));
-		JSonObject = class'JSonObject'.static.DecodeJson(SanitizeJson(SerializedMCMPage));
-	
-		if (JSonObject != none && PageID != "")
+		SanitizedJsonString = SanitizeJson(SerializedMCMPage);
+
+		if (SanitizedJsonString != "")
 		{
-			if (DeserialzedPagesMap.Find('PageID', PageID) == INDEX_NONE)
+			ObjectKeys = GetAllObjectKeys(SanitizedJsonString);
+			JSonObject = class'JSonObject'.static.DecodeJson(SanitizedJsonString);
+	
+			foreach ObjectKeys(ObjKey)
 			{
-				MCMPage = new class'JsonConfig_MCM_Page';
-				if (MCMPage.Deserialize(JSonObject, PageID, self))
+				if (JSonObject != none && ObjKey.ParentKey == "")
 				{
-					MapEntry.PageID = PageID;
-					MapEntry.MCMConfigPage = MCMPage;
-					DeserialzedPagesMap.AddItem(MapEntry);
+					if (DeserialzedPagesMap.Find('PageID', ObjKey.Key) == INDEX_NONE)
+					{
+						MCMPage = new class'JsonConfig_MCM_Page';
+						if (MCMPage.Deserialize(JSonObject, ObjKey.Key, self))
+						{
+							MapEntry.PageID = ObjKey.Key;
+							MapEntry.MCMConfigPage = MCMPage;
+							DeserialzedPagesMap.AddItem(MapEntry);
+						}
+					}
 				}
 			}
 		}

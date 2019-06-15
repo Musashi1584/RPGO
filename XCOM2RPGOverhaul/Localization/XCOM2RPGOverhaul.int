@@ -146,10 +146,10 @@ strRequiredLoadedModsTooltip="Loaded required mods:"
 
 
 [RPGO_MCM_Builder]
-PAGE1_TITLE="RPGO"
-PAGE1_LABEL="RPGO Settings"
+WEAPON_SETTINGS_PAGE_TITLE="RPGO General Setting"
+WEAPON_SETTINGS_PAGE_LABEL="RPGO General Settings"
 
-GROUP1_LABEL="Weapon Changes"
+WEAPON_SETTINGS_GROUP_LABEL="Weapon Changes"
 
 PATCH_BULLPUPS_LABEL="Change Bullpups"
 PATCH_BULLPUPS_TOOLTIP="Apply RPGO changes to bullpups"
@@ -178,4 +178,34 @@ PATCH_DEFAULTWEAPON_UPGRADESLOTS_TOOLTIP="Set all upgrade slots to 3"
 PATCH_FULLAUTOFIRE_LABEL="Add autofire ability"
 PATCH_FULLAUTOFIRE_TOOLTIP="Add autofire abilities to all weapons matching AutofireWeaponCategories"
 
+SWO_SETTINGS_PAGE_TITLE="RPGO Second Wave Options"
+SWO_SETTINGS_PAGE_LABEL="RPGO Second Wave Options"
 
+SWO_COMMANDERS_CHOICE_LABEL="[RPGO] Commanders Choice"
+SWO_SPECIALIZATION_ROULETTE_LABEL="[RPGO] Specialization Roulette"
+SWO_TRAINING_ROULETTE_LABEL="[RPGO] Training Roulette"
+SWO_ORIGINS_LABEL="[RPGO] Origins"
+
+SPEC_ROULETTE_RANDOM_SPEC_COUNT_LABEL="Specialization"
+SPEC_ROULETTE_RANDOM_SPEC_COUNT_TOOLTIP="Amount of random generated specializations on squaddie"
+
+COMMANDERS_CHOICE_SPEC_COUNT_LABEL="Specializations"
+COMMANDERS_CHOICE_SPEC_COUNT_TOOLTIP="Amount of specializations you can choose for each soldier on promotion to squaddie"
+
+SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI_LABEL="Combined"
+SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI_TOOLTIP="Amount of random specializations if spec roulette and commander choice is enabled simultaniously"
+
+COMMANDERS_CHOICE_SPEC_COUNT_COMBI_LABEL="Combined"
+COMMANDERS_CHOICE_SPEC_COUNT_COMBI_TOOLTIP="Amount of chosen specializations if spec roulette and commander choice is enabled simultaniously"
+
+TRAINING_ROULETTE_MIN_RANK_LABEL="Min Rank"
+TRAINING_ROULETTE_MIN_RANK_TOOLTIP="Start to randomize from this rank on"
+
+TRAINING_ROULETTE_MAX_RANK_LABEL="Max Rank"
+TRAINING_ROULETTE_MAX_RANK_TOOLTIP="Randomize abilities up to and including this rank"
+
+ORIGINS_CHOICE_ABILITY_COUNT_LABEL="Chosen Abilties"
+ORIGINS_CHOICE_ABILITY_COUNT_TOOLTIP=" How many starting abilities you want to choose on squaddie"
+
+ORIGINS_ADDITIONAL_RANDOM_ABILTIES_LABEL="Random Abilities"
+ORIGINS_ADDITIONAL_RANDOM_ABILTIES_TOOLTIP="Add this number of random abilties on top of the chose ones"
