@@ -17,7 +17,6 @@ var config array<EquipmentStatCap> EquipmentStatCaps;
 
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
-	local EquipmentStatCap LocalEquipmentStatCap;
 	local XComGameState_Unit UnitState;
 	local array<XComGameState_Item> Items;
 	local XComGameState_Item Item;

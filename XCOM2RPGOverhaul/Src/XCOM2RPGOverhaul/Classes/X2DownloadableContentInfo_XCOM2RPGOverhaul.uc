@@ -82,6 +82,17 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchClaymoreCharges();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSpecialShotAbiitiesForLightEmUp();
+
+	if (class'X2TemplateHelper_ExtendedUpgrades'.default.bReconfigureVanillaAttachements)
+	{
+		class'X2TemplateHelper_ExtendedUpgrades'.static.PatchTemplates();
+		class'X2TemplateHelper_ExtendedUpgrades'.static.ReconfigDefaultAttachments();
+	}
+
+	if (class'X2TemplateHelper_ExtendedUpgrades'.static.IsModInstalled('X2DownloadableContentInfo_X2WOTCCommunityHighlander'))
+	{
+		class'X2TemplateHelper_ExtendedUpgrades'.static.AddLootTables();
+	}
 }
 
 // <summary>
@@ -142,3 +153,43 @@ static function bool AbilityTagExpandHandler_CH(string InString, out string OutS
 		
 	return false;
 }
+
+
+//exec function RPGO_DebugSpecListIcons(
+//	int ItemHeight,
+//	int IconSize,
+//	int InitPosX,
+//	int InitPosY,
+//	int IconPadding,
+//	string BGColor,
+//	string FGColor
+//)
+//{
+//	local UIChooseSpecializations UI;
+//	local UIInventory_SpecializationListItem Item;
+//	local int Index, IconIndex;
+//
+//	UI = UIChooseSpecializations(`SCREENSTACK.GetFirstInstanceOf(class'UIChooseSpecializations'));
+//	for (Index = 0; Index < UI.PoolList.GetItemCount(); Index++)
+//	{
+//		Item = UIInventory_SpecializationListItem(UI.PoolList.GetItem(Index));
+//		Item.SetHeight(ItemHeight);
+//		Item.InitPosX = InitPosX;
+//		Item.InitPosY = InitPosY;
+//		Item.IconSize = IconSize;
+//		Item.EDGE_PADDING = IconPadding;
+//		Item.ConfirmButton.SetY(InitPosY);
+//		Item.RealizeSpecializationsIcons();
+//		for (IconIndex = 0; IconIndex < Item.SpecializationAbilityIcons.Length; IconIndex++)
+//		{
+//			Item.SpecializationAbilityIcons[IconIndex].SetBGColor(BGColor);
+//			Item.SpecializationAbilityIcons[IconIndex].SetForegroundColor(FGColor);
+//		}
+//		//Item.PopulateData();
+//		
+//		//Item.RealizeLocation();
+//		//Item.InitPanel();
+//	}
+//	UI.PoolList.RealizeItems();
+//	UI.PoolList.RealizeList();
+//}

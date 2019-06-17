@@ -30,18 +30,24 @@ public static function JsonConfig_Manager GetConfigManager(optional string Class
 
 	ConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ClassNameParam));
 	
-	if (ConfigManager.DefaultConfigManagerClassName != "")
-	{
-		ConfigManager.DefaultConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigManager.DefaultConfigManagerClassName);
-	}
-	
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
 	{
 		ConfigManager.DeserializeConfig();
-		ConfigManager.OnTagFunctions.AddItem(OnTagFunction);
+		if (ConfigManager.OnTagFunctions.Find(OnTagFunction) == Index_None)
+		{
+			ConfigManager.OnTagFunctions.AddItem(OnTagFunction);
+		}
 	}
 
 	return ConfigManager;
+}
+
+public static function JsonConfig_Manager GetDefaultConfigManager()
+{
+	local JsonConfig_Manager ConfigManager;
+
+	ConfigManager = GetConfigManager();
+	return ConfigManager.DefaultConfigManager;
 }
 
 public static function SerializeAndSaveConfig()
@@ -214,7 +220,7 @@ static public function vector GetConfigVectorValue(coerce string PropertyName, o
 
 	if (ConfigProperty != none)
 	{
-		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.VectorValue.ToString() @ `ShowVar(Namespace),, 'RPG');
+		//`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.VectorValue.ToString() @ `ShowVar(Namespace),, 'RPG');
 		return ConfigProperty.GetVectorValue();
 	}
 
@@ -230,7 +236,7 @@ static public function array<string> GetConfigStringArray(coerce string Property
 
 	if (ConfigProperty != none)
 	{
-		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.ArrayValue.ToString() @ `ShowVar(Namespace),, 'RPG');
+		//`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.ArrayValue.ToString() @ `ShowVar(Namespace),, 'RPG');
 		return ConfigProperty.GetArrayValue();
 	}
 
@@ -249,7 +255,7 @@ static public function WeaponDamageValue GetConfigDamageValue(coerce string Prop
 	if (ConfigProperty != none)
 	{
 		Value =  ConfigProperty.GetDamageValue();
-		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.DamageValue.ToString() @ `ShowVar(Namespace),, 'RPG');
+		//`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ "Value:" @ ConfigProperty.DamageValue.ToString() @ `ShowVar(Namespace),, 'RPG');
 	}
 
 	return Value;
@@ -265,7 +271,7 @@ static public function string GetConfigStringValue(coerce string PropertyName, o
 	if (ConfigProperty != none)
 	{
 		Value =  ConfigProperty.GetValue(TagFunction);
-		`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ `ShowVar(Value) @ `ShowVar(TagFunction) @ `ShowVar(Namespace),, 'RPG');
+		//`LOG(default.class @ GetFuncName() @ `ShowVar(PropertyName) @ `ShowVar(Value) @ `ShowVar(TagFunction) @ `ShowVar(Namespace),, 'RPG');
 	}
 
 	return Value;

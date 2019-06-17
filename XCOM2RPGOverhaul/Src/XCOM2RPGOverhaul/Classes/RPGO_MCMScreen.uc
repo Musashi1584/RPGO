@@ -62,9 +62,6 @@ simulated function BuildMCM(
 	foreach Instance.Builder.DeserialzedPagesMap(MapEntry)
 	{
 		MCMPageConfig = MapEntry.MCMConfigPage;
-
-		SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(MCMPageConfig.SaveConfigManager));
-
 		Page = ConfigAPI.NewSettingsPage(MCMPageConfig.GetPageTitle());
 		Page.SetPageTitle(MCMPageConfig.GetTabLabel());
 
@@ -79,8 +76,10 @@ simulated function BuildMCM(
 
 		foreach MCMPageConfig.Groups(MCMGroupConfig)
 		{
-			Group = Page.AddGroup(name(MCMGroupConfig.GetGroupName()), MCMGroupConfig.GetGroupLabel());
+			SaveConfigManager = GetConfigManager(MCMPageConfig, MCMGroupConfig);
 			
+			Group = Page.AddGroup(name(MCMGroupConfig.GetGroupName()), MCMGroupConfig.GetGroupLabel());
+
 			foreach MCMGroupConfig.Elements(MCMElementConfig)
 			{
 				SetttingName = name(Caps(MCMElementConfig.SettingName));
@@ -198,8 +197,7 @@ simulated function StringSaveHandler(MCM_API_Setting Setting, string SettingValu
 simulated function ElementChangeHandler(MCM_API_Setting Setting, coerce string SettingValue)
 {
 	local XComLWTuple Tuple;
-	local bool bOverrideDefaultHandler;
-		
+
 	Tuple = new class'XComLWTuple';
 	Tuple.Id = 'MCM_ChangeHandler';
 	Tuple.Data.Add(2);
@@ -215,6 +213,7 @@ simulated function ElementChangeHandler(MCM_API_Setting Setting, coerce string S
 simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string SettingValue)
 {
 	local JsonConfig_MCM_Page Page;
+	local JsonConfig_MCM_Group Group;
 	local JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
@@ -236,8 +235,13 @@ simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string Set
 
 	if (!Tuple.Data[2].b)
 	{
+		
 		Page = GetPage(Setting.GetParentGroup().GetParentPage().GetPageId());
-		SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(Page.SaveConfigManager));
+		Group = GetGroup(
+			Setting.GetParentGroup().GetParentPage().GetPageId(),
+			Setting.GetParentGroup().GetName()
+		);
+		SaveConfigManager = GetConfigManager(Page, Group);
 		SaveConfigManager.static.SetConfigString(Caps(string(Setting.GetName())), SettingValue);
 	}
 }
@@ -245,9 +249,11 @@ simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string Set
 simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 {
 	local JsonConfig_MCM_Page ConfigPage;
+	local JsonConfig_MCM_Group ConfigGroup;
 	local JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
+	local int Index;
 
 	bOverrideDefaultHandler = false;
 		
@@ -263,19 +269,40 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 	`XEVENTMGR.TriggerEvent('MCM_SaveButtonClicked', Page, Tuple, none);
 	if (!Tuple.Data[1].b)
 	{
+		for (Index = 0; Index < Page.GetGroupCount(); Index++)
+		{
+			ConfigGroup = GetGroup(
+				Page.GetPageId(),
+				Page.GetGroupByIndex(Index).GetName()
+			);
+			if (ConfigGroup.SaveConfigManager != "")
+			{
+				SaveConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigGroup.SaveConfigManager);
+				SaveConfigManager.static.SerializeAndSaveConfig();
+			}
+		}
+
 		ConfigPage = GetPage(Page.GetPageId());
-		SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigPage.SaveConfigManager));
+		SaveConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigPage.SaveConfigManager);
 		SaveConfigManager.static.SerializeAndSaveConfig();
+		
 		`XEVENTMGR.TriggerEvent('MCM_ConfigSaved', Page, GetBuilder(Page.GetPageId()), none);
 		// todo move to even listener
 		class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
+		if (class'X2TemplateHelper_ExtendedUpgrades'.default.bReconfigureVanillaAttachements)
+		{
+			class'X2TemplateHelper_ExtendedUpgrades'.static.ReconfigDefaultAttachments();
+		}
+
+		class'X2DataTemplateManager'.static.RebuildAllTemplateGameCaches();
 	}
 }
 
 simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 {
 	local JsonConfig_MCM_Page ConfigPage;
-	local JsonConfig_Manager SaveConfigManager;
+	local JsonConfig_MCM_Group ConfigGroup;
+	local JsonConfig_Manager SaveConfigManager, DefaultConfigManager;
 	local int Index;
 	local int SettingIndex;
 	local MCM_API_SettingsGroup Group;
@@ -302,11 +329,17 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 	if (!Tuple.Data[1].b)
 	{
 		ConfigPage = GetPage(Page.GetPageId());
-		SaveConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ConfigPage.SaveConfigManager));
-
+		
 		for (Index = 0; Index < Page.GetGroupCount(); Index++)
 		{
 			Group = Page.GetGroupByIndex(Index);
+
+			ConfigGroup = GetGroup(
+				Page.GetPageId(),
+				Page.GetGroupByIndex(Index).GetName()
+			);
+			SaveConfigManager = GetConfigManager(ConfigPage, ConfigGroup);
+			DefaultConfigManager = SaveConfigManager.GetDefaultConfigManager();
 
 			for (SettingIndex = 0; SettingIndex < Group.GetNumberOfSettings(); SettingIndex++)
 			{
@@ -316,25 +349,37 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 				{
 					case eSettingType_Checkbox:
 						Checkbox = MCM_API_Checkbox(Setting);
-						Checkbox.SetValue(SaveConfigManager.DefaultConfigManager.static.GetConfigBoolValue(Checkbox.GetName()), true);
+						Checkbox.SetValue(DefaultConfigManager.static.GetConfigBoolValue(Checkbox.GetName()), true);
 						break;
 					case eSettingType_Slider:
 						Slider = MCM_API_Slider(Setting);
-						Slider.SetValue(SaveConfigManager.DefaultConfigManager.static.GetConfigFloatValue(Slider.GetName()), true);
+						Slider.SetValue(DefaultConfigManager.static.GetConfigFloatValue(Slider.GetName()), true);
 						break;
 					case eSettingType_Dropdown:
 						Dropdown = MCM_API_Dropdown(Setting);
-						Dropdown.SetValue(SaveConfigManager.DefaultConfigManager.static.GetConfigStringValue(Dropdown.GetName()), true);
+						Dropdown.SetValue(DefaultConfigManager.static.GetConfigStringValue(Dropdown.GetName()), true);
 						break;
 					case eSettingType_Spinner:
 						Spinner = MCM_API_Spinner(Setting);
-						Spinner.SetValue(SaveConfigManager.DefaultConfigManager.static.GetConfigStringValue(Spinner.GetName()), true);
+						Spinner.SetValue(DefaultConfigManager.static.GetConfigStringValue(Spinner.GetName()), true);
 						break;
 				}
 			}
 		}
 
 		`XEVENTMGR.TriggerEvent('MCM_ConfigResetted', Page, GetBuilder(Page.GetPageId()), none);
+	}
+}
+
+function JsonConfig_Manager GetConfigManager(JsonConfig_MCM_Page Page, JsonConfig_MCM_Group Group)
+{
+	if (Group.SaveConfigManager != "")
+	{
+		return class'JsonConfig_Manager'.static.GetConfigManager(Group.SaveConfigManager);
+	}
+	else
+	{
+		return class'JsonConfig_Manager'.static.GetConfigManager(Page.SaveConfigManager);
 	}
 }
 

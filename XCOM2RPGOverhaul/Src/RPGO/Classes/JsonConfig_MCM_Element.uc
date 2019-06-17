@@ -77,7 +77,7 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 		ButtonLabel = ElementJson.GetStringValue("ButtonLabel");
 		Options.Deserialize(ElementJson, "Options");
 
-		return true;
+		return (Type != "");
 	}
 	return false;
 }

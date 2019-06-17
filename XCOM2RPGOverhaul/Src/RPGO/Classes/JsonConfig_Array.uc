@@ -37,7 +37,6 @@ public function bool Deserialize(out JSonObject Data, string PropertyName)
 	UnserializedArrayValue = Data.GetStringValue(PropertyName);
 	if (UnserializedArrayValue != "")
 	{
-		`LOG(default.class @ GetFuncName() @ UnserializedArrayValue,, 'RPG');
 		ArrayValue = SplitString(Repl(Repl(UnserializedArrayValue, " ", ""), "	", ""), ",", true);
 		return true;
 	}

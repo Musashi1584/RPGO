@@ -23,10 +23,8 @@
     <Folder Include="Content" />
     <Folder Include="Localization\ExtendedUpgrades" />
     <Folder Include="Src\" />
-    <Folder Include="Src\ExtendedUpgrades\Classes" />
     <Folder Include="Src\LW_Tuple" />
     <Folder Include="Src\LW_Tuple\Classes" />
-    <Folder Include="Src\ExtendedUpgrades" />
     <Folder Include="Src\ModConfigMenuAPI" />
     <Folder Include="Src\ModConfigMenuAPI\Classes" />
     <Folder Include="Src\RPGO" />
@@ -172,30 +170,6 @@
     <Content Include="ReadMe.txt">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\TemplateHelper.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Ability_UpgradeAbilitySet.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2DownloadableContentInfo_ExtendedUpgrades.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_EU_ModifyNonReactionFire.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_EU_ModifyReactionFire.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_Scope.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Effect_Silencer.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\ExtendedUpgrades\Classes\X2Item_MeleeUpgrades.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\LW_Tuple\Classes\LWTuple.uc">
       <SubType>Content</SubType>
     </Content>
@@ -277,7 +251,7 @@
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\WeaponTemplateCache.uc">
+    <Content Include="Src\RPGO\Classes\RPGOTemplateCache.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
@@ -308,6 +282,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Ability_ShadowOps.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Ability_UpgradeAbilitySet.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Ability_WeaponProficiencies.uc">
@@ -391,6 +368,12 @@
     <Content Include="Src\RPGO\Classes\X2Effect_EquipmentStatCaps.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_EU_ModifyNonReactionFire.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_EU_ModifyReactionFire.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_Failsafe.uc">
       <SubType>Content</SubType>
     </Content>
@@ -448,10 +431,16 @@
     <Content Include="Src\RPGO\Classes\X2Effect_RevealUnit.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_Scope.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_ShotgunDamageModifierCoverType.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_ShotgunDamageModifierRange.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_Silencer.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_SpareBattery.uc">
@@ -464,6 +453,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2EventListener_RPG_TacticalListener.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Item_MeleeUpgrades.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2TargetingMethod_AreaSuppression.uc">
@@ -491,6 +483,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TemplateHelper_ExtendedUpgrades.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\PromotionScreenListener.uc">
@@ -569,9 +564,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2DownloadableContentInfo_RPGO_PromotionScreen.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\XCOM2RPGOverhaul\Classes\X2DownloadableContentInfo_RPGO_UI.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2DownloadableContentInfo_XCOM2RPGOverhaul.uc">

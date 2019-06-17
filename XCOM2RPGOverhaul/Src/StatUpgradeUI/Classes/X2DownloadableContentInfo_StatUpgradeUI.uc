@@ -547,10 +547,8 @@ exec function StatUITest(
 {
 	local XComHQPresentationLayer HQPres;
 	local UIScreen_StatUI UI;
-	local UIPanel_StatUI_StatLine StatLine;
 	local StateObjectReference UnitRef;
-	local int Index, OffsetX;
-
+	
 	HQPres = `HQPRES;
 
 	UI = UIScreen_StatUI(`SCREENSTACK.GetFirstInstanceOf(class'UIScreen_StatUI'));

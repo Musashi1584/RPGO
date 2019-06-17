@@ -5,8 +5,14 @@
 //-----------------------------------------------------------
 class RPGO_SWO_UserSettingsConfigManager extends JsonConfig_Manager config (RPGO_UserSettings);
 
+//defaultproperties
+//{
+//	DefaultConfigManagerClassName="RPGO_SWO_DefaultSettingsConfigManager"
+//}
+
 defaultproperties
 {
-	DefaultConfigManagerClassName="RPGO_SWO_DefaultSettingsConfigManager"
+	Begin Object Class=RPGO_SWO_DefaultSettingsConfigManager Name=DefaultConfigManager0
+	End Object
+	DefaultConfigManager = DefaultConfigManager0;
 }
-

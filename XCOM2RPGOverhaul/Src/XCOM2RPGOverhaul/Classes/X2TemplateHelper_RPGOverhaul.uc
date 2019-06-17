@@ -383,8 +383,8 @@ static function PatchWeapons()
 			WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 			if (WeaponTemplate != none)
 			{
-				class'WeaponTemplateCache'.static.AddTemplate(WeaponTemplate);
-				UnpatchedTemplate = class'WeaponTemplateCache'.static.GetTemplate(WeaponTemplate.DataName);
+				class'RPGOTemplateCache'.static.AddWeaponTemplate(WeaponTemplate);
+				UnpatchedTemplate = class'RPGOTemplateCache'.static.GetWeaponTemplate(WeaponTemplate.DataName);
 
 				// @TODO Patch enviromental damage
 				if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)

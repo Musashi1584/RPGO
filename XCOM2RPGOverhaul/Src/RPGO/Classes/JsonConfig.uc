@@ -91,6 +91,9 @@ static public final function array<ObjectKey> GetAllObjectKeys(coerce string Str
 	local array<ObjectKey> Keys;
 	local ObjectKey ObjKey, EmptyKey;
 
+	ParentKey = "";
+	GrandParentKey = "";
+
 	Str = Repl(Str, "\":{", "$$$\":{");
 	Str = Repl(Str, "\"}}", "}\"}");
 	Str = Repl(Str, "},", "}\"");

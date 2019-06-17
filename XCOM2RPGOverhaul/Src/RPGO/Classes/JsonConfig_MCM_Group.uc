@@ -11,6 +11,7 @@ var protectedwrite string GroupLabel;
 var string ConfigKey;
 
 var array<JsonConfig_MCM_Element> Elements;
+var string SaveConfigManager;
 
 public function SetGroupName(string GroupNameParam)
 {
@@ -51,7 +52,8 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JsonSubObject = new () class'JsonObject';
 	JsonSubObject.SetStringValue("GroupName", GroupName);
 	JsonSubObject.SetStringValue("GroupLabel", GroupLabel);
-
+	JsonSubObject.SetStringValue("SaveConfigManager", SaveConfigManager);
+	
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
@@ -66,6 +68,13 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 	{
 		GroupName = GroupJson.GetStringValue("GroupName");
 		GroupLabel = GroupJson.GetStringValue("GroupLabel");
+		SaveConfigManager = GroupJson.GetStringValue("SaveConfigManager");
+
+		if (SaveConfigManager != "")
+		{
+			
+		}
+
 		Builder = BuilderParam;
 		DeserializeElements(GroupJson);
 

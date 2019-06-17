@@ -178,6 +178,23 @@ PATCH_DEFAULTWEAPON_UPGRADESLOTS_TOOLTIP="Set all upgrade slots to 3"
 PATCH_FULLAUTOFIRE_LABEL="Add autofire ability"
 PATCH_FULLAUTOFIRE_TOOLTIP="Add autofire abilities to all weapons matching AutofireWeaponCategories"
 
+ATTACHMENT_SETTINGS_GROUP_LABEL="Attachment Changes"
+
+PATCH_HAIR_TRIGGERS_LABEL="Change Hair Triggers"
+PATCH_HAIR_TRIGGERS_TOOLTIP="Apply RPGO changes to Hair Triggers"
+
+PATCH_LASER_SIGHTS_LABEL="Change Laser Sights"
+PATCH_LASER_SIGHTS_TOOLTIP="Apply RPGO changes to Laser Sights"
+
+PATCH_STOCKS_LABEL="Change Stocks"
+PATCH_STOCKS_TOOLTIP="Apply RPGO changes to Stocks"
+
+PATCH_SCOPES_LABEL="Change Scopes"
+PATCH_SCOPES_TOOLTIP="Apply RPGO changes to Scopes"
+
+PATCH_AUTOLOADERS_LABEL="Change Autoloaders"
+PATCH_AUTOLOADERS_TOOLTIP="Apply RPGO changes to Autoloaders"
+
 SWO_SETTINGS_PAGE_TITLE="RPGO Second Wave Options"
 SWO_SETTINGS_PAGE_LABEL="RPGO Second Wave Options"
 
