@@ -212,6 +212,232 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 	}
 }
 
+static function PatchWeapons()
+{
+	local X2ItemTemplateManager ItemTemplateManager;
+	local array<name> TemplateNames;
+	local array<X2DataTemplate> DifficultyVariants;
+	local name TemplateName;
+	local X2DataTemplate ItemTemplate;
+	local X2WeaponTemplate WeaponTemplate;
+
+	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
+
+	ItemTemplateManager.GetTemplateNames(TemplateNames);
+
+	foreach TemplateNames(TemplateName)
+	{
+		ItemTemplateManager.FindDataTemplateAllDifficulties(TemplateName, DifficultyVariants);
+		// Iterate over all variants
+		foreach DifficultyVariants(ItemTemplate)
+		{
+			WeaponTemplate = X2WeaponTemplate(ItemTemplate);
+			PatchWeaponTemplate(WeaponTemplate);
+		}
+
+		// Also patch base template
+		WeaponTemplate = X2WeaponTemplate(ItemTemplateManager.FindItemTemplate(TemplateName));
+		PatchWeaponTemplate(WeaponTemplate);
+	}
+}
+
+static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
+{
+	local X2WeaponTemplate UnpatchedTemplate;
+	local X2GremlinTemplate GremlinTemplate;
+	local array<string> AutofireWeaponCategories, PatchUpgradeSlotWeaponCategories;
+
+	if (WeaponTemplate != none)
+	{
+		AutofireWeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
+		PatchUpgradeSlotWeaponCategories = class'RPGODefaultSettingsConfigManager'.static.GetConfigStringArray("PATCH_UPGRADESLOT_WEAPON_CATEGORIES");
+
+		class'RPGOTemplateCache'.static.AddWeaponTemplate(WeaponTemplate);
+		UnpatchedTemplate = class'RPGOTemplateCache'.static.GetWeaponTemplate(WeaponTemplate.DataName);
+
+		// @TODO Patch enviromental damage
+		if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)
+		{
+			//WeaponTemplate.BaseDamage
+		}
+
+		if (default.IgnoreWeaponTemplatesForPatch.Find(WeaponTemplate.DataName) != INDEX_NONE)
+		{
+			return;
+		}
+
+		switch (WeaponTemplate.WeaponCat)
+		{
+			case 'Gremlin':
+				GremlinTemplate = X2GremlinTemplate(WeaponTemplate);
+				AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
+				AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol', true);
+				AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
+				break;
+			case 'rifle':
+			case 'sparkrifle':
+				break;
+			case 'bullpup':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_BULLPUPS"))
+				{
+					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 1;
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
+				}
+				else
+				{
+					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
+				}
+				break;
+			case 'sniper_rifle':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Squadsight');
+				}
+				break;
+			case 'vektor_rifle':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+				}
+				break;
+			case 'shotgun':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SHOTGUNS"))
+				{					
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
+							
+					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.ShotgunCritBonus;
+					WeaponTemplate.Aim = UnpatchedTemplate.Aim + default.ShotgunAimBonus;
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
+
+					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
+					WeaponTemplate.Aim = UnpatchedTemplate.Aim;
+				}
+				break;
+			case 'cannon':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_CANNONS"))
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
+					WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
+					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 2;
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Suppression');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
+					WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage;
+					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
+				}
+				break;
+			case 'pistol':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
+						
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
+				}
+				break;
+			case 'sidearm':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
+				{
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
+					WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
+					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.AutoPistolCritChanceBonus;
+				}
+				else
+				{
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
+					WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
+					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
+				}
+				break;
+			case 'sword':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
+				break;
+			case 'grenade_launcher':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
+				break;
+			case 'wristblade':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
+				break;
+			case 'claymore':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
+				break;
+			case 'holotargeter':
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'RapidTargeting', true);
+				break;
+			default:
+				//`LOG(GetFuncName() @ WeaponTemplate.GetItemFriendlyName() @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "ignored",, 'RPG');
+				break;
+		}
+
+		if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE &&
+			class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
+			AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
+		{
+			AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
+			if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
+			if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
+			if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+		}
+		else if (WeaponTemplate.Abilities.Find('FullAutoFire') != INDEX_NONE)
+		{
+			RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'FullAutoFire');
+			WeaponTemplate.AbilitySpecificAnimations.Remove(
+				WeaponTemplate.AbilitySpecificAnimations.Find('AbilityName', 'FullAutoFire'),
+				1
+			);
+		}
+
+		if (PatchUpgradeSlotWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
+		{
+			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_DEFAULTWEAPON_UPGRADESLOTS"))
+			{
+				WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
+			}
+			else
+			{
+				WeaponTemplate.NumUpgradeSlots = UnpatchedTemplate.NumUpgradeSlots;
+			}
+		}
+	}
+
+	// Patch hero weapons
+	if (WeaponTemplate != none &&
+		(WeaponTemplate.DataName == 'WristBlade_CV' ||
+		WeaponTemplate.DataName == 'ShardGauntlet_CV' ||
+		WeaponTemplate.DataName == 'VektorRifle_CV' ||
+		WeaponTemplate.DataName == 'Bullpup_CV' ||
+		WeaponTemplate.DataName == 'Reaper_Claymore' ||
+		WeaponTemplate.DataName == 'Sidearm_CV')
+	)
+	{
+		WeaponTemplate.StartingItem = true;
+		`LOG("Unlock" @ WeaponTemplate.DataName,, 'RPG');
+	}
+}
+
 static function PatchAbilitiesWeaponCondition()
 {
 	local X2AbilityTemplateManager		TemplateManager;
@@ -353,225 +579,6 @@ static function int GetDifficultyFromTemplateName(name TemplateName)
 {
 	return int(GetRightMost(string(TemplateName)));
 }
-
-
-static function PatchWeapons()
-{
-	local X2ItemTemplateManager ItemTemplateManager;
-	local array<name> TemplateNames;
-	local array<X2DataTemplate> DifficultyVariants;
-	local name TemplateName;
-	local X2DataTemplate ItemTemplate;
-	local X2WeaponTemplate WeaponTemplate, UnpatchedTemplate;
-	local X2GremlinTemplate GremlinTemplate;
-	local array<string> AutofireWeaponCategories, PatchUpgradeSlotWeaponCategories;
-	
-	AutofireWeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
-	PatchUpgradeSlotWeaponCategories = class'RPGODefaultSettingsConfigManager'.static.GetConfigStringArray("PATCH_UPGRADESLOT_WEAPON_CATEGORIES");
-
-	ItemTemplateManager = class'X2ItemTemplateManager'.static.GetItemTemplateManager();
-
-	ItemTemplateManager.GetTemplateNames(TemplateNames);
-
-	foreach TemplateNames(TemplateName)
-	{
-		ItemTemplateManager.FindDataTemplateAllDifficulties(TemplateName, DifficultyVariants);
-		// Iterate over all variants
-		
-		foreach DifficultyVariants(ItemTemplate)
-		{
-			WeaponTemplate = X2WeaponTemplate(ItemTemplate);
-			if (WeaponTemplate != none)
-			{
-				class'RPGOTemplateCache'.static.AddWeaponTemplate(WeaponTemplate);
-				UnpatchedTemplate = class'RPGOTemplateCache'.static.GetWeaponTemplate(WeaponTemplate.DataName);
-
-				// @TODO Patch enviromental damage
-				if (InStr(WeaponTemplate.DataName, "CV") != INDEX_NONE || InStr(WeaponTemplate.DataName, "T1") != INDEX_NONE)
-				{
-					//WeaponTemplate.BaseDamage
-				}
-
-				if (default.IgnoreWeaponTemplatesForPatch.Find(WeaponTemplate.DataName) != INDEX_NONE)
-				{
-					continue;
-				}
-
-				switch (WeaponTemplate.WeaponCat)
-				{
-					case 'Gremlin':
-						GremlinTemplate = X2GremlinTemplate(WeaponTemplate);
-						AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
-						AddAbilityToGremlinTemplate(GremlinTemplate, 'AidProtocol', true);
-						AddAbilityToGremlinTemplate(GremlinTemplate, 'IntrusionProtocol', true);
-						break;
-					case 'rifle':
-					case 'sparkrifle':
-						break;
-					case 'bullpup':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_BULLPUPS"))
-						{
-							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 1;
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
-						}
-						else
-						{
-							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
-						}
-						break;
-					case 'sniper_rifle':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Squadsight');
-						}
-						break;
-					case 'vektor_rifle':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
-						}
-						break;
-					case 'shotgun':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SHOTGUNS"))
-						{					
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
-							
-							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.ShotgunCritBonus;
-							WeaponTemplate.Aim = UnpatchedTemplate.Aim + default.ShotgunAimBonus;
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
-
-							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
-							WeaponTemplate.Aim = UnpatchedTemplate.Aim;
-						}
-						break;
-					case 'cannon':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_CANNONS"))
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-							WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
-							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 2;
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Suppression');
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
-							WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage;
-							WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
-						}
-						break;
-					case 'pistol':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
-						
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
-						}
-						break;
-					case 'sidearm':
-						if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
-						{
-							AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
-							WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
-							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.AutoPistolCritChanceBonus;
-						}
-						else
-						{
-							RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
-							WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
-							WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
-						}
-						break;
-					case 'sword':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
-						break;
-					case 'grenade_launcher':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'LaunchGrenade', true);
-						break;
-					case 'wristblade':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
-						break;
-					case 'claymore':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
-						break;
-					case 'holotargeter':
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'RapidTargeting', true);
-						break;
-					default:
-						//`LOG(GetFuncName() @ WeaponTemplate.GetItemFriendlyName() @ WeaponTemplate.DataName @ WeaponTemplate.WeaponCat @ "ignored",, 'RPG');
-						break;
-				}
-
-				if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE &&
-					class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
-					AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
-				{
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
-						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
-					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
-						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
-					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
-						WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
-				}
-				else if (WeaponTemplate.Abilities.Find('FullAutoFire') != INDEX_NONE)
-				{
-					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'FullAutoFire');
-					WeaponTemplate.AbilitySpecificAnimations.Remove(
-						WeaponTemplate.AbilitySpecificAnimations.Find('AbilityName', 'FullAutoFire'),
-						1
-					);
-				}
-
-				if (PatchUpgradeSlotWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
-				{
-					if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_DEFAULTWEAPON_UPGRADESLOTS"))
-					{
-						WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
-					}
-					else
-					{
-						WeaponTemplate.NumUpgradeSlots = UnpatchedTemplate.NumUpgradeSlots;
-					}
-				}
-			}
-
-			// Patch hero weapons
-			if (WeaponTemplate != none &&
-				(WeaponTemplate.DataName == 'WristBlade_CV' ||
-				WeaponTemplate.DataName == 'ShardGauntlet_CV' ||
-				WeaponTemplate.DataName == 'VektorRifle_CV' ||
-				WeaponTemplate.DataName == 'Bullpup_CV' ||
-				WeaponTemplate.DataName == 'Reaper_Claymore' ||
-				WeaponTemplate.DataName == 'Sidearm_CV')
-			)
-			{
-				WeaponTemplate.StartingItem = true;
-				`LOG("Unlock" @ WeaponTemplate.DataName,, 'RPG');
-			}
-		}
-	}
-}
-
-
 
 
 static function UpdateStorage()
@@ -947,7 +954,15 @@ static function PatchSniperStandardFire()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('SniperStandardFire');
-	GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
+	
+	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	{
+		GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
+	}
+	else
+	{
+		GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = true;
+	}
 }
 
 static function PatchLongWatch()
@@ -955,18 +970,30 @@ static function PatchLongWatch()
 	local X2AbilityTemplateManager		TemplateManager;
 	local X2AbilityTemplate				Template;
 	local X2Effect_Squadsight			Squadsight;
+	local int							Index;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
 	Template = TemplateManager.FindAbilityTemplate('LongWatch');
 
-	// Readd squad sight in case it was removed on movement on playerturn
-	Squadsight = new class'X2Effect_Squadsight';
-	Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnEnd);
-	Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
-	Template.AddTargetEffect(Squadsight);
-
-	// GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
+	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	{
+		// Readd squad sight in case it was removed on movement on playerturn
+		Squadsight = new class'X2Effect_Squadsight';
+		Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnEnd);
+		Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+		Template.AddTargetEffect(Squadsight);
+	}
+	else
+	{
+		for(Index = Template.AbilityTargetEffects.Length; Index >= 0; Index--)
+		{
+			Squadsight = X2Effect_Squadsight(Template.AbilityTargetEffects[Index]);
+			if (Squadsight != none)
+			{
+				Template.AbilityTargetEffects.Remove(Index, 1);
+			}
+		}
+	}
 }
 
 
@@ -984,31 +1011,42 @@ static function PatchSuppression()
 static function PatchSquadSight()
 {
 	local X2AbilityTemplateManager		TemplateManager;
-	local X2AbilityTemplate				Template;
+	local X2AbilityTemplate				Template, UnpatchedTemplate;
 	local X2Effect_Squadsight			Squadsight;
 	local X2AbilityTrigger_EventListener EventTrigger;
 
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
 	Template = TemplateManager.FindAbilityTemplate('Squadsight');
 
-	Template.AbilityTriggers.Length = 0;
-	Template.AbilityTargetEffects.Length = 0;
-	Template.Hostility = eHostility_Neutral;
+	class'RPGOTemplateCache'.static.AddAbilityTemplate(Template);
+	UnpatchedTemplate = class'RPGOTemplateCache'.static.GetAbilityTemplate(Template.DataName);
 
-	EventTrigger = new class'X2AbilityTrigger_EventListener';
-	EventTrigger.ListenerData.Deferral = ELD_OnStateSubmitted;
-	EventTrigger.ListenerData.EventID = 'PlayerTurnBegun';
-	EventTrigger.ListenerData.Filter = eFilter_Player;
-	EventTrigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
-	Template.AbilityTriggers.AddItem(EventTrigger);
+	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	{
+		Template.AbilityTriggers.Length = 0;
+		Template.AbilityTargetEffects.Length = 0;
+		Template.Hostility = eHostility_Neutral;
 
-	Squadsight = new class'X2Effect_Squadsight';
-	Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnBegin);
-	Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
-	Template.AddTargetEffect(Squadsight);
+		EventTrigger = new class'X2AbilityTrigger_EventListener';
+		EventTrigger.ListenerData.Deferral = ELD_OnStateSubmitted;
+		EventTrigger.ListenerData.EventID = 'PlayerTurnBegun';
+		EventTrigger.ListenerData.Filter = eFilter_Player;
+		EventTrigger.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
+		Template.AbilityTriggers.AddItem(EventTrigger);
 
-	Template.AdditionalAbilities.AddItem('RemoveSquadSightOnMove');
+		Squadsight = new class'X2Effect_Squadsight';
+		Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnBegin);
+		Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+		Template.AddTargetEffect(Squadsight);
+
+		Template.AdditionalAbilities.AddItem('RemoveSquadSightOnMove');
+	}
+	else
+	{
+		Template.AbilityTriggers = UnpatchedTemplate.AbilityTriggers;
+		Template.AbilityTargetEffects = UnpatchedTemplate.AbilityTargetEffects;
+		Template.AdditionalAbilities = UnpatchedTemplate.AdditionalAbilities;
+	}
 }
 
 static function bool CanAddItemToInventory(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)

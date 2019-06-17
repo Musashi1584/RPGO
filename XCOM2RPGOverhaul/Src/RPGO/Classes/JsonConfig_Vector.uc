@@ -47,5 +47,9 @@ public function bool Deserialize(JSonObject Data, string PropertyName)
 		return true;
 	}
 
+	VectorValue.X = 0;
+	VectorValue.Y = 0;
+	VectorValue.Z = 0;
+
 	return false;
 }

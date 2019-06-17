@@ -40,34 +40,29 @@ static function PatchTemplatesWithHairTriggerShot()
 
 static function ReconfigDefaultAttachments()
 {
-	local X2DataTemplateManager TemplateManager;
+	local X2ItemTemplateManager TemplateManager;
 	local X2WeaponUpgradeTemplate ItemTemplate;
-	local array<Name> TemplateNames;
-	local Name TemplateName;
-	local array<X2DataTemplate> DataTemplates;
-	local X2DataTemplate DataTemplate;
-	local int Difficulty;
-	
+	local array<X2WeaponUpgradeTemplate> DataTemplates;
+
 	TemplateManager	= class'X2ItemTemplateManager'.static.GetItemTemplateManager();
 	
-	TemplateManager.GetTemplateNames(TemplateNames);
-
-	foreach TemplateNames(TemplateName)
+	/*
+	 * On difficulties other than Veteran, templates with difficulty variants (items, techs, characters) will "copy" all non-config properties from the base template.
+	 * This means that only config properties can have different values for different difficulties.
+	 * Corollary: When making changes to all difficulties, FindDataTemplateAllDifficulties is only required when changing config properties.
+	*/
+	DataTemplates = TemplateManager.GetAllUpgradeTemplates();
+	foreach DataTemplates(ItemTemplate)
 	{
-		TemplateManager.FindDataTemplateAllDifficulties(TemplateName, DataTemplates);
-		foreach DataTemplates(DataTemplate)
+		if(ItemTemplate != none)
 		{
-			ItemTemplate = X2WeaponUpgradeTemplate(DataTemplate);
-			if(ItemTemplate != none)
-			{
-				Difficulty = GetDifficultyFromTemplateName(TemplateName);
-				ReconfigAttachment(ItemTemplate, Difficulty);
-			}
+			//Difficulty = GetDifficultyFromTemplateName(TemplateName);
+			ReconfigAttachment(ItemTemplate);
 		}
 	}
 }
 
-static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate, int Difficulty)
+static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate)
 {
 	local X2WeaponUpgradeTemplate UnpatchedTemplate;
 
@@ -95,6 +90,8 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		{
 			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
 			{
+				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.AdvancedLaserSightAbilityName);
+				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);
 				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.AdvancedLaserSightAbilityName);
 				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);
 			}
@@ -374,6 +371,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		`LOG("Patch" @ WeaponUpgradeTemplate.DataName,, 'ExtendedUpgrades');
 
+		WeaponUpgradeTemplate.CanApplyUpgradeToWeaponFn = CanApplyUpgradeToWeaponEU;
 		WeaponUpgradeTemplate.CanApplyUpgradeToWeaponFn = CanApplyUpgradeToWeaponEU;
 	}
 }

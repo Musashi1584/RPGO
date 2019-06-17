@@ -246,6 +246,10 @@ function JSonObject Serialize()
 
 function Deserialize(JSonObject Data)
 {
+	VectorValue = new class'JsonConfig_Vector';
+	ArrayValue = new class'JsonConfig_Array';
+	DamageValue = new class'JsonConfig_WeaponDamageValue';
+
 	bIsVector = VectorValue.Deserialize(Data, "VectorValue");
 	bIsArray = ArrayValue.Deserialize(Data, "ArrayValue");
 	bIsDamageValue = DamageValue.Deserialize(Data, "DamageValue");
@@ -261,15 +265,15 @@ function Deserialize(JSonObject Data)
 
 defaultproperties
 {
-	Begin Object Class=JsonConfig_Vector Name=DefaultJsonConfig_Vector
+	Begin Object Class=JsonConfig_Vector Name=TaggedDefaultJsonConfig_Vector
 	End Object
-	VectorValue = DefaultJsonConfig_Vector;
+	VectorValue = TaggedDefaultJsonConfig_Vector;
 
-	Begin Object Class=JsonConfig_Array Name=DefaultJsonConfig_Array
+	Begin Object Class=JsonConfig_Array Name=TaggedDefaultJsonConfig_Array
 	End Object
-	ArrayValue = DefaultJsonConfig_Array;
+	ArrayValue = TaggedDefaultJsonConfig_Array;
 
-	Begin Object Class=JsonConfig_WeaponDamageValue Name=DefaultJsonConfig_WeaponDamageValue
+	Begin Object Class=JsonConfig_WeaponDamageValue Name=TaggedDefaultJsonConfig_WeaponDamageValue
 	End Object
-	DamageValue = DefaultJsonConfig_WeaponDamageValue;
+	DamageValue = TaggedDefaultJsonConfig_WeaponDamageValue;
 }

@@ -12,6 +12,39 @@ public static function RPGOTemplateCache GetRPGOTemplateCache()
 	return RPGOTemplateCache(class'Engine'.static.FindClassDefaultObject(string(default.class)));
 }
 
+public static function AddAbilityTemplate(X2AbilityTemplate Template)
+{
+	local RPGOTemplateCache TemplateCache;
+	local X2AbilityTemplate ClonedTemplate;
+
+	TemplateCache = GetRPGOTemplateCache();
+
+	if (GetAbilityTemplate(Template.DataName) == none)
+	{
+		ClonedTemplate = new Template.Class (Template);
+		ClonedTemplate.SetTemplateName(name(Template.DataName $ "_Cache"));
+		TemplateCache.Templates.AddItem(ClonedTemplate);
+	}
+}
+
+public static function X2AbilityTemplate GetAbilityTemplate(name DataName)
+{
+	local RPGOTemplateCache TemplateCache;
+	local X2DataTemplate Template;
+
+	TemplateCache = GetRPGOTemplateCache();
+
+	foreach TemplateCache.Templates(Template)
+	{
+		if (Template.DataName == name(DataName $ "_Cache"))
+		{
+			return X2AbilityTemplate(Template);
+		}
+	}
+
+	return none;
+}
+
 public static function AddWeaponUpgradeTemplate(X2WeaponUpgradeTemplate Template)
 {
 	local RPGOTemplateCache TemplateCache;
@@ -19,7 +52,7 @@ public static function AddWeaponUpgradeTemplate(X2WeaponUpgradeTemplate Template
 
 	TemplateCache = GetRPGOTemplateCache();
 
-	if (GetWeaponTemplate(Template.DataName) == none)
+	if (GetWeaponUpgradeTemplate(Template.DataName) == none)
 	{
 		ClonedTemplate = new Template.Class (Template);
 		ClonedTemplate.SetTemplateName(name(Template.DataName $ "_Cache"));

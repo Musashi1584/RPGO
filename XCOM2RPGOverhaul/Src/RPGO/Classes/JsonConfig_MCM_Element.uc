@@ -63,6 +63,8 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 	ConfigKey = PropertyName;
 
+	Options = new class'JsonConfig_Vector';
+
 	ElementJson = Data.GetObject(PropertyName);
 	if (ElementJson != none)
 	{

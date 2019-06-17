@@ -33,6 +33,7 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 public function bool Deserialize(out JSonObject Data, string PropertyName)
 {
 	local string UnserializedArrayValue;
+	local array<string> EmptyArray;
 	
 	UnserializedArrayValue = Data.GetStringValue(PropertyName);
 	if (UnserializedArrayValue != "")
@@ -40,6 +41,9 @@ public function bool Deserialize(out JSonObject Data, string PropertyName)
 		ArrayValue = SplitString(Repl(Repl(UnserializedArrayValue, " ", ""), "	", ""), ",", true);
 		return true;
 	}
+
+	EmptyArray.Length = 0;
+	ArrayValue = EmptyArray;
 
 	return false;
 }

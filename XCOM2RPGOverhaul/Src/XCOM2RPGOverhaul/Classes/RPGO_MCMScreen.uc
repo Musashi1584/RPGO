@@ -289,6 +289,10 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 		`XEVENTMGR.TriggerEvent('MCM_ConfigSaved', Page, GetBuilder(Page.GetPageId()), none);
 		// todo move to even listener
 		class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
+		class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
+		class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
+		class'X2TemplateHelper_RPGOverhaul'.static.PatchSquadSight();
+
 		if (class'X2TemplateHelper_ExtendedUpgrades'.default.bReconfigureVanillaAttachements)
 		{
 			class'X2TemplateHelper_ExtendedUpgrades'.static.ReconfigDefaultAttachments();

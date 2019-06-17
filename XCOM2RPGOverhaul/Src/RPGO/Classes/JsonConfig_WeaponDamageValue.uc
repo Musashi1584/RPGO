@@ -60,5 +60,15 @@ public function bool Deserialize(JSonObject Data, string PropertyName)
 		return true;
 	}
 
+	DamageValue.Damage = 0;
+	DamageValue.Spread = 0;
+	DamageValue.PlusOne = 0;
+	DamageValue.Crit = 0;
+	DamageValue.Pierce = 0;
+	DamageValue.Rupture = 0;
+	DamageValue.Shred = 0;
+	DamageValue.Tag = '';
+	DamageValue.DamageType = '';
+
 	return false;
 }
