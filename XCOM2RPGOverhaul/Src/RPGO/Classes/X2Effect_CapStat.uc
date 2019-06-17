@@ -115,32 +115,7 @@ function bool IsEffectCurrentlyRelevant(XComGameState_Effect EffectGameState, XC
 	return EffectGameState.StatChanges.Length > 0;
 }
 
-
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	super(X2Effect_Persistent).OnEffectAdded(ApplyEffectParameters, kNewTargetState, NewGameState, NewEffectState);
-}
-
-// From XMBEffectInterface
-function bool GetExtModifiers(name Type, XComGameState_Effect EffectState, XComGameState_Unit Attacker, XComGameState_Unit Target, XComGameState_Ability AbilityState, class<X2AbilityToHitCalc> ToHitType, bool bMelee, bool bFlanking, bool bIndirectFire, optional ShotBreakdown ShotBreakdown, optional out array<ShotModifierInfo> ShotModifiers) { return false; }
-function bool GetExtValue(LWTuple Tuple) { return false; }
-
-function bool GetTagValue(name Tag, XComGameState_Ability AbilityState, X2Effect EffectTemplate, out string TagValue)
-{
-	local int stat, idx;
-
-	Tag = Name(Repl(Tag, X2Effect_Persistent(EffectTemplate).EffectName $ ";", "", true));
-	
-	stat = class'XMBConfig'.default.m_aCharStatTags.Find(Tag);
-	if (stat != INDEX_NONE)
-	{
-		idx = m_aStatCaps.Find('StatType', ECharStatType(stat));
-		if (idx != INDEX_NONE)
-		{
-			TagValue = string(int(m_aStatCaps[idx].StatCapValue));
-			return true;
-		}
-	}
-
-	return false;
 }

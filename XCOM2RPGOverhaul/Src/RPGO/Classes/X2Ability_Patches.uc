@@ -1,4 +1,6 @@
-class X2Ability_Patches extends XMBAbility;
+class X2Ability_Patches extends XMBAbility dependson(X2Effect_CapStat) config (RPG);
+
+var config array<EquipmentStatCap> HEAVYWEAPON_MOBILITY_CAPS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -63,76 +65,61 @@ static function X2AbilityTemplate BlueMoveSlash()
 	return Template;
 }
 
+//static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
+//{
+//	local X2AbilityTemplate Template;
+//	local XMBEffect_ConditionalStatChange Effect;
+//	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
+//
+//	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+//
+//	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+//	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
+//
+//	Effect = new class'XMBEffect_ConditionalStatChange';
+//	Effect.AddPersistentStatChange(eStat_Mobility,class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR"), MODOP_PostMultiplication);
+//	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+//	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+//
+//	Template.AddTargetEffect(Effect);
+//
+//	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
+//	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
+//
+//	Effect = new class'XMBEffect_ConditionalStatChange';
+//	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED"), MODOP_PostMultiplication);
+//	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+//	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
+//
+//
+//	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
+//	Template.AddTargetEffect(Effect);
+//
+//	return Template;
+//}
+
+
 static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 {
 	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalStatChange Effect;
-	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
+	local X2Effect_EquipmentStatCaps CapStatEffect;
+	local X2Condition_StatValue StatValueCondition;
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
-	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
+	StatValueCondition = new class'X2Condition_StatValue';
+	StatValueCondition.AddStatValue(default.HEAVYWEAPON_MOBILITY_CAPS[0].Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAVY_WEAPON_MOBILITY_CAP"));
 
-	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility,class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR"), MODOP_PostMultiplication);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-
-	Template.AddTargetEffect(Effect);
-
-	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
-
-	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED"), MODOP_PostMultiplication);
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-
-
-	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
-	Template.AddTargetEffect(Effect);
-
-	return Template;
-}
-
-
-static function X2AbilityTemplate EquipmentStatCaps()
-{
-	local X2AbilityTemplate Template;
-	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
-	local X2Effect_CapStat CapStatEffect;
-
-	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
-
-	// Regular cap without SyntheticLegMuscles
-	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
-	
-	CapStatEffect = new class'X2Effect_CapStat';
-	CapStatEffect.AddStatCap(eStat_Mobility, 15);
-	CapStatEffect.AddStatCap(eStat_Offense, 50);
+	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
 	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	CapStatEffect.TargetConditions.AddItem(SourceAbilitiesCondition);
 	CapStatEffect.EffectName = 'CapStatEffectRegular';
-	Template.AddTargetEffect(CapStatEffect);
-	
-	// Higher cap with SyntheticLegMuscles
-	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
-	
-	CapStatEffect = new class'X2Effect_CapStat';
-	CapStatEffect.AddStatCap(eStat_Mobility, 20);
-	CapStatEffect.AddStatCap(eStat_Offense, 70);
-	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	CapStatEffect.TargetConditions.AddItem(SourceAbilitiesCondition);
-	CapStatEffect.EffectName = 'CapStatEffectIncreased';
+	CapStatEffect.EquipmentStatCaps = default.HEAVYWEAPON_MOBILITY_CAPS;
+	CapStatEffect.EquipmentStatCaps[0].Cap.StatCapValue = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAVY_WEAPON_MOBILITY_CAP");
+	CapStatEffect.TargetConditions.AddItem(StatValueCondition);
 	Template.AddTargetEffect(CapStatEffect);
 
 	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
-	
 
 	return Template;
 }

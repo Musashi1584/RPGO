@@ -323,6 +323,9 @@
     <Content Include="Src\RPGO\Classes\X2Condition_NotVisibeToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Condition_StatValue.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_TargetAutopsy.uc">
       <SubType>Content</SubType>
     </Content>
