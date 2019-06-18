@@ -1,7 +1,7 @@
 class X2Effect_DamageModifierCoverType extends X2Effect_Persistent config (RPG);
 
-var config float HalfCovertModifier;
-var config float FullCovertModifier;
+var float HalfCovertModifier;
+var float FullCovertModifier;
 
 function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGameState_Unit Attacker, Damageable TargetDamageable, XComGameState_Ability AbilityState, const out EffectAppliedData AppliedData, const int CurrentDamage, optional XComGameState NewGameState)
 {
@@ -34,12 +34,12 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 		
 		if (CoverType == CT_MidLevel)
 		{
-			DamageModifier = int(CurrentDamage * default.HalfCovertModifier) * -1;
+			DamageModifier = int(CurrentDamage * HalfCovertModifier) * -1;
 		}
 
 		if (CoverType == CT_Standing)
 		{
-			DamageModifier = int(CurrentDamage * default.FullCovertModifier) * -1;
+			DamageModifier = int(CurrentDamage * FullCovertModifier) * -1;
 		}
 
 		//`LOG(Class.Name @ GetFuncName() @ "CoverType Damage Modifier:" @ DamageModifier,, 'RPG');

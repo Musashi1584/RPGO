@@ -281,13 +281,18 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_BULLPUPS"))
 				{
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 1;
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherStrike', true);
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'BullpupDesign', true);
 				}
 				else
 				{
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
-					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SkirmisherStrike');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'BullpupDesign');
 				}
+
+				// Fix for bullpup & pistol combo always trigger bullpup overwatch shots
+				RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'PistolReturnFire');
+				AddAbilityToWeaponTemplate(WeaponTemplate, 'BullpupReturnFire', false);
+
 				break;
 			case 'sniper_rifle':
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
@@ -349,24 +354,38 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolDamageModifierRange', true);
 				}
 				else
 				{
 					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'PistolDamageModifierRange');
 				}
 				break;
 			case 'sidearm':
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
 				{
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 					WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.AutoPistolCritChanceBonus;
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'Spray', true);
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'PistolReturnFire');
+
+					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('Spray', 'FF_FireMultiShotConvA');
+					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('Spray', 'FF_FireMultiShotMagA');
+					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
+						WeaponTemplate.SetAnimationNameForAbility('Spray', 'FF_FireMultiShotBeamA');
 				}
 				else
 				{
-					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'ReturnFire');
 					WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
 					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance;
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Spray');
+					WeaponTemplate.AbilitySpecificAnimations.Remove(
+						WeaponTemplate.AbilitySpecificAnimations.Find('AbilityName', 'Spray'),
+						1
+					);
 				}
 				break;
 			case 'sword':
@@ -730,6 +749,7 @@ static function X2AbilityCost_ActionPoints GetAbilityCostActionPoints(X2AbilityT
 	return none;
 }
 
+
 // Mr. Nice: Only really safe if you *know* there is never more than one of that cost type
 // For example, RapidFire/ChainShot have two ammo costs, a free cost for 2 ammo, and the actual cose for 1 ammo.
 static function X2AbilityCost GetAbilityCostByClassName(X2AbilityTemplate Template, name CostClassName)
@@ -763,6 +783,29 @@ static function PatchTraceRounds()
 	//Template.bInfiniteItem = true;
 	//Template.StartingItem = true;
 	//Template.CanBeBuilt = false;
+}
+
+static function PatchSkirmisherReturnFire()
+{
+	local X2AbilityTemplateManager				TemplateManager;
+	local X2AbilityTemplate						Template;
+	local X2Effect								Effect;
+	local X2Effect_ReturnFire					ReturnFireEffect;
+
+	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+	Template = TemplateManager.FindAbilityTemplate('SkirmisherReturnFire');
+
+	foreach Template.AbilityTargetEffects(Effect)
+	{
+		ReturnFireEffect = X2Effect_ReturnFire(Effect);
+		if (ReturnFireEffect != none)
+		{
+			ReturnFireEffect.AbilityToActivate = 'BullpupReturnFire';
+			ReturnFireEffect.GrantActionPoint = 'SkirmisherReturnFireActionPoint';
+			break;
+		}
+	}
 }
 
 static function PatchSteadyHands()

@@ -29,6 +29,7 @@ event name CallMeetsCondition(XComGameState_BaseObject kTarget)
 	
 	foreach StatValues(ThisStatVal)
 	{
+		`LOG(default.class @ GetFuncName() @ ThisStatVal.StatType @ UnitState.GetCurrentStat(ThisStatVal.StatType) @ ThisStatVal.StatValue,, 'RPG');
 		if (UnitState.GetCurrentStat(ThisStatVal.StatType) <= ThisStatVal.StatValue)
 		{
 			return 'AA_StatMatchFail';

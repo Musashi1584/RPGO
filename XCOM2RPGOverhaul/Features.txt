@@ -43,13 +43,13 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [h1]Changes to weapons[/h1]
 [list]
 [*] All weapons get 3 upgrade slots
-[*] Assault Rifles TODO.
+[*] Assault Rifles are unchanged.
 [*] Sniper Rifles give Squadsight ability and can be fired after moving (overwatch still needs 2 AP) but Squadsight is lost if the sniper moves that turn.
 [*] Cannons get get Autofire ability (Fire a long burst at a target that does +1 damage per ammo left in the clip. The shot is less accurate against targets in cover, consumes full clip, destroys cover but cannot be dodged. Needs 2 action points and 3 ammo minimum to be activated) and Suppression ability, have increased damage and clip size but get a -10% mobility penalty.
 [*] Shotguns are very accurate but *damage* drops of with distance and also get reduced by cover to a minimum 1 damage.
 [*] Vektor rifles get the chance of staying concealed (they have a integrated basic suppressor)
-[*] Bullpup Rifles get +1 clip size, get the Autofire ability and standard shots are not turn-ending
-[*] Autopistol get +20% crit change but have a significantly shorter range table than pistol and get the Return Fire ability.
+[*] Bullpup Rifles get +1 clip size, get "Bullpup Design"  (overwatch shots with bullpups can critically hit and have no reaction fire penalty)
+[*] Autopistol get +20% crit change but have a significantly shorter range table than pistol and get the Spray ability.
 [*] Swords get Slice ability.
 [*] Gremlins get Remote Hacking and Aid ability.
 [*] Pistols get Pistol Shot and Return Fire ability.
@@ -80,6 +80,8 @@ You can see the aptitude level of a soldier int the soldier list (a new icon nex
 [list]
 [*] Tracer Ammo - give HoloTargeting instead of aim
 [/list]
+
+Most of these changes can be toggled in the in game mod config menu.
 
 [h1]Specializations[/h1]
 [list]

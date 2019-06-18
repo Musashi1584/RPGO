@@ -65,6 +65,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherReturnFire();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchHolotargeting();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSquadSight();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();

@@ -27,6 +27,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(SyntheticGenes());
 	
 	// Class abilities
+	Templates.AddItem(Spray());
 	Templates.AddItem(Quartermaster());
 	Templates.AddItem(RpgZoneOfControl());
 	Templates.AddItem(ZoneOfControlReturnFire());
@@ -308,6 +309,94 @@ static function X2AbilityTemplate HotShot()
 	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPG.UIPerk_Hotshot'", false, BonusEffect);
 
 	return Template;
+}
+
+static function X2AbilityTemplate Spray()
+{
+	local X2AbilityTemplate                 Template;	
+	local X2AbilityCost_Ammo                AmmoCost;
+	local X2AbilityTarget_Cursor            CursorTarget;
+	local X2AbilityMultiTarget_Cone         ConeMultiTarget;
+	local X2Condition_UnitProperty          UnitPropertyCondition;
+	local X2AbilityToHitCalc_StandardAim    StandardAim;
+	local X2AbilityCooldown                 Cooldown;
+	local X2Effect_ApplyDirectionalWorldDamage WorldDamage;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'Spray');
+	
+	AmmoCost = new class'X2AbilityCost_Ammo';	
+	AmmoCost.iAmmo = 3;
+	Template.AbilityCosts.AddItem(AmmoCost);
+	
+	Template.AbilityCosts.AddItem(default.WeaponActionTurnEnding);
+
+	Cooldown = new class'X2AbilityCooldown';
+	Cooldown.iNumTurns = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_COOLDOWN");
+	Template.AbilityCooldown = Cooldown;
+	
+	StandardAim = new class'X2AbilityToHitCalc_StandardAim';
+	StandardAim.bMultiTargetOnly = true;
+	Template.AbilityToHitCalc = StandardAim;
+	
+	Template.AddMultiTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.ShredderDamageEffect());
+	Template.AddMultiTargetEffect(default.WeaponUpgradeMissDamage);
+	Template.bOverrideAim = true;
+
+	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
+	WorldDamage.bUseWeaponDamageType = true;
+	WorldDamage.bUseWeaponEnvironmentalDamage = false;
+	WorldDamage.EnvironmentalDamageAmount = 15;
+	WorldDamage.bApplyOnHit = true;
+	WorldDamage.bApplyOnMiss = true;
+	WorldDamage.bApplyToWorldOnHit = true;
+	WorldDamage.bApplyToWorldOnMiss = true;
+	WorldDamage.bHitAdjacentDestructibles = true;
+	WorldDamage.PlusNumZTiles = 1;
+	WorldDamage.bHitTargetTile = true;
+	WorldDamage.ApplyChance = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_DESTRUCTION_CHANCE");
+	Template.AddMultiTargetEffect(WorldDamage);
+	
+	CursorTarget = new class'X2AbilityTarget_Cursor';
+	Template.AbilityTargetStyle = CursorTarget;
+
+	ConeMultiTarget = new class'X2AbilityMultiTarget_Cone';
+	ConeMultiTarget.bExcludeSelfAsTargetIfWithinRadius = true;
+	ConeMultiTarget.ConeEndDiameter = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_TILE_WIDTH", "TagValueTilesToUnits");
+	ConeMultiTarget.bUseWeaponRadius = true;
+	ConeMultiTarget.ConeLength = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_TILE_LENGTH", "TagValueTilesToUnits");
+	ConeMultiTarget.bIgnoreBlockingCover = true;
+	Template.AbilityMultiTargetStyle = ConeMultiTarget;
+
+	UnitPropertyCondition = new class'X2Condition_UnitProperty';
+	UnitPropertyCondition.ExcludeDead = true;
+	UnitPropertyCondition.ExcludeFriendlyToSource = false;
+	Template.AbilityShooterConditions.AddItem(UnitPropertyCondition);
+	Template.AbilityTargetConditions.AddItem(UnitPropertyCondition);
+
+	Template.AddShooterEffectExclusions();
+
+	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
+	
+	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY;
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_saturationfire";
+	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
+
+	Template.ActionFireClass = class'X2Action_Fire_SaturationFire';
+	Template.TargetingMethod = class'X2TargetingMethod_Cone';
+
+	Template.ActivationSpeech = 'SaturationFire';
+	//Template.CinescriptCameraType = "Grenadier_SaturationFire";
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
+
+	Template.SuperConcealmentLoss = class'X2AbilityTemplateManager'.default.SuperConcealmentStandardShotLoss;
+	Template.ChosenActivationIncreasePerUse = class'X2AbilityTemplateManager'.default.StandardShotChosenActivationIncreasePerUse;
+	Template.LostSpawnIncreasePerUse = class'X2AbilityTemplateManager'.default.StandardShotLostSpawnIncreasePerUse;
+	Template.bFrameEvenWhenUnitIsHidden = true;
+
+	return Template;	
 }
 
 static function X2AbilityTemplate Quartermaster()

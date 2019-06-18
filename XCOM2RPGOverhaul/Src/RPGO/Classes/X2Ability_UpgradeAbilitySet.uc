@@ -388,7 +388,7 @@ static function EventListenerReturn HairTriggerShotListener(Object EventData, Ob
 	if (SourceAbilityState != none &&
 		AbilityContext != none &&
 		HairTriggerShotAbilityRef.ObjectID > 0 &&
-		(AbilityContext.IsResultContextMiss() || AbilityContext.ResultContext.HitResult == eHit_Graze))
+		AbilityContext.IsResultContextMiss())
 	{
 		Random = Rand(101) + 1; // 1-100
 		if (Chance == 0 || Random >= Chance)

@@ -40,11 +40,17 @@ Version 0.12.0
 - RPGO_RebuildSelectedSoldier called with OPTIONAL_PreserveSquaddiePerks=false and with SWO Origins enabled no removes squaddie abilites properly
 
 Version 0.2.0
+Disclaimer: there were massive changes "under the hood" in this version so i hope nothing breaks.
+As always if you need to rebuild your soldiers with the RPGO_RebuildSelectedSoldier command.
+
 - Reworked config system and added localization tags to all abilities so config changes are now correctly reflected in ability descriptions
-- Added MCM support
+- Added MCM support for weapon changes, attachement changes and secondwave options.
 - Removed mobility penalty from cannons
 - Removed autofire from rifles and bullpups
-
- LONE_WARRIOR_MOBILITY 
-
- INFORMANT_CRIT 
+- Added cannon mobility cap of 16 and aim cap 80 (20 mob/90 aim with power armor)
+- Added spray (like Saturation Fire with a wider but shorter cone) ability to autopistols
+- Added point blank damage bonus to pistols (1Tile/+2 dmg, 2Tile/+1 dmg) and a damage falloff starting from 16 tiles range.
+- Added "Bullpup Design" to bullpups (overwatch shots with bullpups can critically hit and have no reaction fire penalty)
+- Fix LightEmUp triggering on lost headshots
+- Hair trigger shots dont trigger on grazes anymore (only on miss)
+- Fixed a bug where units with bullpup and pistol always trigger bullpup overwatch even when pistol overwatch was chosen

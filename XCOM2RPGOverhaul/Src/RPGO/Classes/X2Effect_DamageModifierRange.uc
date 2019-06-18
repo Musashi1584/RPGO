@@ -1,7 +1,7 @@
-class X2Effect_ShotgunDamageModifierRange extends X2Effect_Persistent config (RPG);
+class X2Effect_DamageModifierRange extends X2Effect_Persistent config (RPG);
 
-var config array<int> SHOTGUN_DAMAGE_FALLOFF;
-var config array<name> AbilityIgnoreDamageFalloff;
+var array<int> DamageFalloff;
+var array<name> AbilityIgnoreDamageFalloff;
 
 function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGameState_Unit Attacker, Damageable TargetDamageable, XComGameState_Ability AbilityState, const out EffectAppliedData AppliedData, const int CurrentDamage, optional XComGameState NewGameState)
 {
@@ -29,11 +29,11 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 
 	if (TargetUnit != none && WeaponState != none)
 	{
-		if (X2WeaponTemplate(WeaponState.GetMyTemplate()).WeaponCat != 'shotgun')
+		if (AbilityState.SourceWeapon.ObjectID != EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID)
 			return 0;
 
 		Tiles = Attacker.TileDistanceBetween(TargetUnit);
-		RangeDamageModifier = default.SHOTGUN_DAMAGE_FALLOFF[Tiles] * -1;
+		RangeDamageModifier = DamageFalloff[Tiles] * -1;
 
 		//`LOG(Class.Name @ GetFuncName() @ "Range Damage Modifier:" @ RangeDamageModifier,, 'RPG');
 

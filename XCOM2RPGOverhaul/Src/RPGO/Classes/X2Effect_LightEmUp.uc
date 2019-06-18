@@ -17,6 +17,7 @@ function RegisterForEvents(XComGameState_Effect EffectGameState)
 function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStateContext_Ability AbilityContext, XComGameState_Ability kAbility, XComGameState_Unit SourceUnit, XComGameState_Item AffectWeapon, XComGameState NewGameState, const array<name> PreCostActionPoints, const array<name> PreCostReservePoints)
 {
 	local XComGameState_Ability					AbilityState;
+	local XComGameState_Unit					TargetUnit;
 
 	//  if under the effect of Serial, let that handle restoring the full action cost - will this work?
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
@@ -24,6 +25,15 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	if (PreCostActionPoints.Find('RunAndGun') != INDEX_NONE)
 		return false;
+
+	TargetUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
+	if (TargetUnit.IsDead() &&
+		TargetUnit.GetMyTemplate().CharacterGroupName == 'TheLost' &&
+		class'X2Effect_TheLostHeadshot'.default.ValidHeadshotAbilities.Find(AbilityContext.InputContext.AbilityTemplateName) != INDEX_NONE
+	)
+	{
+		return false;
+	}
 
 	//`LOG(default.Class @ GetFuncName() @ SourceUnit.GetFullName() @ SourceUnit.ActionPoints.Length @ SourceUnit.NumActionPoints() @ PreCostActionPoints.Length,, 'RPG');
 

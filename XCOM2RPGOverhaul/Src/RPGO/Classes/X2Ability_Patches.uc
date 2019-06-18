@@ -1,23 +1,71 @@
 class X2Ability_Patches extends XMBAbility dependson(X2Effect_CapStat) config (RPG);
 
-var config array<EquipmentStatCap> HEAVYWEAPON_MOBILITY_CAPS;
+var config array<EquipmentStatCap> HEAVYWEAPON_STAT_CAPS;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 	
+	Templates.AddItem(BullpupReturnFire());
+	Templates.AddItem(ShotgunDamageModifierCoverType());
+	Templates.AddItem(BullpupDesign());
 	Templates.AddItem(PurePassive('QuickDrawNew', "img:///UILibrary_PerkIcons.UIPerk_quickdraw"));
 	Templates.AddItem(RpgDeathFromAbove());
 	Templates.AddItem(BlueMoveSlash());
 	Templates.AddItem(HeavyWeaponMobilityPenalty());
+	Templates.AddItem(PistolDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
-	Templates.AddItem(DamageModifierCoverType());
+	//Templates.AddItem(DamageModifierCoverType());
 	//Templates.AddItem(AutoFireOverwatch());
 	//Templates.AddItem(AutoFireShot());
 	Templates.AddItem(RemoveSquadSightOnMove());
 
 	return Templates;
+}
+
+static function X2AbilityTemplate BullpupReturnFire()
+{
+	local X2AbilityTemplate                 Template;
+	local X2AbilityCost_ReserveActionPoints	ReserveActionPoints;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'BullpupReturnFire');
+	class'X2Ability_DefaultAbilitySet'.static.PistolOverwatchShotHelper(Template);
+
+	ReserveActionPoints = GetAbilityReserveCostActionPoints(Template);
+	ReserveActionPoints.AllowedTypes.Length = 0;
+	ReserveActionPoints.AllowedTypes.AddItem('SkirmisherReturnFireActionPoint');
+
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_returnfire";
+	Template.bShowPostActivation = TRUE;
+	Template.bFrameEvenWhenUnitIsHidden = true;
+
+	return Template;
+}
+
+static function X2AbilityTemplate BullpupDesign()
+{
+	local X2AbilityTemplate							Template;
+	local X2Effect_ConditionalModifyReactionFire	ReactionFire;
+	local X2Effect_ConditionalSetUnitValue			UnitValueEffect;
+
+	ReactionFire = new class'X2Effect_ConditionalModifyReactionFire';
+	ReactionFire.bAllowCrit = true;
+	ReactionFire.ReactionModifier = 0;
+	ReactionFire.BuildPersistentEffect(1, true, true, true);
+	ReactionFire.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+
+	UnitValueEffect = new class'X2Effect_ConditionalSetUnitValue';
+	UnitValueEffect.UnitName = class'X2Ability_DefaultAbilitySet'.default.ConcealedOverwatchTurn;
+	UnitValueEffect.CleanupType = eCleanup_BeginTurn;
+	UnitValueEffect.NewValueToSet = 1;
+	UnitValueEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+
+	Template = Passive('BullpupDesign', "img:///UILibrary_PerkIcons.UIPerk_coolpressure", false, ReactionFire);
+
+	AddSecondaryEffect(Template, UnitValueEffect);
+
+	return Template;
 }
 
 static function X2AbilityTemplate RpgDeathFromAbove()
@@ -104,18 +152,29 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	local X2AbilityTemplate Template;
 	local X2Effect_EquipmentStatCaps CapStatEffect;
 	local X2Condition_StatValue StatValueCondition;
+	local EquipmentStatCap EquipmentCap;
+	local int Index;
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
 	StatValueCondition = new class'X2Condition_StatValue';
-	StatValueCondition.AddStatValue(default.HEAVYWEAPON_MOBILITY_CAPS[0].Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAVY_WEAPON_MOBILITY_CAP"));
+	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap)
+	{
+		StatValueCondition.AddStatValue(EquipmentCap.Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey));
+	}
 
 	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
 	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
 	CapStatEffect.EffectName = 'CapStatEffectRegular';
-	CapStatEffect.EquipmentStatCaps = default.HEAVYWEAPON_MOBILITY_CAPS;
-	CapStatEffect.EquipmentStatCaps[0].Cap.StatCapValue = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAVY_WEAPON_MOBILITY_CAP");
+	
+	Index = 0;
+	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap)
+	{
+		default.HEAVYWEAPON_STAT_CAPS[Index].Cap.StatCapValue = class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey);
+		Index++;
+	}
+	CapStatEffect.EquipmentStatCaps = default.HEAVYWEAPON_STAT_CAPS;
 	CapStatEffect.TargetConditions.AddItem(StatValueCondition);
 	Template.AddTargetEffect(CapStatEffect);
 
@@ -124,17 +183,39 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	return Template;
 }
 
+static function X2AbilityTemplate PistolDamageModifierRange()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_DamageModifierRange RangeEffect;
+	
+	Template = PurePassive('PistolDamageModifierRange', "", false, 'eAbilitySource_Perk', false);
+
+	RangeEffect = new class'X2Effect_DamageModifierRange';
+	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	RangeEffect.DamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigIntArray("PISTOL_DAMAGE_FALLOFF");
+	//RangeEffect.AbilityIgnoreDamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigNameArray("PISTOL_DAMAGE_ABILITY_IGNORE_DAMAGE_FALLOFF");
+
+	Template.AddTargetEffect(RangeEffect);
+
+	Template.bDisplayInUITacticalText = false;
+	Template.bDisplayInUITooltip = false;
+
+	return Template;
+}
 
 static function X2AbilityTemplate ShotgunDamageModifierRange()
 {
 	local X2AbilityTemplate Template;
-	local X2Effect_ShotgunDamageModifierRange RangeEffect;
+	local X2Effect_DamageModifierRange RangeEffect;
 	
 	Template = PurePassive('ShotgunDamageModifierRange', "", false, 'eAbilitySource_Perk', false);
 
-	RangeEffect = new class'X2Effect_ShotgunDamageModifierRange';
+	RangeEffect = new class'X2Effect_DamageModifierRange';
 	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	RangeEffect.DamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigIntArray("SHOTGUN_DAMAGE_FALLOFF");
+	RangeEffect.AbilityIgnoreDamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigNameArray("SHOTGUN_DAMAGE_ABILITY_IGNORE_DAMAGE_FALLOFF");
 
 	Template.AddTargetEffect(RangeEffect);
 
@@ -147,13 +228,15 @@ static function X2AbilityTemplate ShotgunDamageModifierRange()
 static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 {
 	local X2AbilityTemplate Template;
-	local X2Effect_ShotgunDamageModifierCoverType CoverTypeEffect;
+	local X2Effect_DamageModifierCoverType CoverTypeEffect;
 	
 	Template = PurePassive('ShotgunDamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
 
-	CoverTypeEffect = new class'X2Effect_ShotgunDamageModifierCoverType';
+	CoverTypeEffect = new class'X2Effect_DamageModifierCoverType';
 	CoverTypeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	CoverTypeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	CoverTypeEffect.HalfCovertModifier = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("SHOTGUN_DAMAGE_HALFCOVERTMODIFIER");
+	CoverTypeEffect.FullCovertModifier = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("SHOTGUN_DAMAGE_FULLCOVERTMODIFIER");
 
 	Template.AddTargetEffect(CoverTypeEffect);
 
@@ -163,25 +246,25 @@ static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 	return Template;
 }
 
-static function X2AbilityTemplate DamageModifierCoverType()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_DamageModifierCoverType DamageModifierCoverType;
-	
-	Template = PurePassive('DamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
-
-	DamageModifierCoverType = new class'X2Effect_DamageModifierCoverType';
-	DamageModifierCoverType.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-	DamageModifierCoverType.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
-
-	Template.AddTargetEffect(DamageModifierCoverType);
-
-	Template.bDisplayInUITacticalText = false;
-	Template.bDisplayInUITooltip = false;
-	Template.bUniqueSource = true;
-
-	return Template;
-}
+//static function X2AbilityTemplate DamageModifierCoverType()
+//{
+//	local X2AbilityTemplate Template;
+//	local X2Effect_DamageModifierCoverType DamageModifierCoverType;
+//	
+//	Template = PurePassive('DamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
+//
+//	DamageModifierCoverType = new class'X2Effect_DamageModifierCoverType';
+//	DamageModifierCoverType.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+//	DamageModifierCoverType.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+//
+//	Template.AddTargetEffect(DamageModifierCoverType);
+//
+//	Template.bDisplayInUITacticalText = false;
+//	Template.bDisplayInUITooltip = false;
+//	Template.bUniqueSource = true;
+//
+//	return Template;
+//}
 
 static function X2AbilityTemplate AutoFireShot()
 {
@@ -271,6 +354,19 @@ private static function X2AbilityCost_ActionPoints GetAbilityCostActionPoints(X2
 		if (X2AbilityCost_ActionPoints(Cost) != none)
 		{
 			return X2AbilityCost_ActionPoints(Cost);
+		}
+	}
+	return none;
+}
+
+static function X2AbilityCost_ReserveActionPoints GetAbilityReserveCostActionPoints(X2AbilityTemplate Template)
+{
+	local X2AbilityCost Cost;
+	foreach Template.AbilityCosts(Cost)
+	{
+		if (X2AbilityCost_ReserveActionPoints(Cost) != none)
+		{
+			return X2AbilityCost_ReserveActionPoints(Cost);
 		}
 	}
 	return none;
