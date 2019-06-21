@@ -133,6 +133,8 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	local X2SoldierClassTemplateManager Manager;
 	local X2SoldierClassTemplate Template;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local SoldierClassAbilityType RandomAbility;
+	local SoldierClassRandomAbilityDeck TraitsDeck, AptitudesDeck;
 	local name TemplateName;
 	local int Index;
 
@@ -155,6 +157,22 @@ static function SetupSpecialization(name SoldierClassTemplate)
 		,, 'RPG');
 		
 		AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
+
+		foreach UniversalSoldierClassTemplate.AdditionalRandomTraits(RandomAbility)
+		{
+			Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'TraitsXComAbilities')].Abilities.AddItem(RandomAbility);
+			`LOG("Specialization" @ UniversalSoldierClassTemplate.ClassSpecializationTitle @
+				"adding" @ RandomAbility.AbilityName @ "to" @ Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'TraitsXComAbilities')].DeckName
+			,, 'RPG');
+		}
+
+		foreach UniversalSoldierClassTemplate.AdditionalRandomAptitudes(RandomAbility)
+		{
+			Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'InnateAptitudesDeck')].Abilities.AddItem(RandomAbility);
+			`LOG("Specialization" @ UniversalSoldierClassTemplate.ClassSpecializationTitle @
+				"adding" @ RandomAbility.AbilityName @ "to" @ Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'InnateAptitudesDeck')].DeckName
+			,, 'RPG');
+		}
 	}
 }
 

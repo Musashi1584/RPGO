@@ -8,6 +8,9 @@ add weight to specs for randomization
 limited random pool of specs and starting abilities
 mod add squaddie perks
 
+"if a soldier with a handgun is being attacked, he does return fire after its resolved. when that soldier is within LOS of a soldier using covering fire, that second soldier will not use it, meaning that the attack will happen without aim penalty, and the onlky reaction will be a weak pistol attack after it being resolved
+its like the covering fire unit is letting the other go ahead of him instead of triggering it"
+
 Regex for config replacement:
 search: ^([A-Z_]{2,})+(=)+([-0-9\.0-9f]*)
 replace: +ConfigProperties = {"$1":{"Value":"$3"}}
@@ -54,3 +57,8 @@ As always if you need to rebuild your soldiers with the RPGO_RebuildSelectedSold
 - Fix LightEmUp triggering on lost headshots
 - Hair trigger shots dont trigger on grazes anymore (only on miss)
 - Fixed a bug where units with bullpup and pistol always trigger bullpup overwatch even when pistol overwatch was chosen
+
+Version 0.2.2
+
+- Added Iridars Rocket Launcher support
+- Added a config options for plugins to add abilities to the random starting abilities decks

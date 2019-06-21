@@ -3,6 +3,10 @@ class X2UniversalSoldierClassInfo extends Object PerObjectConfig PerObjectLocali
 var config string ClassSpecializationIcon;
 var config array<name> ForceComplementarySpecializations;
 var config array<SoldierClassAbilitySlot> AbilitySlots;
+
+var config array<SoldierClassAbilityType> AdditionalRandomTraits;
+var config array<SoldierClassAbilityType> AdditionalRandomAptitudes;
+
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 

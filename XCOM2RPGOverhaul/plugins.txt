@@ -40,6 +40,14 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 +AbilitySlots=(AbilityType=(AbilityName="ColonelAbility***"))
 +AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility***"))
 
+; Uncomment below if you want to add abilities to the traits pool
+;+AdditionalRandomTraits=(AbilityName="AdditionalTrait1")
+;+AdditionalRandomTraits=(AbilityName="AdditionalTrait2")
+
+; Uncomment below if you want to add abilities to the aptitudes pool
+;+AdditionalRandomAptitudes=(AbilityName="AdditionalAptitude1")
+;+AdditionalRandomAptitudes=(AbilityName="AdditionalAptitude2")
+
 ; when you want specs to come in forced "packages" in commanders choice or spec roulette
 +ForceComplementarySpecializations=NameOfAnotherSpec
 
@@ -100,6 +108,14 @@ ClassSpecializationIcon = "img:///SamuraiClassMod.SamuraiClassIcon"
 +AbilitySlots=(AbilityType=(AbilityName="HawkEye"))
 +AbilitySlots=(AbilityType=(AbilityName="DragonStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
 +AbilitySlots=(AbilityType=(AbilityName="WhirlwindStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
+
++AdditionalRandomTraits=(AbilityName="SamuraiCoupDeGrace")
++AdditionalRandomTraits=(AbilityName="SamuraiCutthroat")
++AdditionalRandomTraits=(AbilityName="SamuraiFrenzy")
++AdditionalRandomTraits=(AbilityName="DangerSense")
+
++AdditionalRandomAptitudes=(AbilityName="WayOfTheSamurai")
++AdditionalRandomAptitudes=(AbilityName="TrainingDiscipline")
 
 [RPGO.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="WotCSamuraiClass"

@@ -390,7 +390,7 @@ static function EventListenerReturn HairTriggerShotListener(Object EventData, Ob
 		HairTriggerShotAbilityRef.ObjectID > 0 &&
 		AbilityContext.IsResultContextMiss())
 	{
-		Random = Rand(101) + 1; // 1-100
+		Random = `SYNC_RAND_STATIC(100) + 1; // 1-100
 		if (Chance == 0 || Random >= Chance)
 		{
 			`LOG("HairTriggerShot" @ Chance @ "% failed, rolled" @ Random,, 'ExtendedUpgrades');

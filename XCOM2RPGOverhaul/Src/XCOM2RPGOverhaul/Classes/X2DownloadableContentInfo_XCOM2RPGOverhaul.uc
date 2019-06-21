@@ -1,35 +1,8 @@
 class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo config(RPG);
 
-var config array<string> RunBefore;
-var config array<string> RunAfter;
 var config array<string> IncompatibleMods;
 var config array<string> RequiredMods;
 var config string DisplayName;
-
-function array<string> GetRunBeforeDLCIdentifiers()
-{
-	return default.RunBefore;
-}
-
-function array<string> GetRunAfterDLCIdentifiers()
-{
-	return default.RunAfter;
-}
-
-function array<string> GetIncompatibleDLCIdentifiers()
-{
-	return default.IncompatibleMods;
-}
-
-function array<string> GetRequiredDLCIdentifiers()
-{
-	return default.RequiredMods;
-}
-
-function string GetDisplayName()
-{
-	return default.DisplayName;
-}
 
 // Double tactical ability points
 static event InstallNewCampaign(XComGameState StartState)

@@ -9,7 +9,8 @@ The console command RPGO_RebuildSelectedSoldierClass also supports these SWO.
 Its save to enable or disable them at any time.
 
 Configuration:
-Setting like the number of random specs or the number of specs to pick can be edited in
+Setting like the number of random specs or the number of specs to pick can be changed 
+in the in game mod config menu or be edited in
 [code]
 %Steam%\SteamApps\workshop\content\268500\1280477867\Config\XComSecondWaveOptions.ini
 [/code]
@@ -19,54 +20,19 @@ Soldiers start with a limited number of randomized specializations on Squaddie.
 Instead of having the full set of all specializations, soldiers only get some randomly chosen on promotion to Sqaddie.
 Can be combined with Training Roulette and/or Commanders Choice.
 
-Ini Options:
-[code]
-; How many random specs should be generated
-+ConfigProperties = {"SPEC_ROULETTE_RANDOM_SPEC_COUNT":{"Value":"3"}}
-[/code]
-
 [h1][RPGO] Commanders Choice[/h1]
 On promotion to squaddie you can choose a limited number of specializations from the starting ability pool.
 Can be combined with Specialization Roulette and/or Training Roulette.
-
-Ini Options:
-[code]
-; How many specs can be chosen on squaddie
-+ConfigProperties = {"COMMANDERS_CHOICE_SPEC_COUNT":{"Value":"3"}}
-
-; How many random specs and choosable specs
-; if spec roulette and commander choice is enabled simultaniously
-+ConfigProperties = {"SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI":{"Value":"1"}}
-+ConfigProperties = {"COMMANDERS_CHOICE_SPEC_COUNT_COMBI":{"Value":"2"}}
-[/code]
 
 [h1][RPGO] Training Roulette[/h1]
 The order of perks within specializations get randomized.
 Perks that are prerequisites stay in the same slot.
 Can be combined with Specialization Roulette and/or Commanders Choice.
 
-Ini Options:
-[code]
-; Start to randomize from this rank on
-; 1 = Squaddie
-+ConfigProperties = {"TRAINING_ROULETTE_MIN_RANK":{"Value":"1"}}
-; Randomize abilities up to and including this rank
-; 6 = Colonel
-+ConfigProperties = {"TRAINING_ROULETTE_MAX_RANK":{"Value":"6"}}
-[/code]
-
 [h1][RPGO] Origins[/h1]
 On promotion to squaddie you can choose a limted number of starting perks.
 Can be combined with Specialization Roulette, Commanders Choice and Training Roulette.
 
-Ini Options:
-[code]
-; How many of (normally random) starting abilities you want to choose on squaddie
-; 0 means keeping the random mechanic
-+ConfigProperties = {"ORIGINS_CHOICE_ABILITY_COUNT":{"Value":"2"}}
-; Add this number of random abilties on top of the chose ones
-+ConfigProperties = {"ORIGINS_ADDITIONAL_RANDOM_ABILTIES":{"Value":"0"}}
-[/code]
 
 [url=https://imgur.com/a/9kSAGj5]How to change second wave options[/url]
 

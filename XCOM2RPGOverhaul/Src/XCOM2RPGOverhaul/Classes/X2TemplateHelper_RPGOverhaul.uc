@@ -317,8 +317,8 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 			case 'shotgun':
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SHOTGUNS"))
 				{					
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType');
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange');
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType', false);
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange', false);
 							
 					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.ShotgunCritBonus;
 					WeaponTemplate.Aim = UnpatchedTemplate.Aim + default.ShotgunAimBonus;
@@ -337,7 +337,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-					WeaponTemplate.BaseDamage.Damage += default.CannonDamageBonus;
+					WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage + default.CannonDamageBonus;
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 2;
 				}
 				else
@@ -354,7 +354,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolDamageModifierRange', true);
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolDamageModifierRange', false);
 				}
 				else
 				{

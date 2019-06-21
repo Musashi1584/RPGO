@@ -329,7 +329,7 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 	Tuple.Data[1].kind = XComLWTVBool;
 	Tuple.Data[1].b = bOverrideDefaultHandler;
 
-	`XEVENTMGR.TriggerEvent('ResetButtonClicked', Page, Tuple, none);
+	`XEVENTMGR.TriggerEvent('MCM_ResetButtonClicked', Page, Tuple, none);
 	if (!Tuple.Data[1].b)
 	{
 		ConfigPage = GetPage(Page.GetPageId());
