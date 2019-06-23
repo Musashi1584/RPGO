@@ -25,6 +25,9 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 
 	if (TargetUnit != none && WeaponState != none && TargetUnit.GetMyTemplate().bCanTakeCover)
 	{
+		if (AbilityState.SourceWeapon.ObjectID != EffectState.ApplyEffectParameters.ItemStateObjectRef.ObjectID)
+			return 0;
+
 		`TACTICALRULES.VisibilityMgr.GetVisibilityInfo(Attacker.ObjectID, TargetUnit.ObjectID, VisInfo, HistoryIndex);
 		
 		CoverType = VisInfo.TargetCover;
