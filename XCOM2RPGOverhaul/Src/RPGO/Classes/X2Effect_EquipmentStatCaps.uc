@@ -62,7 +62,7 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 }
 
 
-private function AddCap(StatCap Cap)
+public function AddCap(StatCap Cap)
 {
 	local int Index;
 

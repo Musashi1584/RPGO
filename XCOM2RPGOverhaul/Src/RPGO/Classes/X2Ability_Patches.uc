@@ -157,26 +157,24 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
-	StatValueCondition = new class'X2Condition_StatValue';
-	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap)
-	{
-		StatValueCondition.AddStatValue(EquipmentCap.Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey));
-	}
-
-	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
-	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-	CapStatEffect.EffectName = 'CapStatEffectRegular';
-	
 	Index = 0;
 	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap)
 	{
+		StatValueCondition = new class'X2Condition_StatValue';
+		StatValueCondition.AddStatValue(EquipmentCap.Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey));
+		
+		CapStatEffect = new class'X2Effect_EquipmentStatCaps';
+		CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+		CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+		CapStatEffect.EffectName = 'CapStatEffectRegular';
+	
 		default.HEAVYWEAPON_STAT_CAPS[Index].Cap.StatCapValue = class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey);
+		
+		CapStatEffect.EquipmentStatCaps.AddItem(default.HEAVYWEAPON_STAT_CAPS[Index]);
+		CapStatEffect.TargetConditions.AddItem(StatValueCondition);
+		Template.AddTargetEffect(CapStatEffect);
 		Index++;
 	}
-	CapStatEffect.EquipmentStatCaps = default.HEAVYWEAPON_STAT_CAPS;
-	CapStatEffect.TargetConditions.AddItem(StatValueCondition);
-	Template.AddTargetEffect(CapStatEffect);
 
 	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
 
@@ -266,45 +264,45 @@ static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 //	return Template;
 //}
 
-static function X2AbilityTemplate AutoFireShot()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
-
-	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('AutoFireShot');
-	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonShot";
-
-	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
-	WorldDamage.bUseWeaponDamageType = true;
-	WorldDamage.bUseWeaponEnvironmentalDamage = false;
-	WorldDamage.EnvironmentalDamageAmount = 30;
-	WorldDamage.bApplyOnHit = true;
-	WorldDamage.bApplyOnMiss = true;
-	WorldDamage.bApplyToWorldOnHit = true;
-	WorldDamage.bApplyToWorldOnMiss = true;
-	WorldDamage.bHitAdjacentDestructibles = true;
-	WorldDamage.PlusNumZTiles = 1;
-	WorldDamage.bHitTargetTile = true;
-	Template.AddTargetEffect(WorldDamage);
-
-	GetAbilityCostActionPoints(Template).iNumPoints = 2;
-	Template.OverrideAbilities.AddItem('StandardShot');
-
-	return Template;
-}
-
-static function X2AbilityTemplate AutoFireOverwatch()
-{
-	local X2AbilityTemplate Template;
-
-	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
-	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
-
-	GetAbilityCostActionPoints(Template).iNumPoints = 2;
-	Template.OverrideAbilities.AddItem('Overwatch');
-
-	return Template;
-}
+//static function X2AbilityTemplate AutoFireShot()
+//{
+//	local X2AbilityTemplate Template;
+//	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
+//
+//	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('AutoFireShot');
+//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonShot";
+//
+//	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
+//	WorldDamage.bUseWeaponDamageType = true;
+//	WorldDamage.bUseWeaponEnvironmentalDamage = false;
+//	WorldDamage.EnvironmentalDamageAmount = 30;
+//	WorldDamage.bApplyOnHit = true;
+//	WorldDamage.bApplyOnMiss = true;
+//	WorldDamage.bApplyToWorldOnHit = true;
+//	WorldDamage.bApplyToWorldOnMiss = true;
+//	WorldDamage.bHitAdjacentDestructibles = true;
+//	WorldDamage.PlusNumZTiles = 1;
+//	WorldDamage.bHitTargetTile = true;
+//	Template.AddTargetEffect(WorldDamage);
+//
+//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
+//	Template.OverrideAbilities.AddItem('StandardShot');
+//
+//	return Template;
+//}
+//
+//static function X2AbilityTemplate AutoFireOverwatch()
+//{
+//	local X2AbilityTemplate Template;
+//
+//	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
+//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
+//
+//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
+//	Template.OverrideAbilities.AddItem('Overwatch');
+//
+//	return Template;
+//}
 
 
 
