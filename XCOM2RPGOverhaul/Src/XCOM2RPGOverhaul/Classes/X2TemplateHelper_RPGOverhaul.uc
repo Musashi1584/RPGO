@@ -45,14 +45,6 @@ var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 var config int DefaultWeaponUpgradeSlots;
 
-var config bool bPatchBullpups;
-var config bool bPatchShotguns;
-var config bool bPatchCannons;
-var config bool bPatchPistols;
-var config bool bPatchAutoPistols;
-var config bool bPatchHeavyWeaponMobility;
-var config bool bPatchFullAutoFire;
-
 static function bool IsPrerequisiteAbility(name AbiliityName)
 {
 	local AbilityPrerequisite					Prerequisite;
@@ -408,17 +400,27 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				break;
 		}
 
-		if (InStr(WeaponTemplate.DataName, "SMG",, true) == INDEX_NONE &&
+		if (InStr(WeaponTemplate.DataName, "SMG", false, true) == INDEX_NONE &&
 			class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
 			AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
 		{
 			AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
-			if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
-				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireConvA');
-			if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
-				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireMagA');
-			if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
-				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_AutoFireBeamA');
+			if (InStr(string(WeaponTemplate.DataName), "CV", false, true) != INDEX_NONE)
+			{
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_BulletShredConvA');
+			}
+			else if (InStr(string(WeaponTemplate.DataName), "MG", false, true) != INDEX_NONE)
+			{
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_BulletShredMagA');
+			}
+			else if (InStr(string(WeaponTemplate.DataName), "BM", false, true) != INDEX_NONE)
+			{
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_BulletShredBeamA');
+			}
+			else
+			{
+				WeaponTemplate.SetAnimationNameForAbility('FullAutoFire', 'FF_BulletShredConvA');
+			}
 		}
 		else if (WeaponTemplate.Abilities.Find('FullAutoFire') != INDEX_NONE)
 		{
