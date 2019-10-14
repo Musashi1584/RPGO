@@ -365,7 +365,7 @@ static function int GetSoldierSpecialization(XComGameState_Unit UnitState)
 	//	`LOG(NewRowDistribution.Row @ NewRowDistribution.Count,, 'RPG');
 	//}
 
-	return RowsDistribution[0].Count > 0 ? RowsDistribution[0].Row : INDEX_NONE;
+	return (RowsDistribution.Length > 0 && RowsDistribution[0].Count > 0) ? RowsDistribution[0].Row : INDEX_NONE;
 }
 
 function int SortRowDistribution(RowDistribution A, RowDistribution B)

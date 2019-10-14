@@ -1,8 +1,15 @@
 [h1]How to make a plugin mod that converts any class mod to a rpgo specialization[/h1]
-Basically all you need a mod with two ini files and one localization file. 
+
+IMPORTANT BEFORE YOU START: Disable the "RPG Overhaul - The New Perk Order" mod
+it wipes all specs and only readds the ones in its config. So if you have that mod active
+your new spec wont show up.
+
+Basically all you need to create a mod with two ini files and one localization file. 
 - XComClassData.ini
 - XComRPG.ini
 - XCOM2RPGOverhaul.int
+
+See more info on creating a mod here https://www.reddit.com/r/xcom2mods/wiki/index
 
 the files and their contents in detail
 
@@ -26,7 +33,7 @@ Add a XComClassData.ini and disable the original class like
 Add a XComRPG.ini and add the following entries
 
 [code]
-[RPGO.X2TemplateHelper_RPGOverhaul]
+[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
 +Specializations=(Order=1000*, TemplateName=CustomClassName)
 
 [CustomClassName X2UniversalSoldierClassInfo]
@@ -51,7 +58,7 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 ; when you want specs to come in forced "packages" in commanders choice or spec roulette
 +ForceComplementarySpecializations=NameOfAnotherSpec
 
-[RPGO.X2DownloadableContentInfo_XCOM2RPGOverhaul]
+[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="****DLCNameOriginalClassMod"
 [/code]
 
@@ -85,7 +92,7 @@ XComClassData.ini
 
 XComRPG.ini
 [code]
-[RPGO.X2TemplateHelper_RPGOverhaul]
+[XCOM2RPGOverhaul.X2TemplateHelper_RPGOverhaul]
 +Specializations=(Order=800, TemplateName=Samurai)
 
 +AbilityWeaponCategoryRestrictions = (AbilityName=Shinigami, WeaponCategories=(sword, combatknife))
@@ -117,7 +124,7 @@ ClassSpecializationIcon = "img:///SamuraiClassMod.SamuraiClassIcon"
 +AdditionalRandomAptitudes=(AbilityName="WayOfTheSamurai")
 +AdditionalRandomAptitudes=(AbilityName="TrainingDiscipline")
 
-[RPGO.X2DownloadableContentInfo_XCOM2RPGOverhaul]
+[XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="WotCSamuraiClass"
 [/code]
 

@@ -331,7 +331,10 @@ static function bool GetSpecializationForSlot(XComGameState_Unit UnitState, int 
 	
 	for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
 	{
-		SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
+		if (UnitState.AbilityTree.Length > Index && UnitState.AbilityTree[Index].Abilities.Length > SlotIndex)
+		{
+			SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
+		}
 	}
 
 	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
