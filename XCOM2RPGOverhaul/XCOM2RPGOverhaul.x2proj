@@ -494,6 +494,9 @@
     <Content Include="Src\StatUpgradeUI\Classes\X2EventListener_StatUI.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_Structs.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TemplateHelper_ExtendedUpgrades.uc">
       <SubType>Content</SubType>
     </Content>

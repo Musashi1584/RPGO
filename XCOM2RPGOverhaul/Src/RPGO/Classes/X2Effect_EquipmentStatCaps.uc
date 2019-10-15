@@ -1,6 +1,4 @@
-class X2Effect_EquipmentStatCaps extends X2Effect_CapStat
-	dependson (RPGO_DataStructures)
-	config (RPG);
+class X2Effect_EquipmentStatCaps extends X2Effect_CapStat config (RPG);
 
 var array<EquipmentStatCap> EquipmentStatCaps;
 

@@ -1,11 +1,5 @@
 class X2EventListener_StatUI extends X2EventListener config(StatUpgradeUI);
 
-struct ClassStatPoints
-{
-	var name SoldierClassTemplateName;
-	var int StatPointsPerPromotion;
-};
-
 var config int DefaultStatPointsPerPromotion;
 var config array<ClassStatPoints> ClassStatPointsPerPromotion;
 

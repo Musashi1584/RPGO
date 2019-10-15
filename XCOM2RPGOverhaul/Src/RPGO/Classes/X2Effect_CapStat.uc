@@ -1,4 +1,4 @@
-class X2Effect_CapStat extends X2Effect_PersistentStatChange dependson(RPGO_DataStructures) ;
+class X2Effect_CapStat extends X2Effect_PersistentStatChange;
  
 var array<StatCap>  m_aStatCaps;
 var array<X2Condition> Conditions;

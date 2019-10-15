@@ -1,11 +1,5 @@
 class X2Condition_StatValue extends X2Condition;
 
-struct StatVal
-{
-	var ECharStatType	StatType;
-	var float			StatValue;
-};
-
 var array<StatVal> StatValues;
 
 function AddStatValue(ECharStatType StatType, float StatValue)

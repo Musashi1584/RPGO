@@ -1,24 +1,5 @@
 class UIPanel_StatUI_StatLine extends UIPanel config (StatUpgradeUI);
 
-struct StatCostBind
-{
-	var ECharStatType Stat;
-	var int AbilityPointCost;
-	var int NonLinearProgressionCostLamda;
-};
-
-struct StatIconBind
-{
-	var ECharStatType Stat;
-	var string Icon;
-};
-
-struct StatLocaleBind
-{
-	var ECharStatType Stat;
-	var string LocalString;
-};
-
 var config array<StatIconBind> StatIcons;
 var config array<StatCostBind> StatCosts;
 var config float HealthAbilityPointCostBetaStrikeMultiplier, HealthAbilityPointCostDeltaStrikeMultiplier;

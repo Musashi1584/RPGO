@@ -1,34 +1,5 @@
 class X2TemplateHelper_RPGOverhaul extends Object config (RPG);
 
-struct AbilityWeaponCategoryRestriction
-{
-	var name AbilityName;
-	var array<name> WeaponCategories;
-};
-
-struct AbilityPrerequisite
-{
-	var array<name> PrerequisiteTree;
-};
-
-struct MutuallyExclusiveAbilityPool
-{
-	var array<name> Abilities;
-};
-
-
-struct UniqueItemCategories
-{
-	var array<name> Categories;
-};
-
-struct WeaponProficiency
-{
-	var name AbilityName;
-	var name UnlocksWeaponCategory;
-};
-
-
 var config array<AbilityWeaponCategoryRestriction> AbilityWeaponCategoryRestrictions;
 var config array<AbilityPrerequisite> AbilityPrerequisites;
 var config array<MutuallyExclusiveAbilityPool> MutuallyExclusiveAbilities;

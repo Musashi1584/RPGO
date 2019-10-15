@@ -1,17 +1,6 @@
 // Subclasses X2SoldierClassTemplate to access some of the private variables
 class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate config (JustForStaticVarHack);
 
-struct SoldierSpecialization
-{
-	var int Order;
-	var name TemplateName;
-	var bool bEnabled;
-	structdefaultproperties
-	{
-		bEnabled = true
-	}
-};
-
 // Static caching for better perfomance
 var config bool bHasProcessedSpecs;
 var config array<SoldierSpecialization> CachedSpecializations;
@@ -134,7 +123,6 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	local X2SoldierClassTemplate Template;
 	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
 	local SoldierClassAbilityType RandomAbility;
-	local SoldierClassRandomAbilityDeck TraitsDeck, AptitudesDeck;
 	local name TemplateName;
 	local int Index;
 

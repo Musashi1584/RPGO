@@ -1,12 +1,5 @@
 class X2Effect_AddGrenade extends XMBEffect_AddUtilityItem config(GameData_SoldierSkills);
 
-struct LongWarUpgradeInfo
-{
-	var name ResearchName;
-	var name BaseItemName;
-	var name ItemName;
-};
-
 var config array<LongWarUpgradeInfo> LongWarUpgrades;
 
 var array<name> RandomGrenades;

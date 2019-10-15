@@ -1,11 +1,23 @@
 class RPGO_DataStructures extends Object;
 
+struct LongWarUpgradeInfo
+{
+	var name ResearchName;
+	var name BaseItemName;
+	var name ItemName;
+};
+
+struct StatVal
+{
+	var ECharStatType	StatType;
+	var float			StatValue;
+};
+
 struct StatCap
 {
 	var ECharStatType	StatType;
 	var float			StatCapValue;
 };
-
 
 struct EquipmentStatCap
 {
