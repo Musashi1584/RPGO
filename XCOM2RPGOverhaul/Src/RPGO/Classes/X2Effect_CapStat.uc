@@ -1,10 +1,4 @@
-class X2Effect_CapStat extends X2Effect_PersistentStatChange;
-
-struct StatCap
-{
-	var ECharStatType	StatType;
-	var float			StatCapValue;
-};
+class X2Effect_CapStat extends X2Effect_PersistentStatChange dependson(RPGO_DataStructures) ;
  
 var array<StatCap>  m_aStatCaps;
 var array<X2Condition> Conditions;

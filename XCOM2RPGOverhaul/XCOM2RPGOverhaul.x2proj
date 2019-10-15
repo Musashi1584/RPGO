@@ -254,6 +254,9 @@
     <Content Include="Src\RPGO\Classes\RPGOTemplateCache.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_DataStructures.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2AbilityCharges_Interference.uc">
       <SubType>Content</SubType>
     </Content>

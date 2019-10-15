@@ -1,4 +1,4 @@
-class X2Ability_Patches extends XMBAbility dependson(X2Effect_CapStat) config (RPG);
+class X2Ability_Patches extends XMBAbility dependson(RPGO_DataStructures) config (RPG);
 
 var config array<EquipmentStatCap> HEAVYWEAPON_STAT_CAPS;
 
