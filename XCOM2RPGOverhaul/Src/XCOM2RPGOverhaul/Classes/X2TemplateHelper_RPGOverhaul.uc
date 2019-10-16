@@ -100,13 +100,14 @@ static function XComGameState_HeadquartersXCom GetNewXComHQState(XComGameState N
 
 static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
 {
-	local int Index, CategoryIndex;
+	local int Index, ConfigIndex;
 	local name WeaponCategory;
-	local EInventorySlot InvSlot;
-	local array<XComGameState_Item> CurrentInventory;
+	local array<XComGameState_Item> CurrentInventory, FoundItems;
 	local XComGameState_Item InventoryItem;
 	local AbilitySetupData Data, EmptyData;
 	local array<AbilitySetupData> DataToAdd;
+	local StateObjectReference ItemRef;
+	local array<StateObjectReference> ItemRefs;
 
 	if (!UnitState.IsSoldier())
 		return;
@@ -115,30 +116,84 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 
 	for(Index = SetupData.Length; Index >= 0; Index--)
 	{
-		// Deactivate all ranged abilities that are associated with the primary weapon slot
-		//if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrimaryMelee(UnitState) &&
-		//	SetupData[Index].Template.DefaultSourceItemSlot == eInvSlot_PrimaryWeapon &&
-		//	SetupData[Index].Template.TargetingMethod == class'X2TargetingMethod_OverTheShoulder')
-		//{
-		//	DisabledCondition = new class'X2ConditionDisabled';
-		//	SetupData[Index].Template.AbilityTargetConditions.AddItem(DisabledCondition);
-		//}
-
-		//`LOG(GetFuncName() @ UnitState.GetFullName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot,, 'RPG');
-
-		CategoryIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
-		//`LOG(GetFuncName() @ SetupData[Index].TemplateName @ SetupData[Index].Template.DefaultSourceItemSlot @ Index,, 'RPG');
-		if (CategoryIndex != INDEX_NONE)
+		ConfigIndex = default.AbilityWeaponCategoryRestrictions.Find('AbilityName', SetupData[Index].TemplateName);
+		
+		if (ConfigIndex != INDEX_NONE)
 		{
-			foreach default.AbilityWeaponCategoryRestrictions[CategoryIndex].WeaponCategories(WeaponCategory)
+			// Reset ref
+			SetupData[Index].SourceWeaponRef.ObjectID = 0;
+
+			foreach default.AbilityWeaponCategoryRestrictions[ConfigIndex].WeaponCategories(WeaponCategory)
 			{
-				InvSlot = FindInventorySlotForItemCategory(UnitState, WeaponCategory, InventoryItem, StartState);
-				if (InvSlot != eInvSlot_Unknown)
+				FoundItems = GetInventoryItemsForCategory(UnitState, WeaponCategory, StartState);
+
+				//`LOG(GetFuncName() @ UnitState.SummaryString() @ SetupData[Index].TemplateName @ WeaponCategory @ `ShowVar(FoundItems.Length),, 'RPG');
+
+				if (FoundItems.Length > 0)
 				{
-					//SetupData[Index].Template.DefaultSourceItemSlot = InvSlot;
-					SetupData[Index].SourceWeaponRef = InventoryItem.GetReference();
-					`LOG(GetFuncName()  @ UnitState.GetFullName() @ "Patching" @ SetupData[Index].TemplateName @ "setting DefaultSourceItemSlot to" @ InvSlot @ SetupData[Index].SourceWeaponRef.ObjectID,, 'RPG');
+					ItemRefs.Length = 0;
+					// Checking slots in descending priority
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_PrimaryWeapon));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_SecondaryWeapon));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_Armor));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_Pistol));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_PsiAmp));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_HeavyWeapon));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_ExtraSecondary));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_GrenadePocket));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_AmmoPocket));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_Utility));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_CombatDrugs));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_CombatSim));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_Plating));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_Vest));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_SparkLauncher));
+					ItemRefs.AddItem(GetItemReferenceForInventorySlot(FoundItems, eInvSlot_SecondaryPayload));
+					
+					foreach ItemRefs(ItemRef)
+					{
+						If (ItemRef.ObjectID != 0)
+						{
+							//InventoryItem = XComGameState_Item(`XCOMHISTORY.GetGameStateForObjectID(ItemRef.ObjectID));
+							//`LOG(GetFuncName() @ UnitState.SummaryString() @ `ShowVar(ItemRef.ObjectID) @ InventoryItem.SummaryString() @ InventoryItem.InventorySlot,, 'RPG');
+							SetupData[Index].SourceWeaponRef = ItemRef;
+							break;
+						}
+					}
+
+					// We havent found anything above, take the first found item
+					if (SetupData[Index].SourceWeaponRef.ObjectID == 0)
+					{
+						SetupData[Index].SourceWeaponRef = FoundItems[0].GetReference();
+						break;
+					}
+					else
+					{
+						break;
+					}
 				}
+			}
+
+			// havent found any items for ability, lets remove it
+			if (SetupData[Index].SourceWeaponRef.ObjectID == 0)
+			{
+				//SetupData[Index].Template.AbilityTargetConditions.AddItem(new class'X2ConditionDisabled');
+				`LOG(GetFuncName() @ UnitState.SummaryString() @
+					"Removing" @ SetupData[Index].TemplateName @
+					"cause no matching items found"
+				,, 'RPG');
+
+				SetupData.Remove(Index, 1);
+			}
+			else
+			{
+				InventoryItem = XComGameState_Item(`XCOMHISTORY.GetGameStateForObjectID(SetupData[Index].SourceWeaponRef.ObjectID));
+
+				`LOG(GetFuncName() @ UnitState.SummaryString() @
+					"Patching" @ SetupData[Index].TemplateName @
+					"to" @ InventoryItem.InventorySlot
+					@ InventoryItem.SummaryString()
+				,, 'RPG');
 			}
 		}
 
@@ -173,6 +228,22 @@ static function FinalizeUnitAbilities(XComGameState_Unit UnitState, out array<Ab
 	{
 		SetupData.AddItem(Data);
 	}
+}
+
+static function StateObjectReference GetItemReferenceForInventorySlot(array<XComGameState_Item> Items, EInventorySlot InventorySlot)
+{
+	local XComGameState_Item Item;
+	local StateObjectReference EmptyRef;
+
+	foreach Items(Item)
+	{
+		if (Item.InventorySlot == InventorySlot)
+		{
+			return Item.GetReference();
+		}
+	}
+
+	return EmptyRef;
 }
 
 static function PatchWeapons()
@@ -1197,18 +1268,17 @@ static function AddAnimSet(XComUnitPawn Pawn, AnimSet AnimSetToAdd)
 	}
 }
 
-static function EInventorySlot FindInventorySlotForItemCategory(
+static function array<XComGameState_Item> GetInventoryItemsForCategory(
 	XComGameState_Unit UnitState,
 	name WeaponCategory,
-	out XComGameState_Item FoundItemState,
 	optional XComGameState StartState
 	)
 {
-	local array<XComGameState_Item> CurrentInventory;
-	local XComGameState_Item InventoryItem;
+	local array<XComGameState_Item> CurrentInventory, FoundItems;
 	local X2WeaponTemplate WeaponTemplate;
 	local X2PairedWeaponTemplate PairedWeaponTemplate;
 	local array<name> PairedTemplates;
+	local XComGameState_Item InventoryItem;
 
 	CurrentInventory = UnitState.GetAllInventoryItems(StartState);
 
@@ -1240,11 +1310,10 @@ static function EInventorySlot FindInventorySlotForItemCategory(
 		if (WeaponTemplate != none && WeaponTemplate.WeaponCat == WeaponCategory)
 		{
 			`LOG(GetFuncName() @ InventoryItem.GetMyTemplate().DataName @ InventoryItem.GetMyTemplate().Class.Name @ X2WeaponTemplate(InventoryItem.GetMyTemplate()).WeaponCat @ WeaponCategory,, 'RPG');
-			FoundItemState = InventoryItem;
-			return InventoryItem.InventorySlot;
+			FoundItems.AddItem(InventoryItem);
 		}
 	}
-	return eInvSlot_Unknown;
+	return FoundItems;
 }
 
 static function bool IsPrimaryMelee(XComGameState_Unit UnitState)
