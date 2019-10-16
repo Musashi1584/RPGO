@@ -24,11 +24,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Templates;
 }
 
-// AUTO-CODEGEN: Version-Info
 defaultproperties
 {
     MajorVersion = 0;
     MinorVersion = 2;
-    PatchVersion = 5;
+    PatchVersion = 6;
     Commit = "beta";
 }
