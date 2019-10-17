@@ -24,8 +24,8 @@ event OnInit(UIScreen Screen)
 			Screen.SetTimer(1.8f, false, nameof(NewSwoInfo), self);
 		}
 
-		Screen.SetTimer(2.0f, false, nameof(IncompatibleModWarning), self);
-		Screen.SetTimer(2.1f, false, nameof(RequiredModWarning), self);
+		//Screen.SetTimer(2.0f, false, nameof(IncompatibleModWarning), self);
+		//Screen.SetTimer(2.1f, false, nameof(RequiredModWarning), self);
 	}
 }
 

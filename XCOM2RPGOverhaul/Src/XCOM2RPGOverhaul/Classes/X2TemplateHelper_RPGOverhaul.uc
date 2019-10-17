@@ -23,7 +23,7 @@ static function bool IsPrerequisiteAbility(name AbiliityName)
 	
 	foreach default.AbilityPrerequisites(Prerequisite)
 	{
-		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
+		for (Index = 0; Index < Prerequisite.PrerequisiteTree.Length; Index++)
 		{
 			if (Prerequisite.PrerequisiteTree[Index] == AbiliityName)
 			{
