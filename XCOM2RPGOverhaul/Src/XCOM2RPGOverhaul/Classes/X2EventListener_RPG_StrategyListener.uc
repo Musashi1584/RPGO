@@ -157,11 +157,18 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 			`SecondWaveEnabled('RPGOSpecRoulette'),, 'RPG');
 
 		if (UnitState.GetMyTemplateName() == 'Soldier' &&
-			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-			`SecondWaveEnabled('RPGOSpecRoulette'))
+			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
-			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
-			class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
+			if (`SecondWaveEnabled('RPGOSpecRoulette'))
+			{
+				`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
+				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
+			}
+
+			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
+			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
+			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+
 			//GameState.AddStateObject(UnitState);
 		}
 	}

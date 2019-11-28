@@ -66,7 +66,7 @@ private function DeserializeConfig()
 	local JsonConfig_TaggedConfigProperty ConfigProperty;
 	local string SerializedConfigProperty, PropertyName;
 
-	`LOG(default.class @ GetFuncName() @ "found entries:" @ default.ConfigProperties.Length,, 'RPG');
+	//`LOG(default.class @ GetFuncName() @ "found entries:" @ default.ConfigProperties.Length,, 'RPG');
 
 	foreach default.ConfigProperties(SerializedConfigProperty)
 	{

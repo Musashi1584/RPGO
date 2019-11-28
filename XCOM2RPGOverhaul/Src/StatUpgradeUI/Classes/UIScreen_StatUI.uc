@@ -358,7 +358,7 @@ function bool OnClickedIncrease(ECharStatType StatType, int NewStatValue, int St
 	
 	PointsLeft = GetSoldierSP() + GetSoldierAP() - AbilityPointCostSum - StatPointCostSum - StatCost;
 
-	`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft,, 'RPG');
+	`LOG(default.Class @ GetFuncName() @ "PointsLeft after buy" @ PointsLeft, bLog, 'RPG');
 
 	bCanIncrease = (PointsLeft >= 0);	
 	if (bCanIncrease)

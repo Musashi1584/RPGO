@@ -54,7 +54,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldier, ELD_Immediate);
+	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldier, ELD_OnStateSubmitted);
 	`LOG("Register Event CompleteRespecSoldier",, 'RPG');
 
 	return Template;
@@ -67,17 +67,38 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	if (UnitState != none)
+	if (UnitState != none &&
+		UnitState.GetMyTemplateName() == 'Soldier' &&
+		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier'
+	)
 	{
 		SpentSoldierSP = GetSpentSoldierSP(UnitState);
 		SoldierSP = GetSoldierSP(UnitState);
 
+		ResetSoldierStats(UnitState);
 		UnitState.SetUnitFloatValue('StatPoints', SoldierSP + SpentSoldierSP, eCleanup_Never);
 		UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
 		`LOG(default.class @ GetFuncName() @ "new StatPoints" @ SoldierSP + SpentSoldierSP @ "SpentStatPoints 0",, 'RPG');
 	}
 
 	return ELR_NoInterrupt;
+}
+
+static function ResetSoldierStats(XComGameState_Unit UnitState)
+{
+	local int i;
+	local ECharStatType StatType;
+	local X2CharacterTemplate Template;
+
+	Template = UnitState.GetMyTemplate();
+
+	for (i = 0; i < eStat_MAX; ++i)
+	{
+		StatType = ECharStatType(i);
+		//UnitState.CharacterStats[i].Type = StatType;
+		UnitState.SetBaseMaxStat(StatType, Template.GetCharacterBaseStat(StatType));
+		UnitState.SetCurrentStat(StatType, UnitState.GetMaxStat(StatType));
+	}
 }
 
 static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)

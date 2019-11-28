@@ -41,7 +41,7 @@ function string LocalizeItem(string Key)
 
 	if (Locale == "")
 	{
-		`LOG(default.class @ GetFuncName() @ "Warning localization not found:" @ Path,, 'RPG');
+		//`LOG(default.class @ GetFuncName() @ "Warning localization not found:" @ Path,, 'RPG');
 	}
 	
 	return Locale;
@@ -64,7 +64,7 @@ private function DeserializeConfig()
 	local ObjectKey ObjKey;
 	local string SanitizedJsonString, SerializedMCMPage;
 
-	`LOG(default.class @ GetFuncName() @ "found entries:" @ default.MCMPages.Length,, 'RPG');
+	//`LOG(default.class @ GetFuncName() @ "found entries:" @ default.MCMPages.Length,, 'RPG');
 
 	foreach default.MCMPages(SerializedMCMPage)
 	{
