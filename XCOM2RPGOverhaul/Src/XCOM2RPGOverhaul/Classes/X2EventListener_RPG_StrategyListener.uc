@@ -92,21 +92,26 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	local XComGameState_Unit UnitState;
 	local array<int> AllSpecs;
 	local UnitValue AddedRandomSpecs;
+	local XComGameStateHistory History;
+	local bool bCreatedOwnGameState;
+
+	History = `XCOMHISTORY;
 
 	UnitState = XComGameState_Unit(EventData);
 	AllSpecs.Length = 0; // get rid if unused var warning
 
-	`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
-		"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
-		"RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette') @
-		"RPGOOrigins" @ `SecondWaveEnabled('RPGOOrigins')
-	,, 'RPG');
+	//`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
+	//	"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
+	//	"RPGOTrainingRoulette" @ `SecondWaveEnabled('RPGOTrainingRoulette') @
+	//	"RPGOOrigins" @ `SecondWaveEnabled('RPGOOrigins')
+	//,, 'RPG');
 
 	if (UnitState != none)
 	{
 		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
 
 		`LOG(default.class @ GetFuncName() @
+			UnitState.SummaryString() @
 			UnitState.GetMyTemplateName() @
 			UnitState.GetSoldierClassTemplateName() @
 			UnitState.GetSoldierRank() @ 
@@ -118,9 +123,25 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette'))
 		)
 		{
-			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
+			`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
+				"RPGOSpecRoulette Randomizing starting specs" @
+				GameState @ GameState.GetNumGameStateObjects() @
+				`ShowVar(GameState.HistoryIndex) @
+				`ShowVar(History.GetCurrentHistoryIndex())
+			,, 'RPG');
 
-			NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
+			// Some special gamestate handling because some mods tend to submit unit rankup gamestates manually (looking at you commanders choice)
+			if (GameState.HistoryIndex < History.GetCurrentHistoryIndex() && GameState.HistoryIndex != INDEX_NONE)
+			{
+				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
+				bCreatedOwnGameState = true;
+			}
+			else
+			{
+				NewGameState = GameState;
+			}
+
+			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 
 			if (`SecondWaveEnabled('RPGOSpecRoulette'))
 			{
@@ -130,11 +151,14 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
 			}
-	
-			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+
 			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
 
-			`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+			//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
+			{
+				`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+			}
 		}
 	}
 

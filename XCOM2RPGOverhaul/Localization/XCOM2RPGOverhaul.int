@@ -144,6 +144,8 @@ strRequiredModsTooltip="Missing required mods:"
 strIncompatibleModsTooltip="Detected incompatible mods:"
 strRequiredLoadedModsTooltip="Loaded required mods:"
 
+[RPGO_UIArmory_PromotionHero]
+m_strMutuallyExclusive="Mutually exclusive with:"
 
 [RPGO_MCM_Builder]
 WEAPON_SETTINGS_PAGE_TITLE="RPGO General Setting"
