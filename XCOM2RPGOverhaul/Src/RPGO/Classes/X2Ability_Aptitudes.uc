@@ -45,10 +45,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Pyromaniac());
 
 	//Recolor icons
-	foreach Templates(Template){
-		X2AbilityTemplate(Template).AbilitySourceName = 'eAbilitySource_Commander';
-		X2AbilityTemplate(Template).AdditionalAbilities.AddItem('MNT_PerkLoader');
-	}
+	//foreach Templates(Template){
+	//	X2AbilityTemplate(Template).AbilitySourceName = 'eAbilitySource_Commander';
+	//	X2AbilityTemplate(Template).AdditionalAbilities.AddItem('MNT_PerkLoader');
+	//}
 
 	return Templates;
 
