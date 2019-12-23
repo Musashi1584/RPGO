@@ -69,6 +69,117 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplate(SoldierSpe
 	return GetSpecializationTemplateByName(Spec.TemplateName);
 }
 
+//	IRI Random Classes
+//	get ALL spec templates
+static function array<X2UniversalSoldierClassInfo> GetAllSpecializationTemplates()
+{
+	local array<SoldierSpecialization>			Specs;
+	local SoldierSpecialization					Spec;
+	local array<X2UniversalSoldierClassInfo>	ReturnArray;
+	
+	Specs = GetSpecializations();
+
+	foreach Specs(Spec)
+	{	
+		ReturnArray.AddItem(GetSpecializationTemplateByName(Spec.TemplateName));
+	}
+	return ReturnArray;
+}
+
+static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSoldierClassInfo> SelectedSpecTemplates, X2UniversalSoldierClassInfo SpecTemplate)
+{
+	local X2UniversalSoldierClassInfo CycleSpecTemplate;
+
+	//	Specialization cannot be used if it's missing meta information
+	//	Or it is explicitly forbidden from being complementary
+	if (!SpecTemplate.IRIMetaInfo.bMeta || SpecTemplate.IRIMetaInfo.bCantBeComplementary) return false;
+
+	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
+	if (SpecTemplate.IRIMetaInfo.bUniversal) return true;
+
+	//	Otherwise, cycle through Specs that have already been selected.
+	foreach SelectedSpecTemplates(CycleSpecTemplate)
+	{
+		//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
+		if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
+			(DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
+			 SpecTemplate.IRIMetaInfo.bShoot && CycleSpecTemplate.IRIMetaInfo.bShoot ||
+			 SpecTemplate.IRIMetaInfo.bGremlin && CycleSpecTemplate.IRIMetaInfo.bGremlin ||
+			 SpecTemplate.IRIMetaInfo.bPsionic && CycleSpecTemplate.IRIMetaInfo.bPsionic ||
+			 SpecTemplate.IRIMetaInfo.bMelee && CycleSpecTemplate.IRIMetaInfo.bMelee))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+{
+	local X2UniversalSoldierClassInfo CycleSpecTemplate;
+
+	//	Specialization cannot be used if it's missing meta information
+	//	Or if it is explicitly forbidden from being complementary
+	if (!SpecTemplate.IRIMetaInfo.bMeta || SpecTemplate.IRIMetaInfo.bCantBeComplementary) return false;
+
+	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
+	if (SpecTemplate.IRIMetaInfo.bUniversal) return true;
+
+	//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
+	if (SelectedSpecTemplates[0] != none && 
+		SelectedSpecTemplates[0].IRIMetaInfo.bDualWield && 
+					SpecTemplate.IRIMetaInfo.bDualWield)
+	{
+		return DoSpecializationsUseTheSameWeapons(SelectedSpecTemplates[0], SpecTemplate);
+	}
+
+	//	Otherwise, cycle through Specs that have already been selected.
+	foreach SelectedSpecTemplates(CycleSpecTemplate)
+	{
+		//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
+		if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
+			(DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
+			 SpecTemplate.IRIMetaInfo.bShoot && CycleSpecTemplate.IRIMetaInfo.bShoot ||
+			 SpecTemplate.IRIMetaInfo.bGremlin && CycleSpecTemplate.IRIMetaInfo.bGremlin ||
+			 SpecTemplate.IRIMetaInfo.bPsionic && CycleSpecTemplate.IRIMetaInfo.bPsionic ||
+			 SpecTemplate.IRIMetaInfo.bMelee && CycleSpecTemplate.IRIMetaInfo.bMelee))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+*/
+
+static function bool DoSpecializationsUseTheSameSlots(X2UniversalSoldierClassInfo SpecTemplateA, X2UniversalSoldierClassInfo SpecTemplateB)
+{
+	local EInventorySlot InventorySlot;
+	
+	foreach SpecTemplateA.IRIMetaInfo.InventorySlots(InventorySlot)
+	{
+		if (SpecTemplateB.IRIMetaInfo.InventorySlots.Find(InventorySlot) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static function bool DoSpecializationsUseTheSameWeapons(X2UniversalSoldierClassInfo SpecTemplateA, X2UniversalSoldierClassInfo SpecTemplateB)
+{
+	local name WeaponCat;
+	
+	foreach SpecTemplateA.IRIMetaInfo.AllowedWeaponCategories(WeaponCat)
+	{
+		if (SpecTemplateB.IRIMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+//	END OF IRI Random Classes
+
 static function X2UniversalSoldierClassInfo GetSpecializationTemplateByName(name TemplateName)
 {
 	return new(None, string(TemplateName))class'X2UniversalSoldierClassInfo';
