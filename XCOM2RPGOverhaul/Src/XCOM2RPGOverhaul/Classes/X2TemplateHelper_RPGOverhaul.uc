@@ -58,6 +58,12 @@ static function AddSecondWaveOptions()
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Description,
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
 	);
+
+	AddSecondWaveOption(
+		'RPGO_IRI_SWO_RandomClasses',
+		class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Description,
+		class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Tooltip
+	);
 }
 
 static function AddSecondWaveOption(name ID, string Description, string Tooltip)
@@ -1134,6 +1140,70 @@ static function PatchSquadSight()
 		Template.AbilityTargetEffects = UnpatchedTemplate.AbilityTargetEffects;
 		Template.AdditionalAbilities = UnpatchedTemplate.AdditionalAbilities;
 	}
+}
+
+static function bool IRI_CanAddItemToInventory(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
+{
+    local X2WeaponTemplate              WeaponTemplate;
+    local XGParamTag                    LocTag;
+	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
+	local X2UniversalSoldierClassInfo	SecondarySpecTemplate;
+	local UnitValue						UV;
+	local bool							bAllowed;
+
+	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
+
+	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
+	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none && (Slot == eInvSlot_PrimaryWeapon || Slot == eInvSlot_SecondaryWeapon))
+	{
+		if (UnitState.GetUnitValue('IRI_PrimarySpecialization_Value', UV))
+		{
+			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UV.fValue);
+		}
+
+		//	Exit function early if we can't access either of the specializations for whatever reason.
+		if (PrimarySpecTemplate == none) return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
+
+		//	If soldier's primary specialization is a Dual Wield one, then look only at primary specialization for both Primary and Secondary weapons.
+		if (PrimarySpecTemplate.IRIMetaInfo.bDualWield || Slot == eInvSlot_PrimaryWeapon)
+		{
+			bAllowed = PrimarySpecTemplate.IRI_IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+		}
+		else
+		{
+			if (UnitState.GetUnitValue('IRI_SecondarySpecialization_Value', UV))
+			{
+				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UV.fValue);
+			}
+			if (SecondarySpecTemplate == none) return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
+
+			bAllowed = SecondarySpecTemplate.IRI_IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+		}
+		
+		if (bAllowed)
+		{
+			//	Weapon allowed
+			DisabledReason = "";
+			bCanAddItem = 1;
+
+			// Exit function, overriding normal behavior
+			return CheckGameState != none;
+		}
+		else
+		{
+			//	Weapon NOT Allowed
+			LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
+			LocTag.StrValue0 = UnitState.GetSoldierClassTemplate().DisplayName;
+			DisabledReason = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(`XEXPAND.ExpandString(class'UIArmory_Loadout'.default.m_strUnavailableToClass));
+
+			bCanAddItem = 0;
+
+			// Exit function, overriding normal behavior
+			return CheckGameState != none;
+		}
+	}	
+	//	Otherwise pass the torch to the original RPGO function.
+	return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 }
 
 static function bool CanAddItemToInventory(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)

@@ -10,6 +10,66 @@ var config array<SoldierClassAbilityType> AdditionalRandomAptitudes;
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 
+//	IRI Random Classes
+struct IRIMetaInfoStruct
+{
+	var bool bMeta;
+	var array<name> AllowedWeaponCategories;
+	var array<EInventorySlot> InventorySlots;
+
+	//	This specialization can be rolled only as Primary one, and then will provide access to the same AllowedWeaponCategories for both weapon slots.
+	var bool bDualWield;
+
+	//	Use to determine whether this specialization is valid to complement other soldier's specializations.
+	var bool bUniversal;
+	var bool bShoot;
+	var bool bMelee;
+	var bool bGremlin;
+	var bool bPsionic;
+	var bool bCantBeComplementary;
+	//	check necromancer skills that are weapon agnostic
+	//	look at AllowedWeapons instead of using bool flags?..
+};
+var config IRIMetaInfoStruct IRIMetaInfo;
+
+function bool IRI_IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
+{
+	if (IRIMetaInfo.bDualWield)
+	{
+		return IRIMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+	}
+	else return IRIMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && IRIMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+}
+
+function bool IRI_IsPrimaryWeaponSpecialization()
+{
+	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
+	return IRIMetaInfo.bMeta && IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
+}
+
+function bool IRI_IsSecondaryWeaponSpecialization()
+{
+	return IRIMetaInfo.bMeta && IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+}
+/*
+{
+	if (IRIMetaInfo.bMeta)
+	{
+		//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
+		if (PrimarySpecTemplate.IRIMetaInfo.bDualWield && IRIMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.
+		{
+			return class'X2SoldierClassTemplatePlugin'.static.DoSpecializationsUseTheSameWeapons(PrimarySpecTemplate, self);
+		}
+
+		return IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+	}
+	//	Can't be Secondary Speci if no meta info is set up.
+	return false;
+}
+*/
+
+//	END OF IRI Random Classes
+
 function bool HasAnyAbilitiesInDeck()
 {
 	local X2AbilityTemplateManager AbilityTemplateManager;

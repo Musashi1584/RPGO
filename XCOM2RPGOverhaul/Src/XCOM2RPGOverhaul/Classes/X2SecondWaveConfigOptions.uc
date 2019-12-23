@@ -139,11 +139,157 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 	return RandomAbilitySlotIndices;
 }
 
+//	IRI Random Classes
+//	Select specializations for the soldier to randomly create a soldier class.
+static function array<int> IRI_GetSpecIndices_ForRandomClass(XComGameState_Unit UnitState)
+{
+	local int Count;
+	local array<X2UniversalSoldierClassInfo>	AllSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
+	local X2UniversalSoldierClassInfo			SpecTemplate;
+	local array<int>							ReturnArray;
+
+	`LOG(default.class @ GetFuncName() @ "Start profiling with IRI Random Class SWO",, 'RPG');
+
+	`LOG("=====================================================",, 'IRIRPG');
+	`LOG("Building random class for: " @ UnitState.GetFullName(),, 'IRIRPG');
+
+	Count = GetSpecRouletteCount();
+	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllSpecializationTemplates();
+
+	//	########################################################
+	//	Select random specialization for primary weapon:
+	`LOG("## Selecting primary specialization:" @ Count,, 'IRIRPG');
+	foreach AllSpecTemplates(SpecTemplate)
+	{
+		if (SpecTemplate.IRI_IsPrimaryWeaponSpecialization())
+		{
+			`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+			ValidSpecTemplates.AddItem(SpecTemplate);
+		}
+	}
+	SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
+
+	SelectedSpecTemplates.AddItem(SpecTemplate);
+	ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name));
+	Count--;
+
+	//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.IRI_CanAddItemToInventory
+	UnitState.SetUnitFloatValue('IRI_PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name), eCleanup_Never);
+	`LOG("SELECTD Primary specialization: " @ SpecTemplate.Name,, 'IRIRPG');
+
+	//	Add complementary specializations, if necessary
+	AddComplementarySpecializations(SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
+
+	//	Exit function early if necessary
+	if (Count <= 0) return ReturnArray;
+
+
+	//	########################################################
+	//	Select random specialization for secondary weapon
+	if (SelectedSpecTemplates[0].IRIMetaInfo.bDualWield)
+	{
+		`LOG("## Primary spec is Dual Wield, skipping Secondary Spec.",, 'IRIRPG');
+	}
+	else
+	{
+		`LOG("## Selecting secondary specialization: " @ Count,, 'IRIRPG');
+		ValidSpecTemplates.Length = 0;
+		foreach AllSpecTemplates(SpecTemplate)
+		{	
+			//	Skip specialization if it was already selected
+			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name)) != INDEX_NONE) continue;
+
+			if (SpecTemplate.IRI_IsSecondaryWeaponSpecialization())
+			{
+				`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+				ValidSpecTemplates.AddItem(SpecTemplate);
+			}
+		}
+		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
+
+		SelectedSpecTemplates.AddItem(SpecTemplate);
+		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name));
+		Count--;
+
+		UnitState.SetUnitFloatValue('IRI_SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name), eCleanup_Never);
+		`LOG("SELECTD Secondary specialization: " @ SpecTemplate.Name,, 'IRIRPG');
+
+		//	Add complementary specializations, if necessary
+		AddComplementarySpecializations(SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
+
+		//	Exit function early if necessary
+		if (Count <= 0) return ReturnArray;
+	}
+	//	########################################################
+	//	Select several additional specializations that either complement already selected specializations, or are weapon agnostic.
+	`LOG("## Selecting additional specializations: " @ Count,, 'IRIRPG');
+	while (Count > 0)
+	{
+		ValidSpecTemplates.Length = 0;
+
+		foreach AllSpecTemplates(SpecTemplate)
+		{
+			//	Skip specialization if it was already selected
+			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name)) != INDEX_NONE) continue;
+
+			if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
+			{
+				`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+				ValidSpecTemplates.AddItem(SpecTemplate);
+			}
+		}
+
+		//	Exit function early if there are no valid specs anymore.
+		if (ValidSpecTemplates.Length == 0) return ReturnArray;
+
+		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
+		SelectedSpecTemplates.AddItem(SpecTemplate);
+		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(SpecTemplate.Name));
+		Count--;
+
+		`LOG("SELECTD Additional specialization: " @ SpecTemplate.Name,, 'IRIRPG');
+	}
+	return ReturnArray;
+}
+
+//	IRI Random Classes
+//	Moved this code into a separate function, since it's getting called multiple times.
+static function AddComplementarySpecializations(X2UniversalSoldierClassInfo SpecTemplate, out array<int> ReturnArray, out array<X2UniversalSoldierClassInfo> SelectedSpecTemplates, out int Count)
+{
+	local name	ForceComplementarySpecName;
+	local int	ComplementarySpecIndex;
+
+	if (SpecTemplate.ForceComplementarySpecializations.Length > 0)
+	{
+		foreach SpecTemplate.ForceComplementarySpecializations(ForceComplementarySpecName)
+		{
+			ComplementarySpecIndex = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(ForceComplementarySpecName);
+			
+			if (ReturnArray.Find(ComplementarySpecIndex) == INDEX_NONE)
+			{
+				SelectedSpecTemplates.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(ForceComplementarySpecName));
+				ReturnArray.AddItem(ComplementarySpecIndex);
+				Count--;
+			}
+		}
+	}
+}
 
 static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState, optional bool bRandomizePerkOrder = false)
 {
 	`LOG(default.class @ GetFuncName() @ "SPEC_ROULETTE_RANDOM_SPEC_COUNT" @ GetSpecRouletteCount(),, 'RPG');
-	BuildSpecAbilityTree(UnitState, GetRandomSpecIndices(UnitState), true, bRandomizePerkOrder);
+
+	//	IRI Random Classes
+	if (`SecondWaveEnabled('RPGO_IRI_SWO_RandomClasses'))
+	{
+		BuildSpecAbilityTree(UnitState, IRI_GetSpecIndices_ForRandomClass(UnitState), true, bRandomizePerkOrder);
+	}
+	else
+	{
+		BuildSpecAbilityTree(UnitState, GetRandomSpecIndices(UnitState), true, bRandomizePerkOrder);
+	}
 }
 
 // Empty AddSpecializationIndices will be treated as all specs

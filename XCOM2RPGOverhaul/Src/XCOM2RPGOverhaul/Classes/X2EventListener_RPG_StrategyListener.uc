@@ -16,6 +16,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
 	Templates.AddItem(CreateListenerTemplate_OnGetLocalizedCategory());
 
+	//	IRI Random Classes
+	Templates.AddItem(CreateListenerTemplate_OnBestGearLoadoutApplied());
+
 	return Templates;
 }
 
@@ -408,3 +411,205 @@ function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization 
 {
 	return A.Order > B.Order ? -1 : 0;
 }
+
+//	IRI Random Classes BEGIN
+static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadoutApplied()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'IRI_RPGO_BestGearAppliedListener');
+
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_OnStateSubmitted);
+
+	//	Setting low priority so the unit gets specializations assigned by an event listener above
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_IRIRandomClass, ELD_OnStateSubmitted, 10);
+
+	`LOG("Register Event OnBestGearLoadoutApplied",, 'RPG');
+
+	return Template;
+}
+
+
+
+static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit	UnitState;
+	local XComGameState_Item	PrimaryWeaponState;
+	local XComGameState_Item	SecondaryWeaponState;
+	local XComGameState			NewGameState;
+	local XComGameStateHistory				History;
+	local XComGameState_HeadquartersXCom	XComHQ;
+
+	UnitState = XComGameState_Unit(EventData);
+
+	//`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'IRIGEAR');
+
+	if (UnitState != none)
+	{
+		History = `XCOMHISTORY;
+		PrimaryWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
+		SecondaryWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
+
+		//`LOG("Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
+		//`LOG("Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
+
+		if (PrimaryWeaponState == none || SecondaryWeaponState == none)
+		{
+			NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Changing best loadout for unit: " @ UnitState.GetFullName());
+
+			XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+			XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+
+			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+			if (PrimaryWeaponState == none)
+			{
+				PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+
+				if (PrimaryWeaponState != none)
+				{
+					UnitState.AddItemToInventory(PrimaryWeaponState, eInvSlot_PrimaryWeapon, NewGameState);
+				}
+			}
+
+			if (SecondaryWeaponState == none)
+			{
+				SecondaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
+
+				if (PrimaryWeaponState != none)
+				{
+					UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState);
+				}
+			}
+
+			//`LOG("New Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
+			//`LOG("New Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
+			`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+		}
+	}
+	return ELR_NoInterrupt;
+}
+
+//	Find highest tier infinite weapon that specified soldier can equip into specified slot.
+private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const XComGameState_Unit UnitState, const EInventorySlot eSlot, out XComGameState_HeadquartersXCom XComHQ, out XComGameState NewGameState)
+{
+	local X2WeaponTemplate		WeaponTemplate;
+	local XComGameStateHistory	History;
+	local int					HighestTier;
+	local XComGameState_Item	ItemState;
+	local XComGameState_Item	BestItemState;
+	local StateObjectReference	ItemRef;
+
+	HighestTier = -999;
+	History = `XCOMHISTORY;
+
+	foreach XComHQ.Inventory(ItemRef)
+	{
+		ItemState = XComGameState_Item(History.GetGameStateForObjectID(ItemRef.ObjectID));
+		WeaponTemplate = X2WeaponTemplate(ItemState.GetMyTemplate());
+
+		if (WeaponTemplate != none)
+		{
+			if (WeaponTemplate.InventorySlot == eSlot && WeaponTemplate.bInfiniteItem &&
+				UnitState.CanAddItemToInventory(WeaponTemplate, eSlot, NewGameState, ItemState.Quantity, ItemState))
+			{
+				if (WeaponTemplate.Tier > HighestTier)
+				{
+					HighestTier = WeaponTemplate.Tier;
+					BestItemState = ItemState;
+				}
+			}
+		}
+	}
+	
+	if (HighestTier != -999)
+	{
+		XComHQ.GetItemFromInventory(NewGameState, BestItemState.GetReference(), BestItemState);
+		return BestItemState;
+	}
+	else
+	{
+		return none;
+	}
+}
+
+static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	local XComGameState_Unit				UnitState;
+	local XComGameState_Item				OldWeapon;
+	local XComGameState_Item				NewWeapon;
+	local XComGameState						NewGameState;
+	local XComGameStateHistory				History;
+	local XComGameState_HeadquartersXCom	XComHQ;
+	local UnitValue						UV;
+
+	UnitState = XComGameState_Unit(EventData);
+	UnitState.GetUnitValue('IRI_PrimarySpecialization_Value', UV);
+
+	`LOG("Unit rank up: " @ UnitState.GetFullName() @ UnitState.GetRank() @ UV.fValue,, 'IRIGEAR');
+
+	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_IRI_SWO_RandomClasses') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	{
+		History = `XCOMHISTORY;
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Equipping squaddie items on unit: " @ UnitState.GetFullName());
+
+		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+
+		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+
+		OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
+		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'IRIGEAR');
+		if (OldWeapon != none)
+		{
+			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
+			{
+				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+
+				if (NewWeapon != none)
+				{
+					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
+					{
+						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'IRIGEAR');
+						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
+					}
+					else
+					{	
+						//	If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+						UnitState.AddItemToInventory(OldWeapon, eInvSlot_PrimaryWeapon, NewGameState);
+					}
+				}
+			}
+		}
+
+		OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
+		`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'IRIGEAR');
+		if (OldWeapon != none)
+		{
+			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
+			{
+				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
+
+				if (NewWeapon != none)
+				{
+					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
+					{
+						`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'IRIGEAR');
+						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
+					}
+					else
+					{	
+						//	If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+						UnitState.AddItemToInventory(OldWeapon, eInvSlot_PrimaryWeapon, NewGameState);
+					}
+				}
+			}
+		}
+
+		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+	}
+	return ELR_NoInterrupt;
+}
+//	IRI Random Classes END
