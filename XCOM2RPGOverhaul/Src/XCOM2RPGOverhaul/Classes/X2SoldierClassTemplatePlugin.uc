@@ -102,11 +102,11 @@ static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSol
 	{
 		//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
 		if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
-			(DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
+			DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
 			 SpecTemplate.IRIMetaInfo.bShoot && CycleSpecTemplate.IRIMetaInfo.bShoot ||
 			 SpecTemplate.IRIMetaInfo.bGremlin && CycleSpecTemplate.IRIMetaInfo.bGremlin ||
 			 SpecTemplate.IRIMetaInfo.bPsionic && CycleSpecTemplate.IRIMetaInfo.bPsionic ||
-			 SpecTemplate.IRIMetaInfo.bMelee && CycleSpecTemplate.IRIMetaInfo.bMelee))
+			 SpecTemplate.IRIMetaInfo.bMelee && CycleSpecTemplate.IRIMetaInfo.bMelee)
 		{
 			return true;
 		}

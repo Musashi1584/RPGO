@@ -27,8 +27,18 @@ struct IRIMetaInfoStruct
 	var bool bGremlin;
 	var bool bPsionic;
 	var bool bCantBeComplementary;
+	var int  iWeightPrimary;
+	var int  iWeightSecondary;
+	var int  iWeightComplementary;
+
 	//	check necromancer skills that are weapon agnostic
 	//	look at AllowedWeapons instead of using bool flags?..
+	structdefaultproperties
+	{
+		iWeightPrimary = 1
+		iWeightSecondary = 1
+		iWeightComplementary = 1
+	}
 };
 var config IRIMetaInfoStruct IRIMetaInfo;
 
