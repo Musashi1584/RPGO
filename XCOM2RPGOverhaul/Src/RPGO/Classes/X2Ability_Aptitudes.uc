@@ -3,7 +3,7 @@ class X2Ability_Aptitudes extends XMBAbility;
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
-	local X2DataTemplate Template;
+	//local X2DataTemplate Template;
 
 	Templates.AddItem(Guttersnipe());
 	Templates.AddItem(Warden());
