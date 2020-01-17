@@ -834,9 +834,10 @@ static function X2AbilityTemplate SurgicalPrecision()
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.HIGH_COVER_BONUS / 2);
 
 	Template = Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
-
+	
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AbilityTargetConditions.AddItem(default.HalfCoverCondition);
+	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,, Template.AbilitySourceName);
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.LOW_COVER_BONUS / 2);
 	Template.AddTargetEffect(Effect);
 
