@@ -4,6 +4,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 {
 	local XComGameState_Ability					AbilityState;
 	local XComGameState_Item					PrimaryWeapon;
+	local array<name>							ValidAbilities;
 
 	if (XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID)) == none)
 		return false;
@@ -29,7 +30,8 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 	if (AbilityState != none)
 	{
-		if (kAbility.GetMyTemplateName() == 'StandardShot')
+		ValidAbilities = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("READ_FOR_ANYTHING_ABILITYNAMES");
+		if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != INDEX_NONE)
 		{
 			if (SourceUnit.NumActionPoints() == 0)
 			{
