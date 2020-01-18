@@ -834,9 +834,10 @@ static function X2AbilityTemplate SurgicalPrecision()
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.HIGH_COVER_BONUS / 2);
 
 	Template = Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
-
+	
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AbilityTargetConditions.AddItem(default.HalfCoverCondition);
+	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,, Template.AbilitySourceName);
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.LOW_COVER_BONUS / 2);
 	Template.AddTargetEffect(Effect);
 
@@ -887,9 +888,10 @@ static function X2DataTemplate ReadyForAnythingFlyover()
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.AbilityToHitCalc = default.DeadEye;
 	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.bShowActivation = true;
+	Template.bShowActivation = false; // Flyover is already displayed by Custom Build Viz
 	Template.bSkipFireAction = true;
 	Template.bDontDisplayInAbilitySummary = true;
+	Template.IconImage = "img:///UILibrary_RPG.UIPerk_ReadyForAnything";
 
 	EventListener = new class'X2AbilityTrigger_EventListener';
 	EventListener.ListenerData.EventID = 'ReadyForAnythingTriggered';
@@ -899,34 +901,48 @@ static function X2DataTemplate ReadyForAnythingFlyover()
 	Template.AbilityTriggers.AddItem(EventListener);
 
 	Template.CinescriptCameraType = "Overwatch";
-
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	Template.BuildVisualizationFn = ReadyforAnything_BuildVisualization;
+	Template.MergeVisualizationFn = ReadyForAnything_MergeVisualization;
 
 	return Template;
 }
 
 simulated function ReadyForAnything_BuildVisualization(XComGameState VisualizeGameState)
 {
-	local XComGameStateHistory History;
+	local XComGameStateHistory			History;
 	local XComGameStateContext_Ability  Context;
-	local VisualizationActionMetadata        EmptyActionMetadata;
-	local VisualizationActionMetadata        ActionMetadata;
-	local X2Action_PlaySoundAndFlyOver SoundAndFlyOver;
+	local VisualizationActionMetadata   ActionMetadata;
+	local X2Action_PlaySoundAndFlyOver	SoundAndFlyOver;
 	local StateObjectReference          InteractingUnitRef;
-	local XComGameState_Ability Ability;
+	local XComGameState_Ability			Ability;
 
 	History = `XCOMHISTORY;
 	Context = XComGameStateContext_Ability(VisualizeGameState.GetContext());
 	InteractingUnitRef = Context.InputContext.SourceObject;
-	Ability = XComGameState_Ability(History.GetGameStateForObjectID(context.InputContext.AbilityRef.ObjectID, 1, VisualizeGameState.HistoryIndex - 1));
-	ActionMetadata = EmptyActionMetadata;
+	Ability = XComGameState_Ability(History.GetGameStateForObjectID(Context.InputContext.AbilityRef.ObjectID, 1, VisualizeGameState.HistoryIndex - 1));
+	
 	ActionMetadata.StateObject_OldState = History.GetGameStateForObjectID(InteractingUnitRef.ObjectID, eReturnType_Reference, VisualizeGameState.HistoryIndex - 1);
 	ActionMetadata.StateObject_NewState = VisualizeGameState.GetGameStateForObjectID(InteractingUnitRef.ObjectID);
 	ActionMetadata.VisualizeActor = History.GetVisualizer(InteractingUnitRef.ObjectID);
 
 	SoundAndFlyOver = X2Action_PlaySoundAndFlyOver(class'X2Action_PlaySoundAndFlyOver'.static.AddToVisualizationTree(ActionMetadata, Context));
-	SoundAndFlyOver.SetSoundAndFlyOverParameters(SoundCue'SoundUI.OverWatchCue', Ability.GetMyTemplate().LocFlyOverText, '', eColor_Good, "img:///UILibrary_PerkIcons.UIPerk_overwatch");
+	SoundAndFlyOver.SetSoundAndFlyOverParameters(SoundCue'SoundUI.OverWatchCue', Ability.GetMyTemplate().LocFlyOverText, '', eColor_Good, Ability.GetMyTemplate().IconImage);
+}
+
+static simulated function ReadyForAnything_MergeVisualization(X2Action BuildTree, out X2Action VisualizationTree)
+{
+	local XComGameStateVisualizationMgr VisMgr;
+	local array<X2Action>				FindActions;
+
+	VisMgr = `XCOMVISUALIZATIONMGR;
+	
+	//	This will delay the Ready For Anything flyover until the soldier Enters Cover after using the triggering ability.
+	VisMgr.GetNodesOfType(VisualizationTree, class'X2Action_MarkerTreeInsertEnd', FindActions, BuildTree.Metadata.VisualizeActor);
+	if (FindActions.Length > 0)
+	{
+		VisMgr.ConnectAction(BuildTree, VisualizationTree, false,, FindActions);
+	}
 }
 
 static function X2AbilityTemplate DeadeyeAbility()
