@@ -149,6 +149,7 @@ static function array<int> IRI_GetSpecIndices_ForRandomClass(XComGameState_Unit 
 	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<int>							ReturnArray;
+	local int i;
 
 	`LOG(default.class @ GetFuncName() @ "Start profiling with IRI Random Class SWO",, 'RPG');
 
@@ -165,8 +166,11 @@ static function array<int> IRI_GetSpecIndices_ForRandomClass(XComGameState_Unit 
 	{
 		if (SpecTemplate.IRI_IsPrimaryWeaponSpecialization())
 		{
-			`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
-			ValidSpecTemplates.AddItem(SpecTemplate);
+			for (i = 0; i < SpecTemplate.IRIMetaInfo.iWeightPrimary; i++)
+			{
+				`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+				ValidSpecTemplates.AddItem(SpecTemplate);
+			}
 		}
 	}
 	SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
@@ -203,8 +207,11 @@ static function array<int> IRI_GetSpecIndices_ForRandomClass(XComGameState_Unit 
 
 			if (SpecTemplate.IRI_IsSecondaryWeaponSpecialization())
 			{
-				`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
-				ValidSpecTemplates.AddItem(SpecTemplate);
+				for (i = 0; i < SpecTemplate.IRIMetaInfo.iWeightSecondary; i++)
+				{
+					`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+					ValidSpecTemplates.AddItem(SpecTemplate);
+				}
 			}
 		}
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
@@ -236,8 +243,11 @@ static function array<int> IRI_GetSpecIndices_ForRandomClass(XComGameState_Unit 
 
 			if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
 			{
-				`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
-				ValidSpecTemplates.AddItem(SpecTemplate);
+				for (i = 0; i < SpecTemplate.IRIMetaInfo.iWeightComplementary; i++)
+				{
+					`LOG("Valid spec: " @ SpecTemplate.Name,, 'IRIRPG');
+					ValidSpecTemplates.AddItem(SpecTemplate);
+				}
 			}
 		}
 
