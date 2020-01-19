@@ -3,7 +3,7 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig extends JsonObject;
+class RPGO_JsonConfig extends JsonObject;
 
 struct ObjectKey
 {

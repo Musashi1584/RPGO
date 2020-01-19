@@ -3,6 +3,6 @@
 //	Author: Muashi
 //	
 //-----------------------------------------------------------
-class RPGO_SWO_DefaultSettingsConfigManager extends JsonConfig_Manager config(SecondWaveOptions);
+class RPGO_SWO_DefaultSettingsConfigManager extends RPGO_JsonConfig_Manager config(SecondWaveOptions);
 
 

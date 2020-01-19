@@ -215,37 +215,37 @@
     <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_Array.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_Array.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Builder.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_MCM_Builder.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_Manager.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_Manager.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_Interface.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_Interface.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Element.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_MCM_Element.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Group.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_MCM_Group.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_MCM_Page.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_MCM_Page.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_TaggedConfigProperty.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_TaggedConfigProperty.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_Vector.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_Vector.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\RPGO\Classes\JsonConfig_WeaponDamageValue.uc">
+    <Content Include="Src\RPGO\Classes\RPGO_JsonConfig_WeaponDamageValue.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\RPGOAbilityConfigManager.uc">

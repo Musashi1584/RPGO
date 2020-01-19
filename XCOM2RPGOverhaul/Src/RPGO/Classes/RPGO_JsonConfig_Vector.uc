@@ -1,9 +1,9 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_Vector
+//	Class:	RPGO_JsonConfig_Vector
 //	Author: Muasshi
 //	
 //-----------------------------------------------------------
-class JsonConfig_Vector extends Object implements(JsonConfig_Interface);
+class RPGO_JsonConfig_Vector extends Object implements(RPGO_JsonConfig_Interface);
 
 var protectedwrite vector VectorValue;
 

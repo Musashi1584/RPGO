@@ -3,7 +3,7 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class RPGOUserSettingsConfigManager extends JsonConfig_Manager config (RPGO_UserSettings);
+class RPGOUserSettingsConfigManager extends RPGO_JsonConfig_Manager config (RPGO_UserSettings);
 
 //defaultproperties
 //{

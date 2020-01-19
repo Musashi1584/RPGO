@@ -1,12 +1,12 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_MCM_Element
+//	Class:	RPGO_JsonConfig_MCM_Element
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_MCM_Element extends Object;
+class RPGO_JsonConfig_MCM_Element extends Object;
 
 var string ConfigKey;
-var JsonConfig_MCM_Builder Builder;
+var RPGO_JsonConfig_MCM_Builder Builder;
 var string SettingName;
 var string Type;
 var string Label;
@@ -15,7 +15,7 @@ var string SliderMin;
 var string SliderMax;
 var string SliderStep;
 var string ButtonLabel;
-var JsonConfig_Array Options;
+var RPGO_JsonConfig_Array Options;
 
 public function string GetLabel()
 {
@@ -57,13 +57,13 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
-public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
+public function bool Deserialize(JSonObject Data, string PropertyName, RPGO_JsonConfig_MCM_Builder BuilderParam)
 {
 	local JsonObject ElementJson;
 
 	ConfigKey = PropertyName;
 
-	Options = new class'JsonConfig_Array';
+	Options = new class'RPGO_JsonConfig_Array';
 
 	ElementJson = Data.GetObject(PropertyName);
 	if (ElementJson != none)
@@ -87,7 +87,7 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 defaultproperties
 {
-	Begin Object Class=JsonConfig_Array Name=DefaultJsonConfig_Array
+	Begin Object Class=RPGO_JsonConfig_Array Name=DefaultJsonConfig_Array
 	End Object
 	Options = DefaultJsonConfig_Array;
 }

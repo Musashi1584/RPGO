@@ -1,9 +1,9 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_Array
+//	Class:	RPGO_JsonConfig_Array
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_Array extends Object implements (JsonConfig_Interface);
+class RPGO_JsonConfig_Array extends Object implements (RPGO_JsonConfig_Interface);
 
 var protectedwrite array<string> ArrayValue;
 

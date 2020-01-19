@@ -1,9 +1,9 @@
-class JsonConfig_MCM_Builder extends JsonConfig config(UI) abstract;
+class RPGO_JsonConfig_MCM_Builder extends RPGO_JsonConfig config(UI) abstract;
 
 struct MCMConfigMapEntry
 {
 	var string PageID;
-	var JsonConfig_MCM_Page MCMConfigPage;
+	var RPGO_JsonConfig_MCM_Page MCMConfigPage;
 };
 
 var config array<string> MCMPages;
@@ -11,9 +11,9 @@ var protectedwrite array<MCMConfigMapEntry> DeserialzedPagesMap;
 var string BuilderClassName;
 var array<ObjectKey> ObjectKeys;
 
-static public function JsonConfig_MCM_Builder GetMCMBuilder(optional string BuilderClassNameParam)
+static public function RPGO_JsonConfig_MCM_Builder GetMCMBuilder(optional string BuilderClassNameParam)
 {
-	local JsonConfig_MCM_Builder MCMBuilder;
+	local RPGO_JsonConfig_MCM_Builder MCMBuilder;
 
 	if (BuilderClassNameParam == "")
 	{
@@ -21,7 +21,7 @@ static public function JsonConfig_MCM_Builder GetMCMBuilder(optional string Buil
 	}
 
 
-	MCMBuilder = JsonConfig_MCM_Builder(class'Engine'.static.FindClassDefaultObject(BuilderClassNameParam));
+	MCMBuilder = RPGO_JsonConfig_MCM_Builder(class'Engine'.static.FindClassDefaultObject(BuilderClassNameParam));
 
 	if (MCMBuilder.DeserialzedPagesMap.Length == 0)
 	{
@@ -49,7 +49,7 @@ function string LocalizeItem(string Key)
 
 public static function SerializeAndSaveBuilderConfig()
 {
-	local JsonConfig_MCM_Builder Builder;
+	local RPGO_JsonConfig_MCM_Builder Builder;
 
 	Builder = GetMCMBuilder();
 	Builder.SerializeConfig();
@@ -60,7 +60,7 @@ private function DeserializeConfig()
 {
 	local MCMConfigMapEntry MapEntry;
 	local JSonObject JSonObject;
-	local JsonConfig_MCM_Page MCMPage;
+	local RPGO_JsonConfig_MCM_Page MCMPage;
 	local ObjectKey ObjKey;
 	local string SanitizedJsonString, SerializedMCMPage;
 
@@ -81,7 +81,7 @@ private function DeserializeConfig()
 				{
 					if (DeserialzedPagesMap.Find('PageID', ObjKey.Key) == INDEX_NONE)
 					{
-						MCMPage = new class'JsonConfig_MCM_Page';
+						MCMPage = new class'RPGO_JsonConfig_MCM_Page';
 						if (MCMPage.Deserialize(JSonObject, ObjKey.Key, self))
 						{
 							MapEntry.PageID = ObjKey.Key;

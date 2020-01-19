@@ -1,18 +1,18 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_MCM_Page
+//	Class:	RPGO_JsonConfig_MCM_Page
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_MCM_Page extends Object;
+class RPGO_JsonConfig_MCM_Page extends Object;
 
-var JsonConfig_MCM_Builder Builder;
+var RPGO_JsonConfig_MCM_Builder Builder;
 var int MCMPageId;
 var string ConfigKey;
 var string PageTitle;
 var string TabLabel;
 var string EnableResetButton;
 var string SaveConfigManager;
-var array<JsonConfig_MCM_Group> Groups;
+var array<RPGO_JsonConfig_MCM_Group> Groups;
 
 public function bool ShouldEnableResetButton()
 {
@@ -64,7 +64,7 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
-public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
+public function bool Deserialize(JSonObject Data, string PropertyName, RPGO_JsonConfig_MCM_Builder BuilderParam)
 {
 	local JsonObject PageJson;
 
@@ -89,14 +89,14 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 private function DeserializeGroups(JsonObject PageJson)
 {
-	local JsonConfig_MCM_Group Group;
+	local RPGO_JsonConfig_MCM_Group Group;
 	local ObjectKey ObjKey;
 
 	foreach Builder.ObjectKeys(ObjKey)
 	{
 		if (ObjKey.ParentKey == ConfigKey)
 		{
-			Group = new class'JsonConfig_MCM_Group';
+			Group = new class'RPGO_JsonConfig_MCM_Group';
 			if(Group.Deserialize(PageJson, ObjKey.Key, Builder))
 			{
 				Groups.AddItem(Group);

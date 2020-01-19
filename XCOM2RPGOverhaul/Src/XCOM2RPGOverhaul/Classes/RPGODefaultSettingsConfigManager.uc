@@ -3,5 +3,5 @@
 //	Author: Muashi
 //	
 //-----------------------------------------------------------
-class RPGODefaultSettingsConfigManager extends JsonConfig_Manager config(RPGODefaultSettings);
+class RPGODefaultSettingsConfigManager extends RPGO_JsonConfig_Manager config(RPGODefaultSettings);
 

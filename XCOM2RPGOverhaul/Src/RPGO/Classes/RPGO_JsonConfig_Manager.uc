@@ -1,34 +1,34 @@
-class JsonConfig_Manager extends JsonConfig config(GameData) abstract;
+class RPGO_JsonConfig_Manager extends RPGO_JsonConfig config(GameData) abstract;
 
 struct ConfigPropertyMapEntry
 {
 	var string PropertyName;
-	var JsonConfig_TaggedConfigProperty ConfigProperty;
+	var RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 };
 
 var config array<string> ConfigProperties;
 var protectedwrite array<ConfigPropertyMapEntry> DeserialzedConfigPropertyMap;
 var array< Delegate<TagFunctionDelegate> > OnTagFunctions;
 var string DefaultConfigManagerClassName;
-var JsonConfig_Manager DefaultConfigManager;
+var RPGO_JsonConfig_Manager DefaultConfigManager;
 
-delegate bool TagFunctionDelegate(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
+delegate bool TagFunctionDelegate(name TagFunctionName, RPGO_JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
 //
 // override in subclasses
 //
-function bool OnTagFunction(name TagFunctionName, JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
+function bool OnTagFunction(name TagFunctionName, RPGO_JsonConfig_TaggedConfigProperty ConfigProperty, out string TagValue);
 
-public static function JsonConfig_Manager GetConfigManager(optional string ClassNameParam)
+public static function RPGO_JsonConfig_Manager GetConfigManager(optional string ClassNameParam)
 {
-	local JsonConfig_Manager ConfigManager;
+	local RPGO_JsonConfig_Manager ConfigManager;
 
 	if (ClassNameParam == "")
 	{
 		ClassNameParam = string(default.class);
 	}
 
-	ConfigManager = JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ClassNameParam));
+	ConfigManager = RPGO_JsonConfig_Manager(class'Engine'.static.FindClassDefaultObject(ClassNameParam));
 	
 	if (ConfigManager.DeserialzedConfigPropertyMap.Length == 0)
 	{
@@ -42,9 +42,9 @@ public static function JsonConfig_Manager GetConfigManager(optional string Class
 	return ConfigManager;
 }
 
-public static function JsonConfig_Manager GetDefaultConfigManager()
+public static function RPGO_JsonConfig_Manager GetDefaultConfigManager()
 {
-	local JsonConfig_Manager ConfigManager;
+	local RPGO_JsonConfig_Manager ConfigManager;
 
 	ConfigManager = GetConfigManager();
 	return ConfigManager.DefaultConfigManager;
@@ -52,7 +52,7 @@ public static function JsonConfig_Manager GetDefaultConfigManager()
 
 public static function SerializeAndSaveConfig()
 {
-	local JsonConfig_Manager ConfigManager;
+	local RPGO_JsonConfig_Manager ConfigManager;
 
 	ConfigManager = GetConfigManager();
 	ConfigManager.SerializeConfig();
@@ -63,7 +63,7 @@ private function DeserializeConfig()
 {
 	local ConfigPropertyMapEntry MapEntry;
 	local JSonObject JSonObject, JSonObjectProperty;
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 	local string SerializedConfigProperty, PropertyName;
 
 	//`LOG(default.class @ GetFuncName() @ "found entries:" @ default.ConfigProperties.Length,, 'RPG');
@@ -80,7 +80,7 @@ private function DeserializeConfig()
 			if (JSonObjectProperty != none &&
 				DeserialzedConfigPropertyMap.Find('PropertyName', PropertyName) == INDEX_NONE)
 			{
-				ConfigProperty = new class'JsonConfig_TaggedConfigProperty';
+				ConfigProperty = new class'RPGO_JsonConfig_TaggedConfigProperty';
 				ConfigProperty.ManagerInstance = self;
 				ConfigProperty.Deserialize(JSonObjectProperty);
 				MapEntry.PropertyName = PropertyName;
@@ -115,8 +115,8 @@ static public function bool HasConfigProperty(coerce string PropertyName, option
 
 static public function SetConfigString(string PropertyName, coerce string Value)
 {
-	local JsonConfig_Manager ConfigManager;
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_Manager ConfigManager;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 	local ConfigPropertyMapEntry MapEntry;
 
 	ConfigManager = GetConfigManager();
@@ -128,7 +128,7 @@ static public function SetConfigString(string PropertyName, coerce string Value)
 	}
 	else
 	{
-		ConfigProperty = new class'JsonConfig_TaggedConfigProperty';
+		ConfigProperty = new class'RPGO_JsonConfig_TaggedConfigProperty';
 		ConfigProperty.ManagerInstance = ConfigManager;
 		ConfigProperty.SetValue(Value);
 
@@ -214,7 +214,7 @@ static public function array<name> GetConfigNameArray(coerce string PropertyName
 
 static public function vector GetConfigVectorValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 
 	ConfigProperty = GetConfigProperty(PropertyName);
 
@@ -229,7 +229,7 @@ static public function vector GetConfigVectorValue(coerce string PropertyName, o
 
 static public function array<string> GetConfigStringArray(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 	local array<string> EmptyArray;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -247,7 +247,7 @@ static public function array<string> GetConfigStringArray(coerce string Property
 
 static public function WeaponDamageValue GetConfigDamageValue(coerce string PropertyName, optional string Namespace)
 {
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 	local WeaponDamageValue Value;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -263,7 +263,7 @@ static public function WeaponDamageValue GetConfigDamageValue(coerce string Prop
 
 static public function string GetConfigStringValue(coerce string PropertyName, optional string TagFunction, optional string Namespace)
 {
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 	local string Value;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
@@ -279,7 +279,7 @@ static public function string GetConfigStringValue(coerce string PropertyName, o
 
 static public function string GetConfigTagValue(coerce string PropertyName, optional string Namespace)
 {
-	local JsonConfig_TaggedConfigProperty ConfigProperty;
+	local RPGO_JsonConfig_TaggedConfigProperty ConfigProperty;
 
 	ConfigProperty = GetConfigProperty(PropertyName, Namespace);
 
@@ -292,12 +292,12 @@ static public function string GetConfigTagValue(coerce string PropertyName, opti
 }
 
 
-static public function JsonConfig_TaggedConfigProperty GetConfigProperty(
+static public function RPGO_JsonConfig_TaggedConfigProperty GetConfigProperty(
 	coerce string PropertyName,
 	optional string Namespace
 )
 {
-	local JsonConfig_Manager ConfigManager;
+	local RPGO_JsonConfig_Manager ConfigManager;
 	local int Index;
 
 	ConfigManager = GetConfigManager();

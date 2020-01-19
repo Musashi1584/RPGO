@@ -1,11 +1,11 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_Interface
+//	Class:	RPGO_JsonConfig_Interface
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
 
 
-interface JsonConfig_Interface;
+interface RPGO_JsonConfig_Interface;
 
 public function Serialize(out JsonObject JsonObject, string PropertyName);
 public function bool Deserialize(JSonObject Data, string PropertyName);

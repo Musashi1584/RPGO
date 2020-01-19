@@ -1,16 +1,16 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_TaggedConfigProperty
+//	Class:	RPGO_JsonConfig_TaggedConfigProperty
 //	Author: Musashi
 //	Defines a config entry for a config value with meta information for automatic localization tags
 //-----------------------------------------------------------
 
-class JsonConfig_TaggedConfigProperty extends Object dependson(JsonConfig_Manager);
+class RPGO_JsonConfig_TaggedConfigProperty extends Object dependson(RPGO_JsonConfig_Manager);
 
-var JsonConfig_Manager ManagerInstance;
+var RPGO_JsonConfig_Manager ManagerInstance;
 var protected string Value;
-var protectedwrite JsonConfig_Vector VectorValue;
-var protectedwrite JsonConfig_Array ArrayValue;
-var protectedwrite JsonConfig_WeaponDamageValue DamageValue;
+var protectedwrite RPGO_JsonConfig_Vector VectorValue;
+var protectedwrite RPGO_JsonConfig_Array ArrayValue;
+var protectedwrite RPGO_JsonConfig_WeaponDamageValue DamageValue;
 
 var protected string Namespace;
 var protected string TagFunction;
@@ -152,7 +152,7 @@ function string GetTagValueModifiedByTagFunction(string TagFunctionIn)
 	local int OutValue;
 	local string DelegateValue;
 	local array<string> LocalArrayValue;
-	local delegate<JsonConfig_Manager.TagFunctionDelegate> TagFunctionCB;
+	local delegate<RPGO_JsonConfig_Manager.TagFunctionDelegate> TagFunctionCB;
 
 	foreach ManagerInstance.OnTagFunctions(TagFunctionCB)
 	{
@@ -246,9 +246,9 @@ function JSonObject Serialize()
 
 function Deserialize(JSonObject Data)
 {
-	VectorValue = new class'JsonConfig_Vector';
-	ArrayValue = new class'JsonConfig_Array';
-	DamageValue = new class'JsonConfig_WeaponDamageValue';
+	VectorValue = new class'RPGO_JsonConfig_Vector';
+	ArrayValue = new class'RPGO_JsonConfig_Array';
+	DamageValue = new class'RPGO_JsonConfig_WeaponDamageValue';
 
 	bIsVector = VectorValue.Deserialize(Data, "VectorValue");
 	bIsArray = ArrayValue.Deserialize(Data, "ArrayValue");
@@ -265,15 +265,15 @@ function Deserialize(JSonObject Data)
 
 defaultproperties
 {
-	Begin Object Class=JsonConfig_Vector Name=TaggedDefaultJsonConfig_Vector
+	Begin Object Class=RPGO_JsonConfig_Vector Name=TaggedDefaultJsonConfig_Vector
 	End Object
 	VectorValue = TaggedDefaultJsonConfig_Vector;
 
-	Begin Object Class=JsonConfig_Array Name=TaggedDefaultJsonConfig_Array
+	Begin Object Class=RPGO_JsonConfig_Array Name=TaggedDefaultJsonConfig_Array
 	End Object
 	ArrayValue = TaggedDefaultJsonConfig_Array;
 
-	Begin Object Class=JsonConfig_WeaponDamageValue Name=TaggedDefaultJsonConfig_WeaponDamageValue
+	Begin Object Class=RPGO_JsonConfig_WeaponDamageValue Name=TaggedDefaultJsonConfig_WeaponDamageValue
 	End Object
 	DamageValue = TaggedDefaultJsonConfig_WeaponDamageValue;
 }

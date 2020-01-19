@@ -1,9 +1,9 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_WeaponDamageValue
+//	Class:	RPGO_JsonConfig_WeaponDamageValue
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_WeaponDamageValue extends Object implements (JsonConfig_Interface);
+class RPGO_JsonConfig_WeaponDamageValue extends Object implements (RPGO_JsonConfig_Interface);
 
 var protectedwrite WeaponDamageValue DamageValue;
 

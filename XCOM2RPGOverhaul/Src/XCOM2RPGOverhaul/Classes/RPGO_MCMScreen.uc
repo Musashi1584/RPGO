@@ -8,7 +8,7 @@ class RPGO_MCMScreen extends Object config(UI);
 struct BuilderInstance
 {
 	var int PageId;
-	var JsonConfig_MCM_Builder Builder;
+	var RPGO_JsonConfig_MCM_Builder Builder;
 };
 
 var config int VERSION_CFG;
@@ -46,18 +46,18 @@ simulated function BuildMCM(
 	int GameMode
 )
 {
-	//local JsonConfig_MCM_Builder Builder;
+	//local RPGO_JsonConfig_MCM_Builder Builder;
 	local BuilderInstance Instance;
 	local MCMConfigMapEntry MapEntry;
-	local JsonConfig_MCM_Page MCMPageConfig;
-	local JsonConfig_MCM_Group MCMGroupConfig;
-	local JsonConfig_MCM_Element MCMElementConfig;
-	local JsonConfig_Manager SaveConfigManager;
+	local RPGO_JsonConfig_MCM_Page MCMPageConfig;
+	local RPGO_JsonConfig_MCM_Group MCMGroupConfig;
+	local RPGO_JsonConfig_MCM_Element MCMElementConfig;
+	local RPGO_JsonConfig_Manager SaveConfigManager;
 	local MCM_API_SettingsPage Page;
 	local MCM_API_SettingsGroup Group;
 	local name SetttingName;
 	
-	Instance.Builder = class'JsonConfig_MCM_Builder'.static.GetMCMBuilder(BuilderClassName);
+	Instance.Builder = class'RPGO_JsonConfig_MCM_Builder'.static.GetMCMBuilder(BuilderClassName);
 
 	foreach Instance.Builder.DeserialzedPagesMap(MapEntry)
 	{
@@ -212,9 +212,9 @@ simulated function ElementChangeHandler(MCM_API_Setting Setting, coerce string S
 
 simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string SettingValue)
 {
-	local JsonConfig_MCM_Page Page;
-	local JsonConfig_MCM_Group Group;
-	local JsonConfig_Manager SaveConfigManager;
+	local RPGO_JsonConfig_MCM_Page Page;
+	local RPGO_JsonConfig_MCM_Group Group;
+	local RPGO_JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
 	
@@ -248,9 +248,9 @@ simulated function ElementSaveHandler(MCM_API_Setting Setting, coerce string Set
 
 simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 {
-	local JsonConfig_MCM_Page ConfigPage;
-	local JsonConfig_MCM_Group ConfigGroup;
-	local JsonConfig_Manager SaveConfigManager;
+	local RPGO_JsonConfig_MCM_Page ConfigPage;
+	local RPGO_JsonConfig_MCM_Group ConfigGroup;
+	local RPGO_JsonConfig_Manager SaveConfigManager;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
 	local int Index;
@@ -277,13 +277,13 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 			);
 			if (ConfigGroup.SaveConfigManager != "")
 			{
-				SaveConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigGroup.SaveConfigManager);
+				SaveConfigManager = class'RPGO_JsonConfig_Manager'.static.GetConfigManager(ConfigGroup.SaveConfigManager);
 				SaveConfigManager.static.SerializeAndSaveConfig();
 			}
 		}
 
 		ConfigPage = GetPage(Page.GetPageId());
-		SaveConfigManager = class'JsonConfig_Manager'.static.GetConfigManager(ConfigPage.SaveConfigManager);
+		SaveConfigManager = class'RPGO_JsonConfig_Manager'.static.GetConfigManager(ConfigPage.SaveConfigManager);
 		SaveConfigManager.static.SerializeAndSaveConfig();
 		
 		`XEVENTMGR.TriggerEvent('MCM_ConfigSaved', Page, GetBuilder(Page.GetPageId()), none);
@@ -304,9 +304,9 @@ simulated function SaveButtonClicked(MCM_API_SettingsPage Page)
 
 simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 {
-	local JsonConfig_MCM_Page ConfigPage;
-	local JsonConfig_MCM_Group ConfigGroup;
-	local JsonConfig_Manager SaveConfigManager, DefaultConfigManager;
+	local RPGO_JsonConfig_MCM_Page ConfigPage;
+	local RPGO_JsonConfig_MCM_Group ConfigGroup;
+	local RPGO_JsonConfig_Manager SaveConfigManager, DefaultConfigManager;
 	local int Index;
 	local int SettingIndex;
 	local MCM_API_SettingsGroup Group;
@@ -375,23 +375,23 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 	}
 }
 
-function JsonConfig_Manager GetConfigManager(JsonConfig_MCM_Page Page, JsonConfig_MCM_Group Group)
+function RPGO_JsonConfig_Manager GetConfigManager(RPGO_JsonConfig_MCM_Page Page, RPGO_JsonConfig_MCM_Group Group)
 {
 	if (Group.SaveConfigManager != "")
 	{
-		return class'JsonConfig_Manager'.static.GetConfigManager(Group.SaveConfigManager);
+		return class'RPGO_JsonConfig_Manager'.static.GetConfigManager(Group.SaveConfigManager);
 	}
 	else
 	{
-		return class'JsonConfig_Manager'.static.GetConfigManager(Page.SaveConfigManager);
+		return class'RPGO_JsonConfig_Manager'.static.GetConfigManager(Page.SaveConfigManager);
 	}
 }
 
-simulated public function JsonConfig_MCM_Page GetPage(int PageID)
+simulated public function RPGO_JsonConfig_MCM_Page GetPage(int PageID)
 {
-	local JsonConfig_MCM_Builder Builder;
+	local RPGO_JsonConfig_MCM_Builder Builder;
 	local MCMConfigMapEntry MCMConfig;
-	local JsonConfig_MCM_Page Page;
+	local RPGO_JsonConfig_MCM_Page Page;
 
 
 	Builder = GetBuilder(PageID);
@@ -414,10 +414,10 @@ simulated public function JsonConfig_MCM_Page GetPage(int PageID)
 	return none;
 }
 
-simulated public function JsonConfig_MCM_Group GetGroup(int PageID, name GroupName)
+simulated public function RPGO_JsonConfig_MCM_Group GetGroup(int PageID, name GroupName)
 {
-	local JsonConfig_MCM_Page Page;
-	local JsonConfig_MCM_Group Group;
+	local RPGO_JsonConfig_MCM_Page Page;
+	local RPGO_JsonConfig_MCM_Group Group;
 
 	Page = GetPage(PageID);
 
@@ -429,15 +429,15 @@ simulated public function JsonConfig_MCM_Group GetGroup(int PageID, name GroupNa
 		}
 	}
 
-	`LOG(default.class @ GetFuncName() @ "could not find JsonConfig_MCM_Group for" @ PageID @ GroupName,, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "could not find RPGO_JsonConfig_MCM_Group for" @ PageID @ GroupName,, 'RPG');
 
 	return none;
 }
 
-simulated public function JsonConfig_MCM_Element GetElement(int PageID, name GroupName, name SettingName)
+simulated public function RPGO_JsonConfig_MCM_Element GetElement(int PageID, name GroupName, name SettingName)
 {
-	local JsonConfig_MCM_Group Group;
-	local JsonConfig_MCM_Element Element;
+	local RPGO_JsonConfig_MCM_Group Group;
+	local RPGO_JsonConfig_MCM_Element Element;
 
 	Group = GetGroup(PageID, GroupName);
 
@@ -449,12 +449,12 @@ simulated public function JsonConfig_MCM_Element GetElement(int PageID, name Gro
 		}
 	}
 
-	`LOG(default.class @ GetFuncName() @ "could not find JsonConfig_MCM_Element for" @ PageID @ GroupName @ SettingName,, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "could not find RPGO_JsonConfig_MCM_Element for" @ PageID @ GroupName @ SettingName,, 'RPG');
 
 	return none;
 }
 
-simulated function JsonConfig_MCM_Builder GetBuilder(int PageID)
+simulated function RPGO_JsonConfig_MCM_Builder GetBuilder(int PageID)
 {
 	return BuilderInstances[BuilderInstances.Find('PageId', PageID)].Builder;
 }

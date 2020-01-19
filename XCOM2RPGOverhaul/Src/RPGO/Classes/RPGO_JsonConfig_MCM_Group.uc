@@ -1,16 +1,16 @@
 //-----------------------------------------------------------
-//	Class:	JsonConfig_MCM_Group
+//	Class:	RPGO_JsonConfig_MCM_Group
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class JsonConfig_MCM_Group extends Object;
+class RPGO_JsonConfig_MCM_Group extends Object;
 
-var JsonConfig_MCM_Builder Builder;
+var RPGO_JsonConfig_MCM_Builder Builder;
 var protectedwrite string GroupName;
 var protectedwrite string GroupLabel;
 var string ConfigKey;
 
-var array<JsonConfig_MCM_Element> Elements;
+var array<RPGO_JsonConfig_MCM_Element> Elements;
 var string SaveConfigManager;
 
 public function SetGroupName(string GroupNameParam)
@@ -57,7 +57,7 @@ public function Serialize(out JsonObject JsonObject, string PropertyName)
 	JSonObject.SetObject(PropertyName, JsonSubObject);
 }
 
-public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfig_MCM_Builder BuilderParam)
+public function bool Deserialize(JSonObject Data, string PropertyName, RPGO_JsonConfig_MCM_Builder BuilderParam)
 {
 	local JsonObject GroupJson;
 
@@ -85,14 +85,14 @@ public function bool Deserialize(JSonObject Data, string PropertyName, JsonConfi
 
 private function DeserializeElements(JsonObject GroupJson)
 {
-	local JsonConfig_MCM_Element Element;
+	local RPGO_JsonConfig_MCM_Element Element;
 	local ObjectKey ObjKey;
 
 	foreach Builder.ObjectKeys(ObjKey)
 	{
 		if (ObjKey.ParentKey == ConfigKey)
 		{
-			Element = new class'JsonConfig_MCM_Element';
+			Element = new class'RPGO_JsonConfig_MCM_Element';
 			if(Element.Deserialize(GroupJson, ObjKey.Key, Builder))
 			{
 				Elements.AddItem(Element);
