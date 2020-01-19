@@ -59,11 +59,11 @@ static function AddSecondWaveOptions()
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
 	);
 
-	AddSecondWaveOption(
-		'RPGO_IRI_SWO_RandomClasses',
-		class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Description,
-		class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Tooltip
-	);
+	//AddSecondWaveOption(
+	//	'RPGO_IRI_SWO_RandomClasses',
+	//	class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Description,
+	//	class'XGLocalizedData_RPG'.default.strRPGO_IRI_SWO_RandomClasses_Tooltip
+	//);
 }
 
 static function AddSecondWaveOption(name ID, string Description, string Tooltip)
