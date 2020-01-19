@@ -1,6 +1,8 @@
 class X2Effect_EquipmentStatCaps extends X2Effect_CapStat config (RPG);
 
 var array<EquipmentStatCap> EquipmentStatCaps;
+// If true only the highest cap will be used
+var bool bUseMaxCap;
 
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
@@ -57,6 +59,7 @@ public function AddCap(StatCap Cap)
 	if (Index != INDEX_NONE)
 	{
 		m_aStatCaps[Index].StatCapValue = Max(m_aStatCaps[Index].StatCapValue, Cap.StatCapValue);
+		//`LOG(default.class @ GetFuncName() @ Cap.StatType @ Cap.StatCapValue @ m_aStatCaps[Index].StatCapValue);
 	}
 	else
 	{

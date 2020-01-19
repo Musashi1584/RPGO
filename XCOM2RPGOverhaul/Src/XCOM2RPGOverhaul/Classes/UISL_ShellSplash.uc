@@ -81,7 +81,7 @@ function RealizeVersionText(UIShell ShellScreen)
 		22
 	);
 
-	`log("Showing version" @ VersionString @ "on shell screen...", , 'RPG');
+	`log("INSTALLED RPGO VERSION" @ VersionString, , 'RPG');
 
 	VersionTextRPGO = UIText(ShellScreen.GetChildByName('theVersionTextRPGO', false));
 	if (VersionTextRPGO == none)

@@ -315,7 +315,7 @@ static public function JsonConfig_TaggedConfigProperty GetConfigProperty(
 		return ConfigManager.DefaultConfigManager.GetConfigProperty(PropertyName, Namespace);
 	}
 
-	`LOG(default.class @ GetFuncName() @ "could not find config property for" @ PropertyName,, 'RPG');
+	//`LOG(default.class @ GetFuncName() @ "could not find config property for" @ PropertyName,, 'RPG');
 
 	return none;
 }
