@@ -32,7 +32,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_OnStateSubmitted);
 	// compatibility with Commanders Choice Wotc
-	//Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_Immediate);
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_Immediate);
 	`LOG("Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
 
 	return Template;
