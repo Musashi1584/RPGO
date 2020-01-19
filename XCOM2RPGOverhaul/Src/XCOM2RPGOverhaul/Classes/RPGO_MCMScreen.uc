@@ -3,7 +3,7 @@
 //	Author: Musashi
 //	
 //-----------------------------------------------------------
-class RPGO_MCMScreen extends Object config(UI);
+class RPGO_MCMScreen extends Object config(UI) dependson(MCM_API_Setting);
 
 struct BuilderInstance
 {
@@ -317,6 +317,7 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 	local MCM_API_Dropdown Dropdown;
 	local XComLWTuple Tuple;
 	local bool bOverrideDefaultHandler;
+	local eSettingType SettingsType;
 
 	bOverrideDefaultHandler = false;
 		
@@ -348,8 +349,9 @@ simulated function ResetButtonClicked(MCM_API_SettingsPage Page)
 			for (SettingIndex = 0; SettingIndex < Group.GetNumberOfSettings(); SettingIndex++)
 			{
 				Setting = Group.GetSettingByIndex(SettingIndex);
+				SettingsType = eSettingType(Setting.GetSettingType());
 			
-				switch (Setting.GetSettingType())
+				switch (SettingsType)
 				{
 					case eSettingType_Checkbox:
 						Checkbox = MCM_API_Checkbox(Setting);
