@@ -421,7 +421,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadout
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_OnStateSubmitted);
+	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_Immediate);
 
 	//	Setting low priority so the unit gets specializations assigned by an event listener above
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_IRIRandomClass, ELD_OnStateSubmitted, 10);
@@ -433,16 +433,25 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadout
 
 
 
-static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object EventData, Object EventSource, XComGameState NewGameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit	UnitState;
 	local XComGameState_Item	PrimaryWeaponState;
 	local XComGameState_Item	SecondaryWeaponState;
-	local XComGameState			NewGameState;
 	local XComGameStateHistory				History;
 	local XComGameState_HeadquartersXCom	XComHQ;
 
+	//	This gets us Unit State from History
 	UnitState = XComGameState_Unit(EventData);
+	//	Here we get the Unit State from pending New Game State.
+	UnitState = XComGameState_Unit(NewGameState.GetGameStateForObjectID(UnitState.ObjectID));
+
+	XComHQ = `XCOMHQ;
+	XComHQ = XComGameState_HeadquartersXCom(NewGameState.GetGameStateForObjectID(XComHQ.ObjectID));
+	if (XComHQ == none)
+	{
+		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+	}
 
 	//`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'IRIGEAR');
 
@@ -457,13 +466,6 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 
 		if (PrimaryWeaponState == none || SecondaryWeaponState == none)
 		{
-			NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Changing best loadout for unit: " @ UnitState.GetFullName());
-
-			XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
-			XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
-
-			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
-
 			if (PrimaryWeaponState == none)
 			{
 				PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
@@ -483,10 +485,6 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 					UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState);
 				}
 			}
-
-			//`LOG("New Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
-			//`LOG("New Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
-			`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 		}
 	}
 	return ELR_NoInterrupt;
