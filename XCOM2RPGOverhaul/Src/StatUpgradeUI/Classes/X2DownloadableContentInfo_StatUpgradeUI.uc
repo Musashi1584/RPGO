@@ -279,6 +279,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	local bool								bChangeClass;
 	local int								i, NumRanks, iXP;
 	local array<SCATProgression>			SoldierProgressionAbilties;
+	local array<XComGameState_Item>			PCSItemStates;
 	
 	History = `XCOMHISTORY;
 
@@ -360,6 +361,16 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	if (ClassName == 'Random' || ClassName == 'Rookie')
 	{
 		ClassName = XComHQ.SelectNextSoldierClass();
+	}
+
+	// Remove and return to inventory any equipped PCS chips
+	PCSItemStates = UnitState.GetAllItemsInSlot(eInvSlot_CombatSim);
+	for (i = 0; i < PCSItemStates.Length; ++i)
+	{
+		if (UnitState.RemoveItemFromInventory(PCSItemStates[i], NewGameState)) 
+		{
+			XComHQ.PutItemInInventory(NewGameState, PCSItemStates[i]);
+		}
 	}
 
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
