@@ -2,6 +2,7 @@ class X2EventListener_StatUI extends X2EventListener config(StatUpgradeUI);
 
 var config int DefaultStatPointsPerPromotion;
 var config array<ClassStatPoints> ClassStatPointsPerPromotion;
+var config array<name> EnableClassForStatProgression;
 
 var delegate<OnItemSelectedCallback> NextOnSelectionChanged;
 delegate OnItemSelectedCallback(UIList _list, int itemIndex);
@@ -69,7 +70,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 
 	if (UnitState != none &&
 		UnitState.GetMyTemplateName() == 'Soldier' &&
-		UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier'
+		default.EnableClassForStatProgression.Find(UnitState.GetSoldierClassTemplateName()) != INDEX_NONE
 	)
 	{
 		SpentSoldierSP = GetSpentSoldierSP(UnitState);
@@ -140,7 +141,7 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(MainMenu.GetUnitRef().ObjectID));
 	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 
-	if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	if (default.EnableClassForStatProgression.Find(UnitState.GetSoldierClassTemplateName()) != INDEX_NONE)
 	{
 		StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
 		StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
