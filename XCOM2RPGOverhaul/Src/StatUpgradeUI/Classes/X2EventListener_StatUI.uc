@@ -140,17 +140,20 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(MainMenu.GetUnitRef().ObjectID));
 	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 
-	StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
-	StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
-	StatUIButton.ButtonBG.OnClickedDelegate = OnSoldierStats;
-	StatUIButton.NeedsAttention(StatPointsValue.fValue > 0);
+	if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	{
+		StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
+		StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
+		StatUIButton.ButtonBG.OnClickedDelegate = OnSoldierStats;
+		StatUIButton.NeedsAttention(StatPointsValue.fValue > 0);
 
-	//if(NextOnSelectionChanged == none)
-	//{
-	// 	NextOnSelectionChanged = List.OnSelectionChanged;
-	//	List.OnSelectionChanged = OnSelectionChanged;
-	//}
-	List.MoveItemToBottom(FindDismissListItem(List));
+		//if(NextOnSelectionChanged == none)
+		//{
+		// 	NextOnSelectionChanged = List.OnSelectionChanged;
+		//	List.OnSelectionChanged = OnSelectionChanged;
+		//}
+		List.MoveItemToBottom(FindDismissListItem(List));
+	}
 
 	return ELR_NoInterrupt;
 }
