@@ -7,11 +7,11 @@ var config string DisplayName;
 // Double tactical ability points
 static event InstallNewCampaign(XComGameState StartState)
 {
-	local XComGameState_HeadquartersXCom XComHQ;
+	//local XComGameState_HeadquartersXCom XComHQ;
 
-	XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
+	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
 
-	XComHQ.BonusAbilityPointScalar *= 2.0;
+	//XComHQ.BonusAbilityPointScalar *= 2.0;
 	
 }
 

@@ -22,7 +22,7 @@ static function CHEventListenerTemplate CreateListenerTemplateScamperBegin()
 	Template.RegisterInStrategy = false;
 
 	Template.AddCHEvent('ScamperBegin', OnScamperBegin, ELD_OnStateSubmitted);
-	`LOG("Register Event OnScamperBegin",, 'RPG');
+	`LOG(default.class @ "Register Event OnScamperBegin",, 'RPG');
 
 	return Template;
 }
@@ -37,7 +37,7 @@ static function CHEventListenerTemplate CreateListenerTemplateOnCleanupTacticalM
 	Template.RegisterInStrategy = false;
 
 	Template.AddCHEvent('CleanupTacticalMission', OnCleanupTacticalMission, ELD_OnStateSubmitted);
-	`LOG("Register Event CleanupTacticalMission",, 'RPG');
+	`LOG(default.class @ "Register Event CleanupTacticalMission",, 'RPG');
 
 	return Template;
 }
@@ -52,10 +52,10 @@ static function CHEventListenerTemplate CreateListenerTemplateGetItemRange()
 	Template.RegisterInStrategy = false;
 
 	Template.AddCHEvent('OnGetItemRange', OnGetItemRangeBombard, ELD_OnStateSubmitted);
-	`LOG("Register Event OnGetItemRangeBombard",, 'RPG');
+	`LOG(default.class @ "Register Event OnGetItemRangeBombard",, 'RPG');
 
 	Template.AddCHEvent('OnGetItemRange', OnGetItemRangeScout, ELD_OnStateSubmitted);
-	`LOG("Register Event OnGetItemRangeScout",, 'RPG');
+	`LOG(default.class @ "Register Event OnGetItemRangeScout",, 'RPG');
 
 	return Template;
 }
@@ -70,7 +70,7 @@ static function CHEventListenerTemplate CreateListenerTemplateFailsafe()
 	Template.RegisterInStrategy = false;
 
 	Template.AddCHEvent('PreAcquiredHackReward', OnPreAcquiredHackReward, ELD_OnStateSubmitted);
-	`LOG("Register Event PreAcquiredHackReward",, 'RPG');
+	`LOG(default.class @ "Register Event PreAcquiredHackReward",, 'RPG');
 
 	return Template;
 }

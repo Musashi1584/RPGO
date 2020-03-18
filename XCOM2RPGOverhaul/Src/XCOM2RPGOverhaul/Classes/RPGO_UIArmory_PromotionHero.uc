@@ -551,7 +551,7 @@ function bool CanPurchaseAbility(int Rank, int Branch, name AbilityName)
 	//Emulate Resistance Hero behaviour
 	if(AbilityRanks == 0)
 	{				
-		return (Rank < UnitState.GetRank() && CanAffordAbility(Rank, Branch) && UnitState.MeetsAbilityPrerequisites(AbilityName));
+		return (Rank < UnitState.GetRank() && CanAffordAbility(Rank, Branch) && MeetsAbilityPrerequisites(UnitState, AbilityName));
 	}
 
 	//Don't allow non hero units to purchase abilities with AP without a training center
@@ -567,10 +567,28 @@ function bool CanPurchaseAbility(int Rank, int Branch, name AbilityName)
 	}
 
 	//Normal behaviour
-	// Musashi 11-05-17 do not check ability prerequisites for resistance heroes
+	// Musashi 11-05-17 do not check ability prerequisites for other classes than UniversalSoldier
 	return (Rank < UnitState.GetRank() &&
 		CanAffordAbility(Rank, Branch) &&
-		(UnitState.MeetsAbilityPrerequisites(AbilityName) || UnitState.IsResistanceHero()));
+		MeetsAbilityPrerequisites(UnitState, AbilityName));
+}
+
+function bool MeetsAbilityPrerequisites(XComGameState_Unit UnitState, name AbilityName)
+{
+	local bool bMeetsAbilityPrerequisites;
+
+	bMeetsAbilityPrerequisites = UnitState.MeetsAbilityPrerequisites(AbilityName);
+
+	// Dont use RPGO AbilityPrerequisites for other classes
+	if (!bMeetsAbilityPrerequisites && UnitState.GetSoldierClassTemplateName() != 'UniversalSoldier')
+	{
+		if (class'X2TemplateHelper_RPGOverhaul'.static.IsPrerequisiteAbility(AbilityName))
+		{
+			return true;
+		}
+	}
+
+	return bMeetsAbilityPrerequisites;
 }
 
 function int GetAbilityPointCost(int Rank, int Branch)

@@ -27,7 +27,7 @@ static function CHEventListenerTemplate CreateMainMenuListenerTemplate()
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('OnArmoryMainMenuUpdate', OnArmoryMainMenuUpdate, ELD_Immediate);
-	`LOG("Register Event OnArmoryMainMenuUpdate",, 'RPG');
+	`LOG(default.Class @ "Register Event OnArmoryMainMenuUpdate",, 'RPG');
 
 	return Template;
 }
@@ -41,7 +41,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUp, ELD_Immediate);
-	`LOG("Register Event OnUnitRankUp",, 'RPG');
+	`LOG(default.Class @ "Register Event OnUnitRankUp",, 'RPG');
 
 	return Template;
 }
@@ -55,7 +55,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldier, ELD_OnStateSubmitted);
-	`LOG("Register Event CompleteRespecSoldier",, 'RPG');
+	`LOG(default.Class @ "Register Event CompleteRespecSoldier",, 'RPG');
 
 	return Template;
 }

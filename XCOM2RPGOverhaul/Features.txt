@@ -20,7 +20,7 @@ The baseline ability cost for buying abilities is raised too however:
 
 Individual abilities may cost more or less depending on their powerlevel.
 
-The ability point rewards are doubled and the mission cap is raised from 2 to 10 AP/mission
+The ability point mission cap is raised from 2 to 5 AP/mission
 
 [h1]Soldier SP[/h1]
 

@@ -33,7 +33,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_OnStateSubmitted);
 	// compatibility with Commanders Choice Wotc
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_Immediate);
-	`LOG("Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
+	`LOG(default.class @ "Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
 
 	return Template;
 }
@@ -47,7 +47,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldierSWTR, ELD_OnStateSubmitted);
-	`LOG("Register Event OnCompleteRespecSoldierSWTR",, 'RPG');
+	`LOG(default.class @ "Register Event OnCompleteRespecSoldierSWTR",, 'RPG');
 
 	return Template;
 }
@@ -63,13 +63,13 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnSoldierInfo()
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('SoldierClassIcon', OnSoldierInfo, ELD_Immediate);
-	`LOG("Register Event SoldierClassIcon",, 'RPG');
+	`LOG(default.class @ "Register Event SoldierClassIcon",, 'RPG');
 
 	Template.AddCHEvent('SoldierClassDisplayName', OnSoldierInfo, ELD_Immediate);
-	`LOG("Register Event SoldierClassDisplayName",, 'RPG');
+	`LOG(default.class @ "Register Event SoldierClassDisplayName",, 'RPG');
 
 	Template.AddCHEvent('SoldierClassSummary', OnSoldierInfo, ELD_Immediate);
-	`LOG("Register Event SoldierClassSummary",, 'RPG');
+	`LOG(default.class @ "Register Event SoldierClassSummary",, 'RPG');
 
 	return Template;
 }
@@ -84,7 +84,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnGetLocalizedCat
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('GetLocalizedCategory', OnGetLocalizedCategory, ELD_Immediate);
-	`LOG("Register Event OnGetLocalizedCategory",, 'RPG');
+	`LOG(default.class @ "Register Event OnGetLocalizedCategory",, 'RPG');
 
 	return Template;
 }
@@ -426,7 +426,7 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadout
 	//	Setting low priority so the unit gets specializations assigned by an event listener above
 	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_IRIRandomClass, ELD_OnStateSubmitted, 10);
 
-	`LOG("Register Event OnBestGearLoadoutApplied",, 'RPG');
+	`LOG(default.class @ "Register Event OnBestGearLoadoutApplied",, 'RPG');
 
 	return Template;
 }
