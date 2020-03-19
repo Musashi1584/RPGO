@@ -68,9 +68,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	if (UnitState != none &&
-		UnitState.GetMyTemplateName() == 'Soldier' &&
-		default.EnableClassForStatProgression.Find(UnitState.GetSoldierClassTemplateName()) != INDEX_NONE
+	if (UnitState != none && IsClassEnabled(UnitState)
 	)
 	{
 		SpentSoldierSP = GetSpentSoldierSP(UnitState);
@@ -110,7 +108,7 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 
 	UnitState = XComGameState_Unit(EventData);
 
-	if (UnitState != none)
+	if (UnitState != none && IsClassEnabled(UnitState))
 	{
 		StatPointsPerPromotion = GetClassStatPointsPerPromition(UnitState);
 		BonusStatPointsNaturalAptitude = class'StatUIHelper'.static.GetBonusStatPointsFromNaturalAptitude(UnitState);
@@ -141,7 +139,7 @@ static function EventListenerReturn OnArmoryMainMenuUpdate(Object EventData, Obj
 	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(MainMenu.GetUnitRef().ObjectID));
 	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 
-	if (default.EnableClassForStatProgression.Find(UnitState.GetSoldierClassTemplateName()) != INDEX_NONE)
+	if (UnitState != none && IsClassEnabled(UnitState))
 	{
 		StatUIButton = MainMenu.Spawn(class'UIListItemString', List.ItemContainer).InitListItem(class'UIBarMemorial_Details'.default.m_strSoldierStats);
 		StatUIButton.MCName = 'ArmoryMainMenu_StatUIButton';
@@ -231,4 +229,9 @@ static function int GetSoldierSP(XComGameState_Unit UnitState)
 	local UnitValue StatPointsValue;
 	UnitState.GetUnitValue('StatPoints', StatPointsValue);
 	return int(StatPointsValue.fValue);
+}
+
+static function bool IsClassEnabled(XComGameState_Unit UnitState)
+{
+	return (default.EnableClassForStatProgression.Find(UnitState.GetSoldierClassTemplateName()) != INDEX_NONE);
 }
