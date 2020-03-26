@@ -438,7 +438,6 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 	local XComGameState_Unit	UnitState;
 	local XComGameState_Item	PrimaryWeaponState;
 	local XComGameState_Item	SecondaryWeaponState;
-	local XComGameStateHistory				History;
 	local XComGameState_HeadquartersXCom	XComHQ;
 
 	//	This gets us Unit State from History
@@ -457,7 +456,6 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 
 	if (UnitState != none)
 	{
-		History = `XCOMHISTORY;
 		PrimaryWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
 		SecondaryWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
 

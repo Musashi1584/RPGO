@@ -353,7 +353,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	iXP = UnitState.GetXPValue();
 	iXP -= class'X2ExperienceConfig'.static.GetRequiredXp(NumRanks);
 
-	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Respec Soldier");
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO Respec Soldier");
 	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
 	XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
@@ -370,6 +370,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 		if (UnitState.RemoveItemFromInventory(PCSItemStates[i], NewGameState)) 
 		{
 			XComHQ.PutItemInInventory(NewGameState, PCSItemStates[i]);
+			class'Helpers'.static.OutputMsg("Removing PCS" @ PCSItemStates[i].GetMyTemplateName());
 		}
 	}
 
