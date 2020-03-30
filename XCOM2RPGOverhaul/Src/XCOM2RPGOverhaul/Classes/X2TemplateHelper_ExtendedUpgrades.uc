@@ -72,9 +72,9 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 	if (WeaponUpgradeTemplate != none && default.OverrideAttachment.Find(WeaponUpgradeTemplate.DataName) != INDEX_NONE)
 	{
 		//specific alterations
-		if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
+		if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Bsc')
 		{
-			if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Bsc')
+			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
 			{
 				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.BasicLaserSightAbilityName);
 				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);

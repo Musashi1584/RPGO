@@ -115,7 +115,7 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
 		
-		`LOG(default.Class @ GetFuncName() @ "StatPointsValue" @ int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @ StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @ BonusStatPointsNaturalAptitude,, 'RPG');
+		`LOG(default.Class @ GetFuncName() @ UnitState.GetSoldierClassTemplateName() @ "StatPointsValue" @ int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @ StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @ BonusStatPointsNaturalAptitude,, 'RPG');
 
 		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion + BonusStatPointsNaturalAptitude, eCleanup_Never);
 		GameState.AddStateObject(UnitState);
