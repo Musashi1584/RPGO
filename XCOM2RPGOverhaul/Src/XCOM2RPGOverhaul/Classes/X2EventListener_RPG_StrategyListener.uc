@@ -308,7 +308,7 @@ static function string GetClassIcon(XComGameState_Unit UnitState)
 
 	Spec = GetSpecializationName(UnitState);
 
-	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+	Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(Spec);
 
 	//`LOG(GetFuncName() @ Template @ Template.ClassSpecializationIcon,, 'RPG');
 
@@ -322,7 +322,7 @@ static function string GetClassDisplayName(XComGameState_Unit UnitState)
 
 	Spec = GetSpecializationName(UnitState);
 
-	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+	Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(Spec);
 
 	return Template.ClassSpecializationTitle != "" ? Template.ClassSpecializationTitle : UnitState.GetSoldierClassTemplate().DisplayName;
 }
@@ -350,7 +350,7 @@ static function string GetClassSummary(XComGameState_Unit UnitState)
 
 	Spec = GetSpecializationName(UnitState);
 
-	Template = new(None, string(Spec))class'X2UniversalSoldierClassInfo';
+	Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(Spec);
 
 	//`LOG(GetFuncName() @ Spec @ Template @ Template.ClassSpecializationSummary,, 'RPG');
 	return Template.ClassSpecializationSummary != "" ? Template.ClassSpecializationSummary : UnitState.GetSoldierClassTemplate().ClassSummary;

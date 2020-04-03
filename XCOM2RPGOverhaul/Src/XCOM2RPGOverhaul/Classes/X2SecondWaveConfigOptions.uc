@@ -297,8 +297,10 @@ static function AddComplementarySpecializations(
 
 static function BuildRandomSpecAbilityTree(XComGameState_Unit UnitState, optional bool bRandomizePerkOrder = false)
 {
-	`LOG(default.class @ GetFuncName() @ "SPEC_ROULETTE_RANDOM_SPEC_COUNT" @ GetSpecRouletteCount(),, 'RPG');
-
+	`LOG(default.class @ GetFuncName() @
+		"SPEC_ROULETTE_RANDOM_SPEC_COUNT" @ GetSpecRouletteCount() @
+		"RPGO_SWO_RandomClasses enabled:" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses')
+	,, 'RPG');
 	//	Random Classes
 	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{

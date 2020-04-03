@@ -92,10 +92,10 @@ static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSol
 
 	//	Specialization cannot be used if it's missing meta information
 	//	Or it is explicitly forbidden from being complementary
-	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses || SpecTemplate.SpecializationMetaInfo.bCantBeComplementary) return false;
+	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses) return false;
 
 	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
-	if (SpecTemplate.SpecializationMetaInfo.bUniversal) return true;
+	if (SpecTemplate.IsComplemtarySpecialization()) return true;
 
 	//	Otherwise, cycle through Specs that have already been selected.
 	foreach SelectedSpecTemplates(CycleSpecTemplate)
@@ -311,7 +311,8 @@ static function array<SoldierSpecialization> GetSpecializations()
 
 	for (Index = 0; Index < class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Length; Index++)
 	{
-		UniversalSoldierClassTemplate = new(None, string(class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName))class'X2UniversalSoldierClassInfo';
+		UniversalSoldierClassTemplate = GetSpecializationTemplateByName(class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].TemplateName);
+
 		if (UniversalSoldierClassTemplate.AbilitySlots.Length > 0 && class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].bEnabled)
 		{
 			bHasAnyAbilitiesInDeck = UniversalSoldierClassTemplate.HasAnyAbilitiesInDeck();
@@ -344,7 +345,7 @@ static function array<SoldierSpecialization> GetSpecializationsForSoldier(XComGa
 
 	foreach AllSpecs(Spec)
 	{
-		UniversalSoldierClassTemplate = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+		UniversalSoldierClassTemplate = GetSpecializationTemplateByName(Spec.TemplateName);
 		if (UniversalSoldierClassTemplate.RequiredAbilities.Length > 0)
 		{
 			if (HasAnyOfTheAbilitiesFromAnySource(UnitState, UniversalSoldierClassTemplate.RequiredAbilities))
@@ -495,7 +496,7 @@ static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit U
 	return Indices;
 }
 
-static function bool HasSpecializations(XComGameState_Unit UnitState, name TemplateName)
+static function bool HasSpecialization(XComGameState_Unit UnitState, name TemplateName)
 {
 	local array<SoldierSpecialization> Specs;
 	local int Index;
@@ -503,6 +504,64 @@ static function bool HasSpecializations(XComGameState_Unit UnitState, name Templ
 	Specs = GetTrainedSpecializations(UnitState);
 	Index = Specs.Find('TemplateName', TemplateName);
 	return (Index != INDEX_NONE);
+}
+
+static function bool HasTrainedPrimaryWeaponSpecializations(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> Specs;
+
+	Specs = GetTrainedPrimaryWeaponSpecializations(UnitState);
+
+	return Specs.length > 0;
+}
+
+static function bool HasTrainedSecondarySpecializations(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> Specs;
+
+	Specs = GetTrainedSecondaryWeaponSpecializations(UnitState);
+
+	return Specs.length > 0;
+}
+
+static function array<SoldierSpecialization> GetTrainedPrimaryWeaponSpecializations(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> Specs, PrimarySpecs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo Template;
+
+	Specs = GetTrainedSpecializations(UnitState);
+
+	foreach Specs(Spec)
+	{
+		Template = GetSpecializationTemplateByName(Spec.TemplateName);
+		if (Template.IsPrimaryWeaponSpecialization())
+		{
+			PrimarySpecs.AddItem(Spec);
+		}
+	}
+	
+	return PrimarySpecs;
+}
+
+static function array<SoldierSpecialization> GetTrainedSecondaryWeaponSpecializations(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> Specs, SecondarySpecs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo Template;
+
+	Specs = GetTrainedSpecializations(UnitState);
+
+	foreach Specs(Spec)
+	{
+		Template = GetSpecializationTemplateByName(Spec.TemplateName);
+		if (Template.IsSecondaryWeaponSpecialization())
+		{
+			SecondarySpecs.AddItem(Spec);
+		}
+	}
+	
+	return SecondarySpecs;
 }
 
 static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameState_Unit UnitState)
@@ -551,7 +610,7 @@ static function bool GetSpecializationForSlot(XComGameState_Unit UnitState, int 
 
 	foreach Specs(PossibleSpec)
 	{
-		Template = new(None, string(PossibleSpec.TemplateName))class'X2UniversalSoldierClassInfo';
+		Template = GetSpecializationTemplateByName(PossibleSpec.TemplateName);
 		
 		SpecAbilitiesForSlot.Length = 0;
 
@@ -589,7 +648,7 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlot(XCo
 
 	if(GetSpecializationForSlot(UnitState, SlotIndex, Spec))
 	{
-		return new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+		return GetSpecializationTemplateByName(Spec.TemplateName);
 	}
 	return none;
 }

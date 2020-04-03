@@ -104,6 +104,9 @@ strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number 
 strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes"
 strRPGO_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign specializations for soldier's Primary and Secondary weapon. The soldier will then be able to use only these weapons.\n Requires Specialization Roulette. Can be combined with Origins and Training Roulette, but not Commander's Choice."
 
+strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions"
+strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization."
+
 [UIChooseSpecializations]
 m_strTitlePool=Choose Specializations
 m_strInventoryLabelPool=Available Specializations:

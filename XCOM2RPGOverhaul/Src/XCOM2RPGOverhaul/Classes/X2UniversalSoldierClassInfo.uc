@@ -35,6 +35,11 @@ function bool IsSecondaryWeaponSpecialization()
 {
 	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 }
+
+function bool IsComplemtarySpecialization()
+{
+	return (!SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal);
+}
 /*
 {
 	if (SpecializationMetaInfo.bUseForRandomClasses)

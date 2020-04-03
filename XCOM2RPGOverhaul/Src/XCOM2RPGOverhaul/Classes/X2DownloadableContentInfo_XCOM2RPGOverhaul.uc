@@ -71,10 +71,10 @@ static event OnPostTemplatesCreated()
 // </summary>
 static function bool CanAddItemToInventory_CH(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
-	//	Random Classes
-	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+	//	Weapon restrictions
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
-		return class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
+		return class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory_WeaponRestrictions(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 	}
 	else return class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 }

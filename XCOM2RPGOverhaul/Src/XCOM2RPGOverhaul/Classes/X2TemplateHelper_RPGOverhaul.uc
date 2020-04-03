@@ -62,11 +62,17 @@ static function AddSecondWaveOptions()
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
 	);
 
-	//AddSecondWaveOption(
-	//	'RPGO_SWO_RandomClasses',
-	//	class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Description,
-	//	class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Tooltip
-	//);
+	AddSecondWaveOption(
+		'RPGO_SWO_RandomClasses',
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Description,
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Tooltip
+	);
+
+	AddSecondWaveOption(
+		'RPGO_SWO_WeaponRestriction',
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Description,
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Tooltip
+	);
 }
 
 static function AddSecondWaveOption(name ID, string Description, string Tooltip)
@@ -1145,13 +1151,16 @@ static function PatchSquadSight()
 	}
 }
 
-static function bool CanAddItemToInventory(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
+static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
-    local X2WeaponTemplate              WeaponTemplate;
-    local XGParamTag                    LocTag;
+    local X2WeaponTemplate				WeaponTemplate;
+    local XGParamTag					LocTag;
+	local array<SoldierSpecialization>	PrimarySpecs;
+	local SoldierSpecialization			PrimarySpec;
 	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
+	local array<SoldierSpecialization>	SecondarySpecs;
+	local SoldierSpecialization			SecondarySpec;
 	local X2UniversalSoldierClassInfo	SecondarySpecTemplate;
-	local UnitValue						UV;
 	local bool							bAllowed;
 
 	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
@@ -1159,28 +1168,33 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
 	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none && (Slot == eInvSlot_PrimaryWeapon || Slot == eInvSlot_SecondaryWeapon))
 	{
-		if (UnitState.GetUnitValue('PrimarySpecialization_Value', UV))
+		PrimarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedPrimaryWeaponSpecializations(UnitState);
+		foreach PrimarySpecs(PrimarySpec)
 		{
-			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, UV.fValue);
-		}
-
-		//	Exit function early if we can't access either of the specializations for whatever reason.
-		if (PrimarySpecTemplate == none) return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
-
-		//	If soldier's primary specialization is a Dual Wield one, then look only at primary specialization for both Primary and Secondary weapons.
-		if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield || Slot == eInvSlot_PrimaryWeapon)
-		{
-			bAllowed = PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
-		}
-		else
-		{
-			if (UnitState.GetUnitValue('SecondarySpecialization_Value', UV))
+			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(PrimarySpec);
+			//	If soldier's primary specialization is a Dual Wield one, then look only at primary specialization for both Primary and Secondary weapons.
+			if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield || Slot == eInvSlot_PrimaryWeapon)
 			{
-				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, UV.fValue);
+				bAllowed = PrimarySpecTemplate != none && PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+				if (bAllowed)
+				{
+					break;
+				}
 			}
-			if (SecondarySpecTemplate == none) return CanAddItemToInventory_SpecWeaponRestrictions(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
+		}
 
-			bAllowed = SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+		if (!bAllowed)
+		{
+			SecondarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSecondaryWeaponSpecializations(UnitState);
+			foreach SecondarySpecs(SecondarySpec)
+			{
+				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(SecondarySpec);
+				bAllowed = SecondarySpecTemplate != none && SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+				if (bAllowed)
+				{
+					break;
+				}
+			}
 		}
 		
 		if (bAllowed)
@@ -1209,7 +1223,7 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 }
 
-static function bool CanAddItemToInventory_SpecWeaponRestrictions(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
+static function bool CanAddItemToInventory(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
 	local X2AbilityTemplateManager	TemplateManager;
 	local X2AbilityTemplate			Template;

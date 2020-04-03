@@ -44,6 +44,7 @@ struct SpecializationMetaInfoStruct
 	var bool bUseForRandomClasses;
 	var array<name> AllowedWeaponCategories;
 	var array<EInventorySlot> InventorySlots;
+	var array<name> SpecializationRoles;
 
 	//	This specialization can be rolled only as Primary one, and then will provide access to the same AllowedWeaponCategories for both weapon slots.
 	var bool bDualWield;
