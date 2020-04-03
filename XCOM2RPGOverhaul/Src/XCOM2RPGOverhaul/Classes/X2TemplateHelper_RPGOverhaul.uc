@@ -1161,7 +1161,7 @@ static function bool IRI_CanAddItemToInventory(out int bCanAddItem, const EInven
 	{
 		if (UnitState.GetUnitValue('IRI_PrimarySpecialization_Value', UV))
 		{
-			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UV.fValue);
+			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, UV.fValue);
 		}
 
 		//	Exit function early if we can't access either of the specializations for whatever reason.
@@ -1176,7 +1176,7 @@ static function bool IRI_CanAddItemToInventory(out int bCanAddItem, const EInven
 		{
 			if (UnitState.GetUnitValue('IRI_SecondarySpecialization_Value', UV))
 			{
-				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UV.fValue);
+				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, UV.fValue);
 			}
 			if (SecondarySpecTemplate == none) return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 

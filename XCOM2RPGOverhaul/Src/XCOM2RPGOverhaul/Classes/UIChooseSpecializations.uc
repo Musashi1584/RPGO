@@ -9,6 +9,8 @@ var localized string m_strComplementarySpecializationInfo;
 
 simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
 {
+	local XComGameState_Unit UnitState;
+
 	super.InitChooseCommoditiesScreen(
 		UnitRef,
 		MaxSpecs,
@@ -16,8 +18,10 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 		OnAccept
 	);
 
+	UnitState = GetUnit();
+
 	SpecializationsPool.Length = 0;
-	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializations();
+	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsForSoldier(UnitState);
 	CommodityPool = ConvertToCommodities(SpecializationsPool);
 
 	SpecializationsChosen.Length = 0;
@@ -150,11 +154,15 @@ simulated function AddToChosenList(int Index)
 {
 	local array<SoldierSpecialization> ComplementarySpecializations;
 	local SoldierSpecialization ComplementarySpecialization;
+	local XComGameState_Unit UnitState;
+	
+	UnitState = GetUnit();
 	
 	SelectedItems.AddItem(Index);
 	SpecializationsChosen.AddItem(SpecializationsPool[Index]);
 	
 	ComplementarySpecializations = class'X2SoldierClassTemplatePlugin'.static.GetComplementarySpecializations(
+		UnitState,
 		SpecializationsPool[Index]
 	);
 
@@ -174,11 +182,15 @@ simulated function RemoveFromChosenList(int ChosenIndex, int PoolIndex)
 {
 	local array<SoldierSpecialization> ComplementarySpecializations;
 	local SoldierSpecialization ComplementarySpecialization;
+	local XComGameState_Unit UnitState;
+	
+	UnitState = GetUnit();
 
 	SelectedItems.RemoveItem(PoolIndex);
 	SpecializationsChosen.RemoveItem(SpecializationsChosen[ChosenIndex]);
 
 	ComplementarySpecializations = class'X2SoldierClassTemplatePlugin'.static.GetComplementarySpecializations(
+		UnitState,
 		SpecializationsPool[PoolIndex]
 	);
 

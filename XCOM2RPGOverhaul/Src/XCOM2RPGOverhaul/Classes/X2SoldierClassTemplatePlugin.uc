@@ -185,39 +185,46 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplateByName(name
 	return new(None, string(TemplateName))class'X2UniversalSoldierClassInfo';
 }
 
-static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlotIndex(int SlotIndex)
+static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlotIndex(XComGameState_Unit UnitState, int SlotIndex)
 {
 	local array<SoldierSpecialization> Specs;
 
-	Specs = GetSpecializations();
+	Specs = GetSpecializationsForSoldier(UnitState);
 
 	return GetSpecializationTemplate(Specs[SlotIndex]);
 }
 
-static function int GetSpecializationIndex(name SpecTemplateName)
+static function int GetSpecializationIndex(XComGameState_Unit UnitState, name SpecTemplateName)
 {
 	local array<SoldierSpecialization> Specs;
 
-	Specs = GetSpecializations();
+	if (UnitState != none)
+	{
+		Specs = GetSpecializationsForSoldier(UnitState);
+	}
+	else
+	{
+		Specs = GetSpecializations();
+	}
 
 	return Specs.Find('TemplateName', SpecTemplateName);
 }
 
-static function array<SoldierSpecialization> GetComplementarySpecializations(SoldierSpecialization Spec)
+static function array<SoldierSpecialization> GetComplementarySpecializations(XComGameState_Unit UnitState, SoldierSpecialization Spec)
 {
 	local X2UniversalSoldierClassInfo SpecTemplate;
 	local name ForceComplementarySpec;
 	local array<SoldierSpecialization> AllSpecs, ComplementarySpecs;
 	local int ComplementarySpecIndex;
 
-	AllSpecs = GetSpecializations();
+	AllSpecs = GetSpecializationsForSoldier(UnitState);
 	SpecTemplate = GetSpecializationTemplate(Spec);
 
 	if (SpecTemplate.ForceComplementarySpecializations.Length > 0)
 	{
 		foreach SpecTemplate.ForceComplementarySpecializations(ForceComplementarySpec)
 		{
-			ComplementarySpecIndex = GetSpecializationIndex(ForceComplementarySpec);
+			ComplementarySpecIndex = GetSpecializationIndex(UnitState, ForceComplementarySpec);
 			if (ComplementarySpecIndex != INDEX_NONE)
 			{
 				ComplementarySpecs.AddItem(AllSpecs[ComplementarySpecIndex]);
@@ -327,6 +334,100 @@ static function array<SoldierSpecialization> GetSpecializations()
 	return ValidSpecs;
 }
 
+static function array<SoldierSpecialization> GetSpecializationsForSoldier(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> AllSpecs, SpecsAvailableToSoldier;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+
+	AllSpecs = GetSpecializations();
+
+	foreach AllSpecs(Spec)
+	{
+		UniversalSoldierClassTemplate = new(None, string(Spec.TemplateName))class'X2UniversalSoldierClassInfo';
+		if (UniversalSoldierClassTemplate.RequiredAbilities.Length > 0)
+		{
+			if (HasAnyOfTheAbilitiesFromAnySource(UnitState, UniversalSoldierClassTemplate.RequiredAbilities))
+			{
+				SpecsAvailableToSoldier.AddItem(Spec);
+			}
+		}
+		else
+		{
+			SpecsAvailableToSoldier.AddItem(Spec);
+		}
+	}
+
+	return SpecsAvailableToSoldier;
+}
+
+static function bool HasAnyOfTheAbilitiesFromAnySource(XComGameState_Unit UnitState, array<name> AbilitiesToCheck)
+{
+	local bool bHasAbility;
+	local name Ability;
+
+	foreach AbilitiesToCheck(Ability)
+	{
+		if (UnitState.HasSoldierAbility(Ability))
+		{
+			return true;
+		}
+	}
+
+	if (!bHasAbility)
+	{
+		bHasAbility = HasAnyOfTheAbilitiesFromInventory(UnitState, AbilitiesToCheck);
+	}
+
+	if (!bHasAbility)
+	{
+		bHasAbility = HasAnyOfTheAbilitiesFromCharacterTemplate(UnitState, AbilitiesToCheck);
+	}
+
+	return bHasAbility;
+}
+
+
+// Start helper methods for Issue #735
+static function bool HasAnyOfTheAbilitiesFromInventory(XComGameState_Unit UnitState, array<name> AbilitiesToCheck)
+{
+	local array<XComGameState_Item> CurrentInventory;
+	local XComGameState_Item InventoryItem;
+	local X2EquipmentTemplate EquipmentTemplate;
+	local name Ability;
+
+	CurrentInventory = UnitState.GetAllInventoryItems();
+	foreach CurrentInventory(InventoryItem)
+	{
+		EquipmentTemplate = X2EquipmentTemplate(InventoryItem.GetMyTemplate());
+		if (EquipmentTemplate != none)
+		{
+			foreach EquipmentTemplate.Abilities(Ability)
+			{
+				if (AbilitiesToCheck.Find(Ability) != INDEX_NONE)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+static function bool HasAnyOfTheAbilitiesFromCharacterTemplate(XComGameState_Unit UnitState, array<name> AbilitiesToCheck)
+{
+	local name Ability;
+
+	foreach UnitState.GetMyTemplate().Abilities(Ability)
+	{
+		if (AbilitiesToCheck.Find(Ability) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization B)
 {
 	return A.Order > B.Order ? -1 : 0;
@@ -380,7 +481,7 @@ static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit U
 	local int Index;
 
 	SoldierSpecs = GetTrainedSpecializations(UnitState);
-	AllSpecs = GetSpecializations();
+	AllSpecs = GetSpecializationsForSoldier(UnitState);
 
 	foreach SoldierSpecs(Spec)
 	{
@@ -392,6 +493,16 @@ static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit U
 		}
 	}
 	return Indices;
+}
+
+static function bool HasSpecializations(XComGameState_Unit UnitState, name TemplateName)
+{
+	local array<SoldierSpecialization> Specs;
+	local int Index;
+
+	Specs = GetTrainedSpecializations(UnitState);
+	Index = Specs.Find('TemplateName', TemplateName);
+	return (Index != INDEX_NONE);
 }
 
 static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameState_Unit UnitState)

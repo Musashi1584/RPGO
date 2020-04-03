@@ -1,45 +1,19 @@
-class X2UniversalSoldierClassInfo extends Object PerObjectConfig PerObjectLocalized config (RPG);
+class X2UniversalSoldierClassInfo extends Object dependson(RPGO_Structs) PerObjectConfig PerObjectLocalized config (RPG);
 
 var config string ClassSpecializationIcon;
 var config array<name> ForceComplementarySpecializations;
 var config array<SoldierClassAbilitySlot> AbilitySlots;
-
 var config array<SoldierClassAbilityType> AdditionalRandomTraits;
 var config array<SoldierClassAbilityType> AdditionalRandomAptitudes;
+
+// soldier needs on of these abilities to unlock the specialization
+// currently this works only for the commanders choice and spec roulette swo
+// in default rpgo mode you still have all enabled specs available
+var config array<name> RequiredAbilities;
 
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 
-//	IRI Random Classes
-struct IRIMetaInfoStruct
-{
-	var bool bMeta;
-	var array<name> AllowedWeaponCategories;
-	var array<EInventorySlot> InventorySlots;
-
-	//	This specialization can be rolled only as Primary one, and then will provide access to the same AllowedWeaponCategories for both weapon slots.
-	var bool bDualWield;
-
-	//	Use to determine whether this specialization is valid to complement other soldier's specializations.
-	var bool bUniversal;
-	var bool bShoot;
-	var bool bMelee;
-	var bool bGremlin;
-	var bool bPsionic;
-	var bool bCantBeComplementary;
-	var int  iWeightPrimary;
-	var int  iWeightSecondary;
-	var int  iWeightComplementary;
-
-	//	check necromancer skills that are weapon agnostic
-	//	look at AllowedWeapons instead of using bool flags?..
-	structdefaultproperties
-	{
-		iWeightPrimary = 1
-		iWeightSecondary = 1
-		iWeightComplementary = 1
-	}
-};
 var config IRIMetaInfoStruct IRIMetaInfo;
 
 function bool IRI_IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
@@ -128,13 +102,13 @@ function int GetComplementarySpecializationCheckSum()
 	local name ComplementarySpecialization;
 	local int CheckSum;
 
-	CheckSum = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(Name);
+	CheckSum = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(none, Name);
 
 	if (ForceComplementarySpecializations.Length > 0)
 	{
 		foreach ForceComplementarySpecializations(ComplementarySpecialization)
 		{
-			CheckSum += class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(ComplementarySpecialization);
+			CheckSum += class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(none, ComplementarySpecialization);
 		}
 	}
 	return CheckSum;
