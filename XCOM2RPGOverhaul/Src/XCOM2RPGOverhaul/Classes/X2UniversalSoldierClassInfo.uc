@@ -28,16 +28,16 @@ function bool IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
 function bool IsPrimaryWeaponSpecialization()
 {
 	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
-	return SpecializationMetaInfo.bMeta && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
 }
 
 function bool IsSecondaryWeaponSpecialization()
 {
-	return SpecializationMetaInfo.bMeta && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 }
 /*
 {
-	if (SpecializationMetaInfo.bMeta)
+	if (SpecializationMetaInfo.bUseForRandomClasses)
 	{
 		//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
 		if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield && SpecializationMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.

@@ -41,7 +41,7 @@ struct WeaponProficiency
 //	Random Classes
 struct SpecializationMetaInfoStruct
 {
-	var bool bMeta;
+	var bool bUseForRandomClasses;
 	var array<name> AllowedWeaponCategories;
 	var array<EInventorySlot> InventorySlots;
 
