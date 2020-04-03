@@ -14,45 +14,45 @@ var config array<name> RequiredAbilities;
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 
-var config IRIMetaInfoStruct IRIMetaInfo;
+var config SpecializationMetaInfoStruct SpecializationMetaInfo;
 
-function bool IRI_IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
+function bool IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
 {
-	if (IRIMetaInfo.bDualWield)
+	if (SpecializationMetaInfo.bDualWield)
 	{
-		return IRIMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+		return SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
 	}
-	else return IRIMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && IRIMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+	else return SpecializationMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
 }
 
-function bool IRI_IsPrimaryWeaponSpecialization()
+function bool IsPrimaryWeaponSpecialization()
 {
 	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
-	return IRIMetaInfo.bMeta && IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.bMeta && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
 }
 
-function bool IRI_IsSecondaryWeaponSpecialization()
+function bool IsSecondaryWeaponSpecialization()
 {
-	return IRIMetaInfo.bMeta && IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.bMeta && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 }
 /*
 {
-	if (IRIMetaInfo.bMeta)
+	if (SpecializationMetaInfo.bMeta)
 	{
 		//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
-		if (PrimarySpecTemplate.IRIMetaInfo.bDualWield && IRIMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.
+		if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield && SpecializationMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.
 		{
 			return class'X2SoldierClassTemplatePlugin'.static.DoSpecializationsUseTheSameWeapons(PrimarySpecTemplate, self);
 		}
 
-		return IRIMetaInfo.AllowedWeaponCategories.Length > 0 && IRIMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+		return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 	}
 	//	Can't be Secondary Speci if no meta info is set up.
 	return false;
 }
 */
 
-//	END OF IRI Random Classes
+//	END OF Random Classes
 
 function bool HasAnyAbilitiesInDeck()
 {

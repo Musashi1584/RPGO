@@ -101,8 +101,8 @@ strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limte
 strSWO_Origins_Description="[RPGO] Origins: Choose the soldiers starting abilities"
 strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice and Training Roulette."
 
-strRPGO_IRI_SWO_RandomClasses_Description = "[RPGO] Random Classes"
-strRPGO_IRI_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign specializations for soldier's Primary and Secondary weapon. The soldier will then be able to use only these weapons.\n Requires Specialization Roulette. Can be combined with Origins and Training Roulette, but not Commander's Choice."
+strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes"
+strRPGO_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign specializations for soldier's Primary and Secondary weapon. The soldier will then be able to use only these weapons.\n Requires Specialization Roulette. Can be combined with Origins and Training Roulette, but not Commander's Choice."
 
 [UIChooseSpecializations]
 m_strTitlePool=Choose Specializations

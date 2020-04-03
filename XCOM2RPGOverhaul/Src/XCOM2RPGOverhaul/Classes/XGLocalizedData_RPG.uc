@@ -25,5 +25,5 @@ var localized string strSWO_TrainingRoulette_Description;
 var localized string strSWO_TrainingRoulette_Tooltip;
 var localized string strSWO_Origins_Description;
 var localized string strSWO_Origins_Tooltip;
-var localized string strRPGO_IRI_SWO_RandomClasses_Description;
-var localized string strRPGO_IRI_SWO_RandomClasses_Tooltip;
+var localized string strRPGO_SWO_RandomClasses_Description;
+var localized string strRPGO_SWO_RandomClasses_Tooltip;

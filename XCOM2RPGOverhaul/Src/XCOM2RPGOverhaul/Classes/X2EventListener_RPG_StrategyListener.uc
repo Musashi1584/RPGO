@@ -16,7 +16,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
 	Templates.AddItem(CreateListenerTemplate_OnGetLocalizedCategory());
 
-	//	IRI Random Classes
+	//	Random Classes
 	Templates.AddItem(CreateListenerTemplate_OnBestGearLoadoutApplied());
 
 	return Templates;
@@ -412,19 +412,19 @@ function int SortSpecializations(SoldierSpecialization A, SoldierSpecialization 
 	return A.Order > B.Order ? -1 : 0;
 }
 
-//	IRI Random Classes BEGIN
+//	Random Classes BEGIN
 static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadoutApplied()
 {
 	local CHEventListenerTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'IRI_RPGO_BestGearAppliedListener');
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGO_BestGearAppliedListener');
 
 	Template.RegisterInStrategy = true;
 
 	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_Immediate);
 
 	//	Setting low priority so the unit gets specializations assigned by an event listener above
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_IRIRandomClass, ELD_OnStateSubmitted, 10);
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_RandomClass, ELD_OnStateSubmitted, 10);
 
 	`LOG(default.class @ "Register Event OnBestGearLoadoutApplied",, 'RPG');
 
@@ -452,15 +452,15 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
 	}
 
-	//`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'IRIGEAR');
+	//`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'RPG');
 
 	if (UnitState != none)
 	{
 		PrimaryWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
 		SecondaryWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
 
-		//`LOG("Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
-		//`LOG("Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'IRIGEAR');
+		//`LOG("Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
+		//`LOG("Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
 
 		if (PrimaryWeaponState == none || SecondaryWeaponState == none)
 		{
@@ -531,7 +531,7 @@ private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const X
 	}
 }
 
-static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit				UnitState;
 	local XComGameState_Item				OldWeapon;
@@ -542,11 +542,11 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 	local UnitValue						UV;
 
 	UnitState = XComGameState_Unit(EventData);
-	UnitState.GetUnitValue('IRI_PrimarySpecialization_Value', UV);
+	UnitState.GetUnitValue('PrimarySpecialization_Value', UV);
 
-	`LOG("Unit rank up: " @ UnitState.GetFullName() @ UnitState.GetRank() @ UV.fValue,, 'IRIGEAR');
+	`LOG("Unit rank up: " @ UnitState.GetFullName() @ UnitState.GetRank() @ UV.fValue,, 'RPG');
 
-	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_IRI_SWO_RandomClasses') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_RandomClasses') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	{
 		History = `XCOMHISTORY;
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Equipping squaddie items on unit: " @ UnitState.GetFullName());
@@ -557,7 +557,7 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 
 		OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
-		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'IRIGEAR');
+		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 		if (OldWeapon != none)
 		{
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
@@ -568,7 +568,7 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
 					{
-						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'IRIGEAR');
+						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
@@ -581,7 +581,7 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 		}
 
 		OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
-		`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'IRIGEAR');
+		`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 		if (OldWeapon != none)
 		{
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
@@ -592,7 +592,7 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
 					{
-						`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'IRIGEAR');
+						`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
@@ -608,4 +608,4 @@ static function EventListenerReturn OnUnitRankUp_IRIRandomClass(Object EventData
 	}
 	return ELR_NoInterrupt;
 }
-//	IRI Random Classes END
+//	Random Classes END

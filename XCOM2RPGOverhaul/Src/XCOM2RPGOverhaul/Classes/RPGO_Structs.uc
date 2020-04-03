@@ -38,8 +38,8 @@ struct WeaponProficiency
 	var name UnlocksWeaponCategory;
 };
 
-//	IRI Random Classes
-struct IRIMetaInfoStruct
+//	Random Classes
+struct SpecializationMetaInfoStruct
 {
 	var bool bMeta;
 	var array<name> AllowedWeaponCategories;
