@@ -71,13 +71,13 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplate(SoldierSpe
 
 //	Random Classes
 //	get ALL spec templates
-static function array<X2UniversalSoldierClassInfo> GetAllSpecializationTemplates()
+static function array<X2UniversalSoldierClassInfo> GetSpecializationTemplatesForSoldier(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization>			Specs;
 	local SoldierSpecialization					Spec;
 	local array<X2UniversalSoldierClassInfo>	ReturnArray;
 	
-	Specs = GetSpecializations();
+	Specs = GetSpecializationsForSoldier(UnitState);
 
 	foreach Specs(Spec)
 	{	

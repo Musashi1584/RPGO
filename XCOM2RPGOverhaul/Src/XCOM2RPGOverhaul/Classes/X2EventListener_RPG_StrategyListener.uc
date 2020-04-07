@@ -123,7 +123,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 
 		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
 			AddedRandomSpecs.fValue != 1 &&
-			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette'))
+			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 		)
 		{
 			`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
@@ -146,7 +146,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 
 			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 
-			if (`SecondWaveEnabled('RPGOSpecRoulette'))
+			if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
 			}
@@ -181,12 +181,14 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 			UnitState.GetMyTemplateName() @
 			UnitState.GetSoldierClassTemplateName() @
 			UnitState.GetSoldierRank() @
-			`SecondWaveEnabled('RPGOSpecRoulette'),, 'RPG');
+			"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
+			"RPGO_SWO_RandomClasses" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses')
+		,, 'RPG');
 
 		if (UnitState.GetMyTemplateName() == 'Soldier' &&
 			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
-			if (`SecondWaveEnabled('RPGOSpecRoulette'))
+			if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 			{
 				`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
 				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);

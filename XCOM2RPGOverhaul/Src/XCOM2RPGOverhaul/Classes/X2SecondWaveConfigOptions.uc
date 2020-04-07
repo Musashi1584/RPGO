@@ -159,7 +159,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	`LOG("Building random class for: " @ UnitState.GetFullName(),, 'RPG');
 
 	Count = GetSpecRouletteCount();
-	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllSpecializationTemplates();
+	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplatesForSoldier(UnitState);
 
 	//	########################################################
 	//	Select random specialization for primary weapon:
