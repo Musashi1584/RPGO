@@ -1,5 +1,9 @@
 class XGLocalizedData_RPG extends Object;
 
+var localized string SpecializationPrimary;
+var localized string SpecializationSecondary;
+var localized string SpecializationComplementary;
+
 var localized string UtilityCatPistol;
 var localized string UtilityCatSidearm;
 var localized string UtilityCatSword;
@@ -29,3 +33,37 @@ var localized string strRPGO_SWO_RandomClasses_Description;
 var localized string strRPGO_SWO_RandomClasses_Tooltip;
 var localized string strRPGO_SWO_WeaponRestriction_Description;
 var localized string strRPGO_SWO_WeaponRestriction_Tooltip;
+
+var localized string ItemCategoryRifle;
+var localized string ItemCategorySniperRifle;
+var localized string ItemCategoryShotgun;
+var localized string ItemCategoryCannon;
+var localized string ItemCategoryVektorRifle;
+var localized string ItemCategoryBullpup;
+var localized string ItemCategoryPistol;
+var localized string ItemCategorySidearm;
+var localized string ItemCategorySword;
+var localized string ItemCategoryGremlin;
+var localized string ItemCategoryPsiamp;
+var localized string ItemCategoryGrenadeLauncher;
+var localized string ItemCategoryClaymore;
+var localized string ItemCategoryWristblade;
+var localized string ItemCategoryArcthrower;
+var localized string ItemCategoryCombatknife;
+var localized string ItemCategoryHolotargeter;
+var localized string ItemCategorySawedoffshotgun;
+var localized string ItemCategoryLWGauntlet;
+var localized string ItemCategoryEmpty;
+var localized string ItemCategoryUtility;
+var localized string ItemCategoryTech;
+var localized string ItemCategoryConventional;
+var localized string ItemCategoryPlated;
+var localized string ItemCategoryPowered;
+var localized string ItemCategorySparkrifle;
+var localized string ItemCategoryGauntlet;
+var localized string ItemCategoryBasic;
+var localized string ItemCategoryUnknown;
+var localized string ItemCategoryMedium;
+var localized string ItemCategoryLight;
+var localized string ItemCategoryHeavy;
+var localized string ItemCategoryRocketLauncher;

@@ -31,14 +31,16 @@ function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
 
 static function int GetSpecRouletteCount()
 {
-	return (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
+	return (`SecondWaveEnabled('RPGOCommandersChoice') &&
+		(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')))?
 		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI") :
 		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT");
 }
 
 static function int GetCommandersChoiceCount()
 {
-	return  (`SecondWaveEnabled('RPGOCommandersChoice') && `SecondWaveEnabled('RPGOSpecRoulette')) ?
+	return  (`SecondWaveEnabled('RPGOCommandersChoice') &&
+		(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))) ?
 		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT_COMBI") :
 		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT");
 }
@@ -344,14 +346,14 @@ static function BuildSpecAbilityTree(
 
 		if (bRandomizePerkOrder)
 		{
-			AddSWORandomizedAbilityDecks(ClassTemplate, AddSpecializationIndices, RandomAbilityDecks);
+			AddSWORandomizedAbilityDecks(UnitState, ClassTemplate, AddSpecializationIndices, RandomAbilityDecks);
 		}
 
 		// Go rank by rank, filling in our tree
 		for(RankIndex = 1; RankIndex < ClassTemplate.GetMaxConfiguredRank(); RankIndex++)
 		{
 			RankAbilities = EmptyRankAbilities;
-			AllAbilitySlots = ClassTemplate.GetAbilitySlots(RankIndex);
+			AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetAllAbilitySlotsForRank(UnitState, RankIndex);
 
 			// Determine ability (or lack thereof) from each slot
 			for(SlotIndex = 0; SlotIndex < AllAbilitySlots.Length; SlotIndex++)
@@ -419,6 +421,7 @@ static function BuildSpecAbilityTree(
 }
 
 static function AddSWORandomizedAbilityDecks(
+	XComGameState_Unit UnitState,
 	X2SoldierClassTemplate ClassTemplate,
 	array<int> AddSpecializationIndices,
 	out array<SoldierClassRandomAbilityDeck> RandomDecks
@@ -432,7 +435,7 @@ static function AddSWORandomizedAbilityDecks(
 	
 	for(RankIndex = Max(1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")); RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")); RankIndex++)
 	{
-		AllAbilitySlots = ClassTemplate.GetAbilitySlots(RankIndex);
+		AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetAllAbilitySlotsForRank(UnitState, RankIndex);
 
 		// Determine ability (or lack thereof) from each slot
 		for(SlotIndex = 0; SlotIndex < AllAbilitySlots.Length; SlotIndex++)

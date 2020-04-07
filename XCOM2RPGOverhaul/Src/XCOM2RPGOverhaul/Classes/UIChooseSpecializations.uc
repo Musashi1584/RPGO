@@ -84,9 +84,13 @@ function bool OnAllSpecSelected()
 	
 	UnitState = GetUnit();
 
-	NewGameState=class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
 
-	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, SelectedItems, !`SecondWaveEnabled('RPGOSpecRoulette'), `SecondWaveEnabled('RPGOTrainingRoulette'));
+	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(
+		UnitState, SelectedItems,
+		!(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')),
+		`SecondWaveEnabled('RPGOTrainingRoulette')
+	);
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
@@ -117,7 +121,7 @@ simulated function array<Commodity> ConvertToCommodities(array<SoldierSpecializa
 		
 		Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(Spec);
 		
-		Comm.Title = Template.ClassSpecializationTitle;
+		Comm.Title = Template.GetClassSpecializationTitleWithMetaData();
 		Comm.Image = Template.ClassSpecializationIcon;
 		Comm.Desc = GetComplementarySpecializationInfo(Template) $ "\n" $
 			Template.ClassSpecializationSummary;

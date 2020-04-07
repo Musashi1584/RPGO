@@ -1228,7 +1228,7 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 	local UIChooseSpecializations ChooseSpecScreen;
 	local array<SoldierSpecialization> TrainedSpecs;
 
-	if (`SecondWaveEnabled('RPGOSpecRoulette'))
+	if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
 		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecializations(UnitState);
 	}

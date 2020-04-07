@@ -351,7 +351,6 @@ static function string GetClassSummary(XComGameState_Unit UnitState)
 	local X2UniversalSoldierClassInfo Template;
 
 	Spec = GetSpecializationName(UnitState);
-
 	Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(Spec);
 
 	//`LOG(GetFuncName() @ Spec @ Template @ Template.ClassSpecializationSummary,, 'RPG');

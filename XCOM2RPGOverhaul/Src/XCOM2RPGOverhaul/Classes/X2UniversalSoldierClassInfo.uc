@@ -25,6 +25,95 @@ function bool IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
 	else return SpecializationMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
 }
 
+function string GetClassSpecializationTitleWithMetaData()
+{
+	local string Title;
+
+	Title = ClassSpecializationTitle;
+	Title @= GetSpecializationWeaponSlotInfo();
+	Title @= GetSpecializationAllowedWeaponCategoriesInfo();
+
+	return Title;
+}
+
+function string GetSpecializationWeaponSlotInfo()
+{
+	local string Info;
+
+	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses') || `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	{
+		if (IsPrimaryWeaponSpecialization())
+		{
+			Info = "[";
+			Info $= class'XGLocalizedData_RPG'.default.SpecializationPrimary;
+		}
+		
+		if (IsSecondaryWeaponSpecialization())
+		{
+			if (Info != "")
+			{
+				Info $= ", ";
+			}
+			else
+			{
+				Info = "[";
+			}
+
+			Info $= class'XGLocalizedData_RPG'.default.SpecializationSecondary;
+		}
+		
+		if (Info != "")
+		{
+			Info $= "]";
+		}
+
+		//if (IsComplemtarySpecialization())
+		//{
+		//	Info @= class'UIUtilities_Text'.static.GetSizedText(
+		//		class'XGLocalizedData_RPG'.default.SpecializationComplementary, 14
+		//	);
+		//}
+
+		return class'UIUtilities_Text'.static.GetSizedText(Info, 16);
+	}
+	return "";
+}
+
+function string GetSpecializationAllowedWeaponCategoriesInfo()
+{
+	local string Categories;
+	local array<string> LocalizedCategories;
+
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0)
+	{
+		LocalizedCategories = GetLocalizedWeaponCategories();
+		
+		Categories = "(";
+		Categories $= class'RPGO_UI_Helper'.static.Join(LocalizedCategories, ",");
+		Categories $= ")";
+
+		return class'UIUtilities_Text'.static.GetSizedText(Categories, 16);
+	}
+
+	return "";
+}
+
+function array<String> GetLocalizedWeaponCategories()
+{
+	local name WeaponCat;
+	local array<string> LocalizedCategories;
+
+	foreach SpecializationMetaInfo.AllowedWeaponCategories(WeaponCat)
+	{
+		if (LocalizedCategories.Find(LocalizeCategory(WeaponCat)) == INDEX_NONE)
+		{
+			LocalizedCategories.AddItem(LocalizeCategory(WeaponCat));
+		}
+	}
+
+	return LocalizedCategories;
+}
+
 function bool IsPrimaryWeaponSpecialization()
 {
 	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
@@ -138,6 +227,115 @@ function string GetComplementarySpecializationInfo()
 	}
 
 	return Info;
+}
+
+static public function string LocalizeCategory(name Key)
+{
+	switch (Key)
+	{
+		case 'rifle':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryRifle;
+			break;
+		case 'sniper_rifle':
+			return class'XGLocalizedData_RPG'.default.ItemCategorySniperRifle;
+			break;
+		case 'shotgun':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryShotgun;
+			break;
+		case 'cannon':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryCannon;
+			break;
+		case 'vektor_rifle':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryVektorRifle;
+			break;
+		case 'bullpup':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryBullpup;
+			break;
+		case 'pistol':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryPistol;
+			break;
+		case 'sidearm':
+			return class'XGLocalizedData_RPG'.default.ItemCategorySidearm;
+			break;
+		case 'sword':
+			return class'XGLocalizedData_RPG'.default.ItemCategorySword;
+			break;
+		case 'gremlin':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryGremlin;
+			break;
+		case 'psiamp':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryPsiamp;
+			break;
+		case 'grenade_launcher':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryGrenadeLauncher;
+			break;
+		case 'claymore':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryClaymore;
+			break;
+		case 'wristblade':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryWristblade;
+			break;
+		case 'arcthrower':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryArcthrower;
+			break;
+		case 'combatknife':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryCombatknife;
+			break;
+		case 'holotargeter':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryHolotargeter;
+			break;
+		case 'sawedoffshotgun':
+			return class'XGLocalizedData_RPG'.default.ItemCategorySawedoffshotgun;
+			break;
+		case 'lw_gauntlet':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryLWGauntlet;
+			break;
+		case 'empty':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryEmpty;
+			break;
+		case 'Utility':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryUtility;
+			break;
+		case 'Tech':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryTech;
+			break;
+		case 'conventional':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryConventional;
+			break;
+		case 'plated':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryPlated;
+			break;
+		case 'powered':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryPowered;
+			break;
+		case 'sparkrifle':
+			return class'XGLocalizedData_RPG'.default.ItemCategorySparkrifle;
+			break;
+		case 'gauntlet':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryGauntlet;
+			break;
+		case 'Basic':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryBasic;
+			break;
+		case 'Unknown':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryUnknown;
+			break;
+		case 'Medium':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryMedium;
+			break;
+		case 'Light':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryLight;
+			break;
+		case 'Heavy':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryHeavy;
+			break;
+		case 'iri_rocket_launcher':
+		case 'iri_disposable_launcher':
+			return class'XGLocalizedData_RPG'.default.ItemCategoryRocketLauncher;
+			break;
+	}
+
+	return string(Key);
 }
 
 private function static string MakeBulletList(array<string> List)

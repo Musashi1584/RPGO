@@ -43,6 +43,12 @@ static function AddSecondWaveOptions()
 		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Description,
 		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Tooltip
 	);
+
+	AddSecondWaveOption(
+		'RPGO_SWO_RandomClasses',
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Description,
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Tooltip
+	);
 	
 	AddSecondWaveOption(
 		'RPGOCommandersChoice',
@@ -60,12 +66,6 @@ static function AddSecondWaveOptions()
 		'RPGOOrigins',
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Description,
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
-	);
-
-	AddSecondWaveOption(
-		'RPGO_SWO_RandomClasses',
-		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Description,
-		class'XGLocalizedData_RPG'.default.strRPGO_SWO_RandomClasses_Tooltip
 	);
 
 	AddSecondWaveOption(

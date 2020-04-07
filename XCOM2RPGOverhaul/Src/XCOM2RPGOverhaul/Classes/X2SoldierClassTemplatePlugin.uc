@@ -259,7 +259,7 @@ static function SetupSpecialization(name SoldierClassTemplate)
 
 		`LOG("Specialization" @ Index @ TemplateName @
 			class'X2TemplateHelper_RPGOverhaul'.default.Specializations[Index].bEnabled @
-			UniversalSoldierClassTemplate.ClassSpecializationTitle
+			UniversalSoldierClassTemplate.GetClassSpecializationTitleWithMetaData()
 		,, 'RPG');
 		
 		AddAbilityRanks(UniversalSoldierClassTemplate.ClassSpecializationTitle, UniversalSoldierClassTemplate.AbilitySlots);
@@ -267,7 +267,7 @@ static function SetupSpecialization(name SoldierClassTemplate)
 		foreach UniversalSoldierClassTemplate.AdditionalRandomTraits(RandomAbility)
 		{
 			Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'TraitsXComAbilities')].Abilities.AddItem(RandomAbility);
-			`LOG("Specialization" @ UniversalSoldierClassTemplate.ClassSpecializationTitle @
+			`LOG("Specialization" @ UniversalSoldierClassTemplate.GetClassSpecializationTitleWithMetaData() @
 				"adding" @ RandomAbility.AbilityName @ "to" @ Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'TraitsXComAbilities')].DeckName
 			,, 'RPG');
 		}
@@ -275,7 +275,7 @@ static function SetupSpecialization(name SoldierClassTemplate)
 		foreach UniversalSoldierClassTemplate.AdditionalRandomAptitudes(RandomAbility)
 		{
 			Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'InnateAptitudesDeck')].Abilities.AddItem(RandomAbility);
-			`LOG("Specialization" @ UniversalSoldierClassTemplate.ClassSpecializationTitle @
+			`LOG("Specialization" @ UniversalSoldierClassTemplate.GetClassSpecializationTitleWithMetaData() @
 				"adding" @ RandomAbility.AbilityName @ "to" @ Template.RandomAbilityDecks[Template.RandomAbilityDecks.Find('DeckName', 'InnateAptitudesDeck')].DeckName
 			,, 'RPG');
 		}
@@ -472,6 +472,19 @@ static function string GetAbilityTreeTitle(XComGameState_Unit UnitState, int Slo
 	{
 		return Template.ClassSpecializationTitle;
 	}
+	return "";
+}
+
+static function string GetMetaInfoForSlot(XComGameState_Unit UnitState, int SlotIndex)
+{
+	local X2UniversalSoldierClassInfo Template;
+	
+	Template = GetSpecializationTemplateForSlot(UnitState, SlotIndex);
+	if (Template != none)
+	{
+		return Template.GetSpecializationWeaponSlotInfo() @ Template.GetSpecializationAllowedWeaponCategoriesInfo();
+	}
+	return "";
 }
 
 static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit UnitState)
@@ -562,6 +575,22 @@ static function array<SoldierSpecialization> GetTrainedSecondaryWeaponSpecializa
 	}
 	
 	return SecondarySpecs;
+}
+
+static function array<SoldierClassAbilitySlot> GetAllAbilitySlotsForRank(XComGameState_Unit UnitState, int RankIndex)
+{
+	local array<SoldierSpecialization> Specs;
+	local SoldierSpecialization Spec;
+	local array<SoldierClassAbilitySlot> AbilitySlots;
+	local X2UniversalSoldierClassInfo Template;
+
+	Specs = GetSpecializationsForSoldier(UnitState);
+	foreach Specs(Spec)
+	{
+		Template = GetSpecializationTemplate(Spec);
+		AbilitySlots.AddItem(Template.AbilitySlots[RankIndex - 1]);
+	}
+	return AbilitySlots;
 }
 
 static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameState_Unit UnitState)
