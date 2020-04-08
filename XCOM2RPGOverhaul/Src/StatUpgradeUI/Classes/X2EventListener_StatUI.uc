@@ -88,15 +88,28 @@ static function ResetSoldierStats(XComGameState_Unit UnitState)
 	local int i;
 	local ECharStatType StatType;
 	local X2CharacterTemplate Template;
+	local array<ECharStatType> StatTypesToReset;
+
+	StatTypesToReset.AddItem(eStat_HP);
+	StatTypesToReset.AddItem(eStat_Offense);
+	StatTypesToReset.AddItem(eStat_Defense);
+	StatTypesToReset.AddItem(eStat_Mobility);
+	StatTypesToReset.AddItem(eStat_SightRadius);
+	StatTypesToReset.AddItem(eStat_Will);
+	StatTypesToReset.AddItem(eStat_FlightFuel);
+	StatTypesToReset.AddItem(eStat_UtilityItems);
+	StatTypesToReset.AddItem(eStat_AlertLevel);
 
 	Template = UnitState.GetMyTemplate();
 
 	for (i = 0; i < eStat_MAX; ++i)
 	{
 		StatType = ECharStatType(i);
-		//UnitState.CharacterStats[i].Type = StatType;
-		UnitState.SetBaseMaxStat(StatType, Template.GetCharacterBaseStat(StatType));
-		UnitState.SetCurrentStat(StatType, UnitState.GetMaxStat(StatType));
+		if (StatTypesToReset.Find(StatType) != INDEX_NONE)
+		{
+			UnitState.SetBaseMaxStat(StatType, Template.GetCharacterBaseStat(StatType));
+			UnitState.SetCurrentStat(StatType, UnitState.GetMaxStat(StatType));
+		}
 	}
 }
 

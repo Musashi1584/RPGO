@@ -348,7 +348,8 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 		{
 			class'Helpers'.static.OutputMsg(default.strCantRespecRookie);
 			return;
-	}	}
+		}
+	}
 	
 	iXP = UnitState.GetXPValue();
 	iXP -= class'X2ExperienceConfig'.static.GetRequiredXp(NumRanks);
@@ -390,7 +391,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	{
 		UnitState.RankUpSoldier(NewGameState, ClassName);
 	}
-
+	
 	// Restore the squaddie abilities
 	if (OPTIONAL_PreserveSquaddiePerks)
 	{
