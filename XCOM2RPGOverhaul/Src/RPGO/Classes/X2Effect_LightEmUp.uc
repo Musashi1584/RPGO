@@ -18,6 +18,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 {
 	local XComGameState_Ability					AbilityState;
 	local XComGameState_Unit					TargetUnit;
+	local UnitValue								LightEmUpUsesThisTurn;
 
 	//  if under the effect of Serial, let that handle restoring the full action cost - will this work?
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
@@ -26,18 +27,23 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	if (PreCostActionPoints.Find('RunAndGun') != INDEX_NONE)
 		return false;
 
-	TargetUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
-	if (TargetUnit.IsDead() &&
-		TargetUnit.GetMyTemplate().CharacterGroupName == 'TheLost' &&
-		class'X2Effect_TheLostHeadshot'.default.ValidHeadshotAbilities.Find(AbilityContext.InputContext.AbilityTemplateName) != INDEX_NONE
-	)
+	//TargetUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
+	//if (TargetUnit.GetMyTemplate().CharacterGroupName == 'TheLost' &&
+	//	class'X2Effect_TheLostHeadshot'.default.ValidHeadshotAbilities.Find(AbilityContext.InputContext.AbilityTemplateName) != INDEX_NONE
+	//)
+	//{
+	//	return false;
+	//}
+
+	//`LOG(default.Class @ GetFuncName() @ SourceUnit.GetFullName() @ SourceUnit.ActionPoints.Length @ SourceUnit.NumActionPoints() @ PreCostActionPoints.Length,, 'RPG');
+
+	SourceUnit.GetUnitValue ('LightEmUpUsesThisTurn', LightEmUpUsesThisTurn);
+	if(int(LightEmUpUsesThisTurn.fValue) != 0)
 	{
 		return false;
 	}
 
-	//`LOG(default.Class @ GetFuncName() @ SourceUnit.GetFullName() @ SourceUnit.ActionPoints.Length @ SourceUnit.NumActionPoints() @ PreCostActionPoints.Length,, 'RPG');
-
-	if (PreCostActionPoints.Length == 2)
+	if (SourceUnit.ActionPoints.Length != PreCostActionPoints.Length)
 	{
 		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
 
@@ -45,6 +51,8 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		{
 			SourceUnit.ActionPoints.Length = 0;
 			SourceUnit.ActionPoints.AddItem(default.LightEmUpActionPoint);
+
+			SourceUnit.SetUnitFloatValue ('LightEmUpUsesThisTurn', LightEmUpUsesThisTurn.fValue + 1, eCleanup_BeginTurn);
 
 			// Get the AbilityState for LightEmUp so we dont trigger the flyover for StandardShot
 			AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
