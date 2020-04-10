@@ -157,27 +157,19 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 
 	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
-	Index = 0;
-	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap)
-	{
-		StatValueCondition = new class'X2Condition_StatValue';
-		StatValueCondition.AddStatValue(EquipmentCap.Cap.StatType, class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey));
-		
-		CapStatEffect = new class'X2Effect_EquipmentStatCaps';
-		CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-		CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-		CapStatEffect.EffectName = 'CapStatEffectRegular';
-	
+	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
+	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	CapStatEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
+	CapStatEffect.EffectName = 'CapStatEffectRegular';
+	CapStatEffect.bUseMaxCap = true;
+
+	foreach default.HEAVYWEAPON_STAT_CAPS(EquipmentCap, Index)
+	{	
 		default.HEAVYWEAPON_STAT_CAPS[Index].Cap.StatCapValue = class'RPGOAbilityConfigManager'.static.GetConfigIntValue(EquipmentCap.ValueConfigKey);
-		
 		CapStatEffect.EquipmentStatCaps.AddItem(default.HEAVYWEAPON_STAT_CAPS[Index]);
-		CapStatEffect.TargetConditions.AddItem(StatValueCondition);
-		Template.AddTargetEffect(CapStatEffect);
-		Index++;
 	}
-
-	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
-
+	
+	Template.AddTargetEffect(CapStatEffect);
 	return Template;
 }
 

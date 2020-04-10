@@ -470,6 +470,9 @@
     <Content Include="Src\RPGO\Classes\X2TargetingMethod_AreaSuppression.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\XComGameState_Effect_CapStats.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\XMBValue_Ammo.uc">
       <SubType>Content</SubType>
     </Content>

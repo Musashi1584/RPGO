@@ -1,68 +1,41 @@
-class X2Effect_EquipmentStatCaps extends X2Effect_CapStat config (RPG);
+class X2Effect_EquipmentStatCaps extends X2Effect_CapStat dependson(RPGO_DataStructures) config (RPG);
 
-var array<EquipmentStatCap> EquipmentStatCaps;
 // If true only the highest cap will be used
 var bool bUseMaxCap;
+var array<EquipmentStatCap> EquipmentStatCaps;
 
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	local XComGameState_Unit UnitState;
 	local array<XComGameState_Item> Items;
 	local XComGameState_Item Item;
-	local int EquipmentStatCapIndex;
+	local EquipmentStatCap EquipmentCap;
+	local X2WeaponTemplate WeaponTemplate;
+	local X2ArmorTemplate ArmorTemplate;
+	local XComGameState_Effect_CapStats EffectState;
 
 	UnitState = XComGameState_Unit(kNewTargetState);
-
 	Items = UnitState.GetAllInventoryItems();
 
-	foreach Items(Item)
+	EffectState = XComGameState_Effect_CapStats(NewEffectState);
+
+	foreach EquipmentStatCaps(EquipmentCap)
 	{
-		EquipmentStatCapIndex = EquipmentStatCaps.Find('TemplateName', Item.GetMyTemplateName());
-		if (EquipmentStatCapIndex != INDEX_NONE)
+		foreach Items(Item)
 		{
-			AddCap(EquipmentStatCaps[EquipmentStatCapIndex].Cap);
-			continue;
-		}
+			WeaponTemplate = X2WeaponTemplate(Item.GetMyTemplate());
+			ArmorTemplate = X2ArmorTemplate(Item.GetMyTemplate());
 
-		EquipmentStatCapIndex = EquipmentStatCaps.Find('WeaponCategoryName', X2WeaponTemplate(Item.GetMyTemplate()).WeaponCat);
-		if (EquipmentStatCapIndex != INDEX_NONE)
-		{
-			AddCap(EquipmentStatCaps[EquipmentStatCapIndex].Cap);
-			continue;
-		}
-
-		EquipmentStatCapIndex = EquipmentStatCaps.Find('ItemCategoryName', Item.GetMyTemplate().ItemCat);
-		if (EquipmentStatCapIndex != INDEX_NONE)
-		{
-			AddCap(EquipmentStatCaps[EquipmentStatCapIndex].Cap);
-			continue;
-		}
-
-		EquipmentStatCapIndex = EquipmentStatCaps.Find('ArmorClass', X2ArmorTemplate(Item.GetMyTemplate()).ArmorClass);
-		if (EquipmentStatCapIndex != INDEX_NONE)
-		{
-			AddCap(EquipmentStatCaps[EquipmentStatCapIndex].Cap);
-			continue;
+			if (Item.GetMyTemplateName() == EquipmentCap.TemplateName  ||
+				(WeaponTemplate != none && WeaponTemplate.WeaponCat == EquipmentCap.WeaponCategoryName) ||
+				(Item.GetMyTemplate().ItemCat == EquipmentCap.ItemCategoryName) ||
+				(ArmorTemplate != none && ArmorTemplate.ArmorClass == EquipmentCap.ArmorClass)
+			)
+			{
+				EffectState.AddCap(EquipmentCap.Cap, bUseMaxCap);
+			}
 		}
 	}
 	
 	super.OnEffectAdded(ApplyEffectParameters, kNewTargetState, NewGameState, NewEffectState);
-}
-
-
-public function AddCap(StatCap Cap)
-{
-	local int Index;
-
-	Index = m_aStatCaps.Find('StatType', Cap.StatType);
-
-	if (Index != INDEX_NONE)
-	{
-		m_aStatCaps[Index].StatCapValue = Max(m_aStatCaps[Index].StatCapValue, Cap.StatCapValue);
-		//`LOG(default.class @ GetFuncName() @ Cap.StatType @ Cap.StatCapValue @ m_aStatCaps[Index].StatCapValue);
-	}
-	else
-	{
-		m_aStatCaps.AddItem(Cap);
-	}
 }

@@ -1,16 +1,7 @@
 class X2Effect_CapStat extends X2Effect_PersistentStatChange;
- 
-var array<StatCap>  m_aStatCaps;
+
 var array<X2Condition> Conditions;
- 
-function AddStatCap(ECharStatType StatType, float StatCapValue)
-{
-	local StatCap Cap;
-	
-	Cap.StatType = StatType;
-	Cap.StatCapValue = StatCapValue;
-	m_aStatCaps.AddItem(Cap);
-}
+
 
 function RegisterForEvents(XComGameState_Effect EffectGameState)
 {
@@ -32,11 +23,11 @@ function RegisterForEvents(XComGameState_Effect EffectGameState)
 static function EventListenerReturn EventHandler(Object EventData, Object EventSource, XComGameState GameState, Name EventID, Object CallbackData)
 {
 	local XComGameState_Unit UnitState, SourceUnitState, NewUnitState;
-	local XComGameState_Effect NewEffectState;
+	local XComGameState_Effect_CapStats NewEffectState;
 	local XComGameState_Ability AbilityState;
 	local XComGameState NewGameState;
 	local X2Effect_CapStat EffectTemplate;
-	local XComGameState_Effect EffectState;
+	local XComGameState_Effect_CapStats EffectState;
 	local bool bOldApplicable, bNewApplicable;
 	local array<StatChange> LocalStatChanges;
 	local StatChange LocalStatChange;
@@ -44,7 +35,7 @@ static function EventListenerReturn EventHandler(Object EventData, Object EventS
 	local int AppliedStatChangeIndex, StatChangeOther;
 	local float AppliedStatChange, CappedStat, NewStatAmount;
 
-	EffectState = XComGameState_Effect(CallbackData);
+	EffectState = XComGameState_Effect_CapStats(CallbackData);
 	if (EffectState == none)
 		return ELR_NoInterrupt;
 
@@ -62,9 +53,9 @@ static function EventListenerReturn EventHandler(Object EventData, Object EventS
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Conditional Stat Change");
 
 		NewUnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
-		NewEffectState = XComGameState_Effect(NewGameState.ModifyStateObject(class'XComGameState_Effect', EffectState.ObjectID));
+		NewEffectState = XComGameState_Effect_CapStats(NewGameState.ModifyStateObject(class'XComGameState_Effect', EffectState.ObjectID));
 
-		foreach EffectTemplate.m_aStatCaps(LocalStatCap)
+		foreach EffectState.m_aStatCaps(LocalStatCap)
 		{
 			AppliedStatChangeIndex = NewEffectState.StatChanges.Find('StatType', LocalStatCap.StatType);
 			AppliedStatChange = (AppliedStatChangeIndex != INDEX_NONE) ?
@@ -112,4 +103,10 @@ function bool IsEffectCurrentlyRelevant(XComGameState_Effect EffectGameState, XC
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	super(X2Effect_Persistent).OnEffectAdded(ApplyEffectParameters, kNewTargetState, NewGameState, NewEffectState);
+}
+
+
+defaultproperties
+{
+	GameStateEffectClass = class'XComGameState_Effect_CapStats'
 }
