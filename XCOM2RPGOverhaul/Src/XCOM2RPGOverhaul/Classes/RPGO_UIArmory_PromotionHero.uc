@@ -701,6 +701,7 @@ function PreviewAbility(int Rank, int Branch)
 			AbilityIcon = AbilityTemplate.IconImage;
 			AbilityName = AbilityTemplate.LocFriendlyName != "" ? AbilityTemplate.LocFriendlyName : ("Missing 'LocFriendlyName' for " $ AbilityTemplate.DataName);
 			AbilityDesc = AbilityTemplate.HasLongDescription() ? AbilityTemplate.GetMyLongDescription(, Unit) : ("Missing 'LocLongDescription' for " $ AbilityTemplate.DataName);
+			AbilityDesc $= "<br />" $ class'X2TemplateHelper_RPGOverhaul'.static.GetAbilityMetaInfo(AbilityTemplate);
 			AbilityHint = "";
 
 			// Don't display cost information if the ability has already been purchased

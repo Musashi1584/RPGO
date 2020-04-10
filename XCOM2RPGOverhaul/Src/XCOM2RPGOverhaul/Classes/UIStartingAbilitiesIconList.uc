@@ -4,6 +4,7 @@ var UIPanel StartingAbiltiesBG;
 var UIX2PanelHeader StartingAbiltiesHeader;
 var UIAbilityIconRow AbilityIconRow;
 var int IconSize;
+var localized string m_strStartingAbilities;
 
 simulated function UIPanel InitStartingAbilitiesIconList(
 	optional name InitName,
@@ -18,7 +19,7 @@ simulated function UIPanel InitStartingAbilitiesIconList(
 	StartingAbiltiesBG = Spawn(class'UIPanel', self);
 	StartingAbiltiesBG.InitPanel('BG', class'UIUtilities_Controls'.const.MC_X2Background);
 
-	HeaderTitle = "Starting Abilities";
+	HeaderTitle = default.m_strStartingAbilities;
 	if (`ISCONTROLLERACTIVE)
 	{
 		HeaderTitle = class'UIUtilities_Text'.static.InjectImage(class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_LSCLICK_L3, 28, 28) @ HeaderTitle;

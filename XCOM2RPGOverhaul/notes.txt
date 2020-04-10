@@ -1,12 +1,10 @@
 New swo choose weapon proficiencies
 weapon changes
 dodge changes
-stat screen
 add a covert op similar to "Increase Combat Intelligence" that improves natural aptitude
 exclude specs from random 
-add weight to specs for randomization
 limited random pool of specs and starting abilities
-mod add squaddie perks
+command to add specs to a soldier
 
 "if a soldier with a handgun is being attacked, he does return fire after its resolved. when that soldier is within LOS of a soldier using covering fire, that second soldier will not use it, meaning that the attack will happen without aim penalty, and the onlky reaction will be a weak pistol attack after it being resolved
 its like the covering fire unit is letting the other go ahead of him instead of triggering it"

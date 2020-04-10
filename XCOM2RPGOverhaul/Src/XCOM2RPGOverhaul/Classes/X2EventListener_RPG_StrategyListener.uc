@@ -15,6 +15,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
 	Templates.AddItem(CreateListenerTemplate_OnGetLocalizedCategory());
+	Templates.AddItem(CreateListenerTemplate_OnSecondWaveChanged());
 
 	//	Random Classes
 	Templates.AddItem(CreateListenerTemplate_OnBestGearLoadoutApplied());
@@ -88,6 +89,22 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnGetLocalizedCat
 
 	return Template;
 }
+
+static function CHEventListenerTemplate CreateListenerTemplate_OnSecondWaveChanged()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGOnSecondWaveChanged');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('OnSecondWaveChanged', OnSecondWaveChanged, ELD_OnStateSubmitted);
+	`LOG(default.class @ "Register Event OnSecondWaveChanged",, 'RPG');
+
+	return Template;
+}
+
 
 static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
@@ -167,7 +184,6 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 
 	return ELR_NoInterrupt;
 }
-
 
 static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
@@ -303,6 +319,69 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 	return ELR_NoInterrupt;
 }
 
+static function EventListenerReturn OnSecondWaveChanged(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+	//local XComGameStateHistory History;
+	//local XComGameState_Unit UnitState;
+	//local XComGameState_CampaignSettings CurrentCampaignSettings, PreviousCampaignSettings;
+	//local UnitValue AddedRandomSpecs;
+	//local name SecondWaveOption;
+	//local bool bRandomEnabled, bRandomDisabled, bCommandersChoiceEnabled;
+	//
+	//History = `XCOMHISTORY;
+	//
+	//CurrentCampaignSettings = XComGameState_CampaignSettings(EventData);
+	//CurrentCampaignSettings = XComGameState_CampaignSettings(History.GetGameStateForObjectID(CurrentCampaignSettings.ObjectID, , GameState.HistoryIndex));
+	//PreviousCampaignSettings = XComGameState_CampaignSettings(History.GetGameStateForObjectID(CurrentCampaignSettings.ObjectID, , GameState.HistoryIndex - 1));
+	//
+	//bCommandersChoiceEnabled = (PreviousCampaignSettings.SecondWaveOptions.Find('RPGOCommandersChoice') == INDEX_NONE &&
+	//							CurrentCampaignSettings.SecondWaveOptions.Find('RPGOCommandersChoice') != INDEX_NONE);
+	//
+	//bRandomEnabled = (PreviousCampaignSettings.SecondWaveOptions.Find('RPGOSpecRoulette') == INDEX_NONE &&
+	//				  CurrentCampaignSettings.SecondWaveOptions.Find('RPGOSpecRoulette') != INDEX_NONE) ||
+	//				 (PreviousCampaignSettings.SecondWaveOptions.Find('RPGO_SWO_RandomClasses') == INDEX_NONE &&
+	//				  CurrentCampaignSettings.SecondWaveOptions.Find('RPGO_SWO_RandomClasses') != INDEX_NONE);
+	//
+	//bRandomDisabled = (PreviousCampaignSettings.SecondWaveOptions.Find('RPGOSpecRoulette') != INDEX_NONE ||
+	//				   PreviousCampaignSettings.SecondWaveOptions.Find('RPGO_SWO_RandomClasses') != INDEX_NONE) &&
+	//				 (CurrentCampaignSettings.SecondWaveOptions.Find('RPGOSpecRoulette') == INDEX_NONE ||
+	//				  CurrentCampaignSettings.SecondWaveOptions.Find('RPGO_SWO_RandomClasses') == INDEX_NONE);
+	//
+	//foreach History.IterateByClassType(class'XComGameState_Unit', UnitState)
+	//{
+	//	if (bRandomEnabled)
+	//	{
+	//		`LOG(GetFuncName() @ "RPGO_SWO_RandomClasses or RPGOSpecRoulette was enabled",, 'RPG');
+	//		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
+	//
+	//		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
+	//			AddedRandomSpecs.fValue != 1)
+	//		{
+	//			OnUnitRankUpSecondWaveRoulette(UnitState, none, GameState, '', none);
+	//		}
+	//	}
+	//
+	//	if (bRandomDisabled)
+	//	{
+	//		`LOG(GetFuncName() @ "RPGO_SWO_RandomClasses or RPGOSpecRoulette was disabled",, 'RPG');
+	//		UnitState.ClearUnitValue('SecondWaveSpecRouletteAddedRandomSpecs');
+	//	}
+	//}
+	//
+	//
+	//foreach PreviousCampaignSettings.SecondWaveOptions(SecondWaveOption)
+	//{
+	//	`LOG(GetFuncName() @ "PreviousCampaignSettings" @ SecondWaveOption,, 'RPG');
+	//}
+	//
+	//foreach CurrentCampaignSettings.SecondWaveOptions(SecondWaveOption)
+	//{
+	//	`LOG(GetFuncName() @ "CurrentCampaignSettings" @ SecondWaveOption,, 'RPG');
+	//}
+
+	return ELR_NoInterrupt;
+}
+
 static function string GetClassIcon(XComGameState_Unit UnitState)
 {
 	local name Spec;
@@ -349,12 +428,22 @@ static function string GetClassSummary(XComGameState_Unit UnitState)
 {
 	local name Spec;
 	local X2UniversalSoldierClassInfo Template;
+	local string Summary;
 
 	Spec = GetSpecializationName(UnitState);
 	Template = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateByName(Spec);
 
 	//`LOG(GetFuncName() @ Spec @ Template @ Template.ClassSpecializationSummary,, 'RPG');
-	return Template.ClassSpecializationSummary != "" ? Template.ClassSpecializationSummary : UnitState.GetSoldierClassTemplate().ClassSummary;
+
+	Summary = Template.ClassSpecializationSummary != "" ? Template.ClassSpecializationSummary : UnitState.GetSoldierClassTemplate().ClassSummary;
+
+	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses') || `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	{
+		Summary $= "<br />" $ class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecsMetaInfo(UnitState);
+	}
+
+
+	return Summary;
 }
 
 static function int GetSoldierSpecialization(XComGameState_Unit UnitState)

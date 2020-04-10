@@ -45,7 +45,7 @@ function string GetSpecializationWeaponSlotInfo()
 		if (IsPrimaryWeaponSpecialization())
 		{
 			Info = "[";
-			Info $= class'XGLocalizedData_RPG'.default.SpecializationPrimary;
+			Info $= class'XGLocalizedData_RPG'.default.SpecializationPrimaryShort;
 		}
 		
 		if (IsSecondaryWeaponSpecialization())
@@ -59,7 +59,7 @@ function string GetSpecializationWeaponSlotInfo()
 				Info = "[";
 			}
 
-			Info $= class'XGLocalizedData_RPG'.default.SpecializationSecondary;
+			Info $= class'XGLocalizedData_RPG'.default.SpecializationSecondaryShort;
 		}
 		
 		if (Info != "")
@@ -70,7 +70,7 @@ function string GetSpecializationWeaponSlotInfo()
 		//if (IsComplemtarySpecialization())
 		//{
 		//	Info @= class'UIUtilities_Text'.static.GetSizedText(
-		//		class'XGLocalizedData_RPG'.default.SpecializationComplementary, 14
+		//		class'XGLocalizedData_RPG'.default.SpecializationComplementaryShort, 14
 		//	);
 		//}
 
@@ -89,7 +89,7 @@ function string GetSpecializationAllowedWeaponCategoriesInfo()
 		LocalizedCategories = GetLocalizedWeaponCategories();
 		
 		Categories = "(";
-		Categories $= class'RPGO_UI_Helper'.static.Join(LocalizedCategories, ",");
+		Categories $= class'RPGO_UI_Helper'.static.Join(LocalizedCategories, ", ");
 		Categories $= ")";
 
 		return class'UIUtilities_Text'.static.GetSizedText(Categories, 16);
@@ -100,18 +100,7 @@ function string GetSpecializationAllowedWeaponCategoriesInfo()
 
 function array<String> GetLocalizedWeaponCategories()
 {
-	local name WeaponCat;
-	local array<string> LocalizedCategories;
-
-	foreach SpecializationMetaInfo.AllowedWeaponCategories(WeaponCat)
-	{
-		if (LocalizedCategories.Find(LocalizeCategory(WeaponCat)) == INDEX_NONE)
-		{
-			LocalizedCategories.AddItem(LocalizeCategory(WeaponCat));
-		}
-	}
-
-	return LocalizedCategories;
+	return class'X2TemplateHelper_RPGOverhaul'.static.GetLocalizedCategories(SpecializationMetaInfo.AllowedWeaponCategories);
 }
 
 function bool IsPrimaryWeaponSpecialization()
@@ -227,115 +216,6 @@ function string GetComplementarySpecializationInfo()
 	}
 
 	return Info;
-}
-
-static public function string LocalizeCategory(name Key)
-{
-	switch (Key)
-	{
-		case 'rifle':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryRifle;
-			break;
-		case 'sniper_rifle':
-			return class'XGLocalizedData_RPG'.default.ItemCategorySniperRifle;
-			break;
-		case 'shotgun':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryShotgun;
-			break;
-		case 'cannon':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryCannon;
-			break;
-		case 'vektor_rifle':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryVektorRifle;
-			break;
-		case 'bullpup':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryBullpup;
-			break;
-		case 'pistol':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryPistol;
-			break;
-		case 'sidearm':
-			return class'XGLocalizedData_RPG'.default.ItemCategorySidearm;
-			break;
-		case 'sword':
-			return class'XGLocalizedData_RPG'.default.ItemCategorySword;
-			break;
-		case 'gremlin':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryGremlin;
-			break;
-		case 'psiamp':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryPsiamp;
-			break;
-		case 'grenade_launcher':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryGrenadeLauncher;
-			break;
-		case 'claymore':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryClaymore;
-			break;
-		case 'wristblade':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryWristblade;
-			break;
-		case 'arcthrower':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryArcthrower;
-			break;
-		case 'combatknife':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryCombatknife;
-			break;
-		case 'holotargeter':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryHolotargeter;
-			break;
-		case 'sawedoffshotgun':
-			return class'XGLocalizedData_RPG'.default.ItemCategorySawedoffshotgun;
-			break;
-		case 'lw_gauntlet':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryLWGauntlet;
-			break;
-		case 'empty':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryEmpty;
-			break;
-		case 'Utility':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryUtility;
-			break;
-		case 'Tech':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryTech;
-			break;
-		case 'conventional':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryConventional;
-			break;
-		case 'plated':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryPlated;
-			break;
-		case 'powered':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryPowered;
-			break;
-		case 'sparkrifle':
-			return class'XGLocalizedData_RPG'.default.ItemCategorySparkrifle;
-			break;
-		case 'gauntlet':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryGauntlet;
-			break;
-		case 'Basic':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryBasic;
-			break;
-		case 'Unknown':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryUnknown;
-			break;
-		case 'Medium':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryMedium;
-			break;
-		case 'Light':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryLight;
-			break;
-		case 'Heavy':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryHeavy;
-			break;
-		case 'iri_rocket_launcher':
-		case 'iri_disposable_launcher':
-			return class'XGLocalizedData_RPG'.default.ItemCategoryRocketLauncher;
-			break;
-	}
-
-	return string(Key);
 }
 
 private function static string MakeBulletList(array<string> List)

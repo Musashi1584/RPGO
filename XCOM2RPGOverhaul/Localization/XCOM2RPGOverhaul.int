@@ -16,7 +16,7 @@ ClassSpecializationSummary="Tripods, high capacity magazines, and a rain of empt
 
 [Grenadier X2UniversalSoldierClassInfo]
 ClassSpecializationTitle=Grenadier
-ClassSpecializationSummary="Ever since man found a way to pack explosives into a conveniently portable container for ready use the Grenadier has been there to make someone's day miserable. Whether Blackpowder or Hi-Ex the result is all the same."
+ClassSpecializationSummary="Ever since man found a way to pack explosives into a conveniently portable container for ready use the Grenadier has been there to make someone's day miserable."
 
 [Sniper X2UniversalSoldierClassInfo]
 ClassSpecializationTitle=Sniper
@@ -48,7 +48,7 @@ ClassSpecializationSummary="Nothing like a Ripjack to ruin an Xray's day. The Sk
 
 [Saboteur X2UniversalSoldierClassInfo]
 ClassSpecializationTitle=Saboteur
-ClassSpecializationSummary="Sometimes its not enough to just bring a rocket launcher to the field. No you need a specialist who can properly calibrate a proximity mine or mix up X4 in a basement chemlab. Call in the Saboteur when a grenade just won't cut it."
+ClassSpecializationSummary="Sometimes its not enough to just bring a rocket launcher to the field. No you need a specialist who can properly calibrate a proximity mine or mix up X4 in a basement chemlab."
 
 [Spotter X2UniversalSoldierClassInfo]
 ClassSpecializationTitle=Spotter
@@ -73,9 +73,18 @@ m_strServeredArms="<font color='#bf1e2e'><b>Needs Arm Augmention</b></font>"
 m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"
 
 [XGLocalizedData_RPG]
-SpecializationPrimary="P"
-SpecializationSecondary="S"
-SpecializationComplementary="C"
+AbilityWeaponRestrictions="Compatible with:"
+
+SpecializationPrimaryShort="P"
+SpecializationSecondaryShort="S"
+SpecializationComplementaryShort="C"
+
+SpecializationPrimary="Primary Specialization(s):"
+SpecializationSecondary="Secondary Sepecialization(s):"
+SpecializationComplementary="Complementary Specialization(s):"
+
+AllowedWeaponCategoriesPrimary="Primary Weapon Categories:"
+AllowedWeaponCategoriesSecondary="Secondary Weapon Categories:"
 
 UtilityCatPistol="(Auto-)Pistol"
 UtilityCatSidearm="(Auto-)Pistol"
@@ -90,10 +99,11 @@ UtilityCatCombatknife="Melee Weapon"
 UtilityCatHolotargeter="Holotargeter"
 UtilityCatSawedoffshotgun="Sawed-Off Shotgun"
 UtilityCatLWGauntlet="XCOM Gauntlet"
+
 m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
 
-strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Soldiers start with a limited number of randomized specializations on Squaddie."
+strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Limited number of randomized specializations on Squaddie."
 strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette, Origins and Commanders Choice."
 
 strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
@@ -105,10 +115,10 @@ strSWO_CommandersChoice_Tooltip="On promotion to squaddie you can choose a limte
 strSWO_Origins_Description="[RPGO] Origins: Choose the soldiers starting abilities"
 strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number of starting perks. \n Can be combined with Specialization Roulette, Commanders Choice and Training Roulette."
 
-strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes: like Specialization Roulette but with a more sensible random generation"
+strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes: Generates funtional random classes"
 strRPGO_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign a primary, a secondary and some complementary specializations for the soldier. This is recommended over Specialization Roulette if you use Weapon Restrictions as well because it will make sure your soldier will have a primary and secondary weapon category available. Can be combined with Origins and Training Roulette, but not Commander's Choice."
 
-strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions: Your specializations will determine which weapons your soldier can use"
+strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions: Specializations will determine which weapons your soldiers can use"
 strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options"
 
 ItemCategoryRifle="Rifle"
@@ -169,6 +179,9 @@ m_strItemChosen=You already have chosen this ability
 m_strItemOwned=Random ability
 m_strItemLimitReached=You cannot pick any more abilties
 m_strItemNotRemovable=Random abilities cant be removed
+
+[UIStartingAbilitiesIconList]
+m_strStartingAbilities=Starting Abilities
 
 [RPGOVersionTemplate]
 strRPGOVersion="Musasis RPG Overhaul v%MAJOR.%MINOR.%PATCH"

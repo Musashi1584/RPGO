@@ -1,8 +1,17 @@
 class XGLocalizedData_RPG extends Object;
 
+var localized string SpecializationPrimaryShort;
+var localized string SpecializationSecondaryShort;
+var localized string SpecializationComplementaryShort;
+
 var localized string SpecializationPrimary;
 var localized string SpecializationSecondary;
 var localized string SpecializationComplementary;
+
+var localized string AllowedWeaponCategoriesPrimary;
+var localized string AllowedWeaponCategoriesSecondary;
+
+var localized string AbilityWeaponRestrictions;
 
 var localized string UtilityCatPistol;
 var localized string UtilityCatSidearm;

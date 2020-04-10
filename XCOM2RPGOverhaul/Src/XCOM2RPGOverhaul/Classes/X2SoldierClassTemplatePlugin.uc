@@ -487,6 +487,66 @@ static function string GetMetaInfoForSlot(XComGameState_Unit UnitState, int Slot
 	return "";
 }
 
+static function string GetTrainedSpecsMetaInfo(XComGameState_Unit UnitState)
+{
+	local array<SoldierSpecialization> SoldierSpecs;
+	local SoldierSpecialization Spec;
+	local array<string> PrimaryWeaponCategories, PrimaryWeaponCategoriesFromSpec, SecondaryWeaponCategories, SecondaryWeaponCategoriesFromSpec;
+	local string WeaponCategory;
+	local X2UniversalSoldierClassInfo Template;
+	local string Info;
+	local array<string> PrimarySpecs, SecondarySpecs;
+
+	SoldierSpecs = GetTrainedSpecializations(UnitState);
+	foreach SoldierSpecs(Spec)
+	{
+		Template = GetSpecializationTemplateByName(Spec.TemplateName);
+		if (Template.IsPrimaryWeaponSpecialization())
+		{
+			PrimarySpecs.AddItem(Template.ClassSpecializationTitle);
+
+			PrimaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
+			foreach PrimaryWeaponCategoriesFromSpec(WeaponCategory)
+			{
+				if (PrimaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
+				{
+					PrimaryWeaponCategories.AddItem(WeaponCategory);
+				}
+			}
+		}
+		if (Template.IsSecondaryWeaponSpecialization())
+		{
+			SecondarySpecs.AddItem(Template.ClassSpecializationTitle);
+
+			SecondaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
+			foreach SecondaryWeaponCategoriesFromSpec(WeaponCategory)
+			{
+				if (SecondaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
+				{
+					SecondaryWeaponCategories.AddItem(WeaponCategory);
+				}
+			}
+		}
+	}
+
+	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses') || `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	{
+		Info = class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationPrimary, eUIState_Header);
+		Info @= class'RPGO_UI_Helper'.static.Join(PrimarySpecs, ", ") $ " ";
+		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationSecondary, eUIState_Header);
+		Info @= class'RPGO_UI_Helper'.static.Join(SecondarySpecs, ", ") $ "<br />";
+	}
+
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	{
+		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesPrimary, eUIState_Header);
+		Info @= class'RPGO_UI_Helper'.static.Join(PrimaryWeaponCategories, ", ") $ " ";
+		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesSecondary, eUIState_Header);
+		Info @= class'RPGO_UI_Helper'.static.Join(SecondaryWeaponCategories, ", ");
+	}
+	return class'UIUtilities_Text'.static.GetSizedText(Info, 16);
+}
+
 static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> AllSpecs, SoldierSpecs;
