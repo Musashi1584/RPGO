@@ -38,6 +38,13 @@ static function bool IsPrerequisiteAbility(name AbiliityName)
 
 static function AddSecondWaveOptions()
 {
+	
+	AddSecondWaveOption(
+		'RPGO_SWO_WeaponRestriction',
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Description,
+		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Tooltip
+	);
+
 	AddSecondWaveOption(
 		'RPGOSpecRoulette',
 		class'XGLocalizedData_RPG'.default.strSWO_SpecRoulette_Description,
@@ -66,12 +73,6 @@ static function AddSecondWaveOptions()
 		'RPGOOrigins',
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Description,
 		class'XGLocalizedData_RPG'.default.strSWO_Origins_Tooltip
-	);
-
-	AddSecondWaveOption(
-		'RPGO_SWO_WeaponRestriction',
-		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Description,
-		class'XGLocalizedData_RPG'.default.strRPGO_SWO_WeaponRestriction_Tooltip
 	);
 }
 

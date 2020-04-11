@@ -118,8 +118,8 @@ strSWO_Origins_Tooltip="On promotion to squaddie you can choose a limted number 
 strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes: Generates funtional random classes"
 strRPGO_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign a primary, a secondary and some complementary specializations for the soldier. This is recommended over Specialization Roulette if you use Weapon Restrictions as well because it will make sure your soldier will have a primary and secondary weapon category available. Can be combined with Origins and Training Roulette, but not Commander's Choice."
 
-strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions: Specializations will determine which weapons your soldiers can use"
-strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options"
+strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions: Specs will determine which weapons your soldiers can use"
+strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options. With Random Classes active your soldier will only have one designated primaray and secondary specialization."
 
 ItemCategoryRifle="Rifle"
 ItemCategorySniperRifle="Sniper Rifle"
