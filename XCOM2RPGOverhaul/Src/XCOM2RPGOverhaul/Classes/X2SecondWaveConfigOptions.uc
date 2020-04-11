@@ -259,6 +259,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
 
 			//	Skip specialization if it's mutually exclusive with one of the selected ones.
+			bSkipSpec = false;
 			for (i = 0; i < SelectedSpecTemplates.Length; i++)
 			{
 				if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
