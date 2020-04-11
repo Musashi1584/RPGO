@@ -201,11 +201,16 @@ static function X2UniversalSoldierClassInfo GetSpecTemplateBySlotFromAssignedSpe
 // This checks gets the specialization by checking ALL spec
 static function X2UniversalSoldierClassInfo GetSpecTemplateBySlotFromAvailableSpecs(XComGameState_Unit UnitState, int SlotIndex)
 {
+	return GetSpecializationTemplate(GetSpecializationBySlotFromAvailableSpecs(UnitState, SlotIndex));
+}
+
+static function SoldierSpecialization GetSpecializationBySlotFromAvailableSpecs(XComGameState_Unit UnitState, int SlotIndex)
+{
 	local array<SoldierSpecialization> Specs;
 
 	Specs = GetSpecializationsAvailableToSoldier(UnitState);
 
-	return GetSpecializationTemplate(Specs[SlotIndex]);
+	return Specs[SlotIndex];
 }
 
 static function int GetSpecializationIndex(XComGameState_Unit UnitState, name SpecTemplateName)
@@ -511,34 +516,34 @@ static function string GetAssignedSpecsMetaInfo(XComGameState_Unit UnitState)
 	local string Info;
 	local array<string> PrimarySpecs, SecondarySpecs;
 
-	SoldierSpecs = GetAssignedSpecializations(UnitState);
+	SoldierSpecs = GetTrainedPrimaryWeaponSpecializations(UnitState);
 	foreach SoldierSpecs(Spec)
 	{
 		Template = GetSpecializationTemplateByName(Spec.TemplateName);
-		if (Template.IsPrimaryWeaponSpecialization())
-		{
-			PrimarySpecs.AddItem(Template.ClassSpecializationTitle);
+		PrimarySpecs.AddItem(Template.ClassSpecializationTitle);
 
-			PrimaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
-			foreach PrimaryWeaponCategoriesFromSpec(WeaponCategory)
+		PrimaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
+		foreach PrimaryWeaponCategoriesFromSpec(WeaponCategory)
+		{
+			if (PrimaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
 			{
-				if (PrimaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
-				{
-					PrimaryWeaponCategories.AddItem(WeaponCategory);
-				}
+				PrimaryWeaponCategories.AddItem(WeaponCategory);
 			}
 		}
-		if (Template.IsSecondaryWeaponSpecialization())
-		{
-			SecondarySpecs.AddItem(Template.ClassSpecializationTitle);
+	}
 
-			SecondaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
-			foreach SecondaryWeaponCategoriesFromSpec(WeaponCategory)
+	SoldierSpecs = GetTrainedSecondaryWeaponSpecializations(UnitState);
+	foreach SoldierSpecs(Spec)
+	{
+		Template = GetSpecializationTemplateByName(Spec.TemplateName);
+		SecondarySpecs.AddItem(Template.ClassSpecializationTitle);
+
+		SecondaryWeaponCategoriesFromSpec = Template.GetLocalizedWeaponCategories();
+		foreach SecondaryWeaponCategoriesFromSpec(WeaponCategory)
+		{
+			if (SecondaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
 			{
-				if (SecondaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
-				{
-					SecondaryWeaponCategories.AddItem(WeaponCategory);
-				}
+				SecondaryWeaponCategories.AddItem(WeaponCategory);
 			}
 		}
 	}
@@ -611,20 +616,47 @@ static function bool HasTrainedSecondarySpecializations(XComGameState_Unit UnitS
 	return Specs.length > 0;
 }
 
+static function array<string> GetSpecializationTitles(array<SoldierSpecialization> Specs)
+{
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo Template;
+	local array<string> SpecsTitles;
+
+	foreach Specs(Spec)
+	{
+		Template = GetSpecializationTemplateByName(Spec.TemplateName);
+		SpecsTitles.AddItem(Template.ClassSpecializationTitle);
+	}
+
+	return SpecsTitles;
+}
+
 static function array<SoldierSpecialization> GetTrainedPrimaryWeaponSpecializations(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> Specs, PrimarySpecs;
 	local SoldierSpecialization Spec;
 	local X2UniversalSoldierClassInfo Template;
+	local UnitValue	ChosenPrimarySpec;
 
-	Specs = GetAssignedSpecializations(UnitState);
-
-	foreach Specs(Spec)
+	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
-		Template = GetSpecializationTemplateByName(Spec.TemplateName);
-		if (Template.IsPrimaryWeaponSpecialization())
+		if (UnitState.GetUnitValue('PrimarySpecialization_Value', ChosenPrimarySpec))
 		{
+			Spec = GetSpecializationBySlotFromAvailableSpecs(UnitState, ChosenPrimarySpec.fValue);
 			PrimarySpecs.AddItem(Spec);
+		}
+	}
+	else
+	{
+		Specs = GetAssignedSpecializations(UnitState);
+
+		foreach Specs(Spec)
+		{
+			Template = GetSpecializationTemplateByName(Spec.TemplateName);
+			if (Template.IsPrimaryWeaponSpecialization())
+			{
+				PrimarySpecs.AddItem(Spec);
+			}
 		}
 	}
 	
@@ -636,15 +668,27 @@ static function array<SoldierSpecialization> GetTrainedSecondaryWeaponSpecializa
 	local array<SoldierSpecialization> Specs, SecondarySpecs;
 	local SoldierSpecialization Spec;
 	local X2UniversalSoldierClassInfo Template;
+	local UnitValue	ChosenSecondarySpec;
 
-	Specs = GetAssignedSpecializations(UnitState);
-
-	foreach Specs(Spec)
+	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
-		Template = GetSpecializationTemplateByName(Spec.TemplateName);
-		if (Template.IsSecondaryWeaponSpecialization())
+		if (UnitState.GetUnitValue('SecondarySpecialization_Value', ChosenSecondarySpec))
 		{
+			Spec = GetSpecializationBySlotFromAvailableSpecs(UnitState, ChosenSecondarySpec.fValue);
 			SecondarySpecs.AddItem(Spec);
+		}
+	}
+	else
+	{
+		Specs = GetAssignedSpecializations(UnitState);
+
+		foreach Specs(Spec)
+		{
+			Template = GetSpecializationTemplateByName(Spec.TemplateName);
+			if (Template.IsSecondaryWeaponSpecialization())
+			{
+				SecondarySpecs.AddItem(Spec);
+			}
 		}
 	}
 	
