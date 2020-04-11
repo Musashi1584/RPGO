@@ -1256,7 +1256,6 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	//local X2AbilityTrigger_EventListener		EventListener;
 	local X2AbilityTemplate                 Template;	
 	local X2AbilityCost_Ammo                AmmoCost;
-	local X2AbilityCost						FreeCost;
 	local X2AbilityToHitCalc_StandardAim    StandardAim;
 	local X2Condition_UnitProperty          ShooterCondition;
 	local X2AbilityTarget_Single            SingleTarget;
@@ -1271,10 +1270,6 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	AmmoCost = new class'X2AbilityCost_Ammo';
 	AmmoCost.iAmmo = 1;	
 	Template.AbilityCosts.AddItem(AmmoCost);
-	
-	FreeCost = new class'X2AbilityCost';
-	FreeCost.bFreeCost = true;
-	Template.AbilityCosts.AddItem(FreeCost);
 	
 	StandardAim = new class'X2AbilityToHitCalc_StandardAim';
 	//StandardAim.bReactionFire = true;
