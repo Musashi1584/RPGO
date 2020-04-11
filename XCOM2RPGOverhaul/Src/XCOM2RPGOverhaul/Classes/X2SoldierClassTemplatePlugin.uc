@@ -489,18 +489,30 @@ static function string GetAssignedSpecsMetaInfo(XComGameState_Unit UnitState)
 
 	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses') || `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
-		Info = class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationPrimary, eUIState_Header);
-		Info @= class'RPGO_UI_Helper'.static.Join(PrimarySpecs, ", ") $ " ";
-		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationSecondary, eUIState_Header);
-		Info @= class'RPGO_UI_Helper'.static.Join(SecondarySpecs, ", ") $ "<br />";
+		if (PrimarySpecs.Length > 0)
+		{
+			Info = class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationPrimary, eUIState_Header);
+			Info @= class'RPGO_UI_Helper'.static.Join(PrimarySpecs, ", ") $ " ";
+		}
+		if (SecondarySpecs.Length > 0)
+		{
+			Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.SpecializationSecondary, eUIState_Header);
+			Info @= class'RPGO_UI_Helper'.static.Join(SecondarySpecs, ", ") $ "<br />";
+		}
 	}
 
 	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
-		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesPrimary, eUIState_Header);
-		Info @= class'RPGO_UI_Helper'.static.Join(PrimaryWeaponCategories, ", ") $ " ";
-		Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesSecondary, eUIState_Header);
-		Info @= class'RPGO_UI_Helper'.static.Join(SecondaryWeaponCategories, ", ");
+		if (PrimaryWeaponCategories.Length > 0)
+		{
+			Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesPrimary, eUIState_Header);
+			Info @= class'RPGO_UI_Helper'.static.Join(PrimaryWeaponCategories, ", ") $ " ";
+		}
+		if (SecondaryWeaponCategories.Length > 0)
+		{
+			Info $= class'UIUtilities_Text'.static.GetColoredText(class'XGLocalizedData_RPG'.default.AllowedWeaponCategoriesSecondary, eUIState_Header);
+			Info @= class'RPGO_UI_Helper'.static.Join(SecondaryWeaponCategories, ", ");
+		}
 	}
 	return class'UIUtilities_Text'.static.GetSizedText(Info, 16);
 }
