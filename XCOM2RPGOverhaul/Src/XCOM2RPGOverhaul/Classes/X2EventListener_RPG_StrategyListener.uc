@@ -419,7 +419,7 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 	//class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Sort(SortSpecializations);
 	//Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
 
-	Spec = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlot(UnitState, RowIndex);
+	Spec = class'X2SoldierClassTemplatePlugin'.static.GetSpecTemplateBySlotFromAssignedSpecs(UnitState, RowIndex);
 	
 	return ((RowIndex != INDEX_NONE) && (Spec != none)) ? Spec.Name : UnitState.GetSoldierClassTemplate().DataName;
 }
@@ -439,7 +439,7 @@ static function string GetClassSummary(XComGameState_Unit UnitState)
 
 	if (`SecondWaveEnabled('RPGO_SWO_RandomClasses') || `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
-		Summary $= "<br />" $ class'X2SoldierClassTemplatePlugin'.static.GetTrainedSpecsMetaInfo(UnitState);
+		Summary $= "<br />" $ class'X2SoldierClassTemplatePlugin'.static.GetAssignedSpecsMetaInfo(UnitState);
 	}
 
 

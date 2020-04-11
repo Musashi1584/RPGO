@@ -21,7 +21,7 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 	UnitState = GetUnit();
 
 	SpecializationsPool.Length = 0;
-	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsForSoldier(UnitState);
+	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
 	CommodityPool = ConvertToCommodities(SpecializationsPool);
 
 	SpecializationsChosen.Length = 0;

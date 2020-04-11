@@ -97,7 +97,7 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 	`LOG(default.class @ GetFuncName() @ "Start profiling",, 'RPG');
 
 	Count = GetSpecRouletteCount();
-	Specs = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsForSoldier(UnitState);
+	Specs = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
 
 	for (Index = 0; Index < Count; Index++)
 	{
@@ -110,7 +110,7 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 			}
 		}
 
-		SpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, RandomSlotIndex);
+		SpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecTemplateBySlotFromAvailableSpecs(UnitState, RandomSlotIndex);
 
 		RandomAbilitySlotIndices.AddItem(RandomSlotIndex);
 
@@ -135,7 +135,7 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState)
 
 	foreach RandomAbilitySlotIndices(Index)
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ Index @ class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplateForSlotIndex(UnitState, Index).ClassSpecializationTitle,, 'RPG');
+		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette add random index" @ Index @ class'X2SoldierClassTemplatePlugin'.static.GetSpecTemplateBySlotFromAvailableSpecs(UnitState, Index).ClassSpecializationTitle,, 'RPG');
 	}
 
 	`LOG(default.class @ GetFuncName() @ "Stop profiling",, 'RPG');
@@ -161,7 +161,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	`LOG("Building random class for: " @ UnitState.GetFullName(),, 'RPG');
 
 	Count = GetSpecRouletteCount();
-	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplatesForSoldier(UnitState);
+	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplatesAvailableToSoldier(UnitState);
 
 	//	########################################################
 	//	Select random specialization for primary weapon:

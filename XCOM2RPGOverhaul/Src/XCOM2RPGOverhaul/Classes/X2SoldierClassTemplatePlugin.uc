@@ -71,13 +71,13 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplate(SoldierSpe
 
 //	Random Classes
 //	get ALL spec templates
-static function array<X2UniversalSoldierClassInfo> GetSpecializationTemplatesForSoldier(XComGameState_Unit UnitState)
+static function array<X2UniversalSoldierClassInfo> GetSpecializationTemplatesAvailableToSoldier(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization>			Specs;
 	local SoldierSpecialization					Spec;
 	local array<X2UniversalSoldierClassInfo>	ReturnArray;
 	
-	Specs = GetSpecializationsForSoldier(UnitState);
+	Specs = GetSpecializationsAvailableToSoldier(UnitState);
 
 	foreach Specs(Spec)
 	{	
@@ -185,11 +185,25 @@ static function X2UniversalSoldierClassInfo GetSpecializationTemplateByName(name
 	return new(None, string(TemplateName))class'X2UniversalSoldierClassInfo';
 }
 
-static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlotIndex(XComGameState_Unit UnitState, int SlotIndex)
+
+// This gets the specialization by index only looking intro the currently assigned specs
+static function X2UniversalSoldierClassInfo GetSpecTemplateBySlotFromAssignedSpecs(XComGameState_Unit UnitState, int SlotIndex)
+{
+	local SoldierSpecialization Spec;
+
+	if(GetSpecializationForSlotFromAssignedSpecs(UnitState, SlotIndex, Spec))
+	{
+		return GetSpecializationTemplateByName(Spec.TemplateName);
+	}
+	return none;
+}
+
+// This checks gets the specialization by checking ALL spec
+static function X2UniversalSoldierClassInfo GetSpecTemplateBySlotFromAvailableSpecs(XComGameState_Unit UnitState, int SlotIndex)
 {
 	local array<SoldierSpecialization> Specs;
 
-	Specs = GetSpecializationsForSoldier(UnitState);
+	Specs = GetSpecializationsAvailableToSoldier(UnitState);
 
 	return GetSpecializationTemplate(Specs[SlotIndex]);
 }
@@ -200,7 +214,7 @@ static function int GetSpecializationIndex(XComGameState_Unit UnitState, name Sp
 
 	if (UnitState != none)
 	{
-		Specs = GetSpecializationsForSoldier(UnitState);
+		Specs = GetSpecializationsAvailableToSoldier(UnitState);
 	}
 	else
 	{
@@ -217,7 +231,7 @@ static function array<SoldierSpecialization> GetComplementarySpecializations(XCo
 	local array<SoldierSpecialization> AllSpecs, ComplementarySpecs;
 	local int ComplementarySpecIndex;
 
-	AllSpecs = GetSpecializationsForSoldier(UnitState);
+	AllSpecs = GetSpecializationsAvailableToSoldier(UnitState);
 	SpecTemplate = GetSpecializationTemplate(Spec);
 
 	if (SpecTemplate.ForceComplementarySpecializations.Length > 0)
@@ -335,7 +349,7 @@ static function array<SoldierSpecialization> GetSpecializations()
 	return ValidSpecs;
 }
 
-static function array<SoldierSpecialization> GetSpecializationsForSoldier(XComGameState_Unit UnitState)
+static function array<SoldierSpecialization> GetSpecializationsAvailableToSoldier(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> AllSpecs, SpecsAvailableToSoldier;
 	local SoldierSpecialization Spec;
@@ -466,7 +480,7 @@ static function string GetAbilityTreeTitle(XComGameState_Unit UnitState, int Slo
 		return UnitState.GetSoldierClassTemplate().AbilityTreeTitles[SlotIndex];
 	}
 
-	Template = GetSpecializationTemplateForSlot(UnitState, SlotIndex);
+	Template = GetSpecTemplateBySlotFromAssignedSpecs(UnitState, SlotIndex);
 
 	if (Template != none)
 	{
@@ -479,7 +493,7 @@ static function string GetMetaInfoForSlot(XComGameState_Unit UnitState, int Slot
 {
 	local X2UniversalSoldierClassInfo Template;
 	
-	Template = GetSpecializationTemplateForSlot(UnitState, SlotIndex);
+	Template = GetSpecTemplateBySlotFromAssignedSpecs(UnitState, SlotIndex);
 	if (Template != none)
 	{
 		return Template.GetSpecializationWeaponSlotInfo() @ Template.GetSpecializationAllowedWeaponCategoriesInfo();
@@ -487,7 +501,7 @@ static function string GetMetaInfoForSlot(XComGameState_Unit UnitState, int Slot
 	return "";
 }
 
-static function string GetTrainedSpecsMetaInfo(XComGameState_Unit UnitState)
+static function string GetAssignedSpecsMetaInfo(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> SoldierSpecs;
 	local SoldierSpecialization Spec;
@@ -497,7 +511,7 @@ static function string GetTrainedSpecsMetaInfo(XComGameState_Unit UnitState)
 	local string Info;
 	local array<string> PrimarySpecs, SecondarySpecs;
 
-	SoldierSpecs = GetTrainedSpecializations(UnitState);
+	SoldierSpecs = GetAssignedSpecializations(UnitState);
 	foreach SoldierSpecs(Spec)
 	{
 		Template = GetSpecializationTemplateByName(Spec.TemplateName);
@@ -547,15 +561,15 @@ static function string GetTrainedSpecsMetaInfo(XComGameState_Unit UnitState)
 	return class'UIUtilities_Text'.static.GetSizedText(Info, 16);
 }
 
-static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit UnitState)
+static function array<int> GetAssignedSpecializationsIndices(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> AllSpecs, SoldierSpecs;
 	local SoldierSpecialization Spec;
 	local array<int> Indices;
 	local int Index;
 
-	SoldierSpecs = GetTrainedSpecializations(UnitState);
-	AllSpecs = GetSpecializationsForSoldier(UnitState);
+	SoldierSpecs = GetAssignedSpecializations(UnitState);
+	AllSpecs = GetSpecializationsAvailableToSoldier(UnitState);
 
 	foreach SoldierSpecs(Spec)
 	{
@@ -569,12 +583,12 @@ static function array<int> GetTrainedSpecializationsIndices(XComGameState_Unit U
 	return Indices;
 }
 
-static function bool HasSpecialization(XComGameState_Unit UnitState, name TemplateName)
+static function bool HasSpecializationAssigned(XComGameState_Unit UnitState, name TemplateName)
 {
 	local array<SoldierSpecialization> Specs;
 	local int Index;
 
-	Specs = GetTrainedSpecializations(UnitState);
+	Specs = GetAssignedSpecializations(UnitState);
 	Index = Specs.Find('TemplateName', TemplateName);
 	return (Index != INDEX_NONE);
 }
@@ -603,7 +617,7 @@ static function array<SoldierSpecialization> GetTrainedPrimaryWeaponSpecializati
 	local SoldierSpecialization Spec;
 	local X2UniversalSoldierClassInfo Template;
 
-	Specs = GetTrainedSpecializations(UnitState);
+	Specs = GetAssignedSpecializations(UnitState);
 
 	foreach Specs(Spec)
 	{
@@ -623,7 +637,7 @@ static function array<SoldierSpecialization> GetTrainedSecondaryWeaponSpecializa
 	local SoldierSpecialization Spec;
 	local X2UniversalSoldierClassInfo Template;
 
-	Specs = GetTrainedSpecializations(UnitState);
+	Specs = GetAssignedSpecializations(UnitState);
 
 	foreach Specs(Spec)
 	{
@@ -644,7 +658,7 @@ static function array<SoldierClassAbilitySlot> GetAllAbilitySlotsForRank(XComGam
 	local array<SoldierClassAbilitySlot> AbilitySlots;
 	local X2UniversalSoldierClassInfo Template;
 
-	Specs = GetSpecializationsForSoldier(UnitState);
+	Specs = GetSpecializationsAvailableToSoldier(UnitState);
 	foreach Specs(Spec)
 	{
 		Template = GetSpecializationTemplate(Spec);
@@ -653,7 +667,7 @@ static function array<SoldierClassAbilitySlot> GetAllAbilitySlotsForRank(XComGam
 	return AbilitySlots;
 }
 
-static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameState_Unit UnitState)
+static function array<SoldierSpecialization> GetAssignedSpecializations(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> Specs;
 	local SoldierSpecialization Spec;
@@ -664,7 +678,7 @@ static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameS
 
 	for (Index = 0; Index < Abilities.Length; Index++)
 	{
-		if (GetSpecializationForSlot(UnitState, Index, Spec))
+		if (GetSpecializationForSlotFromAssignedSpecs(UnitState, Index, Spec))
 		{
 			Specs.AddItem(Spec);
 		}
@@ -673,7 +687,7 @@ static function array<SoldierSpecialization> GetTrainedSpecializations(XComGameS
 	return Specs;
 }
 
-static function bool GetSpecializationForSlot(XComGameState_Unit UnitState, int SlotIndex, out SoldierSpecialization Spec)
+static function bool GetSpecializationForSlotFromAssignedSpecs(XComGameState_Unit UnitState, int SlotIndex, out SoldierSpecialization Spec)
 {
 	local array<SoldierSpecialization> Specs;
 	local SoldierSpecialization PossibleSpec;
@@ -729,17 +743,6 @@ static function bool GetSpecializationForSlot(XComGameState_Unit UnitState, int 
 	}
 
 	return false;
-}
-
-static function X2UniversalSoldierClassInfo GetSpecializationTemplateForSlot(XComGameState_Unit UnitState, int SlotIndex)
-{
-	local SoldierSpecialization Spec;
-
-	if(GetSpecializationForSlot(UnitState, SlotIndex, Spec))
-	{
-		return GetSpecializationTemplateByName(Spec.TemplateName);
-	}
-	return none;
 }
 
 static function AddSlot(X2SoldierClassTemplate Template, SoldierClassAbilitySlot Slot, int RankIndex)
