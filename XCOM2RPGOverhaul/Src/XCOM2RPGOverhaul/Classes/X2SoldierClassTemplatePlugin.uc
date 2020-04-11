@@ -462,6 +462,12 @@ static function string GetAssignedSpecsMetaInfo(XComGameState_Unit UnitState)
 			{
 				PrimaryWeaponCategories.AddItem(WeaponCategory);
 			}
+
+			if (Template.SpecializationMetaInfo.bDualWield &&
+				SecondaryWeaponCategories.Find(WeaponCategory) == INDEX_NONE)
+			{
+				SecondaryWeaponCategories.AddItem(WeaponCategory);
+			}
 		}
 	}
 
