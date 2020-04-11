@@ -91,28 +91,38 @@ static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSol
 	local X2UniversalSoldierClassInfo CycleSpecTemplate;
 
 	//	Specialization cannot be used if it's missing meta information
-	//	Or it is explicitly forbidden from being complementary
-	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses ||
-		SpecTemplate.SpecializationMetaInfo.bCantBeComplementary)
+	
+	if (SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses)
 	{
-		return false;
-	}
-
-	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
-	if (SpecTemplate.IsComplemtarySpecialization()) return true;
-
-	//	Otherwise, cycle through Specs that have already been selected.
-	foreach SelectedSpecTemplates(CycleSpecTemplate)
-	{
-		//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
-		if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
-			DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
-			 SpecTemplate.SpecializationMetaInfo.bShoot && CycleSpecTemplate.SpecializationMetaInfo.bShoot ||
-			 SpecTemplate.SpecializationMetaInfo.bGremlin && CycleSpecTemplate.SpecializationMetaInfo.bGremlin ||
-			 SpecTemplate.SpecializationMetaInfo.bPsionic && CycleSpecTemplate.SpecializationMetaInfo.bPsionic ||
-			 SpecTemplate.SpecializationMetaInfo.bMelee && CycleSpecTemplate.SpecializationMetaInfo.bMelee)
+		//	If this spec is marked as Dual Wield one, it can be selected as a complementary spec to a primary spec that is also dual wield and uses the same weapons in the same slots.
+		if (SpecTemplate.SpecializationMetaInfo.bDualWield && SelectedSpecTemplates.Length > 0 && SelectedSpecTemplates[0].SpecializationMetaInfo.bDualWield &&
+			DoSpecializationsUseTheSameSlots(SelectedSpecTemplates[0], SpecTemplate) && DoSpecializationsUseTheSameWeapons(SelectedSpecTemplates[0], SpecTemplate))
 		{
-			return true;
+			 return true;
+		}
+
+		//	Exit now if the spec is explicitly forbidden from being complementary.
+		if (SpecTemplate.SpecializationMetaInfo.bCantBeComplementary)
+		{
+			return false;
+		}
+		
+		//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
+		if (SpecTemplate.IsComplemtarySpecialization()) return true;
+
+		//	Otherwise, cycle through Specs that have already been selected.
+		foreach SelectedSpecTemplates(CycleSpecTemplate)
+		{
+			//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
+			if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
+				DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
+				 SpecTemplate.SpecializationMetaInfo.bShoot && CycleSpecTemplate.SpecializationMetaInfo.bShoot ||
+				 SpecTemplate.SpecializationMetaInfo.bGremlin && CycleSpecTemplate.SpecializationMetaInfo.bGremlin ||
+				 SpecTemplate.SpecializationMetaInfo.bPsionic && CycleSpecTemplate.SpecializationMetaInfo.bPsionic ||
+				 SpecTemplate.SpecializationMetaInfo.bMelee && CycleSpecTemplate.SpecializationMetaInfo.bMelee)
+			{
+				return true;
+			}
 		}
 	}
 	return false;
