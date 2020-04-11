@@ -215,6 +215,9 @@
     <Content Include="Src\ModConfigMenuAPI\MCM_API_Includes.uci">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\RPGO_Helper.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\RPGO_JsonConfig.uc">
       <SubType>Content</SubType>
     </Content>

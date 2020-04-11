@@ -1,7 +1,9 @@
 class X2Effect_DamageModifierRange extends X2Effect_Persistent config (RPG);
 
 var array<int> DamageFalloff;
-var array<name> AbilityIgnoreDamageFalloff;
+var config array<name> AbilityRemovesDamageFalloff;
+var config array<name> AttackAbilityIgnoreDamageFalloff;
+var config array<name> EffectRemovesDamageFalloff;
 
 function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGameState_Unit Attacker, Damageable TargetDamageable, XComGameState_Ability AbilityState, const out EffectAppliedData AppliedData, const int CurrentDamage, optional XComGameState NewGameState)
 {
@@ -9,19 +11,34 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 	local XComGameState_Unit TargetUnit;
 	local XComGameState_Item WeaponState;
 	local int Tiles, RangeDamageModifier;
-	local name Ability;
+	local name Ability, LocalEffectName;
 
 	History = `XCOMHISTORY;
 
 	if (!class'XComGameStateContext_Ability'.static.IsHitResultHit(AppliedData.AbilityResultContext.HitResult))
-		return 0;
-
-	foreach default.AbilityIgnoreDamageFalloff (Ability)
 	{
-		if (Attacker.HasSoldierAbility(Ability))
+		return 0;
+	}
+
+	foreach default.EffectRemovesDamageFalloff (LocalEffectName)
+	{
+		if (Attacker.AffectedByEffectNames.Find(LocalEffectName) != INDEX_NONE)
 		{
 			return 0;
 		}
+	}
+
+	foreach default.AttackAbilityIgnoreDamageFalloff (Ability)
+	{
+		if (AbilityState.GetMyTemplateName() == Ability)
+		{
+			return 0;
+		}
+	}
+
+	if (class'RPGO_Helper'.static.HasAnyOfTheAbilitiesFromAnySource(Attacker, default.AbilityRemovesDamageFalloff))
+	{
+		return 0;
 	}
 
 	TargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(AppliedData.AbilityInputContext.PrimaryTarget.ObjectID));

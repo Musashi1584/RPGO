@@ -204,7 +204,6 @@ static function X2AbilityTemplate ShotgunDamageModifierRange()
 	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
 	RangeEffect.DamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigIntArray("SHOTGUN_DAMAGE_FALLOFF");
-	RangeEffect.AbilityIgnoreDamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigNameArray("SHOTGUN_DAMAGE_ABILITY_IGNORE_DAMAGE_FALLOFF");
 
 	Template.AddTargetEffect(RangeEffect);
 
