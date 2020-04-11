@@ -1,6 +1,6 @@
 class UISL_UIShell_RPGO extends UIScreenListener config(RPGO_NullConfig);
 
-var config bool bDismissedNewSWO;
+var config bool bDismissedNewSWO2;
 
 var localized string strCommunityHighlanderMissing;
 var localized string strIncompatibleModsFound;
@@ -19,7 +19,7 @@ event OnInit(UIScreen Screen)
 		{
 			Screen.SetTimer(1.5f, false, nameof(MakePopupHighlanderMissing), self);
 		}
-		if (!bDismissedNewSWO)
+		if (!bDismissedNewSWO2)
 		{
 			Screen.SetTimer(1.8f, false, nameof(NewSwoInfo), self);
 		}
@@ -116,6 +116,6 @@ simulated function OKClickedGeneric(Name eAction)
 simulated function OKClickedSwoCB(Name eAction)
 {
 	`PRESBASE.PlayUISound(eSUISound_MenuSelect);
-	bDismissedNewSWO = true;
+	bDismissedNewSWO2 = true;
 	self.SaveConfig();
 }

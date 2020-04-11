@@ -151,7 +151,6 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_EquipmentStatCaps CapStatEffect;
-	local X2Condition_StatValue StatValueCondition;
 	local EquipmentStatCap EquipmentCap;
 	local int Index;
 
