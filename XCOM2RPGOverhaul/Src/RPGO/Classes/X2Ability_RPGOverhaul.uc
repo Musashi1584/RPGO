@@ -1276,6 +1276,8 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	Template.AbilityToHitCalc = StandardAim;
 	Template.AbilityToHitOwnerOnMissCalc = StandardAim;
 
+	Template.AbilityTriggers.AddItem(new class'X2AbilityTrigger_Placeholder');
+
 	Template.AbilityTargetConditions.AddItem(default.LivingHostileUnitDisallowMindControlProperty);
 	
 	TargetVisibilityCondition = new class'X2Condition_Visibility';
