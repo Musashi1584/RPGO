@@ -92,7 +92,11 @@ static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSol
 
 	//	Specialization cannot be used if it's missing meta information
 	//	Or it is explicitly forbidden from being complementary
-	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses) return false;
+	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses ||
+		SpecTemplate.SpecializationMetaInfo.bCantBeComplementary)
+	{
+		return false;
+	}
 
 	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
 	if (SpecTemplate.IsComplemtarySpecialization()) return true;

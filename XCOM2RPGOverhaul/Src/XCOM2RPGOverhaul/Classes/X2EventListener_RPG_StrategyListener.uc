@@ -623,29 +623,29 @@ private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const X
 
 static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
-	local XComGameState_Unit				UnitState;
-	local XComGameState_Item				OldWeapon;
-	local XComGameState_Item				NewWeapon;
-	local XComGameState						NewGameState;
-	local XComGameStateHistory				History;
-	local XComGameState_HeadquartersXCom	XComHQ;
-	local UnitValue						UV;
-
+	local XComGameState_Unit                UnitState;
+	local XComGameState_Item                OldWeapon;
+	local XComGameState_Item                NewWeapon;
+	local XComGameState                     NewGameState;
+	local XComGameStateHistory              History;
+	local XComGameState_HeadquartersXCom    XComHQ;
+	local UnitValue                     UV;
+ 
 	UnitState = XComGameState_Unit(EventData);
 	UnitState.GetUnitValue('PrimarySpecialization_Value', UV);
-
+ 
 	`LOG("Unit rank up: " @ UnitState.GetFullName() @ UnitState.GetRank() @ UV.fValue,, 'RPG');
-
-	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_RandomClasses') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+ 
+	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	{
 		History = `XCOMHISTORY;
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Equipping squaddie items on unit: " @ UnitState.GetFullName());
-
+ 
 		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
 		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
-
+ 
 		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
-
+ 
 		OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
 		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 		if (OldWeapon != none)
@@ -653,7 +653,7 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
 			{
 				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
-
+ 
 				if (NewWeapon != none)
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
@@ -662,22 +662,37 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
-					{	
-						//	If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+					{  
+						//  If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+						`LOG("ERROR, could not equip New Primary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						UnitState.AddItemToInventory(OldWeapon, eInvSlot_PrimaryWeapon, NewGameState);
 					}
 				}
 			}
 		}
-
+		else
+		{
+			NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+ 
+				if (NewWeapon != none)
+				{
+					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
+					{
+						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+					}
+					else `LOG("ERROR, could not equip New Primary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				}
+		}
+ 
 		OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
-		`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+	   
 		if (OldWeapon != none)
 		{
+			`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
 			{
 				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
-
+ 
 				if (NewWeapon != none)
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
@@ -686,14 +701,27 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
-					{	
-						//	If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+					{  
+						//  If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
+						`LOG("ERROR, could not equip New Secondary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						UnitState.AddItemToInventory(OldWeapon, eInvSlot_PrimaryWeapon, NewGameState);
 					}
 				}
 			}
 		}
-
+		else
+		{
+			NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
+			if (NewWeapon != none)
+			{
+				if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
+				{
+					`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				}
+				else `LOG("ERROR, could not equip New Secondary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
+			}
+		}
+ 
 		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 	}
 	return ELR_NoInterrupt;

@@ -1280,7 +1280,7 @@ static function bool CanAddItemToInventory(out int bCanAddItem, const EInventory
 	}
 	//}
 
-	if (!bEvaluate)
+	if (!bEvaluate && !`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
 		foreach default.WeaponProficiencies(Proficiency)
 		{
