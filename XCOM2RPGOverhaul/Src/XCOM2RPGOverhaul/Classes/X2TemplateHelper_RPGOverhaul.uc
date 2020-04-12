@@ -530,23 +530,27 @@ static function PatchAbilitiesWeaponCondition()
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
-		if (Template != none && !bMeleeReaction)
+		
+		if (Template != none)
 		{
-			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
-			Template.AbilityTargetConditions.AddItem(WeaponCondition);
-
-			// Hide active abilities if no weapon matches
-			if (
-				(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
-				 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
-				!Template.bIsPassive &&
-				Template.HasTrigger('X2AbilityTrigger_PlayerInput')
-			)
+			bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
+			if (!bMeleeReaction)
 			{
-				Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-				Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				WeaponCondition = new class'X2Condition_WeaponCategory';
+				WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
+				Template.AbilityTargetConditions.AddItem(WeaponCondition);
+
+				// Hide active abilities if no weapon matches
+				if (
+					(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
+					 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
+					!Template.bIsPassive &&
+					Template.HasTrigger('X2AbilityTrigger_PlayerInput')
+				)
+				{
+					Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+					Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				}
 			}
 		}
 	}
