@@ -41,6 +41,12 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		return false;
 	}
 
+	if (PreCostActionPoints.Find('LW2WotC_RunAndGun') != -1)
+	{
+		`LOG(self.Class.Name @ GetFuncName() @ "LW2 RunAndGun", bLog, 'RPG');
+		return false;
+	}
+
 	if (kAbility == none)
 	{
 		`LOG(self.Class.Name @ GetFuncName() @ "kAbility", bLog, 'RPG');
