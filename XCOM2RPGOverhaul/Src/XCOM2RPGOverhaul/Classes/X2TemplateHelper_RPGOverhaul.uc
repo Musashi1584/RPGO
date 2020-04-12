@@ -355,9 +355,13 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'vektor_rifle':
+				
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+					if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate('SilentKillPassive') != none)
+					{
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+					}
 				}
 				else
 				{
