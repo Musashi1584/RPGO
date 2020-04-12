@@ -355,9 +355,13 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'vektor_rifle':
+				
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
-					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+					if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate('SilentKillPassive') != none)
+					{
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
+					}
 				}
 				else
 				{
@@ -530,23 +534,27 @@ static function PatchAbilitiesWeaponCondition()
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
-		if (Template != none && !bMeleeReaction)
+		
+		if (Template != none)
 		{
-			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
-			Template.AbilityTargetConditions.AddItem(WeaponCondition);
-
-			// Hide active abilities if no weapon matches
-			if (
-				(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
-				 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
-				!Template.bIsPassive &&
-				Template.HasTrigger('X2AbilityTrigger_PlayerInput')
-			)
+			bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
+			if (!bMeleeReaction)
 			{
-				Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-				Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				WeaponCondition = new class'X2Condition_WeaponCategory';
+				WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
+				Template.AbilityTargetConditions.AddItem(WeaponCondition);
+
+				// Hide active abilities if no weapon matches
+				if (
+					(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
+					 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
+					!Template.bIsPassive &&
+					Template.HasTrigger('X2AbilityTrigger_PlayerInput')
+				)
+				{
+					Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+					Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				}
 			}
 		}
 	}
@@ -719,8 +727,11 @@ static function PatchAbilityPrerequisites()
 		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Prerequisite.PrerequisiteTree[Index]);
-			Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
-			`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			if (Template != none)
+			{
+				Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
+				`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			}
 		}
 	}
 
@@ -729,12 +740,15 @@ static function PatchAbilityPrerequisites()
 		for (Index = 0; Index < Exclusive.Abilities.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Exclusive.Abilities[Index]);
-			foreach Exclusive.Abilities(Ability)
+			if (Template != none)
 			{
-				if (Template.DataName != Ability)
+				foreach Exclusive.Abilities(Ability)
 				{
-					Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
-					`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					if (Template.DataName != Ability)
+					{
+						Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
+						`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					}
 				}
 			}
 		}
