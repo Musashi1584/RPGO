@@ -358,10 +358,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
-					if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate('SilentKillPassive') != none)
-					{
-						AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
-					}
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
 				}
 				else
 				{
@@ -1433,12 +1430,15 @@ static function RemoveAbilityFromWeaponTemplate(out X2WeaponTemplate Template, n
 
 static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability, bool bShowInTactical = false)
 {
-	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(Ability) != none)
 	{
-		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
-		Template.Abilities.AddItem(Ability);
-		if (bShowInTactical)
-			ShowInTacticalText(Ability);
+		if (Template.Abilities.Find(Ability) == INDEX_NONE)
+		{
+			//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+			Template.Abilities.AddItem(Ability);
+			if (bShowInTactical)
+				ShowInTacticalText(Ability);
+		}
 	}
 }
 
