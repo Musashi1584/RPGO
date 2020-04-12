@@ -12,7 +12,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(PurePassive('QuickDrawNew', "img:///UILibrary_PerkIcons.UIPerk_quickdraw"));
 	Templates.AddItem(RpgDeathFromAbove());
 	Templates.AddItem(BlueMoveSlash());
-	Templates.AddItem(HeavyWeaponMobilityPenalty());
+	Templates.AddItem(HeavyWeaponMobilityCap());
 	Templates.AddItem(PistolDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
@@ -113,41 +113,7 @@ static function X2AbilityTemplate BlueMoveSlash()
 	return Template;
 }
 
-//static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
-//{
-//	local X2AbilityTemplate Template;
-//	local XMBEffect_ConditionalStatChange Effect;
-//	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
-//
-//	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
-//
-//	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-//	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
-//
-//	Effect = new class'XMBEffect_ConditionalStatChange';
-//	Effect.AddPersistentStatChange(eStat_Mobility,class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR"), MODOP_PostMultiplication);
-//	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-//	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-//
-//	Template.AddTargetEffect(Effect);
-//
-//	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
-//	SourceAbilitiesCondition.AddRequireAbility('SyntheticLegMuscles', 'AA_AbilityRequired');
-//
-//	Effect = new class'XMBEffect_ConditionalStatChange';
-//	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("HEAVY_WEAPON_MOBILITY_SCALAR_REDUCED"), MODOP_PostMultiplication);
-//	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,, Template.AbilitySourceName);
-//	Effect.TargetConditions.AddItem(SourceAbilitiesCondition);
-//
-//
-//	//Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, default.HEAVY_WEAPON_MOBILITY_SCALAR);
-//	Template.AddTargetEffect(Effect);
-//
-//	return Template;
-//}
-
-
-static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
+static function X2AbilityTemplate HeavyWeaponMobilityCap()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_EquipmentStatCaps CapStatEffect;
@@ -172,6 +138,32 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	return Template;
 }
 
+static function X2AbilityTemplate StationaryCannonDamageBonus()
+{
+	local X2AbilityTemplate Template;
+	local XMBEffect_ConditionalBonus Effect;
+	local X2Effect_RemoveEffectAfterMove RemoveEffectAfterMoveEffect;
+	
+	Template = PurePassive('StationaryCannonDamageBonus', "", false, 'eAbilitySource_Perk', false);
+
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	Effect.AddPercentDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CANNON_STATIONARY_DAMAGE_PCT_BONUS"), eHit_Success);
+	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	Effect.EffectName = 'StationaryCannonDamageBonus';
+	Template.AddTargetEffect(Effect);
+
+	RemoveEffectAfterMoveEffect = new class'X2Effect_RemoveEffectAfterMove';
+	RemoveEffectAfterMoveEffect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	RemoveEffectAfterMoveEffect.EffectsToRemove.AddItem('StationaryCannonDamageBonus');
+	Template.AddTargetEffect(RemoveEffectAfterMoveEffect);
+
+	Template.bDisplayInUITacticalText = false;
+	Template.bDisplayInUITooltip = false;
+	
+	return Template;
+}
+
 static function X2AbilityTemplate PistolDamageModifierRange()
 {
 	local X2AbilityTemplate Template;
@@ -183,7 +175,6 @@ static function X2AbilityTemplate PistolDamageModifierRange()
 	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
 	RangeEffect.DamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigIntArray("PISTOL_DAMAGE_FALLOFF");
-	//RangeEffect.AbilityIgnoreDamageFalloff =  class'RPGOAbilityConfigManager'.static.GetConfigNameArray("PISTOL_DAMAGE_ABILITY_IGNORE_DAMAGE_FALLOFF");
 
 	Template.AddTargetEffect(RangeEffect);
 
@@ -233,68 +224,6 @@ static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 
 	return Template;
 }
-
-//static function X2AbilityTemplate DamageModifierCoverType()
-//{
-//	local X2AbilityTemplate Template;
-//	local X2Effect_DamageModifierCoverType DamageModifierCoverType;
-//	
-//	Template = PurePassive('DamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
-//
-//	DamageModifierCoverType = new class'X2Effect_DamageModifierCoverType';
-//	DamageModifierCoverType.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-//	DamageModifierCoverType.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
-//
-//	Template.AddTargetEffect(DamageModifierCoverType);
-//
-//	Template.bDisplayInUITacticalText = false;
-//	Template.bDisplayInUITooltip = false;
-//	Template.bUniqueSource = true;
-//
-//	return Template;
-//}
-
-//static function X2AbilityTemplate AutoFireShot()
-//{
-//	local X2AbilityTemplate Template;
-//	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
-//
-//	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('AutoFireShot');
-//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonShot";
-//
-//	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
-//	WorldDamage.bUseWeaponDamageType = true;
-//	WorldDamage.bUseWeaponEnvironmentalDamage = false;
-//	WorldDamage.EnvironmentalDamageAmount = 30;
-//	WorldDamage.bApplyOnHit = true;
-//	WorldDamage.bApplyOnMiss = true;
-//	WorldDamage.bApplyToWorldOnHit = true;
-//	WorldDamage.bApplyToWorldOnMiss = true;
-//	WorldDamage.bHitAdjacentDestructibles = true;
-//	WorldDamage.PlusNumZTiles = 1;
-//	WorldDamage.bHitTargetTile = true;
-//	Template.AddTargetEffect(WorldDamage);
-//
-//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
-//	Template.OverrideAbilities.AddItem('StandardShot');
-//
-//	return Template;
-//}
-//
-//static function X2AbilityTemplate AutoFireOverwatch()
-//{
-//	local X2AbilityTemplate Template;
-//
-//	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
-//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
-//
-//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
-//	Template.OverrideAbilities.AddItem('Overwatch');
-//
-//	return Template;
-//}
-
-
 
 static function X2AbilityTemplate RemoveSquadSightOnMove()
 {

@@ -12,7 +12,6 @@ var config array<name> IgnoreWeaponTemplatesForPatch;
 
 var config int ShotgunAimBonus;
 var config int ShotgunCritBonus;
-var config int CannonDamageBonus;
 var config int AutoPistolCritChanceBonus;
 var config int DefaultWeaponUpgradeSlots;
 
@@ -387,14 +386,16 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
-					WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage + default.CannonDamageBonus;
+					AddAbilityToWeaponTemplate(WeaponTemplate, 'StationaryCannonDamageBonus', true);
+					//WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage + int(UnpatchedTemplate.BaseDamage.Damage * default.CannonDamageBonusPercent);
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 2;
 				}
 				else
 				{
 					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'Suppression');
 					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty');
-					WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage;
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'StationaryCannonDamageBonus');
+					//WeaponTemplate.BaseDamage.Damage = UnpatchedTemplate.BaseDamage.Damage;
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize;
 				}
 				break;

@@ -443,6 +443,9 @@
     <Content Include="Src\RPGO\Classes\X2Effect_ReducedRecoveryTime.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_RemoveEffectAfterMove.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_RevealUnit.uc">
       <SubType>Content</SubType>
     </Content>
