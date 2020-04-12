@@ -719,8 +719,11 @@ static function PatchAbilityPrerequisites()
 		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Prerequisite.PrerequisiteTree[Index]);
-			Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
-			`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			if (Template != none)
+			{
+				Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
+				`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			}
 		}
 	}
 
@@ -729,12 +732,15 @@ static function PatchAbilityPrerequisites()
 		for (Index = 0; Index < Exclusive.Abilities.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Exclusive.Abilities[Index]);
-			foreach Exclusive.Abilities(Ability)
+			if (Template != none)
 			{
-				if (Template.DataName != Ability)
+				foreach Exclusive.Abilities(Ability)
 				{
-					Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
-					`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					if (Template.DataName != Ability)
+					{
+						Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
+						`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					}
 				}
 			}
 		}
