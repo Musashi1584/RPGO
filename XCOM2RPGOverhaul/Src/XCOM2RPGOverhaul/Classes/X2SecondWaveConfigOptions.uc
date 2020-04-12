@@ -153,6 +153,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<int>							ReturnArray;
+	local bool									bSkipSpec;
 	local int i;
 
 	`LOG(default.class @ GetFuncName() @ "Start profiling with Random Class SWO",, 'RPG');
@@ -160,6 +161,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	`LOG("=====================================================",, 'RPG');
 	`LOG("Building random class for: " @ UnitState.GetFullName(),, 'RPG');
 
+	//	Minimum number of specs we should assign to the soldier, configured with MCM.
 	Count = GetSpecRouletteCount();
 	AllSpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplatesAvailableToSoldier(UnitState);
 
@@ -185,7 +187,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 
 	//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory
 	UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
-	`LOG("SELECTD Primary specialization: " @ SpecTemplate.Name,, 'RPG');
+	`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
 
 	//	Add complementary specializations, if necessary
 	AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
@@ -209,6 +211,18 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 			//	Skip specialization if it was already selected
 			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
 
+			//	Skip specialization if it's mutually exclusive with one of the selected ones.
+			bSkipSpec = false;
+			for (i = 0; i < SelectedSpecTemplates.Length; i++)
+			{
+				if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
+				{
+					bSkipSpec = true;
+					break;
+				}
+			}
+			if (bSkipSpec) continue;
+
 			if (SpecTemplate.IsSecondaryWeaponSpecialization())
 			{
 				for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightSecondary; i++)
@@ -225,7 +239,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 		Count--;
 
 		UnitState.SetUnitFloatValue('SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
-		`LOG("SELECTD Secondary specialization: " @ SpecTemplate.Name,, 'RPG');
+		`LOG("SELECTED Secondary specialization: " @ SpecTemplate.Name,, 'RPG');
 
 		//	Add complementary specializations, if necessary
 		AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
@@ -245,6 +259,18 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 			//	Skip specialization if it was already selected
 			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
 
+			//	Skip specialization if it's mutually exclusive with one of the selected ones.
+			bSkipSpec = false;
+			for (i = 0; i < SelectedSpecTemplates.Length; i++)
+			{
+				if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
+				{
+					bSkipSpec = true;
+					break;
+				}
+			}
+			if (bSkipSpec) continue;
+
 			if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
 			{
 				for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightComplementary; i++)
@@ -263,7 +289,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
 		Count--;
 
-		`LOG("SELECTD Additional specialization: " @ SpecTemplate.Name,, 'RPG');
+		`LOG("SELECTED Additional specialization: " @ SpecTemplate.Name,, 'RPG');
 	}
 	return ReturnArray;
 }

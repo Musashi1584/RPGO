@@ -111,7 +111,8 @@ function bool IsPrimaryWeaponSpecialization()
 
 function bool IsSecondaryWeaponSpecialization()
 {
-	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+	//	Spec is valid to be secondary if it allows using specific weapons in the secondary slot OR if it's a valid primary spec that is also a Dual Wield spec
+	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && (SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE || SpecializationMetaInfo.bDualWield && IsPrimaryWeaponSpecialization());
 }
 
 function bool IsComplemtarySpecialization()

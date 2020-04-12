@@ -44,9 +44,12 @@ struct SpecializationMetaInfoStruct
 	var bool bUseForRandomClasses;
 	var array<name> AllowedWeaponCategories;
 	var array<EInventorySlot> InventorySlots;
-	var array<name> SpecializationRoles;
+	var array<name> SpecializationRoles;	//	Seems to be unused, delete?-Iri
+	var array<name> MutuallyExclusiveSpecs;
 
 	//	This specialization can be rolled only as Primary one, and then will provide access to the same AllowedWeaponCategories for both weapon slots.
+	//	It can also be rolled as Secondary to a non-Dual Wield primary spec that uses same weapons in the same slots.
+	//	It can also be rolled as Complementary to a primary Dual Wield spec, even if bCantBeComplementary = true.
 	var bool bDualWield;
 
 	//	Use to determine whether this specialization is valid to complement other soldier's specializations.
