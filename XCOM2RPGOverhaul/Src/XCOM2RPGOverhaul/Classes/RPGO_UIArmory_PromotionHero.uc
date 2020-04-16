@@ -70,7 +70,11 @@ simulated function OnInit()
 
 simulated function UpdateNavHelp()
 {
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+
 	super.UpdateNavHelp();
+
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
 
 	NavHelp.AddLeftHelp(
 		Caps(class'XGLocalizedData_RPG'.default.SelectClassIcon),
@@ -98,6 +102,26 @@ simulated function UpdateNavHelp()
 		class'XGLocalizedData_RPG'.default.SelectClassDescriptionTooltip,
 		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
 	);
+
+	NavHelp.AddRightHelp(
+		Caps(class'XGLocalizedData_RPG'.default.ResetClassInsignia),
+		"",
+		OnResetClassInsigniaButtonClicked,
+		!CustomClassInsigniaGameState.HasClassInsignia(UnitReference.ObjectID),
+		class'XGLocalizedData_RPG'.default.SelectClassDescriptionTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+}
+
+function OnResetClassInsigniaButtonClicked()
+{
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+
+	CustomClassInsigniaGameState.ResetClassInsignia(UnitReference.ObjectID);
+
+	PopulateData();
 }
 
 function OnSelectClassTitleButtonClicked()

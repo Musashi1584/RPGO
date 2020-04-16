@@ -90,7 +90,6 @@ function string GetClassIconForUnit(int UnitObjectID)
 	return "";
 }
 
-
 function string GetClassTitleForUnit(int UnitObjectID)
 {
 	local int Index;
@@ -114,4 +113,25 @@ function string GetClassDescriptionForUnit(int UnitObjectID)
 		return UnitClassInsignias[Index].ClassDescription;
 	}
 	return "";
+}
+
+function bool HasClassInsignia(int UnitObjectID)
+{
+	local int Index;
+
+	Index = UnitClassInsignias.Find('UnitObjectID', UnitObjectID);
+
+	return (Index != INDEX_NONE);
+}
+
+function ResetClassInsignia(int UnitObjectID)
+{
+	local int Index;
+
+	Index = UnitClassInsignias.Find('UnitObjectID', UnitObjectID);
+
+	if (Index != INDEX_NONE)
+	{
+		UnitClassInsignias.Remove(Index, 1);
+	}
 }

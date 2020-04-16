@@ -76,10 +76,12 @@ m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"
 SelectClassTitle="Class Title"
 SelectClassIcon="Class Icon"
 SelectClassDescription="Class Description"
+ResetClassInsignia="Reset Custom Class Insignia"
 
 SelectClassTitleTooltip="Select a custom class title. This will override the automatic assignment based on specializations"
 SelectClassIconTooltip="Select a custom class icon. This will override the automatic assignment based on specializations"
 SelectClassDescriptionTooltip="Select a custom class description. This will override the automatic assignment based on specializations"
+ResetClassInsigniaTooltip="This will reset the custom class icon, tile and description and those will be set by the default behavior again"
 
 AbilityWeaponRestrictions="Compatible with:"
 
