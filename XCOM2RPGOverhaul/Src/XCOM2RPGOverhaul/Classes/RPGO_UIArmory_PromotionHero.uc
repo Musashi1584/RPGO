@@ -32,7 +32,7 @@ var int Position, MaxPosition;
 
 var int AdjustXOffset;
 
-var UIButton SelectClassIconButton, SelectClassTitleButton;
+//var UIButton SelectClassIconButton, SelectClassTitleButton;
 
 simulated function OnInit()
 {
@@ -108,7 +108,7 @@ simulated function UpdateNavHelp()
 		"",
 		OnResetClassInsigniaButtonClicked,
 		!CustomClassInsigniaGameState.HasClassInsignia(UnitReference.ObjectID),
-		class'XGLocalizedData_RPG'.default.SelectClassDescriptionTooltip,
+		class'XGLocalizedData_RPG'.default.ResetClassInsigniaTooltip,
 		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
 	);
 }
