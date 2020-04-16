@@ -32,6 +32,8 @@ var int Position, MaxPosition;
 
 var int AdjustXOffset;
 
+var UIButton SelectClassIconButton, SelectClassTitleButton;
+
 simulated function OnInit()
 {
 	super.OnInit();
@@ -48,6 +50,17 @@ simulated function OnInit()
 		MC.FunctionVoid("AnimateIn");
 	}
 
+	//SelectClassIconButton = Spawn(class'UIButton', self);
+	//SelectClassIconButton.SetResizeToText(false);
+	//SelectClassIconButton.InitButton(, "Class Icon", OnSelectClassIconButtonClicked)
+	//	.SetPosition(MC.GetNum("_x") - 35, 210).SetWidth(150);
+	//
+	//SelectClassTitleButton = Spawn(class'UIButton', self);
+	//SelectClassTitleButton.SetResizeToText(false);
+	//SelectClassTitleButton.InitButton(, "Class Title", OnSelectClassTitleButtonClicked)
+	//	.SetPosition(MC.GetNum("_x") - 35, SelectClassIconButton.Y + SelectClassIconButton.Height + 10).SetWidth(150);
+		
+
 	if (!class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(GetUnit()) &&
 		!class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(GetUnit()))
 	{
@@ -55,6 +68,121 @@ simulated function OnInit()
 	}
 }
 
+simulated function UpdateNavHelp()
+{
+	super.UpdateNavHelp();
+
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassIcon),
+		"",
+		OnSelectClassIconButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassIconTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+	
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassTitle),
+		"",
+		OnSelectClassTitleButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassTitleTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassDescription),
+		"",
+		OnSelectClassDescriptionButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassDescriptionTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+}
+
+function OnSelectClassTitleButtonClicked()
+{
+	local TInputDialogData kData;
+	local XComGameState_Unit Unit;
+
+	Unit = GetUnit();
+
+	kData.strTitle = Caps(class'XGLocalizedData_RPG'.default.SelectClassTitle);
+	kData.iMaxChars = 200; //SQUAD_MAX_NAME_LENGTH;
+	kData.strInputBoxText = GetClassDisplayName(Unit);
+	kData.fnCallback = OnClassTitleInputBoxClosed;
+
+	`HQPRES.UIInputDialog(kData);
+}
+
+function OnClassTitleInputBoxClosed(string Text)
+{
+	local XComGameState NewGameState;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+	
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Change Class ImagePath");
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	CustomClassInsigniaGameState = XComGameState_CustomClassInsignia(NewGameState.ModifyStateObject(CustomClassInsigniaGameState.Class, CustomClassInsigniaGameState.ObjectID));
+	CustomClassInsigniaGameState.SetClassTitleForUnit(Text, UnitReference.ObjectID);
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	
+	//CycleToSoldier(UnitReference);
+	PopulateData();
+
+	//OnCancel();
+}
+
+function OnSelectClassDescriptionButtonClicked()
+{
+	local TInputDialogData kData;
+	local XComGameState_Unit Unit;
+
+	Unit = GetUnit();
+
+	kData.strTitle = Caps(class'XGLocalizedData_RPG'.default.SelectClassDescription);
+	kData.DialogType = eDialogType_MultiLine;
+	kData.iMaxChars = 1000; //SQUAD_MAX_NAME_LENGTH;
+	kData.strInputBoxText = GetClassSummary(Unit);
+	kData.fnCallback = OnClassDescriptionInputBoxClosed;
+
+	`HQPRES.UIInputDialog(kData);
+}
+
+function OnClassDescriptionInputBoxClosed(string Text)
+{
+	local XComGameState NewGameState;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+	
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Change Class ImagePath");
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	CustomClassInsigniaGameState = XComGameState_CustomClassInsignia(NewGameState.ModifyStateObject(CustomClassInsigniaGameState.Class, CustomClassInsigniaGameState.ObjectID));
+	CustomClassInsigniaGameState.SetClassDescriptionForUnit(Text, UnitReference.ObjectID);
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	
+	//CycleToSoldier(UnitReference);
+	PopulateData();
+}
+
+function OnSelectClassIconButtonClicked()
+{
+	local RPGO_UIClassIconSelectionScreen TempScreen;
+	local XComPresentationLayerBase Pres;
+	local string CurrentIcon;
+	
+
+	// `PRES is tactical (strategy is `HQPRES, generic is `PRESBASE)
+	Pres = `HQPRES;
+
+	if (Pres != none && Pres.ScreenStack.IsNotInStack(class'RPGO_UIClassIconSelectionScreen'))
+	{
+		CurrentIcon = GetClassIcon(GetUnit());
+		CurrentIcon = Repl(CurrentIcon, "img:///", "");
+		TempScreen = Pres.Spawn(class'RPGO_UIClassIconSelectionScreen', Pres);
+		TempScreen.UnitStateObjectId = UnitReference.ObjectID;
+		TempScreen.SelectedIndex = TempScreen.ClassIconImagePaths.Find(CurrentIcon);
+		Pres.ScreenStack.Push(TempScreen, Pres.Get2DMovie());
+	}
+}
 
 //Override functions
 simulated function InitPromotion(StateObjectReference UnitRef, optional bool bInstantTransition)

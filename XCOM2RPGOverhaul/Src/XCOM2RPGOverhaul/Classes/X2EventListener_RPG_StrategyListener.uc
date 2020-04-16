@@ -285,7 +285,8 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 {
 	local XComLWTuple Tuple;
 	local XComGameState_Unit UnitState;
-	local string Info;
+	local string Info, CustomClassIcon, CustomClassTitle, CustomClassDescription;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
 
 	Tuple = XComLWTuple(EventData);
 	UnitState = XComGameState_Unit(EventSource);
@@ -298,16 +299,45 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 		return ELR_NoInterrupt;
 	}
 
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	if (CustomClassInsigniaGameState != none)
+	{
+		CustomClassIcon = CustomClassInsigniaGameState.GetClassIconForUnit(UnitState.ObjectID);
+		CustomClassTitle = CustomClassInsigniaGameState.GetClassTitleForUnit(UnitState.ObjectID);
+		CustomClassDescription = CustomClassInsigniaGameState.GetClassDescriptionForUnit(UnitState.ObjectID);
+	}
+	
 	switch (Event)
 	{
 		case 'SoldierClassIcon':
-			Info = GetClassIcon(UnitState);
+			if (CustomClassIcon != "")
+			{
+				Info = "img:///" $ CustomClassIcon;
+			}
+			else
+			{
+				Info = GetClassIcon(UnitState);
+			}
 			break;
 		case 'SoldierClassDisplayName':
-			Info = GetClassDisplayName(UnitState);
+			if (CustomClassTitle != "")
+			{
+				Info = CustomClassTitle;
+			}
+			else
+			{
+				Info = GetClassDisplayName(UnitState);
+			}
 			break;
 		case 'SoldierClassSummary':
-			Info = GetClassSummary(UnitState);
+			if (CustomClassDescription != "")
+			{
+				Info = CustomClassDescription;
+			}
+			else
+			{
+				Info = GetClassSummary(UnitState);
+			}
 			break;
 	}
 
