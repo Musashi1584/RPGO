@@ -92,3 +92,11 @@ struct SpecializationMetaInfoStruct
 		iWeightComplementary = 1
 	}
 };
+
+struct ClassInsignia
+{
+	var int UnitObjectID;
+	var string ClassImagePath;
+	var string ClassTitle;
+	var string ClassDescription;
+};

@@ -7,6 +7,8 @@ var config string DisplayName;
 // Double tactical ability points
 static event InstallNewCampaign(XComGameState StartState)
 {
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(StartState);
+
 	//local XComGameState_HeadquartersXCom XComHQ;
 
 	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
@@ -15,9 +17,36 @@ static event InstallNewCampaign(XComGameState StartState)
 	
 }
 
+static event OnLoadedSavedGame()
+{
+	InitializeClassInsiginiaGameState();
+}
+
+
 static event OnLoadedSavedGameToStrategy()
 {
+	InitializeClassInsiginiaGameState();
 	class'X2TemplateHelper_RPGOverhaul'.static.UpdateStorage();
+}
+
+static function InitializeClassInsiginiaGameState()
+{
+
+	local XComGameStateHistory History;
+	local XComGameState NewGameState;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Create ClassInsignia State");
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(NewGameState);
+	
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		History.AddGameStateToHistory(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
 }
 
 static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)

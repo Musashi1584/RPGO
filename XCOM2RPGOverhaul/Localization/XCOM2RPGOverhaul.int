@@ -73,6 +73,14 @@ m_strServeredArms="<font color='#bf1e2e'><b>Needs Arm Augmention</b></font>"
 m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"
 
 [XGLocalizedData_RPG]
+SelectClassTitle="Class Title"
+SelectClassIcon="Class Icon"
+SelectClassDescription="Class Description"
+
+SelectClassTitleTooltip="Select a custom class title. This will override the automatic assignment based on specializations"
+SelectClassIconTooltip="Select a custom class icon. This will override the automatic assignment based on specializations"
+SelectClassDescriptionTooltip="Select a custom class description. This will override the automatic assignment based on specializations"
+
 AbilityWeaponRestrictions="Compatible with:"
 
 SpecializationPrimaryShort="P"
