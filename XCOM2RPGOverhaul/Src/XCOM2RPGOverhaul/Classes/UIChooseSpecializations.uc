@@ -7,10 +7,14 @@ var array<int> SelectedItems;
 
 var localized string m_strComplementarySpecializationInfo;
 
-simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
+simulated function InitChooseSpecialization(
+	StateObjectReference UnitRef,
+	int MaxSpecs,
+	array<SoldierSpecialization> AvailableSpecs,
+	array<SoldierSpecialization> OwnedSpecs,
+	optional delegate<AcceptAbilities> OnAccept
+)
 {
-	local XComGameState_Unit UnitState;
-
 	super.InitChooseCommoditiesScreen(
 		UnitRef,
 		MaxSpecs,
@@ -18,10 +22,8 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 		OnAccept
 	);
 
-	UnitState = GetUnit();
-
 	SpecializationsPool.Length = 0;
-	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
+	SpecializationsPool = AvailableSpecs;
 	CommodityPool = ConvertToCommodities(SpecializationsPool);
 
 	SpecializationsChosen.Length = 0;

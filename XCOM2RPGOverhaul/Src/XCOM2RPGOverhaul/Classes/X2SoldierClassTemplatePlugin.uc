@@ -36,6 +36,41 @@ static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameStat
 	return Templates;
 }
 
+
+// Get all available starting abilities
+static function array<X2AbilityTemplate> GetAllStartingAbilities(XComGameState_Unit Unit)
+{
+	local X2AbilityTemplate AbilityTemplate;
+	local X2AbilityTemplateManager AbilityTemplateManager;
+	local array<X2AbilityTemplate> AbilityTemplates;
+	local array<SoldierClassRandomAbilityDeck> LocalRandomAbilityDecks;
+	local SoldierClassRandomAbilityDeck Deck;
+	local SoldierClassAbilityType AbilityType;
+	
+	if(Unit.IsSoldier())
+	{
+		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+		LocalRandomAbilityDecks = Unit.GetSoldierClassTemplate().RandomAbilityDecks;
+
+		foreach LocalRandomAbilityDecks(Deck)
+		{
+			foreach Deck.Abilities(AbilityType)
+			{
+				AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
+				if(AbilityTemplate != none &&
+					!AbilityTemplate.bDontDisplayInAbilitySummary &&
+					AbilityTemplate.ConditionsEverValidForUnit(Unit, true) )
+				{
+					AbilityTemplate.DefaultSourceItemSlot = AbilityType.ApplyToWeaponSlot;
+					AbilityTemplates.AddItem(AbilityTemplate);
+				}
+			}
+		}
+	}
+	return AbilityTemplates;
+}
+
 // Get all owned ability templates for rank
 static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameState_Unit UnitState, int Rank)
 {
@@ -241,6 +276,19 @@ static function int GetSpecializationIndex(XComGameState_Unit UnitState, name Sp
 	}
 
 	return Specs.Find('TemplateName', SpecTemplateName);
+}
+
+
+static function array<SoldierSpecialization> GetSpecializationsByIndex(XComGameState_Unit UnitState, array<int> IndexArray)
+{
+	local int Index;
+	local array<SoldierSpecialization> Specs;
+
+	foreach IndexArray(Index)
+	{
+		Specs.AddItem(GetSpecializationBySlotFromAvailableSpecs(UnitState, Index));
+	}
+	return Specs;
 }
 
 static function array<SoldierSpecialization> GetComplementarySpecializations(XComGameState_Unit UnitState, SoldierSpecialization Spec)

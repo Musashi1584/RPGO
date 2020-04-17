@@ -284,6 +284,12 @@ SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI_TOOLTIP="Amount of random specializations 
 COMMANDERS_CHOICE_SPEC_COUNT_COMBI_LABEL="Combined"
 COMMANDERS_CHOICE_SPEC_COUNT_COMBI_TOOLTIP="Amount of chosen specializations if spec roulette and commander choice is enabled simultaniously"
 
+COMMANDERS_CHOICE_RANDOM_POOL_ENABLED_LABEL="Random pool"
+COMMANDERS_CHOICE_RANDOM_POOL_ENABLED_TOOLTIP="When enabled you can only choose from a limited random pool of specs instead of all available specializations."
+
+COMMANDERS_CHOICE_RANDOM_POOL_COUNT_LABEL="Random pool size"
+COMMANDERS_CHOICE_RANDOM_POOL_COUNT_TOOLTIP="This determines that size of the random pool. It should always be bigger than the number of commanders choice specs above. If you have the random classes swo enabled, its algorithm will be used for randomization."
+
 TRAINING_ROULETTE_MIN_RANK_LABEL="Min Rank"
 TRAINING_ROULETTE_MIN_RANK_TOOLTIP="Start to randomize from this rank on"
 
@@ -295,3 +301,9 @@ ORIGINS_CHOICE_ABILITY_COUNT_TOOLTIP=" How many starting abilities you want to c
 
 ORIGINS_ADDITIONAL_RANDOM_ABILTIES_LABEL="Random Abilities"
 ORIGINS_ADDITIONAL_RANDOM_ABILTIES_TOOLTIP="Add this number of random abilties on top of the chose ones"
+
+ORIGINS_RANDOM_POOL_ENABLED_LABEL="Random pool"
+ORIGINS_RANDOM_POOL_ENABLED_TOOLTIP="When enabled you can only choose from a limited random pool of abilities instead of all available starting abilities"
+
+ORIGINS_RANDOM_POOL_COUNT_LABEL="Random pool size"
+ORIGINS_RANDOM_POOL_COUNT_TOOLTIP="This determines that size of the random pool. It should always be bigger than the sum of chosen and random abilities above"

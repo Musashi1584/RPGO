@@ -1379,11 +1379,37 @@ static function string GetClassSummary(XComGameState_Unit Unit)
 function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 {
 	local UIChooseSpecializations ChooseSpecScreen;
-	local array<SoldierSpecialization> TrainedSpecs;
+	local array<SoldierSpecialization> TrainedSpecs, AvailableSpecs;
+	local int RandomPoolSize;
 
 	if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
 		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetAssignedSpecializations(UnitState);
+	}
+
+	if (class'X2SecondWaveConfigOptions'.static.IsCommandersChoiceRandomPoolEnabled())
+	{
+		TrainedSpecs.Length = 0;
+		RandomPoolSize = class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceRandomPoolCount();
+
+		if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+		{
+			AvailableSpecs =  class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsByIndex(
+				UnitState,
+				class'X2SecondWaveConfigOptions'.static.GetSpecIndices_ForRandomClass(UnitState, RandomPoolSize)
+			);
+		}
+		else
+		{
+			AvailableSpecs =  class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsByIndex(
+				UnitState,
+				class'X2SecondWaveConfigOptions'.static.GetRandomSpecIndices(UnitState, RandomPoolSize)
+			);
+		}
+	}
+	else
+	{
+		AvailableSpecs = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
 	}
 
 	ChooseSpecScreen = Spawn(class'UIChooseSpecializations', Movie.Pres);
@@ -1391,6 +1417,7 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 	ChooseSpecScreen.InitChooseSpecialization(
 		UnitState.GetReference(),
 		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount(),
+		AvailableSpecs,
 		TrainedSpecs
 	);
 }
@@ -1399,18 +1426,31 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 {
 	local UIChooseAbilities ChooseAbilityScreen;
 	local array<X2AbilityTemplate> RandomTemplates;
+	local array<X2AbilityTemplate> AvailableTemplates;
 
-
-	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
-		UnitState,
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES")
-	);
+	if (class'X2SecondWaveConfigOptions'.static.IsOriginsRandomPoolEnabled())
+	{
+		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
+			UnitState,
+			class'X2SecondWaveConfigOptions'.static.GetOriginsRandomPoolCount()
+		);
+	}
+	else
+	{
+		RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
+			UnitState,
+			class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount()
+		);
+		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllStartingAbilities(UnitState);
+	}
+	
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
 	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());
 	ChooseAbilityScreen.InitChooseAbiltites(
 		UnitState.GetReference(),
 		class'X2SecondWaveConfigOptions'.static.GetOriginsAbiltiesCount(),
+		AvailableTemplates,
 		RandomTemplates
 	);
 }
