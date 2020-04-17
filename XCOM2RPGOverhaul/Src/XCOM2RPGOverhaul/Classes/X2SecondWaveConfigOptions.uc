@@ -179,59 +179,58 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 			}
 		}
 	}
-	SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
+	if (ValidSpecTemplates.Length > 0)
+	{
+		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
-	SelectedSpecTemplates.AddItem(SpecTemplate);
-	ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
-	Count--;
+		SelectedSpecTemplates.AddItem(SpecTemplate);
+		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
+		Count--;
 
-	//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory
-	UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
-	`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
+		//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory
+		UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
+		`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
 
-	//	Add complementary specializations, if necessary
-	AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
+		//	Add complementary specializations, if necessary
+		AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 
-	//	Exit function early if necessary
-	if (Count <= 0) return ReturnArray;
-
+		//	Exit function early if necessary
+		if (Count <= 0) return ReturnArray;
+	}
+	else `LOG("There were no valid primary specs to choose from.",, 'RPG');
 
 	//	########################################################
 	//	Select random specialization for secondary weapon
-	if (SelectedSpecTemplates[0].SpecializationMetaInfo.bDualWield)
-	{
-		`LOG("## Primary spec is Dual Wield, skipping Secondary Spec.",, 'RPG');
-	}
-	else
-	{
-		`LOG("## Selecting secondary specialization: " @ Count,, 'RPG');
-		ValidSpecTemplates.Length = 0;
-		foreach AllSpecTemplates(SpecTemplate)
-		{	
-			//	Skip specialization if it was already selected
-			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
+	`LOG("## Selecting secondary specialization: " @ Count,, 'RPG');
+	ValidSpecTemplates.Length = 0;
+	foreach AllSpecTemplates(SpecTemplate)
+	{	
+		//	Skip specialization if it was already selected
+		if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
 
-			//	Skip specialization if it's mutually exclusive with one of the selected ones.
-			bSkipSpec = false;
-			for (i = 0; i < SelectedSpecTemplates.Length; i++)
+		//	Skip specialization if it's mutually exclusive with one of the selected ones.
+		bSkipSpec = false;
+		for (i = 0; i < SelectedSpecTemplates.Length; i++)
+		{
+			if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
 			{
-				if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
-				{
-					bSkipSpec = true;
-					break;
-				}
-			}
-			if (bSkipSpec) continue;
-
-			if (SpecTemplate.IsSecondaryWeaponSpecialization())
-			{
-				for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightSecondary; i++)
-				{
-					`LOG("Valid spec: " @ SpecTemplate.Name,, 'RPG');
-					ValidSpecTemplates.AddItem(SpecTemplate);
-				}
+				bSkipSpec = true;
+				break;
 			}
 		}
+		if (bSkipSpec) continue;
+
+		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate))
+		{
+			for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightSecondary; i++)
+			{
+				`LOG("Valid spec: " @ SpecTemplate.Name,, 'RPG');
+				ValidSpecTemplates.AddItem(SpecTemplate);
+			}
+		}
+	}
+	if (ValidSpecTemplates.Length > 0)
+	{
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
 		SelectedSpecTemplates.AddItem(SpecTemplate);
@@ -247,6 +246,8 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 		//	Exit function early if necessary
 		if (Count <= 0) return ReturnArray;
 	}
+	else `LOG("There were no valid secondary specs to choose from.",, 'RPG');
+
 	//	########################################################
 	//	Select several additional specializations that either complement already selected specializations, or are weapon agnostic.
 	`LOG("## Selecting additional specializations: " @ Count,, 'RPG');

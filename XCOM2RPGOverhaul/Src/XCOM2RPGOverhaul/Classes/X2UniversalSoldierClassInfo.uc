@@ -16,13 +16,9 @@ var localized string ClassSpecializationTitle;
 
 var config SpecializationMetaInfoStruct SpecializationMetaInfo;
 
-function bool IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
+function bool IsWeaponAllowed(name WeaponCat)
 {
-	if (SpecializationMetaInfo.bDualWield)
-	{
-		return SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
-	}
-	else return SpecializationMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+	return SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
 }
 
 function string GetClassSpecializationTitleWithMetaData()
@@ -106,18 +102,18 @@ function array<String> GetLocalizedWeaponCategories()
 function bool IsPrimaryWeaponSpecialization()
 {
 	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
-	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.iWeightPrimary > 0 && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
 }
 
 function bool IsSecondaryWeaponSpecialization()
 {
-	//	Spec is valid to be secondary if it allows using specific weapons in the secondary slot OR if it's a valid primary spec that is also a Dual Wield spec
-	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && (SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE || SpecializationMetaInfo.bDualWield && IsPrimaryWeaponSpecialization());
+	//	Spec is valid to be secondary if it allows using specific weapons in the secondary slot
+	return SpecializationMetaInfo.iWeightSecondary > 0 && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 }
 
 function bool IsComplemtarySpecialization()
 {
-	return (!SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal);
+	return SpecializationMetaInfo.iWeightComplementary > 0 && !SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal;
 }
 /*
 {
