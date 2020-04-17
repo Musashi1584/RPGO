@@ -192,6 +192,7 @@ function OnSelectClassIconButtonClicked()
 	local RPGO_UIClassIconSelectionScreen TempScreen;
 	local XComPresentationLayerBase Pres;
 	local string CurrentIcon;
+	local array<string> AllIcons;
 	
 
 	// `PRES is tactical (strategy is `HQPRES, generic is `PRESBASE)
@@ -201,9 +202,13 @@ function OnSelectClassIconButtonClicked()
 	{
 		CurrentIcon = GetClassIcon(GetUnit());
 		CurrentIcon = Repl(CurrentIcon, "img:///", "");
+
 		TempScreen = Pres.Spawn(class'RPGO_UIClassIconSelectionScreen', Pres);
+
+		AllIcons = TempScreen.GetAllClassIcons();
+
 		TempScreen.UnitStateObjectId = UnitReference.ObjectID;
-		TempScreen.SelectedIndex = TempScreen.ClassIconImagePaths.Find(CurrentIcon);
+		TempScreen.SelectedIndex = AllIcons.Find(CurrentIcon);
 		Pres.ScreenStack.Push(TempScreen, Pres.Get2DMovie());
 	}
 }

@@ -1,0 +1,66 @@
+								 
+
+
+						
+						
+						
+
+
+
+						  
+						  
+						  
+
+
+
+					  
+					  
+					  
+
+				   
+									 
+								  
+											 
+										  
+
+[LWGauntlet_CV X2MultiWeaponTemplate]
+-TacticalText="<Bullet/> Der XCOM-Handschuh ist ein fortschrittliches Gerät, das sowohl einen Mini-Raketenwerfer als auch einen Flammenwerfer trägt.<br/><Bullet/> Der Raketenwerfer trägt zunächst eine Rakete und hat einen dreifachen Radius für sein Wirkungsgebiet.<br/><Bullet/><Bullet/> Er kann alles im Sichtbereich anvisieren.<br/><Bullet/><Bullet/> Schäden durch Raketen reduzieren sich mit zunehmender Entfernung zum Aufschlagspunkt herab.<br/><Bullet/> Der Flammenwerfer ist eine Kurzstreckenwaffe, die mehreren Zielen innerhalb eines kegelförmigen Wirkungsbereichs Schaden zufügt.<br/><Bullet/> Der Flammenwerfer hat zwei Ladungen und beschädigt mechanische Einheiten nicht ohne Upgrades.<br/><Bullet/> Die Verwendung einer der beiden Handschuhfähigkeiten erfordert eine Aktion und beendet den Zug. <br/><Bullet/>Die Genauigkeit der Rakete wird durch die Zielgenauigkeit des Soldaten, die Zieldistanz und die Tatsache beeinflusst, ob der Soldat bereits in diesem Zug Aktionen ausgeführt hat. Raketen mit niedriger Genauigkeit haben höhere Streuwerte, was bedeutet, dass sie den Zielpfad wahrscheinlich um größere Entfernungen verfehlen. Die maximal mögliche Streuung der Rakete wird im Popup-Fenster angezeigt, während ein Wert, der mit dem Zielkursor erscheint, die erwartete (durchschnittliche) Streuung für einen Schuss an dieser Stelle anzeigt."
++TacticalText="<Bullet/> The XCOM gauntlet is an experimental device that is equipped with a single-charge flamethrower by default.<br/><Bullet/> The flamethrower is a short-range weapon that causes damage to multiple targets within a cone-shaped area of effect, with the exception of robotic enemies.<br/><Bullet/> The Rocket Launcher is an additional module that is only available to soldiers with special training. It may target anything in sight range and has a three-tile radius for its area of effect. Rocket damage falls off from the point of impact.<br/><Bullet/> Rocket accuracy is affected by the soldier's aim, target distance, and whether the soldier has used any actions already this turn. Low accuracy-rockets will have higher scatter values, meaning they are more likely to miss the target tile by greater distances. The rocket's maximum possible scatter is noted in the popup, while a value appearing with the targeting cursor will show the expected (average) scatter for a shot on that location."
+																																									
+																																																																																																																																																																																																																																																																																																																																																																							   
+							 
+
+[LWGauntlet_MG X2MultiWeaponTemplate]
+-TacticalText="<Bullet/> Der XCOM-Handschuh ist ein fortschrittliches Gerät, das sowohl einen Mini-Raketenwerfer als auch einen Flammenwerfer trägt.<br/><Bullet/> Der Raketenwerfer trägt zunächst eine Rakete und hat einen dreifachen Radius für sein Wirkungsgebiet.<br/><Bullet/><Bullet/> Er kann alles im Sichtbereich anvisieren.<br/><Bullet/><Bullet/> Schäden durch Raketen reduzieren sich mit zunehmender Entfernung zum Aufschlagspunkt herab.<br/><Bullet/> Der Flammenwerfer ist eine Kurzstreckenwaffe, die mehreren Zielen innerhalb eines kegelförmigen Wirkungsbereichs Schaden zufügt.<br/><Bullet/> Der Flammenwerfer hat zwei Ladungen und beschädigt mechanische Einheiten nicht ohne Upgrades.<br/><Bullet/> Die Verwendung einer der beiden Handschuhfähigkeiten erfordert eine Aktion und beendet den Zug. <br/><Bullet/>Die Genauigkeit der Rakete wird durch die Zielgenauigkeit des Soldaten, die Zieldistanz und die Tatsache beeinflusst, ob der Soldat bereits in diesem Zug Aktionen ausgeführt hat. Raketen mit niedriger Genauigkeit haben höhere Streuwerte, was bedeutet, dass sie den Zielpfad wahrscheinlich um größere Entfernungen verfehlen. Die maximal mögliche Streuung der Rakete wird im Popup-Fenster angezeigt, während ein Wert, der mit dem Zielkursor erscheint, die erwartete (durchschnittliche) Streuung für einen Schuss an dieser Stelle anzeigt."
++TacticalText="<Bullet/> The XCOM MkII gauntlet is an advanced device that is equipped with a single-charge flamethrower by default.<br/><Bullet/> The flamethrower is a short-range weapon that causes damage to multiple targets within a cone-shaped area of effect, with the exception of robotic enemies.<br/><Bullet/> The Rocket Launcher is an additional module that is only available to soldiers with special training. It may target anything in sight range and has a three-tile radius for its area of effect. Rocket damage falls off from the point of impact.<br/><Bullet/> Rocket accuracy is affected by the soldier's aim, target distance, and whether the soldier has used any actions already this turn. Low accuracy-rockets will have higher scatter values, meaning they are more likely to miss the target tile by greater distances. The rocket's maximum possible scatter is noted in the popup, while a value appearing with the targeting cursor will show the expected (average) scatter for a shot on that location."
+
+																																																																																																																																																																																																																																																																																																																																																																							   
+							 
+
+[LWGauntlet_BM X2MultiWeaponTemplate]
+-TacticalText="<Bullet/> Die Abschussvorrichtung der fortgeschrittenen Handschuhe feuert eine High-Tech-Rakete ab, die sich durch blockiertes Gelände navigieren kann.\n<Bullet/> Der verbesserte Flammenwerfer verursacht massiven Schaden in einem kleinen Kegel und schädigt Bereich und Feinde gleichermaßen.Schäden durch Raketen reduzieren sich mit zunehmender Entfernung zum Aufschlagspunkt herab.<br/><Bullet/> Der Flammenwerfer ist eine Kurzstreckenwaffe, die mehreren Zielen innerhalb eines kegelförmigen Wirkungsbereichs Schaden zufügt.<br/><Bullet/> Der Flammenwerfer hat zwei Ladungen und beschädigt mechanische Einheiten nicht ohne Upgrades.<br/><Bullet/> Die Verwendung einer der beiden Handschuhfähigkeiten erfordert eine Aktion und beendet den Zug. <br/><Bullet/>Die Genauigkeit der Rakete wird durch die Zielgenauigkeit des Soldaten, die Zieldistanz und die Tatsache beeinflusst, ob der Soldat bereits in diesem Zug Aktionen ausgeführt hat. Raketen mit niedriger Genauigkeit haben höhere Streuwerte, was bedeutet, dass sie den Zielpfad wahrscheinlich um größere Entfernungen verfehlen. Die maximal mögliche Streuung der Rakete wird im Popup-Fenster angezeigt, während ein Wert, der mit dem Zielkursor erscheint, die erwartete (durchschnittliche) Streuung für einen Schuss an dieser Stelle anzeigt."
++TacticalText="<Bullet/> Like its precedessors, the Blaster Gauntlet is equipped with a single-charge plasma flamethrower by default.<br/><Bullet/> The upgraded flamethrower is a short-range weapon that causes massive damage to multiple targets within a cone-shaped area of effect, with the exception of robotic enemies.<br/><Bullet/> The Blaster Launcher is an additional module that is only available to soldiers with special training. Its high-tech rocket may target any spot within range, navigating around obstacles to do so, and has a three-tile radius for its area of effect. Rocket damage falls off from the point of impact.<br/><Bullet/> Rocket accuracy is affected by the soldier's aim, target distance, and whether the soldier has used any actions already this turn. Low accuracy-rockets will have higher scatter values, meaning they are more likely to miss the target tile by greater distances. The rocket's maximum possible scatter is noted in the popup, while a value appearing with the targeting cursor will show the expected (average) scatter for a shot on that location."
+																																			  
+																																																																																																																																																																																																																																																																																																																																						   
+							
+
+							  
+									   
+
+				
+													
+
+
+						   
+						   
+						   
+
+					   
+								   
+																																	   
+
+
+
+							   
+							   
+							   

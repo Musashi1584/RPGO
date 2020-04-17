@@ -40,24 +40,76 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	m_kTitleHeader.SetPosition(10, 20);
 
 	ImageSelector = Spawn(class'RPGO_UIImageSelector', m_kContainer);
-	ImageSelector.InitImageSelector(, 0, 70, m_kContainer.Width - 10, m_kContainer.height - 80, default.ClassIconImagePaths, , SetClassIcon, SelectedIndex);
+	ImageSelector.InitImageSelector(, 0, 70, m_kContainer.Width - 10, m_kContainer.height - 80, GetAllClassIcons(), , SetClassIcon, SelectedIndex);
+}
+
+function array<string> GetAllClassIcons()
+{
+	local X2SoldierClassTemplateManager Manager;
+	local array<X2SoldierClassTemplate> ClassTemplates; 
+	local X2SoldierClassTemplate ClassTemplate;
+	local array<string> AllClassIconImagePaths;
+	local array<X2UniversalSoldierClassInfo> SpecTemplates;
+	local X2UniversalSoldierClassInfo SpecTemplate;
+	local string ClassIcon;
+
+	Manager = class'X2SoldierClassTemplateManager'.static.GetSoldierClassTemplateManager();
+
+	ClassTemplates = Manager.GetAllSoldierClassTemplates(true);
+	foreach ClassTemplates(ClassTemplate)
+	{
+		if (ClassTemplate.IconImage != "")
+		{
+			ClassIcon = Repl(ClassTemplate.IconImage, "img://", "");
+			if (AllClassIconImagePaths.Find(ClassIcon) == INDEX_NONE)
+			{
+				AllClassIconImagePaths.AddItem(ClassIcon);
+			}
+		}
+	}
+
+	SpecTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllAvailableSpecializationTemplates();
+	foreach SpecTemplates(SpecTemplate)
+	{
+		if (SpecTemplate.ClassSpecializationIcon != "")
+		{
+			ClassIcon= Repl(SpecTemplate.ClassSpecializationIcon, "img://", "");
+			if (AllClassIconImagePaths.Find(ClassIcon) == INDEX_NONE)
+			{
+				AllClassIconImagePaths.AddItem(ClassIcon);
+			}
+		}
+	}
+
+	foreach default.ClassIconImagePaths(ClassIcon)
+	{
+		if (AllClassIconImagePaths.Find(ClassIcon) == INDEX_NONE)
+		{
+			AllClassIconImagePaths.AddItem(ClassIcon);
+		}
+	}
+
+	return AllClassIconImagePaths;
 }
 
 function SetClassIcon(int iImageIndex)
 {
 	local XComGameState NewGameState;
 	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+	local array<string> AllIcons;
 
 	if (SelectedIndex == iImageIndex)
 	{
 		OnCancel();
 		return;
 	}
+
+	AllIcons = GetAllClassIcons();
 	
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Change Class ImagePath");
 	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
 	CustomClassInsigniaGameState = XComGameState_CustomClassInsignia(NewGameState.ModifyStateObject(CustomClassInsigniaGameState.Class, CustomClassInsigniaGameState.ObjectID));
-	CustomClassInsigniaGameState.SetClassIconForUnit(default.ClassIconImagePaths[iImageIndex], UnitStateObjectId);
+	CustomClassInsigniaGameState.SetClassIconForUnit(AllIcons[iImageIndex], UnitStateObjectId);
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 	
 	UpdatePromotionScreen();

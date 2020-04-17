@@ -20,13 +20,15 @@ Soldiers start with a limited number of randomized specializations on Squaddie.
 Instead of having the full set of all specializations, soldiers only get some randomly chosen on promotion to Sqaddie. Can NOT be changed in campaign.
 
 [h1][RPGO] Commanders Choice: Choose a limted number of specializations[/h1]
-On promotion to squaddie you can choose a limited number of specializations from the starting ability pool.
+On promotion to squaddie you can choose a limited number of specializations from the pool of all available specializations.
+[u]MCM Option: Random Pool[/u] - When enabled you can only choose from a limited random pool of specs instead of all available specializations. If you have the random classes swo enabled, its algorithm will be used for randomization.
 
 [h1][RPGO] Training Roulette: The order of perks within specializations get randomized.[/h1]
 Perk order in specializations is randomized with exception to perk pre-requisites. Can NOT be changed in campaign.
 
 [h1][RPGO] Origins: Choose the soldiers starting abilities[/h1]
 Instead of having all starting perks randomly rolled, you can choose a limited number of starting perks (plus some random perks if you want) on promotion to squaddie 
+[u]MCM Option: Random Pools[/u] - When enabled you can only choose from a limited random pool of abilities instead of all available starting abilities.
 
 [h1][RPGO] Random Classes: Generates funtional random classes[/h1]
 On promotion to squaddie, RPGO will randomly assign a primary, a secondary and some complementary specializations for the soldier. This is recommended over Specialization Roulette if you use Weapon Restrictions as well because it will make sure your soldier will have a primary and secondary weapon category available. Can be combined with Origins and Training Roulette, but NOT to Commander's Choice.

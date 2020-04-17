@@ -4,19 +4,23 @@
 [list]
 [*] Gameplay overhaul that revamps various aspects of the game
 [*] Replaces vanilla classes with a single class with 14 specializations with 7 ranks each for a total of 98 abilities to choose from
+[*] Additional specs can be added by the ever growing pool of [u][url=https://steamcommunity.com/workshop/filedetails/?id=1404633593]Plugin Mods[/url][/u]
 [*] The new class can choose from all primary and all secondary weapons (including LW2 secondaries). Every combination is possible.
-[*] Dynamic class title / class icon based on your ability choices
-[*] 2 random starting abilities on squaddie
+[*] Dynamic class title / class icon based on your ability choices per default
+[*] Custom class tile / class icon 
+[*] Random starting abilities on squaddie
 [*] Stats can be upgraded with ability points
 [*] All secondary weapon abilities work regardless of the inventory slot (e.g fan fire with pistols in the primary slot).
 [*] Weapon and Attachment mechanics got revamped to have a more focused role for each weapon
 [*] Full support of Primary Secondaries
 [*] Full support of weapon mods like Resistance Firearms
-[*] New second wave options: [RPGO] Specialization Roulette, [RPGO] Commanders Choice, [RPGO] Training Roulette
+[*] [u][url=https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1653297026045137844/]New second wave options[/url][/u]
 [*] Full controller support
 [/list]
 
-I recommend to play this mod with the following mods:
+[u][url=http://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/]CLICK HERE FOR A FULL LIST OF FEATURES[/url][/u]
+
+Recommended Mod that accompany rpgo well:
 [list]
 [*] [u][url=http://steamcommunity.com/sharedfiles/filedetails/?id=1135248412]WotC SpecOps Combat Knives[/url][/u]
 [*] [u][url=http://steamcommunity.com/sharedfiles/filedetails/?id=1123865738]WotC Katana Mod Reloaded[/url][/u]
@@ -32,62 +36,46 @@ I recommend to play this mod with the following mods:
 
 [/list]
 
-[h1]About this overhaul[/h1]
-The mod replaces the vanilla class by one class starting as "Soldier".
-
-The Soldier class can use every weapon (supporting Primary Secondaries, LW2 Secondary Weapons).
-
-This class has 14 rows of abilities (named specializations) with 7 ranks each (98 abilities total) to choose from.
-There a lot of plugin mods that you can use to add to this: [u][url=https://steamcommunity.com/workshop/filedetails/?id=1404633593]plugin in mod collection[/url][/u]
-
-When your soldier evolves your class name and icon changes dynamically to the specialization you have the most perks from.
-
-On squaddie your soldier will get two random starting abilities from a pool to give each soldier an idea to where he/she could be developed.
-
-With second wave options you can limit the available specialization to some randomly chosen or picked (or even a combination of some picked and some random) specializations.
-More info on swo [u][url=https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1653297026045137844/]HERE[/url][/u]
-
-Any combination of abilities and weapons are possible. For example you can create a cannon wielding medic, a gunslinging grenadier, sniper with ripjack or whatever you can imagine.
-
-Most abilities work with each weapon, the secondary weapon abilities work with their associated secondary regardless if it is in the primary or secondary.
-
-Another big change is the possibility to upgrade the soldiers stats with ability points. Therefor i designed a completely new ui screen.
-
-For overall balance and because i wanted to i overhauled the weapon mechanics and how most weapon attachments work.
-
-[u][url=http://steamcommunity.com/workshop/filedetails/discussion/1280477867/1693785669848910158/]CLICK HERE FOR A FULL LIST OF FEATURES[/url][/u]
-
 [h1]Credits[/h1]
 *Standing on the shoulders of giants*
 
-A huge thanks to everone involved in this mods. So many great people helped me along the way.
+A huge thanks to everone involved in the creation of this mod. So many great people helped me along the way.
 I could not have done it without you guys!
 
-Pavonis Interactive for all long war 2 perks i used and initial Detailed Soldier Lists.
-Robojumper for the stats icons i used in the stats upgrade screen, some class icons, controller support and coding assistance on countless occasions.
-xylthixlm for xmod base and the perk icon library. Fantastic work and a tremendous workload reduction.
-MalucoMarinero - there can only be one (community highlander)
-creative xenos for being that crazy chaotic creative bunch of great people that they are.
-bg for [WOTC] Detailed Soldier Lists
-MoonWolf for the initial [WOTC] New Promotion Screen by Default
-zamster for helping me turning my localization into proper english
-Chris the Thin Mint for help with balancing and localization
-FelineKnave for a lot of great localization
-bstar - Public Relations manager and rpgo developer
-Ziodyne - for the aptitude perks of mint
-DerBK - for some ABB perks bstar "aquired"
-Sumajin - making some weapon changes configurable
-Astral Descend - UI Consultant
-Mr. Nice - Controller Support
-Iridar - Random Classes and Weapon Restrictions SWO
+A special thanks to these contributors
+[u][b]Robojumper[/b][/u] My modding sensei! Stats icons, class icons, controller support, initial code of the custom class icon ui and coding assistance on countless occasions.
+[u][b]bstar[/b][/u] - Public Relations manager and rpgo developer
+[u][b]Mr. Nice[/b][/u] - Controller Support
+[u][b]Iridar[/b][/u] - Random Classes and Weapon Restrictions SWO
+[u][b]Parameter[/b][/u] - German localization
+
+Additional Credits
+[u][b]Astral Descend[/b][/u] - UI Consultant
+[u][b]Pavonis Interactive[/b][/u] for all long war 2 perks i used and initial Detailed Soldier Lists.
+[u][b]xylthixlm[/b][/u] for xmod base and the perk icon library. Fantastic work and a tremendous workload reduction.
+[u][b]MalucoMarinero[/b][/u] - there can only be one (community highlander)
+[u][b]creative xenos[/b][/u] - for being that crazy chaotic creative bunch of great people that they are.
+[u][b]bg[/b][/u] for [WOTC] Detailed Soldier Lists
+[u][b]MoonWolf[/b][/u] for the initial [WOTC] New Promotion Screen by Default
+[u][b]zamster[/b][/u] for helping me turning my localization into proper english
+[u][b]Chris the Thin Mint[/b][/u] for help with balancing and localization
+[u][b]FelineKnave[/b][/u] for a lot of great localization
+[u][b]Ziodyne[/b][/u] - for the aptitude perks of mint
+[u][b]DerBK[/b][/u] - for some ABB perks bstar "aquired"
+[u][b]Sumajin[/b][/u] - making some weapon changes configurable
+[u][b]Ketaros[/b][/u] - For the excellent pool of class icons
 
 [h1]Playtesters[/h1]
 Thanks to the first line of infantry and brigadier rank bug hunters
-Ginger
-Astery86
-nekoworkshop
-bstar
-Chris the Thin Mint
+[u][b]Ginger[/b][/u]
+[u][b]Astery86[/b][/u]
+[u][b]nekoworkshop[/b][/u]
+[u][b]bstar[/b][/u]
+[u][b]Chris the Thin Mint[/b][/u]
+
+[u][b]All of you beautiful people[/b][/u] - for playing with this mod and submitting suggestions, ideas, requests and bug reports, which constantly make this mod better
+
+If i forgot to credit someone i apologize from the bottom of my heart. Please let me know and i will add you to the credits!
 
 [h1]FAQ[/h1]
 

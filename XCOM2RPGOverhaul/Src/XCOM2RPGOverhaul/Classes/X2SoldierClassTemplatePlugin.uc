@@ -413,6 +413,24 @@ static function array<SoldierSpecialization> GetSpecializations()
 	return ValidSpecs;
 }
 
+static function array<X2UniversalSoldierClassInfo> GetAllAvailableSpecializationTemplates()
+{
+	local array<SoldierSpecialization> AllSpecs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local array<X2UniversalSoldierClassInfo> Templates;
+
+	AllSpecs = GetSpecializations();
+
+	foreach AllSpecs(Spec)
+	{
+		UniversalSoldierClassTemplate = GetSpecializationTemplateByName(Spec.TemplateName);
+		Templates.AddItem(UniversalSoldierClassTemplate);
+	}
+
+	return Templates;
+}
+
 static function array<SoldierSpecialization> GetSpecializationsAvailableToSoldier(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> AllSpecs, SpecsAvailableToSoldier;

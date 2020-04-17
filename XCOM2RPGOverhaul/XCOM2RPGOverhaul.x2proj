@@ -7,6 +7,7 @@
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>XCOM2RPGOverhaul</AssemblyName>
     <RootNamespace>XCOM2RPGOverhaul</RootNamespace>
+    <ProjectGuid>{a0694487-4ba1-429b-8005-f51b4db40a08}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -146,19 +147,34 @@
     <Content Include="Features.txt">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\ExtendedUpgrades\XComGame.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\NewPromotionScreenbyDefault.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\StatUpgradeUI.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\StatUpgradeUI.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\WOTC_LW2SecondaryWeapons.deu">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\WOTC_LW2SecondaryWeapons.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\XCOM2RPGOverhaul.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\XCOM2RPGOverhaul.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\XComGame.deu">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\XComGame.int">
