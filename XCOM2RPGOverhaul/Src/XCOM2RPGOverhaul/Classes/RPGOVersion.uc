@@ -26,8 +26,8 @@ static function array<X2DataTemplate> CreateTemplates()
 
 defaultproperties
 {
-    MajorVersion = 0;
-    MinorVersion = 2;
-    PatchVersion = 10;
-    Commit = "beta";
+	MajorVersion = 0;
+	MinorVersion = 4;
+	PatchVersion = 0;
+	Commit = "beta";
 }

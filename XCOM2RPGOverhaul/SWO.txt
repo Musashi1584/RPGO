@@ -6,33 +6,35 @@ Better Second Wave Mod Support
 You can use these option separately or in any combination of them.
 The console command RPGO_RebuildSelectedSoldierClass also supports these SWO.
 
-Its save to enable or disable them at any time.
+Its save to enable or disable some of these option in running campaigns.
 
 Configuration:
 Setting like the number of random specs or the number of specs to pick can be changed 
-in the in game mod config menu or be edited in
+in the [b]ingame mod config menu[/b] or be edited in
 [code]
 %Steam%\SteamApps\workshop\content\268500\1280477867\Config\XComSecondWaveOptions.ini
 [/code]
 
-[h1][RPGO] Specialization Roulette[/h1]
+[h1][RPGO] Specialization Roulette: Limited number of randomized specializations on Squaddie[/h1]
 Soldiers start with a limited number of randomized specializations on Squaddie.
-Instead of having the full set of all specializations, soldiers only get some randomly chosen on promotion to Sqaddie.
-Can be combined with Training Roulette and/or Commanders Choice.
+Instead of having the full set of all specializations, soldiers only get some randomly chosen on promotion to Sqaddie. Can NOT be changed in campaign.
 
-[h1][RPGO] Commanders Choice[/h1]
+[h1][RPGO] Commanders Choice: Choose a limted number of specializations[/h1]
 On promotion to squaddie you can choose a limited number of specializations from the starting ability pool.
-Can be combined with Specialization Roulette and/or Training Roulette.
 
-[h1][RPGO] Training Roulette[/h1]
-The order of perks within specializations get randomized.
-Perks that are prerequisites stay in the same slot.
-Can be combined with Specialization Roulette and/or Commanders Choice.
+[h1][RPGO] Training Roulette: The order of perks within specializations get randomized.[/h1]
+Perk order in specializations is randomized with exception to perk pre-requisites. Can NOT be changed in campaign.
 
-[h1][RPGO] Origins[/h1]
-On promotion to squaddie you can choose a limted number of starting perks.
-Can be combined with Specialization Roulette, Commanders Choice and Training Roulette.
+[h1][RPGO] Origins: Choose the soldiers starting abilities[/h1]
+Instead of having all starting perks randomly rolled, you can choose a limited number of starting perks (plus some random perks if you want) on promotion to squaddie 
 
+[h1][RPGO] Random Classes: Generates funtional random classes[/h1]
+On promotion to squaddie, RPGO will randomly assign a primary, a secondary and some complementary specializations for the soldier. This is recommended over Specialization Roulette if you use Weapon Restrictions as well because it will make sure your soldier will have a primary and secondary weapon category available. Can be combined with Origins and Training Roulette, but NOT to Commander's Choice.
+
+[h1][RPGO] Weapon Restrictions: Specs will determine which weapons your soldiers can use[/h1]
+Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options. With Random Classes active your soldier will only have exactly one designated primaray and one secondary specialization.
+
+All second wave options can be combined with each other.
 
 [url=https://imgur.com/a/9kSAGj5]How to change second wave options[/url]
 

@@ -6,6 +6,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	
 	Templates.AddItem(Firebug());
 	Templates.AddItem(Scrounger());
+	Templates.AddItem(ScroungerTrigger());
 	Templates.AddItem(Airstrike());
 
 	return Templates;

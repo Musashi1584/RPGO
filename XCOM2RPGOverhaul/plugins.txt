@@ -47,6 +47,10 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 +AbilitySlots=(AbilityType=(AbilityName="ColonelAbility***"))
 +AbilitySlots=(AbilityType=(AbilityName="BrigadierAbility***"))
 
+;Uncomment below to add meta informations for the random classes and weapon restriction swo
+;See the paragraph about SpecializationMetaInfo below for more information
+;SpecializationMetaInfo = ...
+
 ; Uncomment below if you want to add abilities to the traits pool
 ;+AdditionalRandomTraits=(AbilityName="AdditionalTrait1")
 ;+AdditionalRandomTraits=(AbilityName="AdditionalTrait2")
@@ -56,7 +60,12 @@ ClassSpecializationIcon = "img:///path_to_the_class_icon**"
 ;+AdditionalRandomAptitudes=(AbilityName="AdditionalAptitude2")
 
 ; when you want specs to come in forced "packages" in commanders choice or spec roulette
-+ForceComplementarySpecializations=NameOfAnotherSpec
+;+ForceComplementarySpecializations=NameOfAnotherSpec
+
+; soldier needs on of these abilities to unlock the specialization
+; this works only for the commanders choice and spec roulette swo
+; in default rpgo mode you still have all enabled specs available
++RequiredAbilities=AbilityThatUnlocksSpec
 
 [XCOM2RPGOverhaul.X2DownloadableContentInfo_XCOM2RPGOverhaul]
 +RequiredMods="****DLCNameOriginalClassMod"
@@ -116,6 +125,8 @@ ClassSpecializationIcon = "img:///SamuraiClassMod.SamuraiClassIcon"
 +AbilitySlots=(AbilityType=(AbilityName="DragonStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
 +AbilitySlots=(AbilityType=(AbilityName="WhirlwindStrike", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon))
 
+SpecializationMetaInfo = (bUseForRandomClasses=true, AllowedWeaponCategories=(sword, combatknife), InventorySlots=(eInvSlot_PrimaryWeapon, eInvSlot_SecondaryWeapon), bMelee=true, iWeightPrimary=1)
+
 +AdditionalRandomTraits=(AbilityName="SamuraiCoupDeGrace")
 +AdditionalRandomTraits=(AbilityName="SamuraiCutthroat")
 +AdditionalRandomTraits=(AbilityName="SamuraiFrenzy")
@@ -134,3 +145,40 @@ XCOM2RPGOverhaul.int
 ClassSpecializationTitle="Samurai"
 ClassSpecializationSummary="The way of the samurai is found in death. Meditation on inevitable death should be performed daily. Every day when one's body and mind are at peace, one should meditate upon being ripped apart by arrows, rifles, spears and swords, being carried away by surging waves, being thrown into the midst of a great fire, being struck by lightning, being shaken to death by a great earthquake, falling from thousand-foot cliffs, dying of disease or committing seppuku at the death of one's master. And every day without fail one should consider himself as dead. This is the substance of the way of the samurai."
 [/code]
+
+[h1]SpecializationMetaInfo - Metadata for specializations[/h1]
+This is a new property of the X2UniversalSoldierClassInfo class to setup metadata for specs.
+Currently its only for random classes and weapon restriction swo but there will probably be more use cases in the future.
+
+The values and what they do:
+
+[b][u]bUseForRandomClasses[/u][/b] - Enables the spec to participate in the Random Classes SWO
+
+[b][u]AllowedWeaponCategories[/u][/b] - This are the weapon categories provided when the Weapon Restriction SWO is enabled
+
+[b][u]InventorySlots[/u][/b] - The weapon categories are supplied to these inventory slots. This is also used by the Random Classes SWO algorithm. Valid values are eInvSlot_PrimaryWeapon and/or eInvSlot_SecondaryWeapon
+
+[b][u]MutuallyExclusiveSpecs[/u][/b] - Define specs that should not be rolled together with this spec by the Random Classes SWO
+
+[b][u]bDualWield[/u][/b] - This specialization can be rolled only as Primary one, and then will provide access to the same AllowedWeaponCategories for both weapon slots.
+It can also be rolled as Secondary to a non-Dual Wield primary spec that uses same weapons in the same slots.
+It can also be rolled as Complementary to a primary Dual Wield spec, even if bCantBeComplementary = true.
+
+[b][u]bUniversal[/u][/b] - Use to determine whether this specialization is valid to complement other soldier's specializations.
+It means this spec can complement any other spec in existence because it doesn't depend on equipment, e.g. Scout (phantom and stuff).
+
+[b][u]bShoot[/u][/b] - this spec requires a firearm to function properly.
+
+[b][u]bMelee[/u][/b] - requires a melee weapon (ripjack counts as one)
+
+[b][u]bGremlin[/u][/b] - requires a Gremlin 
+
+[b][u]bPsionic[/u][/b] - requires Psi Amp. 
+
+[b][u]bCantBeComplementary[/u][/b] - this spec can be used only as primary or secondary, but cannot complement other specs. "Skirmisher" spec is a good example, as it pretty much requires a ripjack to function. 
+
+Weights used by the Random Classes SWO algorithm:
+[b][u]iWeightPrimary[/u][/b]
+[b][u]iWeightSecondary[/u][/b]
+[b][u]iWeightComplementary[/u][/b]
+

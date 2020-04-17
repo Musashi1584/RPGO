@@ -73,6 +73,16 @@ m_strServeredArms="<font color='#bf1e2e'><b>Needs Arm Augmention</b></font>"
 m_strServeredLegs"<font color='#bf1e2e'><b>Needs Legs Augmentation</b></font>"
 
 [XGLocalizedData_RPG]
+SelectClassTitle="Class Title"
+SelectClassIcon="Class Icon"
+SelectClassDescription="Class Description"
+ResetClassInsignia="Reset Custom Class Insignia"
+
+SelectClassTitleTooltip="Select a custom class title. This will override the automatic assignment based on specializations"
+SelectClassIconTooltip="Select a custom class icon. This will override the automatic assignment based on specializations"
+SelectClassDescriptionTooltip="Select a custom class description. This will override the automatic assignment based on specializations"
+ResetClassInsigniaTooltip="This will reset the custom class icon, tile and description and those will be set by the default behavior again"
+
 AbilityWeaponRestrictions="Compatible with:"
 
 SpecializationPrimaryShort="P"
@@ -103,10 +113,10 @@ UtilityCatLWGauntlet="XCOM Gauntlet"
 m_strCategoryRestricted=ALREADY EQUIPPED A <XGParam:StrValue0/!WeaponCat/>
 m_strAbilityRequired=ABILITY <XGParam:StrValue0/!Ability/> REQUIRED
 
-strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Limited number of randomized specializations on Squaddie."
+strSWO_SpecRoulette_Description="[RPGO] Specialization Roulette: Limited number of randomized specializations on Squaddie"
 strSWO_SpecRoulette_Tooltip="Instead of having the full set of all specializations, soldiers only some randomly chosen on promotion to Sqaddie. \n Can be combined with Training Roulette, Origins and Commanders Choice."
 
-strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized."
+strSWO_TrainingRoulette_Description="[RPGO] Training Roulette: The order of perks within specializations get randomized"
 strSWO_TrainingRoulette_Tooltip="Randomizes the perk order per specialization. Perks that are prerequisites stay in the same slot. \n Can be combined with Specialization Roulette, Origins and Commanders Choice."
 
 strSWO_CommandersChoice_Description="[RPGO] Commanders Choice: Choose a limted number of specializations"
@@ -119,7 +129,7 @@ strRPGO_SWO_RandomClasses_Description = "[RPGO] Random Classes: Generates funtio
 strRPGO_SWO_RandomClasses_Tooltip = "On promotion to squaddie, RPGO will randomly assign a primary, a secondary and some complementary specializations for the soldier. This is recommended over Specialization Roulette if you use Weapon Restrictions as well because it will make sure your soldier will have a primary and secondary weapon category available. Can be combined with Origins and Training Roulette, but not Commander's Choice."
 
 strRPGO_SWO_WeaponRestriction_Description = "[RPGO] Weapon Restrictions: Specs will determine which weapons your soldiers can use"
-strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options. With Random Classes active your soldier will only have one designated primaray and secondary specialization."
+strRPGO_SWO_WeaponRestriction_Tooltip = "Enable this option to restrict RPGO Soldier to certain weapon categories based on their chosen specialization. Specializations will grant you access to certain weapon categories for the primary and/or secondary weapon slot. Can be combined with any of the other rpgo second wave options. With Random Classes active your soldier will only have exactly one designated primaray and one secondary specialization."
 
 ItemCategoryRifle="Rifle"
 ItemCategorySniperRifle="Sniper Rifle"
@@ -192,7 +202,7 @@ strCommunityHighlanderMissing="RPGO requires the X2WotCCommunityHighlander to wo
 strTitleIncompatibleMod="RPGO detected some INCOMPATIBLE mods"
 strIncompatibleModsFound="Please DEATIVATE the following mods and restart or RPGO will not work properly:"
 strTitleSWOInfo="RPGO Update News"
-strSWOInfo="\n<font color='#1bad62'>Two new Second Wave Options!</font>\n \n\n<font color='#1bad62'>Random Classes</font> - Generates functional random classes by using a algorithm instead of the pure rng of Specialization Roulette\n<font color='#1bad62'>Weapon Restrictions</font> - Specializations will determine which weapons your soldiers can use\n\nThere are also changes to other Second Wave Options: Specialization Roulette and Training Roulette can no longer be changed in running campaigns anymore because that caused issues. This can be reversed in XComGameData.ini on your own risk.\n\n<font color='#1bad62'>CREDITS AND THANKS to Iridar who contributed the new second wave options!</font>\n\nRegards, Musashi"
+strSWOInfo="\n<font color='#1bad62'>Two new Second Wave Options!</font>\n<font color='#1bad62'>Random Classes</font> - Generates functional random classes by using a algorithm instead of the pure rng of Specialization Roulette\n<font color='#1bad62'>Weapon Restrictions</font> - Specializations will determine which weapons your soldiers can use\n\nThere are also changes to other Second Wave Options: Specialization Roulette and Training Roulette can no longer be changed in running campaigns anymore because that caused issues. This can be reversed in XComGameData.ini on your own risk.\n\n<font color='#1bad62'>To the mod authors of rpgo plugin mods</font>\nPlease checkout the steam 'Create a specialization from a class mod' discussion for infos how you can enable these new options for your plugin mod.\n\n<font color='#1bad62'>CREDITS AND THANKS to Iridar who contributed the new second wave options!</font>\n\nRegards, Musashi"
 strTitleRequiredMod="RPGO detected some MISSING REQUIRED mods"
 strRequiredModsMissing="Please ACTIVATE the following mods and restart or RPGO will not work properly:"
 
