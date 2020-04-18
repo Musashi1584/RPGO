@@ -32,7 +32,6 @@ var int Position, MaxPosition;
 
 var int AdjustXOffset;
 
-//var UIButton SelectClassIconButton, SelectClassTitleButton;
 
 simulated function OnInit()
 {
@@ -49,17 +48,6 @@ simulated function OnInit()
 	{
 		MC.FunctionVoid("AnimateIn");
 	}
-
-	//SelectClassIconButton = Spawn(class'UIButton', self);
-	//SelectClassIconButton.SetResizeToText(false);
-	//SelectClassIconButton.InitButton(, "Class Icon", OnSelectClassIconButtonClicked)
-	//	.SetPosition(MC.GetNum("_x") - 35, 210).SetWidth(150);
-	//
-	//SelectClassTitleButton = Spawn(class'UIButton', self);
-	//SelectClassTitleButton.SetResizeToText(false);
-	//SelectClassTitleButton.InitButton(, "Class Title", OnSelectClassTitleButtonClicked)
-	//	.SetPosition(MC.GetNum("_x") - 35, SelectClassIconButton.Y + SelectClassIconButton.Height + 10).SetWidth(150);
-		
 
 	if (!class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(GetUnit()) &&
 		!class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(GetUnit()))
@@ -122,6 +110,7 @@ function OnResetClassInsigniaButtonClicked()
 	CustomClassInsigniaGameState.ResetClassInsignia(UnitReference.ObjectID);
 
 	PopulateData();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
 }
 
 function OnSelectClassTitleButtonClicked()
@@ -150,10 +139,8 @@ function OnClassTitleInputBoxClosed(string Text)
 	CustomClassInsigniaGameState.SetClassTitleForUnit(Text, UnitReference.ObjectID);
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 	
-	//CycleToSoldier(UnitReference);
 	PopulateData();
-
-	//OnCancel();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
 }
 
 function OnSelectClassDescriptionButtonClicked()
@@ -183,8 +170,8 @@ function OnClassDescriptionInputBoxClosed(string Text)
 	CustomClassInsigniaGameState.SetClassDescriptionForUnit(Text, UnitReference.ObjectID);
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 	
-	//CycleToSoldier(UnitReference);
 	PopulateData();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
 }
 
 function OnSelectClassIconButtonClicked()

@@ -293,11 +293,11 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 
 	//`LOG(GetFuncName() @ XComGameState_Unit(EventSource).GetFullName(),, 'RPG');
 
-	if (UnitState.GetSoldierClassTemplate().DataName != 'UniversalSoldier')
-	{
-		//`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
-		return ELR_NoInterrupt;
-	}
+	//if (UnitState.GetSoldierClassTemplate().DataName != 'UniversalSoldier')
+	//{
+	//	//`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
+	//	return ELR_NoInterrupt;
+	//}
 
 	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
 	if (CustomClassInsigniaGameState != none)
