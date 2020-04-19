@@ -84,19 +84,17 @@ function bool OnAllSpecSelected()
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
 	local array<int> SpecIndices;
-	local int UIIndex;
+	local int SpecIndex;
 	local SoldierSpecialization Spec;
 	
 	UnitState = GetUnit();
 
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
 
-	foreach SelectedItems(UIIndex)
+	foreach SpecializationsChosen(Spec)
 	{
-		Spec = SpecializationsChosen[UIIndex];
-		SpecIndices.AddItem(
-			class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, Spec.TemplateName)
-		);
+		SpecIndex = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, Spec.TemplateName);
+		SpecIndices.AddItem(SpecIndex);
 	}
 
 	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(
