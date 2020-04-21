@@ -99,7 +99,7 @@ function bool OnAllSpecSelected()
 
 	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(
 		UnitState, SpecIndices,
-		!(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')),
+		true,
 		`SecondWaveEnabled('RPGOTrainingRoulette')
 	);
 	
