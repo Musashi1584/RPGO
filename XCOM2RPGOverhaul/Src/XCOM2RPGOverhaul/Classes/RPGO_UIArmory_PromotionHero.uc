@@ -1381,7 +1381,6 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 
 	if (class'X2SecondWaveConfigOptions'.static.IsCommandersChoiceRandomPoolEnabled())
 	{
-		TrainedSpecs.Length = 0;
 		RandomPoolSize = class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceRandomPoolCount();
 
 		if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
