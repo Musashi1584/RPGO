@@ -1,8 +1,80 @@
 class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo config(RPG);
 
+var config array<ModClassOverrideEntry> ModClassOverrides;
 var config array<string> IncompatibleMods;
 var config array<string> RequiredMods;
 var config string DisplayName;
+
+static function OnPreCreateTemplates()
+{
+	PatchModClassOverrides();
+}
+
+static function PatchModClassOverrides()
+{
+	local Engine LocalEngine;
+	local ModClassOverrideEntry MCO;
+	local int Index;
+
+	LocalEngine = class'Engine'.static.GetEngine();
+	foreach default.ModClassOverrides(MCO)
+	{
+		LocalEngine.ModClassOverrides.AddItem(MCO);
+		`LOG(GetFuncName() @ "Adding" @ MCO.BaseGameClass @ MCO.ModClass,, 'RPG');
+	}
+
+	for (Index =  LocalEngine.ModClassOverrides.Length - 1; Index >= 0; Index--)
+	{
+		MCO =  LocalEngine.ModClassOverrides[Index];
+
+		if (default.ModClassOverrides.Find('BaseGameClass', MCO.BaseGameClass) != INDEX_NONE &&
+			default.ModClassOverrides.Find('ModClass', MCO.ModClass) == INDEX_NONE)
+		{
+			`LOG(GetFuncName() @ "Found incompatible MCO. Removing" @ MCO.BaseGameClass @ MCO.ModClass @ Index,, 'RPG');
+				LocalEngine.ModClassOverrides.Remove(Index, 1);
+		}
+	}
+}
+
+
+static event OnPostTemplatesCreated()
+{
+	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
+	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherReturnFire();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchHolotargeting();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSquadSight();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchStandardShot();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchRemoteStart();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSuppression();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchKillZone();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherGrapple();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchThrowClaymore();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSwordSlice();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchBladestormAttack();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchClaymoreCharges();
+	class'X2TemplateHelper_RPGOverhaul'.static.PatchSpecialShotAbiitiesForLightEmUp();
+
+	if (class'X2TemplateHelper_ExtendedUpgrades'.default.bReconfigureVanillaAttachements)
+	{
+		class'X2TemplateHelper_ExtendedUpgrades'.static.PatchTemplates();
+		class'X2TemplateHelper_ExtendedUpgrades'.static.ReconfigDefaultAttachments();
+	}
+
+	if (class'X2TemplateHelper_ExtendedUpgrades'.static.IsModInstalled('X2DownloadableContentInfo_X2WOTCCommunityHighlander'))
+	{
+		class'X2TemplateHelper_ExtendedUpgrades'.static.AddLootTables();
+	}
+}
 
 // Double tactical ability points
 static event InstallNewCampaign(XComGameState StartState)
@@ -52,45 +124,6 @@ static function InitializeClassInsiginiaGameState()
 static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
 {
 	class'X2TemplateHelper_RPGOverhaul'.static.FinalizeUnitAbilities(UnitState, SetupData, StartState, PlayerState, bMultiplayerDisplay);
-}
-
-static event OnPostTemplatesCreated()
-{
-	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
-	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchWeapons();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherReturnFire();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchHolotargeting();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSquadSight();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchStandardShot();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchRemoteStart();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSuppression();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchKillZone();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherGrapple();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchThrowClaymore();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSwordSlice();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchBladestormAttack();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchMedicalProtocol();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchTraceRounds();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSteadyHands();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchClaymoreCharges();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchSpecialShotAbiitiesForLightEmUp();
-
-	if (class'X2TemplateHelper_ExtendedUpgrades'.default.bReconfigureVanillaAttachements)
-	{
-		class'X2TemplateHelper_ExtendedUpgrades'.static.PatchTemplates();
-		class'X2TemplateHelper_ExtendedUpgrades'.static.ReconfigDefaultAttachments();
-	}
-
-	if (class'X2TemplateHelper_ExtendedUpgrades'.static.IsModInstalled('X2DownloadableContentInfo_X2WOTCCommunityHighlander'))
-	{
-		class'X2TemplateHelper_ExtendedUpgrades'.static.AddLootTables();
-	}
 }
 
 // <summary>
