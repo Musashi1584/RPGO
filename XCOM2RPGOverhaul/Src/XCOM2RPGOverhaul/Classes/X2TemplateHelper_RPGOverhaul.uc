@@ -1218,6 +1218,11 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
 				}
 			}
 		}
+
+		if (WeaponTemplate.WeaponCat == 'rifle' && class'X2SecondWaveConfigOptions'.static.AlwaysAllowAssaultRifles())
+		{
+			bAllowed = true;
+		}
 		
 		
 		if (bAllowed)

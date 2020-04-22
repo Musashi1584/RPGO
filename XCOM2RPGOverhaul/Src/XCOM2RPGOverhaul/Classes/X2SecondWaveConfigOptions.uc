@@ -75,6 +75,11 @@ static function bool IsCommandersChoiceRandomPoolEnabled()
 	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigBoolValue("COMMANDERS_CHOICE_RANDOM_POOL_ENABLED");
 }
 
+static function bool AlwaysAllowAssaultRifles()
+{
+	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigBoolValue("WEAPON_RESTRICTIONS_ALWAYS_ALLOW_ASSAULT_RIFLES");
+}
+
 static function AddStartingAbilities(
 	XComGameState NewGameState,
 	XComGameState_Unit UnitState,
