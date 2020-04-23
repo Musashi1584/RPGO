@@ -66,6 +66,11 @@ ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flam
 ClassSpecializationTitle=Enforcer
 ClassSpecializationSummary="The Enforcer utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Enforcer's allies take aim."
 
+[Marauder X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Marauder
+ClassSpecializationSummary="Untrained, unstable and unleashed! The marauder, a specialist with the Sawed-Off Shotgun. Lethal in close quarters, where every shot counts."
+
+
 [UIPersonnel_SoldierListItemDetailed]
 m_strServeredHead="<font color='#bf1e2e'><b>Needs Head Augmentation</b></font>"
 m_strServeredTorso="<font color='#bf1e2e'><b>Needs Torso Augmentation</b></font>"
