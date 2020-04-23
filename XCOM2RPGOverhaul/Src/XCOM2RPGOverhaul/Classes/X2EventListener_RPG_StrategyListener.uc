@@ -115,6 +115,8 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	local XComGameStateHistory History;
 	local bool bCreatedOwnGameState;
 
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	History = `XCOMHISTORY;
 
 	UnitState = XComGameState_Unit(EventData);
@@ -189,6 +191,8 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 {
 	local XComGameState_Unit UnitState;
 
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	UnitState = XComGameState_Unit(EventSource);
 
 	if (UnitState != none)
@@ -212,7 +216,7 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 
 			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
 			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
-			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+			//UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
 
 			//GameState.AddStateObject(UnitState);
 		}
@@ -661,6 +665,8 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 	local XComGameState_HeadquartersXCom    XComHQ;
 	local UnitValue                     UV;
  
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	UnitState = XComGameState_Unit(EventData);
 	UnitState.GetUnitValue('PrimarySpecialization_Value', UV);
  

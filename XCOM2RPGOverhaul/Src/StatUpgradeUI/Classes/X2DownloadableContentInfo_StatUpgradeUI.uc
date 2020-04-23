@@ -260,10 +260,16 @@ private function SetSquaddieAbilites(XComGameState NewGameState, XComGameState_U
 	}
 }
 
+
 // Refresh a soldier's ability tree and XCOM abilities from the armory screen, with the option to
 // change their class and rank. Specifiying a class for a rookie will rank them up to Squaddie.
 // Like the Training Center respec, you will lose any XCOM AP spent, but not soldier AP.
-exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddiePerks = true, optional int OPTIONAL_SetRankTo = 0, optional name OPTIONAL_ChangeClassTo = '')
+exec function RPGO_RebuildSelectedSoldier(
+	optional bool OPTIONAL_PreserveSquaddiePerks = true,
+	optional bool OPTIONAL_PreserveSpecializations = true,
+	optional int OPTIONAL_SetRankTo = 0,
+	optional name OPTIONAL_ChangeClassTo = ''
+)
 {
 	local XComGameStateHistory				History;
 	local UIArmory							Armory;
@@ -375,11 +381,20 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 		}
 	}
 
+
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
-	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
-	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
-	UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+	
+	if (!OPTIONAL_PreserveSquaddiePerks)
+	{
+		UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
+	}
+
+	if (!OPTIONAL_PreserveSpecializations)
+	{
+		UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
+		UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+	}
 
 	SquaddieAbilities = UnitState.GetRankAbilities(0);
 
@@ -441,6 +456,7 @@ exec function RPGO_RebuildSelectedSoldier(optional bool OPTIONAL_PreserveSquaddi
 	}
 
 	`XEVENTMGR.TriggerEvent('CompleteRespecSoldier', none, UnitState, NewGameState);
+	//class'X2EventListener_StatUI'.static.
 
 	if (NewGameState.GetNumGameStateObjects() > 0)
 	{

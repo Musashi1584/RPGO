@@ -147,13 +147,17 @@ Use the ability template names that can be found in XComClassData.ini (TraitsXCo
 
 eg "RPGO_AssignSquaddieAbilities HotShot Bulletproof APT_Militia" replaces the current squaddie abilities with HotShot, Bulletproof and Militia.
 
-[code]RPGO_RebuildSelectedSoldier <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>[/code]
+[code]RPGO_RebuildSelectedSoldier <OPTIONAL_PreserveSquaddiePerks> <OPTIONAL_PreserveSpecializations> <OPTIONAL_SetRankTo> <OPTIONAL_ChangeClassTo>[/code]
 
-Rebuilds the current soldier, resets AP and SP and by default keeps the current squaddie abilities
+Rebuilds the current soldier, resets AP and SP and by default keeps the current squaddie abilities and specs
 
-eg "RPGO_RebuildSelectedSoldier false 5" rebuilds the soldier including new random squaddie perks and promotes to rank 5.
+eg 
 
-"RPGO_RebuildSelectedSoldier" without any arguments rebuilds the soldier, keeps the current squaddie perks and promotes to the former rank.
+[code]RPGO_RebuildSelectedSoldier false false 5[/code] rebuilds the soldier including new random squaddie perks and new specs (e.g. you can choose new specs with commanders choice swo or get new random specs with specialization roulette) and promotes to rank 5.
+
+[code]RPGO_RebuildSelectedSoldier true true[/code] keeps the current squaddie perks and chosen specs (in case of any swo) and promotes to the former rank.
+
+[code]RPGO_RebuildSelectedSoldier[/code] without any arguments rebuilds the soldier, keeps the current squaddie perks and chosen specs (in case of any swo) and promotes to the former rank.
 
 [h1]New Second Wave Options[/h1]
 see [url=https://steamcommunity.com/workshop/filedetails/discussion/1280477867/1653297026045137844/]Second Wave Options in RPGO[/url]
