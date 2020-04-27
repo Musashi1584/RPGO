@@ -105,6 +105,12 @@ function bool OnAllSpecSelected()
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+
+	//	If weapon restrictions are enabled, equip the soldier with new weapons, according to newly-acquired specializations.
+	//if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	//{
+	//	class'X2EventListener_RPG_StrategyListener'.static.WeaponResticitions_EquipNewWeaponsOnSoldier(UnitState.ObjectID, NewGameState);
+	//}
 	
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 
@@ -114,6 +120,13 @@ function bool OnAllSpecSelected()
 	}
 
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent("StrategyUI_Recruit_Soldier");
+
+	//	If weapon restrictions are enabled, equip the soldier with new weapons, according to newly-acquired specializations.
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	{
+		`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
+		class'X2EventListener_RPG_StrategyListener'.static.WeaponResticitions_EquipNewWeaponsOnSoldier(UnitState.ObjectID);
+	}
 	
 	return true;
 }
