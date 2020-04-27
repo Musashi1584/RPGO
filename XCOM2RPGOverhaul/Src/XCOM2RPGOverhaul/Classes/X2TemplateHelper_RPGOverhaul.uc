@@ -447,6 +447,11 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
 				break;
 			case 'claymore':
+
+				// Added Claymore Archetype and animation for granade throw
+				WeaponTemplate.GameArchetype = "WP_Claymore.WP_Claymore";
+				WeaponTemplate.SetAnimationNameForAbility('Throw', 'FF_Grenade');
+
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
 				break;
 			case 'holotargeter':
