@@ -3,7 +3,13 @@ class UIChooseAbilities extends UIChooseCommodity;
 var array<X2AbilityTemplate> AbilitiesPool;
 var array<X2AbilityTemplate> AbilitiesChosen;
 
-simulated function InitChooseAbiltites(StateObjectReference UnitRef, int MaxAbilities, optional array<X2AbilityTemplate> OwnedAbiltites, optional delegate<AcceptAbilities> OnAccept)
+simulated function InitChooseAbiltites(
+	StateObjectReference UnitRef,
+	int MaxAbilities,
+	array<X2AbilityTemplate> AvailableAbilities,
+	optional array<X2AbilityTemplate> OwnedAbiltites,
+	optional delegate<AcceptAbilities> OnAccept
+)
 {
 	super.InitChooseCommoditiesScreen(
 		UnitRef,
@@ -16,45 +22,13 @@ simulated function InitChooseAbiltites(StateObjectReference UnitRef, int MaxAbil
 	CommoditiesChosen = ConvertToCommodities(AbilitiesChosen);
 	
 	AbilitiesPool.Length = 0;
-	AbilitiesPool = GetAbilityTemplates(GetUnit());
+	AbilitiesPool = AvailableAbilities;
 	AbilitiesPool.Sort(SortAbiltiesByName);
 	CommodityPool = ConvertToCommodities(AbilitiesPool);
 
 	PopulateData();
 }
 
-simulated function array<X2AbilityTemplate> GetAbilityTemplates(XComGameState_Unit Unit, optional XComGameState CheckGameState)
-{
-	local X2AbilityTemplate AbilityTemplate;
-	local X2AbilityTemplateManager AbilityTemplateManager;
-	local array<X2AbilityTemplate> AbilityTemplates;
-	local array<SoldierClassRandomAbilityDeck> RandomAbilityDecks;
-	local SoldierClassRandomAbilityDeck Deck;
-	local SoldierClassAbilityType AbilityType;
-	
-	if(Unit.IsSoldier())
-	{
-		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
-
-		RandomAbilityDecks = Unit.GetSoldierClassTemplate().RandomAbilityDecks;
-
-		foreach RandomAbilityDecks(Deck)
-		{
-			foreach Deck.Abilities(AbilityType)
-			{
-				AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
-				if(AbilityTemplate != none &&
-					!AbilityTemplate.bDontDisplayInAbilitySummary &&
-					AbilityTemplate.ConditionsEverValidForUnit(Unit, true) )
-				{
-					AbilityTemplate.DefaultSourceItemSlot = AbilityType.ApplyToWeaponSlot;
-					AbilityTemplates.AddItem(AbilityTemplate);
-				}
-			}
-		}
-	}
-	return AbilityTemplates;
-}
 
 
 

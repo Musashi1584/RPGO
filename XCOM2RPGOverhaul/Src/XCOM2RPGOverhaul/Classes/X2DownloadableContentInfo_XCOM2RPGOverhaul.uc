@@ -1,29 +1,41 @@
 class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo config(RPG);
 
+var config array<ModClassOverrideEntry> ModClassOverrides;
 var config array<string> IncompatibleMods;
 var config array<string> RequiredMods;
 var config string DisplayName;
 
-// Double tactical ability points
-static event InstallNewCampaign(XComGameState StartState)
+static function OnPreCreateTemplates()
 {
-	//local XComGameState_HeadquartersXCom XComHQ;
-
-	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
-
-	//XComHQ.BonusAbilityPointScalar *= 2.0;
-	
+	PatchModClassOverrides();
 }
 
-static event OnLoadedSavedGameToStrategy()
+static function PatchModClassOverrides()
 {
-	class'X2TemplateHelper_RPGOverhaul'.static.UpdateStorage();
+	local Engine LocalEngine;
+	local ModClassOverrideEntry MCO;
+	local int Index;
+
+	LocalEngine = class'Engine'.static.GetEngine();
+	foreach default.ModClassOverrides(MCO)
+	{
+		LocalEngine.ModClassOverrides.AddItem(MCO);
+		`LOG(GetFuncName() @ "Adding" @ MCO.BaseGameClass @ MCO.ModClass,, 'RPG');
+	}
+
+	for (Index =  LocalEngine.ModClassOverrides.Length - 1; Index >= 0; Index--)
+	{
+		MCO =  LocalEngine.ModClassOverrides[Index];
+
+		if (default.ModClassOverrides.Find('BaseGameClass', MCO.BaseGameClass) != INDEX_NONE &&
+			default.ModClassOverrides.Find('ModClass', MCO.ModClass) == INDEX_NONE)
+		{
+			`LOG(GetFuncName() @ "Found incompatible MCO. Removing" @ MCO.BaseGameClass @ MCO.ModClass @ Index,, 'RPG');
+				LocalEngine.ModClassOverrides.Remove(Index, 1);
+		}
+	}
 }
 
-static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
-{
-	class'X2TemplateHelper_RPGOverhaul'.static.FinalizeUnitAbilities(UnitState, SetupData, StartState, PlayerState, bMultiplayerDisplay);
-}
 
 static event OnPostTemplatesCreated()
 {
@@ -62,6 +74,56 @@ static event OnPostTemplatesCreated()
 	{
 		class'X2TemplateHelper_ExtendedUpgrades'.static.AddLootTables();
 	}
+}
+
+// Double tactical ability points
+static event InstallNewCampaign(XComGameState StartState)
+{
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(StartState);
+
+	//local XComGameState_HeadquartersXCom XComHQ;
+
+	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
+
+	//XComHQ.BonusAbilityPointScalar *= 2.0;
+	
+}
+
+static event OnLoadedSavedGame()
+{
+	InitializeClassInsiginiaGameState();
+}
+
+
+static event OnLoadedSavedGameToStrategy()
+{
+	InitializeClassInsiginiaGameState();
+	class'X2TemplateHelper_RPGOverhaul'.static.UpdateStorage();
+}
+
+static function InitializeClassInsiginiaGameState()
+{
+
+	local XComGameStateHistory History;
+	local XComGameState NewGameState;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Create ClassInsignia State");
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(NewGameState);
+	
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		History.AddGameStateToHistory(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+}
+
+static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
+{
+	class'X2TemplateHelper_RPGOverhaul'.static.FinalizeUnitAbilities(UnitState, SetupData, StartState, PlayerState, bMultiplayerDisplay);
 }
 
 // <summary>

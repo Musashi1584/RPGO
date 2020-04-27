@@ -66,6 +66,8 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 	local XComGameState_Unit UnitState;
 	local int SpentSoldierSP, SoldierSP;
 
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	UnitState = XComGameState_Unit(EventSource);
 
 	if (UnitState != none && IsClassEnabled(UnitState)
@@ -118,6 +120,8 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 	local XComGameState_Unit UnitState;
 	local UnitValue StatPointsValue;
 	local int StatPointsPerPromotion, BonusStatPointsNaturalAptitude;
+
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
 
 	UnitState = XComGameState_Unit(EventData);
 

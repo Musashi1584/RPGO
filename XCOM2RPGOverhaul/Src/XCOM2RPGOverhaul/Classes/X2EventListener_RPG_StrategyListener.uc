@@ -115,6 +115,8 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	local XComGameStateHistory History;
 	local bool bCreatedOwnGameState;
 
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	History = `XCOMHISTORY;
 
 	UnitState = XComGameState_Unit(EventData);
@@ -189,6 +191,8 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 {
 	local XComGameState_Unit UnitState;
 
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	UnitState = XComGameState_Unit(EventSource);
 
 	if (UnitState != none)
@@ -212,7 +216,7 @@ static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData
 
 			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
 			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
-			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+			//UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
 
 			//GameState.AddStateObject(UnitState);
 		}
@@ -285,29 +289,59 @@ static function EventListenerReturn OnSoldierInfo(Object EventData, Object Event
 {
 	local XComLWTuple Tuple;
 	local XComGameState_Unit UnitState;
-	local string Info;
+	local string Info, CustomClassIcon, CustomClassTitle, CustomClassDescription;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
 
 	Tuple = XComLWTuple(EventData);
 	UnitState = XComGameState_Unit(EventSource);
 
 	//`LOG(GetFuncName() @ XComGameState_Unit(EventSource).GetFullName(),, 'RPG');
 
-	if (UnitState.GetSoldierClassTemplate().DataName != 'UniversalSoldier')
-	{
-		//`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
-		return ELR_NoInterrupt;
-	}
+	//if (UnitState.GetSoldierClassTemplate().DataName != 'UniversalSoldier')
+	//{
+	//	//`LOG(GetFuncName() @ "bailing" @ UnitState.GetSoldierClassTemplate().DisplayName @ UnitState.GetSoldierClassTemplate().DataName,, 'RPG');
+	//	return ELR_NoInterrupt;
+	//}
 
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	if (CustomClassInsigniaGameState != none)
+	{
+		CustomClassIcon = CustomClassInsigniaGameState.GetClassIconForUnit(UnitState.ObjectID);
+		CustomClassTitle = CustomClassInsigniaGameState.GetClassTitleForUnit(UnitState.ObjectID);
+		CustomClassDescription = CustomClassInsigniaGameState.GetClassDescriptionForUnit(UnitState.ObjectID);
+	}
+	
 	switch (Event)
 	{
 		case 'SoldierClassIcon':
-			Info = GetClassIcon(UnitState);
+			if (CustomClassIcon != "")
+			{
+				Info = "img:///" $ CustomClassIcon;
+			}
+			else
+			{
+				Info = GetClassIcon(UnitState);
+			}
 			break;
 		case 'SoldierClassDisplayName':
-			Info = GetClassDisplayName(UnitState);
+			if (CustomClassTitle != "")
+			{
+				Info = CustomClassTitle;
+			}
+			else
+			{
+				Info = GetClassDisplayName(UnitState);
+			}
 			break;
 		case 'SoldierClassSummary':
-			Info = GetClassSummary(UnitState);
+			if (CustomClassDescription != "")
+			{
+				Info = CustomClassDescription;
+			}
+			else
+			{
+				Info = GetClassSummary(UnitState);
+			}
 			break;
 	}
 
@@ -631,6 +665,8 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 	local XComGameState_HeadquartersXCom    XComHQ;
 	local UnitValue                     UV;
  
+	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+
 	UnitState = XComGameState_Unit(EventData);
 	UnitState.GetUnitValue('PrimarySpecialization_Value', UV);
  

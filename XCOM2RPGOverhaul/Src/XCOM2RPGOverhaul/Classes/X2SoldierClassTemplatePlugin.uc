@@ -36,6 +36,41 @@ static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameStat
 	return Templates;
 }
 
+
+// Get all available starting abilities
+static function array<X2AbilityTemplate> GetAllStartingAbilities(XComGameState_Unit Unit)
+{
+	local X2AbilityTemplate AbilityTemplate;
+	local X2AbilityTemplateManager AbilityTemplateManager;
+	local array<X2AbilityTemplate> AbilityTemplates;
+	local array<SoldierClassRandomAbilityDeck> LocalRandomAbilityDecks;
+	local SoldierClassRandomAbilityDeck Deck;
+	local SoldierClassAbilityType AbilityType;
+	
+	if(Unit.IsSoldier())
+	{
+		AbilityTemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
+
+		LocalRandomAbilityDecks = Unit.GetSoldierClassTemplate().RandomAbilityDecks;
+
+		foreach LocalRandomAbilityDecks(Deck)
+		{
+			foreach Deck.Abilities(AbilityType)
+			{
+				AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityType.AbilityName);
+				if(AbilityTemplate != none &&
+					!AbilityTemplate.bDontDisplayInAbilitySummary &&
+					AbilityTemplate.ConditionsEverValidForUnit(Unit, true) )
+				{
+					AbilityTemplate.DefaultSourceItemSlot = AbilityType.ApplyToWeaponSlot;
+					AbilityTemplates.AddItem(AbilityTemplate);
+				}
+			}
+		}
+	}
+	return AbilityTemplates;
+}
+
 // Get all owned ability templates for rank
 static function array<X2AbilityTemplate> GetAbilityTemplatesForRank(XComGameState_Unit UnitState, int Rank)
 {
@@ -128,42 +163,39 @@ static function bool IsSpecializationValidToBeComplementary(array<X2UniversalSol
 	return false;
 }
 
-/*
+static function bool IsSpecializationValidToBeSecondary(array<X2UniversalSoldierClassInfo> SelectedSpecTemplates, X2UniversalSoldierClassInfo SpecTemplate)
 {
-	local X2UniversalSoldierClassInfo CycleSpecTemplate;
-
-	//	Specialization cannot be used if it's missing meta information
-	//	Or if it is explicitly forbidden from being complementary
-	if (!SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses || SpecTemplate.SpecializationMetaInfo.bCantBeComplementary) return false;
-
-	//	If the Spec Template is Universal, then it can Complement any other specialization just fine.
-	if (SpecTemplate.SpecializationMetaInfo.bUniversal) return true;
-
-	//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
-	if (SelectedSpecTemplates[0] != none && 
-		SelectedSpecTemplates[0].SpecializationMetaInfo.bDualWield && 
-					SpecTemplate.SpecializationMetaInfo.bDualWield)
+	//	Allow only specs with configured meta info.
+	if (SpecTemplate.SpecializationMetaInfo.bUseForRandomClasses)
 	{
-		return DoSpecializationsUseTheSameWeapons(SelectedSpecTemplates[0], SpecTemplate);
-	}
-
-	//	Otherwise, cycle through Specs that have already been selected.
-	foreach SelectedSpecTemplates(CycleSpecTemplate)
-	{
-		//	At least one of the selected specializations roughly does the same thing as this specialization, then this specialization can complement that one.
-		if (DoSpecializationsUseTheSameSlots(CycleSpecTemplate, SpecTemplate) &&
-			(DoSpecializationsUseTheSameWeapons(CycleSpecTemplate, SpecTemplate) ||
-			 SpecTemplate.SpecializationMetaInfo.bShoot && CycleSpecTemplate.SpecializationMetaInfo.bShoot ||
-			 SpecTemplate.SpecializationMetaInfo.bGremlin && CycleSpecTemplate.SpecializationMetaInfo.bGremlin ||
-			 SpecTemplate.SpecializationMetaInfo.bPsionic && CycleSpecTemplate.SpecializationMetaInfo.bPsionic ||
-			 SpecTemplate.SpecializationMetaInfo.bMelee && CycleSpecTemplate.SpecializationMetaInfo.bMelee))
+		if (SelectedSpecTemplates.Length > 0)
 		{
-			return true;
+			//	Primary specs marked as Dual Wield do not get secondary specs.
+			if (SelectedSpecTemplates[0].SpecializationMetaInfo.bDualWield) 
+			{
+				//`LOG(SpecTemplate.Name @ "is not valid, because primary spec is dual wield.",, 'RPG');
+				return false;
+			}
+		
+			//	If this spec is marked as Dual Wield spec, and it uses the same weapons as the primary spec,
+			if (SpecTemplate.SpecializationMetaInfo.bDualWield && DoSpecializationsUseTheSameWeapons(SelectedSpecTemplates[0], SpecTemplate))
+			{
+				//	then this spec can become a secondary spec for it
+				//	Looking up Secondary Weight allows to restrict specific specs from becoming secondary to dual wield specs.
+
+				if (SpecTemplate.SpecializationMetaInfo.iWeightSecondary <= 0) `LOG(SpecTemplate.Name @ "is not valid, because iWeightSecondary is zero or lower.",, 'RPG');
+				return SpecTemplate.SpecializationMetaInfo.iWeightSecondary > 0;
+			}
 		}
+		//	If this spec is not a dual wield spec, then we only check if the spec itself is valid to be a secondary on its own.
+		//if (!SpecTemplate.IsSecondaryWeaponSpecialization())
+		//{
+		//	`LOG(SpecTemplate.Name @ "is not valid, because it's not a secondary spec.",, 'RPG');
+		//}
+		return SpecTemplate.IsSecondaryWeaponSpecialization();		
 	}
 	return false;
 }
-*/
 
 static function bool DoSpecializationsUseTheSameSlots(X2UniversalSoldierClassInfo SpecTemplateA, X2UniversalSoldierClassInfo SpecTemplateB)
 {
@@ -241,6 +273,19 @@ static function int GetSpecializationIndex(XComGameState_Unit UnitState, name Sp
 	}
 
 	return Specs.Find('TemplateName', SpecTemplateName);
+}
+
+
+static function array<SoldierSpecialization> GetSpecializationsByIndex(XComGameState_Unit UnitState, array<int> IndexArray)
+{
+	local int Index;
+	local array<SoldierSpecialization> Specs;
+
+	foreach IndexArray(Index)
+	{
+		Specs.AddItem(GetSpecializationBySlotFromAvailableSpecs(UnitState, Index));
+	}
+	return Specs;
 }
 
 static function array<SoldierSpecialization> GetComplementarySpecializations(XComGameState_Unit UnitState, SoldierSpecialization Spec)
@@ -366,6 +411,24 @@ static function array<SoldierSpecialization> GetSpecializations()
 	default.bHasProcessedSpecs = true;
 
 	return ValidSpecs;
+}
+
+static function array<X2UniversalSoldierClassInfo> GetAllAvailableSpecializationTemplates()
+{
+	local array<SoldierSpecialization> AllSpecs;
+	local SoldierSpecialization Spec;
+	local X2UniversalSoldierClassInfo UniversalSoldierClassTemplate;
+	local array<X2UniversalSoldierClassInfo> Templates;
+
+	AllSpecs = GetSpecializations();
+
+	foreach AllSpecs(Spec)
+	{
+		UniversalSoldierClassTemplate = GetSpecializationTemplateByName(Spec.TemplateName);
+		Templates.AddItem(UniversalSoldierClassTemplate);
+	}
+
+	return Templates;
 }
 
 static function array<SoldierSpecialization> GetSpecializationsAvailableToSoldier(XComGameState_Unit UnitState)

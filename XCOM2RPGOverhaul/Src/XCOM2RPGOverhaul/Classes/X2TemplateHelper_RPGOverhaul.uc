@@ -34,8 +34,6 @@ static function bool IsPrerequisiteAbility(name AbiliityName)
 	return false;
 }
 
-
-
 static function AddSecondWaveOptions()
 {
 	
@@ -355,6 +353,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'vektor_rifle':
+				
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
@@ -530,23 +529,27 @@ static function PatchAbilitiesWeaponCondition()
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
-		if (Template != none && !bMeleeReaction)
+		
+		if (Template != none)
 		{
-			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
-			Template.AbilityTargetConditions.AddItem(WeaponCondition);
-
-			// Hide active abilities if no weapon matches
-			if (
-				(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
-				 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
-				!Template.bIsPassive &&
-				Template.HasTrigger('X2AbilityTrigger_PlayerInput')
-			)
+			bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
+			if (!bMeleeReaction)
 			{
-				Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-				Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				WeaponCondition = new class'X2Condition_WeaponCategory';
+				WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
+				Template.AbilityTargetConditions.AddItem(WeaponCondition);
+
+				// Hide active abilities if no weapon matches
+				if (
+					(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
+					 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
+					!Template.bIsPassive &&
+					Template.HasTrigger('X2AbilityTrigger_PlayerInput')
+				)
+				{
+					Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+					Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				}
 			}
 		}
 	}
@@ -719,8 +722,11 @@ static function PatchAbilityPrerequisites()
 		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Prerequisite.PrerequisiteTree[Index]);
-			Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
-			`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			if (Template != none)
+			{
+				Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
+				`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			}
 		}
 	}
 
@@ -729,12 +735,15 @@ static function PatchAbilityPrerequisites()
 		for (Index = 0; Index < Exclusive.Abilities.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Exclusive.Abilities[Index]);
-			foreach Exclusive.Abilities(Ability)
+			if (Template != none)
 			{
-				if (Template.DataName != Ability)
+				foreach Exclusive.Abilities(Ability)
 				{
-					Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
-					`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					if (Template.DataName != Ability)
+					{
+						Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
+						`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					}
 				}
 			}
 		}
@@ -1169,37 +1178,56 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
 	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
 	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none && (Slot == eInvSlot_PrimaryWeapon || Slot == eInvSlot_SecondaryWeapon))
 	{
+		//`LOG("Begin check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName,, 'IRITEST');
+
+		//	Check if the soldier's primary specs allow using this weapon in this slot.
 		PrimarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedPrimaryWeaponSpecializations(UnitState);
 		foreach PrimarySpecs(PrimarySpec)
 		{
 			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(PrimarySpec);
-			//	If soldier's primary specialization is a Dual Wield one, then look only at primary specialization for both Primary and Secondary weapons.
-			if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield || Slot == eInvSlot_PrimaryWeapon)
+			if (PrimarySpecTemplate != none)
 			{
-				bAllowed = PrimarySpecTemplate != none && PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+				//`LOG("Checking primary spec:" @ PrimarySpec.TemplateName,, 'IRITEST');
+				
+				//	Primary Spec allows using primary weapon based on their category, or both primary and secondary, if it's marked as Dual Wield spec.
+				bAllowed = PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.WeaponCat) && (Slot == eInvSlot_PrimaryWeapon || PrimarySpecTemplate.SpecializationMetaInfo.bDualWield);
 				if (bAllowed)
 				{
+					//`LOG("It allows this weapon.",, 'IRITEST');
 					break;
 				}
 			}
+			else `LOG("Weapon Restrictions: ERROR, could not get Spec Template for spec:" @ PrimarySpec.TemplateName,, 'RPG');
 		}
 
+		//	Check if the weapon is not allowed yet, check if the secondary specs allow it.
 		if (!bAllowed)
 		{
 			SecondarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSecondaryWeaponSpecializations(UnitState);
 			foreach SecondarySpecs(SecondarySpec)
 			{
+				//`LOG("Checking secondary spec:" @ SecondarySpec.TemplateName,, 'IRITEST');
 				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(SecondarySpec);
-				bAllowed = SecondarySpecTemplate != none && SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
+
+				//	Secondary Spec can allow only secondary weapons.
+				bAllowed = SecondarySpecTemplate != none && SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.WeaponCat) && Slot == eInvSlot_SecondaryWeapon;
 				if (bAllowed)
 				{
+					//`LOG("It allows this weapon.",, 'IRITEST');
 					break;
 				}
 			}
 		}
+
+		if (WeaponTemplate.WeaponCat == 'rifle' && class'X2SecondWaveConfigOptions'.static.AlwaysAllowAssaultRifles())
+		{
+			bAllowed = true;
+		}
+		
 		
 		if (bAllowed)
 		{
+			//`LOG("Weapon allowed.",, 'IRITEST');
 			//	Weapon allowed
 			DisabledReason = "";
 			bCanAddItem = 1;
@@ -1209,6 +1237,7 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
 		}
 		else
 		{
+			//`LOG("Weapon NOT allowed.",, 'IRITEST');
 			//	Weapon NOT Allowed
 			LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
 			LocTag.StrValue0 = UnitState.GetSoldierClassTemplate().DisplayName;
@@ -1419,12 +1448,15 @@ static function RemoveAbilityFromWeaponTemplate(out X2WeaponTemplate Template, n
 
 static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability, bool bShowInTactical = false)
 {
-	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(Ability) != none)
 	{
-		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
-		Template.Abilities.AddItem(Ability);
-		if (bShowInTactical)
-			ShowInTacticalText(Ability);
+		if (Template.Abilities.Find(Ability) == INDEX_NONE)
+		{
+			//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+			Template.Abilities.AddItem(Ability);
+			if (bShowInTactical)
+				ShowInTacticalText(Ability);
+		}
 	}
 }
 
