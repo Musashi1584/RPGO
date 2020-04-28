@@ -115,23 +115,6 @@ function bool IsComplemtarySpecialization()
 {
 	return SpecializationMetaInfo.iWeightComplementary > 0 && !SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal;
 }
-/*
-{
-	if (SpecializationMetaInfo.bUseForRandomClasses)
-	{
-		//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
-		if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield && SpecializationMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.
-		{
-			return class'X2SoldierClassTemplatePlugin'.static.DoSpecializationsUseTheSameWeapons(PrimarySpecTemplate, self);
-		}
-
-		return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
-	}
-	//	Can't be Secondary Speci if no meta info is set up.
-	return false;
-}
-*/
-
 //	END OF Random Classes
 
 function bool HasAnyAbilitiesInDeck()

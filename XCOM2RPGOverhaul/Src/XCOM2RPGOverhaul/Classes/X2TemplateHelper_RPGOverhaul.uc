@@ -1163,71 +1163,36 @@ static function PatchSquadSight()
 
 static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
-    local X2WeaponTemplate				WeaponTemplate;
-    local XGParamTag					LocTag;
-	local array<SoldierSpecialization>	PrimarySpecs;
-	local SoldierSpecialization			PrimarySpec;
-	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
-	local array<SoldierSpecialization>	SecondarySpecs;
-	local SoldierSpecialization			SecondarySpec;
-	local X2UniversalSoldierClassInfo	SecondarySpecTemplate;
-	local bool							bAllowed;
+    local X2WeaponTemplate	WeaponTemplate;
+    local XGParamTag		LocTag;
+	local bool				bAllowed;
 
 	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 
+	`LOG("Check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName @ "UI check:" @ CheckGameState == none @ "DisabledReason:" @ DisabledReason,, 'IRITEST');
+
 	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
-	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none && (Slot == eInvSlot_PrimaryWeapon || Slot == eInvSlot_SecondaryWeapon))
+	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none)
 	{
-		//`LOG("Begin check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName,, 'IRITEST');
-
-		//	Check if the soldier's primary specs allow using this weapon in this slot.
-		PrimarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedPrimaryWeaponSpecializations(UnitState);
-		foreach PrimarySpecs(PrimarySpec)
+		if (Slot == eInvSlot_PrimaryWeapon)
 		{
-			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(PrimarySpec);
-			if (PrimarySpecTemplate != none)
-			{
-				//`LOG("Checking primary spec:" @ PrimarySpec.TemplateName,, 'IRITEST');
-				
-				//	Primary Spec allows using primary weapon based on their category, or both primary and secondary, if it's marked as Dual Wield spec.
-				bAllowed = PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.WeaponCat) && (Slot == eInvSlot_PrimaryWeapon || PrimarySpecTemplate.SpecializationMetaInfo.bDualWield);
-				if (bAllowed)
-				{
-					//`LOG("It allows this weapon.",, 'IRITEST');
-					break;
-				}
-			}
-			else `LOG("Weapon Restrictions: ERROR, could not get Spec Template for spec:" @ PrimarySpec.TemplateName,, 'RPG');
+			bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsPrimaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+			`LOG("This is a primary weapon, allowed:" @ bAllowed,, 'IRITEST');
+		}
+		else if (Slot == eInvSlot_SecondaryWeapon)
+		{
+			bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsSecondaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+			`LOG("This is a secondary weapon, allowed:" @ bAllowed,, 'IRITEST');
+		}
+		else 
+		{
+			`LOG("This is not a primary nor a secondary weapon, defaulting.",, 'IRITEST');
+			return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 		}
 
-		//	Check if the weapon is not allowed yet, check if the secondary specs allow it.
-		if (!bAllowed)
-		{
-			SecondarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSecondaryWeaponSpecializations(UnitState);
-			foreach SecondarySpecs(SecondarySpec)
-			{
-				//`LOG("Checking secondary spec:" @ SecondarySpec.TemplateName,, 'IRITEST');
-				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(SecondarySpec);
-
-				//	Secondary Spec can allow only secondary weapons.
-				bAllowed = SecondarySpecTemplate != none && SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.WeaponCat) && Slot == eInvSlot_SecondaryWeapon;
-				if (bAllowed)
-				{
-					//`LOG("It allows this weapon.",, 'IRITEST');
-					break;
-				}
-			}
-		}
-
-		if (WeaponTemplate.WeaponCat == 'rifle' && class'X2SecondWaveConfigOptions'.static.AlwaysAllowAssaultRifles())
-		{
-			bAllowed = true;
-		}
-		
-		
 		if (bAllowed)
 		{
-			//`LOG("Weapon allowed.",, 'IRITEST');
+			`LOG("Weapon allowed.",, 'IRITEST');
 			//	Weapon allowed
 			DisabledReason = "";
 			bCanAddItem = 1;
@@ -1237,7 +1202,7 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
 		}
 		else
 		{
-			//`LOG("Weapon NOT allowed.",, 'IRITEST');
+			`LOG("Weapon NOT allowed.",, 'IRITEST');
 			//	Weapon NOT Allowed
 			LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
 			LocTag.StrValue0 = UnitState.GetSoldierClassTemplate().DisplayName;
