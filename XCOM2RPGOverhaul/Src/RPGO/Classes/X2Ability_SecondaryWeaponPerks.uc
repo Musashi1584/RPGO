@@ -684,7 +684,8 @@ static function X2AbilityTemplate Brutality()
 	return Template;
 }
 
-// Ruthless - Killing a stunned, panicked or mind-controlled enemy with your sawed-off shotgun refunds one action point. There is not limit to the number of activations per turn.
+// Ruthless - Killing a stunned, panicked or mind-controlled enemy with your sawed-off shotgun refunds one action point. 
+// There is not limit to the number of activations per turn.
 static function X2AbilityTemplate Ruthless()
 {
 	local X2AbilityTemplate						Template;
