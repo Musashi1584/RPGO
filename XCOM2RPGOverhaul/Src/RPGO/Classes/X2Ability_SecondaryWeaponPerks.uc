@@ -533,7 +533,9 @@ static function X2AbilityTemplate RpgDeepPockets()
 	return Template;
 }
 
-// SawedOffOverwatch (working name) - During enemy turns, fire a free reaction shot that can critically hit with your sawed-off shotgun weapon at any visible enemy within three tiles who moves or fires. Can only trigger once per turn. The reaction shot uses 1 ammo and only triggers if the sawed-off shotgun is loaded. 
+// SawedOffOverwatch (working name) - During enemy turns, fire a free reaction shot that can critically hit with your
+// sawed-off shotgun weapon at any visible enemy within three tiles who moves or fires. 
+// Can only trigger once per turn. The reaction shot uses 1 ammo and only triggers if the sawed-off shotgun is loaded. 
 static function X2AbilityTemplate SawedOffOverwatch()
 {
 	local X2AbilityTemplate 				Template;
