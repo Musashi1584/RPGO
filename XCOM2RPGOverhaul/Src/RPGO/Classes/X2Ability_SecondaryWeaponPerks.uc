@@ -270,7 +270,6 @@ static function X2AbilityTemplate SingleTap()
 
 	Template.IconImage = "img:///UILibrary_LWSecondariesWOTC.LW_AbilityPointBlank";
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_PISTOL_SHOT_PRIORITY;
-//	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_ShowIfAvailable;
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_AlwaysShow;
 	Template.DisplayTargetHitChance = true;
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
