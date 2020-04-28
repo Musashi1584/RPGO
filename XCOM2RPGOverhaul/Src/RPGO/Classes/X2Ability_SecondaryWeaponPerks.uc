@@ -15,7 +15,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(SingleTap());	
 	Templates.AddItem(DoubleTap());	
 	Templates.AddItem(DoubleTap2());
-	Templates.Additem(DeepPockets());
+	Templates.Additem(RpgDeepPockets());
 	Templates.Additem(SawedOffOverwatch());
 	Templates.Additem(ScrapMetal());
 	Templates.Additem(ScrapMetalTrigger());
