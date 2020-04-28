@@ -1166,30 +1166,41 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
     local X2WeaponTemplate	WeaponTemplate;
     local XGParamTag		LocTag;
 	local bool				bAllowed;
+	//local StateObjectReference Ref;
+	//local int i;
 
 	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
-
-	`LOG("Check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName @ "UI check:" @ CheckGameState == none @ "DisabledReason:" @ DisabledReason,, 'IRITEST');
 
 	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
 	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none)
 	{
-		if (Slot == eInvSlot_PrimaryWeapon)
-		{
-			bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsPrimaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
-			`LOG("This is a primary weapon, allowed:" @ bAllowed,, 'IRITEST');
-		}
-		else if (Slot == eInvSlot_SecondaryWeapon)
-		{
-			bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsSecondaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
-			`LOG("This is a secondary weapon, allowed:" @ bAllowed,, 'IRITEST');
-		}
-		else 
-		{
-			`LOG("This is not a primary nor a secondary weapon, defaulting.",, 'IRITEST');
-			return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
-		}
+		`LOG("Begin check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName,, 'IRITEST');
 
+		switch (Slot)
+		{
+			case eInvSlot_PrimaryWeapon:
+				bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsPrimaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+				//bAllowed = WeaponTemplate.WeaponCat == 'shotgun' || WeaponTemplate.WeaponCat == 'cannon';
+				`LOG("This is a primary weapon, allowed:" @ bAllowed,, 'IRITEST');
+				break;
+			case eInvSlot_SecondaryWeapon:
+				bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsSecondaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+				//bAllowed = WeaponTemplate.WeaponCat == 'empty' || WeaponTemplate.WeaponCat == 'gremlin';
+				`LOG("This is a secondary weapon, allowed:" @ bAllowed,, 'IRITEST');
+				break;
+			default:
+				`LOG("This is neither a primary nor a secondary weapon, defaulting.",, 'IRITEST');
+				return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
+		}
+		/*
+		for (i = 0; i < 10000; i++)
+		{
+			foreach `XCOMHQ.Inventory(Ref)
+			{
+				`LOG("Found item: " @ XComGameState_Item(`XCOMHISTORY.GetGameStateForObjectID(Ref.ObjectID)).GetMyTemplateName(),, 'CPUTEST');
+			}
+		}*/
+		
 		if (bAllowed)
 		{
 			`LOG("Weapon allowed.",, 'IRITEST');

@@ -362,8 +362,13 @@ static function name GetFirstAllowedSecondaryWeaponCategory(const XComGameState_
 static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
 {	
 	local array<name> AllowedCategories;
+	local int i;
+
+	`LOG("IsPrimaryWeaponCategoryAllowed for:" @ UnitState.GetFullName(),, 'WEAPON_RESTRICTIONS');
 
 	AllowedCategories = GetAllowedPrimaryWeaponCategories(UnitState);
+
+	for (i = 0; i < AllowedCategories.Length; i++) `LOG(AllowedCategories[i],, 'WEAPON_RESTRICTIONS');
 
 	return AllowedCategories.Find(WeaponCat) != INDEX_NONE;
 }
@@ -372,8 +377,13 @@ static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit Uni
 static function bool IsSecondaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
 {	
 	local array<name> AllowedCategories;
+	local int i;
+
+	`LOG("IsSecondaryWeaponCategoryAllowed for:" @ UnitState.GetFullName(),, 'WEAPON_RESTRICTIONS');
 
 	AllowedCategories = GetAllowedSecondaryWeaponCategories(UnitState);
+
+	for (i = 0; i < AllowedCategories.Length; i++) `LOG(AllowedCategories[i],, 'WEAPON_RESTRICTIONS');
 
 	return AllowedCategories.Find(WeaponCat) != INDEX_NONE;
 }
