@@ -416,7 +416,6 @@ static function X2AbilityTemplate DoubleTap()
 
 	KnockbackEffect = new class'X2Effect_Knockback';
 	KnockbackEffect.KnockbackDistance = 3;
-	//KnockbackEffect.bUseTargetLocation = true;
 	Template.AddTargetEffect(KnockbackEffect);
 
 	Template.bUseAmmoAsChargesForHUD = true;
