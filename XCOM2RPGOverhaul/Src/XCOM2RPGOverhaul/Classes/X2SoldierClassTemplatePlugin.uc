@@ -361,31 +361,87 @@ static function name GetFirstAllowedSecondaryWeaponCategory(const XComGameState_
 
 static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
 {	
-	local array<name> AllowedCategories;
-	local int i;
+	local array<SoldierSpecialization>	PrimarySpecs;
+	local SoldierSpecialization			PrimarySpec;
+	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
 
-	`LOG("IsPrimaryWeaponCategoryAllowed for:" @ UnitState.GetFullName(),, 'WEAPON_RESTRICTIONS');
+	PrimarySpecs = GetTrainedPrimaryWeaponSpecializations(UnitState);
+	foreach PrimarySpecs(PrimarySpec)
+	{
+		PrimarySpecTemplate = GetSpecializationTemplate(PrimarySpec);
+		if (PrimarySpecTemplate != none)
+		{
+			if (PrimarySpecTemplate.SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+			{
+				return true;
+			}
+		}
+		else `LOG("Weapon Restrictions: GetAllowedPrimaryWeaponCategories: ERROR, could not get Spec Template for spec:" @ PrimarySpec.TemplateName,, 'RPG');
+	}
 
-	AllowedCategories = GetAllowedPrimaryWeaponCategories(UnitState);
-
-	for (i = 0; i < AllowedCategories.Length; i++) `LOG(AllowedCategories[i],, 'WEAPON_RESTRICTIONS');
-
-	return AllowedCategories.Find(WeaponCat) != INDEX_NONE;
+	if (PrimarySpecs.Length > 0)
+	{
+		return false;
+	}
+	else 
+	{
+		//	Soldiers are always allowed to at least use an Assault Rifle.
+		return WeaponCat == 'rifle';
+	}
 }
 
 
 static function bool IsSecondaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
 {	
-	local array<name> AllowedCategories;
-	local int i;
+	local array<SoldierSpecialization>	PrimarySpecs;
+	local SoldierSpecialization			PrimarySpec;
+	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
 
-	`LOG("IsSecondaryWeaponCategoryAllowed for:" @ UnitState.GetFullName(),, 'WEAPON_RESTRICTIONS');
+	local array<SoldierSpecialization>	SecondarySpecs;
+	local SoldierSpecialization			SecondarySpec;
+	local X2UniversalSoldierClassInfo	SecondarySpecTemplate;
 
-	AllowedCategories = GetAllowedSecondaryWeaponCategories(UnitState);
+	//	Dual Wield specs allow their weapon categories to be used in the secondary weapon slot as well.
+	PrimarySpecs = GetTrainedPrimaryWeaponSpecializations(UnitState);
+	foreach PrimarySpecs(PrimarySpec)
+	{
+		PrimarySpecTemplate = GetSpecializationTemplate(PrimarySpec);
+		if (PrimarySpecTemplate != none)
+		{
+			if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield)
+			{
+				if (PrimarySpecTemplate.SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+				{
+					return true;
+				}
+			}
+		}
+		else `LOG("Weapon Restrictions: GetAllowedSecondaryWeaponCategories: ERROR, could not get Spec Template for spec:" @ PrimarySpec.TemplateName,, 'RPG');
+	}
 
-	for (i = 0; i < AllowedCategories.Length; i++) `LOG(AllowedCategories[i],, 'WEAPON_RESTRICTIONS');
+	SecondarySpecs = GetTrainedSecondaryWeaponSpecializations(UnitState);
+	foreach SecondarySpecs(SecondarySpec)
+	{
+		SecondarySpecTemplate = GetSpecializationTemplate(SecondarySpec);
+		if (SecondarySpecTemplate != none)
+		{
+			if (SecondarySpecTemplate.SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+			{
+				return true;
+			}
+		}
+		else `LOG("Weapon Restrictions: GetAllowedSecondaryWeaponCategories: ERROR, could not get Spec Template for spec:" @ SecondarySpec.TemplateName,, 'RPG');
+	}
 
-	return AllowedCategories.Find(WeaponCat) != INDEX_NONE;
+	if (PrimarySpecs.Length > 0)
+	{
+		return false;
+	}
+	else 
+	{
+		//	Soldiers are always allowed to at least use an Empty Secondary.
+		return WeaponCat == 'empty';
+	}
 }
 
 //	END OF Weapon Restrictions
