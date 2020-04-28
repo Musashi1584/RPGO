@@ -558,7 +558,8 @@ static function X2AbilityTemplate SawedOffOverwatch()
 	return Template;
 }
 
-// Scrap Metal - Your sawed-off shotgun attacks against robotic enemies pierce 1/2/3 armor and kills on robotic enemies with your sawed-off shotgun restore one charge of the Reload Sawed-Off Shotgun ability.
+// Scrap Metal - Your sawed-off shotgun attacks against robotic enemies pierce 1/2/3 armor and
+// kills on robotic enemies with your sawed-off shotgun restore one charge of the Reload Sawed-Off Shotgun ability.
 static function X2AbilityTemplate ScrapMetal()
 {
 	local X2AbilityTemplate 			Template;
