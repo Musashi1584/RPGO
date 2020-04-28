@@ -227,7 +227,7 @@ static function bool DoSpecializationsUseTheSameWeapons(X2UniversalSoldierClassI
 //	END OF Random Classes
 
 //	Weapon Restrictions
-static function array<name> GetAllowedPrimaryWeaponCategories(const XComGameState_Unit UnitState)
+static function array<name> GetAllowedPrimaryWeaponCategories(XComGameState_Unit UnitState)
 {	
 	local array<SoldierSpecialization>	PrimarySpecs;
 	local SoldierSpecialization			PrimarySpec;
@@ -258,7 +258,7 @@ static function array<name> GetAllowedPrimaryWeaponCategories(const XComGameStat
 	return ReturnArray;
 }
 
-static function array<name> GetAllowedSecondaryWeaponCategories(const XComGameState_Unit UnitState)
+static function array<name> GetAllowedSecondaryWeaponCategories(XComGameState_Unit UnitState)
 {	
 	local array<SoldierSpecialization>	PrimarySpecs;
 	local SoldierSpecialization			PrimarySpec;
@@ -359,20 +359,25 @@ static function name GetFirstAllowedSecondaryWeaponCategory(const XComGameState_
 	return '';
 }*/
 
-static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
+static function bool IsPrimaryWeaponCategoryAllowed(XComGameState_Unit UnitState, name WeaponCat)
 {	
 	local array<SoldierSpecialization>	PrimarySpecs;
 	local SoldierSpecialization			PrimarySpec;
 	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
 
 	PrimarySpecs = GetTrainedPrimaryWeaponSpecializations(UnitState);
+
+	`LOG("Weapon Restrictions: IsPrimaryWeaponCategoryAllowed:" @ UnitState.GetFullName() @ WeaponCat @ "Primary Specs:" @ PrimarySpecs.Length,, 'RPG');
+
 	foreach PrimarySpecs(PrimarySpec)
 	{
+		`LOG("Primary Spec:" @ PrimarySpec.TemplateName,, 'RPG');
 		PrimarySpecTemplate = GetSpecializationTemplate(PrimarySpec);
 		if (PrimarySpecTemplate != none)
 		{
 			if (PrimarySpecTemplate.SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
 			{
+				`LOG("It has a matching WeaponCat, returning true",, 'RPG');
 				return true;
 			}
 		}
@@ -381,17 +386,19 @@ static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit Uni
 
 	if (PrimarySpecs.Length > 0)
 	{
-		return false;
+		`LOG("No match found, returning false.",, 'RPG');
+		return class'X2SecondWaveConfigOptions'.static.AlwaysAllowAssaultRifles() && WeaponCat == 'rifle';
 	}
 	else 
 	{
 		//	Soldiers are always allowed to at least use an Assault Rifle.
+		`LOG("WARNING No primary specs found, returning Rifle check.",, 'RPG');
 		return WeaponCat == 'rifle';
 	}
 }
 
 
-static function bool IsSecondaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
+static function bool IsSecondaryWeaponCategoryAllowed(XComGameState_Unit UnitState, name WeaponCat)
 {	
 	local array<SoldierSpecialization>	PrimarySpecs;
 	local SoldierSpecialization			PrimarySpec;
