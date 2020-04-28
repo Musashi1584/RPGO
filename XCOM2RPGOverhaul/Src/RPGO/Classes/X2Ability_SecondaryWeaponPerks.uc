@@ -491,7 +491,7 @@ static function X2AbilityTemplate DoubleTap2()
 
 
 // Deep Pockets - Gain additional charges for Reload Sawed-Off
-static function X2AbilityTemplate DeepPockets()
+static function X2AbilityTemplate RpgDeepPockets()
 {
 	local X2AbilityTemplate 				Template;
 	local XMBEffect_AddAbilityCharges 		ChargesEffectCV, ChargesEffectMG, ChargesEffectBM;
