@@ -242,7 +242,8 @@ simulated function ReloadAbility_BuildVisualization(XComGameState VisualizeGameS
 		//****************************************************************************************
 }
 
-// Shotgun Tap - Grants Single & Double Tap
+// Shotgun Tap - Grants the Hipfire ability (template name RpgShotgunTap).
+// Point Blank no longer ends the turn.
 static function X2AbilityTemplate ShotgunTap()
 {
 	local X2AbilityTemplate		Template;

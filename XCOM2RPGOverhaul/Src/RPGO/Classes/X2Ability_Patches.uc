@@ -17,9 +17,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
 	Templates.AddItem(SawedOffShotgunDamageModifierCovertype());
-	Templates.AddItem(SawedOffShotgunDamageModifierRange_CV());
-	Templates.AddItem(SawedOffShotgunDamageModifierRange_MG());
-	Templates.AddItem(SawedOffShotgunDamageModifierRange_BM());
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_CV', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_CV")));
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_MG', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_MG")));
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_BM', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_BM")));
 	//Templates.AddItem(DamageModifierCoverType());
 	//Templates.AddItem(AutoFireOverwatch());
 	//Templates.AddItem(AutoFireShot());
@@ -259,17 +259,17 @@ static function X2AbilityTemplate SawedOffShotgunDamageModifierCovertype()
 	return Template;
 }
 
-static function X2AbilityTemplate SawedOffShotgunDamageModifierRange_CV()
+static function X2AbilityTemplate SawedOffShotgunDamageModifierRange(name TemplateName, array<float> DamageFalloff)
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_DamageModifierRangePercentage RangeEffect;
 	
-	Template = PurePassive('SawedOffShotgunDamageModifierRange_CV', "", false, 'eAbilitySource_Perk', false);
+	Template = PurePassive(TemplateName, "", false, 'eAbilitySource_Perk', false);
 
 	RangeEffect = new class'X2Effect_DamageModifierRangePercentage';
 	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
 	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
-	RangeEffect.DamageFalloff = class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_CV");
+	RangeEffect.DamageFalloff = DamageFalloff;
 
 	Template.AddTargetEffect(RangeEffect);
 
@@ -278,47 +278,6 @@ static function X2AbilityTemplate SawedOffShotgunDamageModifierRange_CV()
 
 	return Template;
 }
-
-static function X2AbilityTemplate SawedOffShotgunDamageModifierRange_MG()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_DamageModifierRangePercentage RangeEffect;
-	
-	Template = PurePassive('SawedOffShotgunDamageModifierRange_MG', "", false, 'eAbilitySource_Perk', false);
-
-	RangeEffect = new class'X2Effect_DamageModifierRangePercentage';
-	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
-	RangeEffect.DamageFalloff = class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_MG");
-
-	Template.AddTargetEffect(RangeEffect);
-
-	Template.bDisplayInUITacticalText = false;
-	Template.bDisplayInUITooltip = false;
-
-	return Template;
-}
-
-static function X2AbilityTemplate SawedOffShotgunDamageModifierRange_BM()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_DamageModifierRangePercentage RangeEffect;
-	
-	Template = PurePassive('SawedOffShotgunDamageModifierRange_BM', "", false, 'eAbilitySource_Perk', false);
-
-	RangeEffect = new class'X2Effect_DamageModifierRangePercentage';
-	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
-	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
-	RangeEffect.DamageFalloff = class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_BM");
-
-	Template.AddTargetEffect(RangeEffect);
-
-	Template.bDisplayInUITacticalText = false;
-	Template.bDisplayInUITooltip = false;
-
-	return Template;
-}
-
 
 
 //static function X2AbilityTemplate DamageModifierCoverType()
