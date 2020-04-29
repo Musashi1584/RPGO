@@ -553,23 +553,12 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadout
 	//	Have to listen for Promotion Event, because UnitRankUp triggers before the game equips squaddie loadout on the soldier.
 	Template.AddCHEvent('PromotionEvent', RandomClasses_PromotionEventListener, ELD_OnStateSubmitted);
 
-	//Template.AddCHEvent('SquaddieItemStateApplied', RandomClasses_SquaddieLoadoutApplied, ELD_OnStateSubmitted);
-
 	`LOG(default.class @ "Register Event OnBestGearLoadoutApplied",, 'RPG');
 
 	return Template;
 }
 
-static function EventListenerReturn RandomClasses_SquaddieLoadoutApplied(Object EventData, Object EventSource, XComGameState NewGameState, Name Event, Object CallbackData)
-{
-	local XComGameState_Unit UnitState;
-
-	UnitState = XComGameState_Unit(EventSource);
-	`LOG("Weapon Restrictions: SquaddieItemStateApplied event is triggered for unit:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
-
-	return ELR_NoInterrupt;
-}
-
+//	This listener runs whenever the player clicks Unequip Barracks in the Squad Select or similar buttons.
 static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object EventData, Object EventSource, XComGameState NewGameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit	UnitState;
@@ -676,17 +665,17 @@ static function EventListenerReturn RandomClasses_PromotionEventListener(Object 
 	local XComGameState_Unit UnitState;
  
 	//	Do nothing if Commander's Choice is enabled; equipping new weapons on the soldier after their promotion is handled elsewhere.
-	//if (`SecondWaveEnabled('RPGOCommandersChoice')) return ELR_NoInterrupt;
+	if (`SecondWaveEnabled('RPGOCommandersChoice')) return ELR_NoInterrupt;
 
 	UnitState = XComGameState_Unit(EventData);
-	`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
+	//`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
  
 	//	Proceed only if this is a newly promoted RPGO soldier to the rank of squaddie, where they first receive their specializations. 
 	//	Proceed only if both Weapon Restrictions and Random Classes SWOs are enabled. 
 	//	Equipping new weapons on the soldier with Weapon Restrictions without Random Classes is handled in other places.
 	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	{
-		`LOG("RPGO Soldier promotion event: " @ UnitState.GetFullName(),, 'RPG');
+		//`LOG("RPGO Soldier promotion event: " @ UnitState.GetFullName(),, 'RPG');
 		WeaponResticitions_EquipNewWeaponsOnSoldier(UnitState.ObjectID);
 	}
 	return ELR_NoInterrupt;
@@ -727,7 +716,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 		return;
 	}
 
-	`LOG("Weapon Restrictions: equip new weapons on soldier:"@ UnitState.GetFullName(),, 'RPG');
+	//`LOG("Weapon Restrictions: equip new weapons on soldier:"@ UnitState.GetFullName(),, 'RPG');
  
 	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
 	XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
@@ -735,7 +724,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 	OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
 	if (OldWeapon != none)
 	{
-		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+		//`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
 		
 		//	Soldier has a weapon equipped, but they're not supposed to be able to use it.
@@ -750,7 +739,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
 					{
-						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+						//`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
@@ -772,7 +761,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 		{
 			if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
 			{
-				`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				//`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 			}
 			else 
 			{
@@ -785,7 +774,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 	OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
 	if (OldWeapon != none)
 	{
-		`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+		//`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
 		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
 		
 		//	Soldier has a weapon equipped, but they're not supposed to be able to use it.
@@ -800,7 +789,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
 					{
-						`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+						//`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
@@ -822,7 +811,7 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 		{
 			if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
 			{
-				`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				//`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 			}
 			else 
 			{
@@ -833,8 +822,16 @@ public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjec
 	}
 
 	if (UseGameState == none)
-	{
-		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
-	}
+    {
+        if (NewGameState.GetNumGameStateObjects() > 0)
+        {
+            UnitState.ValidateLoadout(NewGameState);
+            `XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+        }
+        else
+        {
+            `XCOMHISTORY.CleanupPendingGameState(NewGameState);
+        }
+    }
 }
 //	Random Classes END

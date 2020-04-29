@@ -456,6 +456,7 @@ exec function RPGO_RebuildSelectedSoldier(
 	}
 
 	`XEVENTMGR.TriggerEvent('CompleteRespecSoldier', none, UnitState, NewGameState);
+	`XEVENTMGR.TriggerEvent('PromotionEvent', UnitState, UnitState, NewGameState);
 	//class'X2EventListener_StatUI'.static.
 
 	if (NewGameState.GetNumGameStateObjects() > 0)
