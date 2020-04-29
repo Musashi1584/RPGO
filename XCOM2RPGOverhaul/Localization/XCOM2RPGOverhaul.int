@@ -243,8 +243,11 @@ PATCH_PISTOLS_TOOLTIP="Apply RPGO changes to pistols"
 PATCH_AUTO_PISTOLS_LABEL="Change Auto Pistols"
 PATCH_AUTO_PISTOLS_TOOLTIP="Apply RPGO changes to auto pistols"
 
-PATCH_VECTOR_RIFLES_LABEL="Change Vector Rifles"
-PATCH_VECTOR_RIFLES_TOOLTIP="Apply RPGO changes to vector rifles"
+PATCH_SAWEDOFF_SHOTGUN_LABEL="Change Sawed-Off Shotguns"
+PATCH_SAWEDOFF_SHOTGUN_TOOLTIP="Apply RPGO changes to Sawed-Off Shotguns"
+
+PATCH_VECTOR_RIFLES_LABEL="Change Vektor Rifles"
+PATCH_VECTOR_RIFLES_TOOLTIP="Apply RPGO changes to vektor rifles"
 
 PATCH_DEFAULTWEAPON_UPGRADESLOTS_LABEL="Change default upgrade slots"
 PATCH_DEFAULTWEAPON_UPGRADESLOTS_TOOLTIP="Set all upgrade slots to 3"
