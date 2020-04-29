@@ -157,9 +157,11 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			{
 				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
 				bCreatedOwnGameState = true;
+				`LOG("Created my own state, I should submit it." @ getfuncname(),, 'RPG');
 			}
 			else
 			{
+				`LOG("Using given state." @ getfuncname(),, 'RPG');
 				NewGameState = GameState;
 			}
 
@@ -179,6 +181,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
 			{
+				`LOG("Submitting Game State" @ getfuncname(),, 'RPG');
 				`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 			}
 		}
@@ -547,22 +550,22 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnBestGearLoadout
 
 	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_Immediate);
 
-	//	Setting low priority so the unit gets specializations assigned by an event listener above
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUp_RandomClass, ELD_OnStateSubmitted, 10);
+	//	Have to listen for Promotion Event, because UnitRankUp triggers before the game equips squaddie loadout on the soldier.
+	Template.AddCHEvent('PromotionEvent', RandomClasses_PromotionEventListener, ELD_OnStateSubmitted);
 
 	`LOG(default.class @ "Register Event OnBestGearLoadoutApplied",, 'RPG');
 
 	return Template;
 }
 
-
-
+//	This listener runs whenever the player clicks Unequip Barracks in the Squad Select or similar buttons.
 static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object EventData, Object EventSource, XComGameState NewGameState, Name Event, Object CallbackData)
 {
 	local XComGameState_Unit	UnitState;
 	local XComGameState_Item	PrimaryWeaponState;
 	local XComGameState_Item	SecondaryWeaponState;
 	local XComGameState_HeadquartersXCom	XComHQ;
+	local array<name>						AllowedWeaponCategories;
 
 	//	This gets us Unit State from History
 	UnitState = XComGameState_Unit(EventData);
@@ -586,34 +589,36 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 		//`LOG("Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
 		//`LOG("Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
 
-		if (PrimaryWeaponState == none || SecondaryWeaponState == none)
+		if (PrimaryWeaponState == none)
 		{
-			if (PrimaryWeaponState == none)
-			{
-				PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+			AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
 
-				if (PrimaryWeaponState != none)
-				{
-					UnitState.AddItemToInventory(PrimaryWeaponState, eInvSlot_PrimaryWeapon, NewGameState);
-				}
+			PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
+
+			if (PrimaryWeaponState != none)
+			{
+				UnitState.AddItemToInventory(PrimaryWeaponState, eInvSlot_PrimaryWeapon, NewGameState);
 			}
+		}
 
-			if (SecondaryWeaponState == none)
+		if (SecondaryWeaponState == none)
+		{
+			AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
+
+			SecondaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
+
+			if (PrimaryWeaponState != none)
 			{
-				SecondaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
-
-				if (PrimaryWeaponState != none)
-				{
-					UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState);
-				}
+				UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState);
 			}
 		}
 	}
+	
 	return ELR_NoInterrupt;
 }
 
 //	Find highest tier infinite weapon that specified soldier can equip into specified slot.
-private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const XComGameState_Unit UnitState, const EInventorySlot eSlot, out XComGameState_HeadquartersXCom XComHQ, out XComGameState NewGameState)
+private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const XComGameState_Unit UnitState, const EInventorySlot eSlot, array<name> AllowedWeaponCategories, out XComGameState_HeadquartersXCom XComHQ, out XComGameState NewGameState)
 {
 	local X2WeaponTemplate		WeaponTemplate;
 	local XComGameStateHistory	History;
@@ -632,8 +637,7 @@ private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const X
 
 		if (WeaponTemplate != none)
 		{
-			if (WeaponTemplate.InventorySlot == eSlot && WeaponTemplate.bInfiniteItem &&
-				UnitState.CanAddItemToInventory(WeaponTemplate, eSlot, NewGameState, ItemState.Quantity, ItemState))
+			if (WeaponTemplate.InventorySlot == eSlot && WeaponTemplate.bInfiniteItem && AllowedWeaponCategories.Find(WeaponTemplate.WeaponCat) != INDEX_NONE)
 			{
 				if (WeaponTemplate.Tier > HighestTier)
 				{
@@ -646,8 +650,8 @@ private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const X
 	
 	if (HighestTier != -999)
 	{
-		XComHQ.GetItemFromInventory(NewGameState, BestItemState.GetReference(), BestItemState);
-		return BestItemState;
+		
+		return BestItemState.GetMyTemplate().CreateInstanceFromTemplate(NewGameState);
 	}
 	else
 	{
@@ -655,46 +659,87 @@ private static function XComGameState_Item FindBestInfiniteWeaponForUnit(const X
 	}
 }
 
-static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+
+static function EventListenerReturn RandomClasses_PromotionEventListener(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
 {
-	local XComGameState_Unit                UnitState;
+	local XComGameState_Unit UnitState;
+ 
+	//	Do nothing if Commander's Choice is enabled; equipping new weapons on the soldier after their promotion is handled elsewhere.
+	if (`SecondWaveEnabled('RPGOCommandersChoice')) return ELR_NoInterrupt;
+
+	UnitState = XComGameState_Unit(EventData);
+	//`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
+ 
+	//	Proceed only if this is a newly promoted RPGO soldier to the rank of squaddie, where they first receive their specializations. 
+	//	Proceed only if both Weapon Restrictions and Random Classes SWOs are enabled. 
+	//	Equipping new weapons on the soldier with Weapon Restrictions without Random Classes is handled in other places.
+	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	{
+		//`LOG("RPGO Soldier promotion event: " @ UnitState.GetFullName(),, 'RPG');
+		WeaponResticitions_EquipNewWeaponsOnSoldier(UnitState.ObjectID);
+	}
+	return ELR_NoInterrupt;
+}
+
+public static function WeaponResticitions_EquipNewWeaponsOnSoldier(int UnitObjectID, optional XComGameState UseGameState)
+{
+	local XComGameState_Unit				UnitState;
 	local XComGameState_Item                OldWeapon;
 	local XComGameState_Item                NewWeapon;
 	local XComGameState                     NewGameState;
 	local XComGameStateHistory              History;
 	local XComGameState_HeadquartersXCom    XComHQ;
-	local UnitValue                     UV;
- 
-	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+	local array<name>						AllowedWeaponCategories;
 
-	UnitState = XComGameState_Unit(EventData);
-	UnitState.GetUnitValue('PrimarySpecialization_Value', UV);
- 
-	`LOG("Unit rank up: " @ UnitState.GetFullName() @ UnitState.GetRank() @ UV.fValue,, 'RPG');
- 
-	if (UnitState != none && UnitState.GetRank() == 1 && `SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	History = `XCOMHISTORY;
+
+	//	If this function was supplied with a Game State, use that one for all modifications. Otherwise, create and own gamestate.
+	if (UseGameState == none)
 	{
-		History = `XCOMHISTORY;
-		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Equipping squaddie items on unit: " @ UnitState.GetFullName());
- 
-		XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
-		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
- 
-		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
- 
-		OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
-		`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
-		if (OldWeapon != none)
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Weapon Restrictions: equip new items");
+		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitObjectID));
+	}
+	else 
+	{
+		NewGameState = UseGameState;
+		
+		//	Depending on how this is function is called, the supplied Game State may or may not already contain the Unit State we want to modify, so try to get it first.
+		UnitState = XComGameState_Unit(NewGameState.GetGameStateForObjectID(UnitObjectID));
+		if (UnitState == none)
 		{
+			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitObjectID));
+		}
+	}
+	if (UnitState == none)
+	{
+		`LOG("WeaponResticitions_EquipNewWeaponsOnSoldier: ERROR, no Unit State!" @ UseGameState == none,, 'RPG');
+		return;
+	}
+
+	//`LOG("Weapon Restrictions: equip new weapons on soldier:"@ UnitState.GetFullName(),, 'RPG');
+ 
+	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
+	XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+ 
+	OldWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
+	if (OldWeapon != none)
+	{
+		//`LOG("Old Primary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
+		
+		//	Soldier has a weapon equipped, but they're not supposed to be able to use it.
+		if (AllowedWeaponCategories.Find(OldWeapon.GetWeaponCategory()) == INDEX_NONE)
+		{
+			//	Attempt to replace.
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
 			{
-				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
  
 				if (NewWeapon != none)
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
 					{
-						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+						//`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
@@ -706,60 +751,87 @@ static function EventListenerReturn OnUnitRankUp_RandomClass(Object EventData, O
 				}
 			}
 		}
-		else
-		{
-			NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, XComHQ, NewGameState);
+	}
+	else	//	Unit doesn't have a primary weapon equipped. Shouldn't be possible, but let's cover it anyway.
+	{
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
+		NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
  
-				if (NewWeapon != none)
-				{
-					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
-					{
-						`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
-					}
-					else `LOG("ERROR, could not equip New Primary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
-				}
+		if (NewWeapon != none)
+		{
+			if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_PrimaryWeapon, NewGameState))
+			{
+				//`LOG("New Primary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+			}
+			else 
+			{
+				`LOG("ERROR, could not equip New Primary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				NewGameState.RemoveStateObject(NewWeapon.ObjectID);
+			}
 		}
+	}
  
-		OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
-	   
-		if (OldWeapon != none)
+	OldWeapon = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
+	if (OldWeapon != none)
+	{
+		//`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
+		
+		//	Soldier has a weapon equipped, but they're not supposed to be able to use it.
+		if (AllowedWeaponCategories.Find(OldWeapon.GetWeaponCategory()) == INDEX_NONE)
 		{
-			`LOG("Old Secondary Weapon " @ OldWeapon.GetMyTemplateName(),, 'RPG');
+			//	Attempt to replace.
 			if (UnitState.RemoveItemFromInventory(OldWeapon, NewGameState))
 			{
-				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
+				NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
  
 				if (NewWeapon != none)
 				{
 					if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
 					{
-						`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+						//`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
 						XComHQ.PutItemInInventory(NewGameState, OldWeapon);
 					}
 					else
 					{  
 						//  If for some magical reason could not equip a new weapon on the unit, equip the old weapon back.
 						`LOG("ERROR, could not equip New Secondary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
-						UnitState.AddItemToInventory(OldWeapon, eInvSlot_PrimaryWeapon, NewGameState);
+						UnitState.AddItemToInventory(OldWeapon, eInvSlot_SecondaryWeapon, NewGameState);
 					}
 				}
 			}
 		}
-		else
+	}
+	else
+	{
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
+		NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
+ 
+		if (NewWeapon != none)
 		{
-			NewWeapon = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, XComHQ, NewGameState);
-			if (NewWeapon != none)
+			if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
 			{
-				if (UnitState.AddItemToInventory(NewWeapon, eInvSlot_SecondaryWeapon, NewGameState))
-				{
-					`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
-				}
-				else `LOG("ERROR, could not equip New Secondary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				//`LOG("New Secondary Weapon " @ NewWeapon.GetMyTemplateName(),, 'RPG');
+			}
+			else 
+			{
+				`LOG("ERROR, could not equip New Secondary Weapon on the soldier:" @ NewWeapon.GetMyTemplateName(),, 'RPG');
+				NewGameState.RemoveStateObject(NewWeapon.ObjectID);
 			}
 		}
- 
-		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 	}
-	return ELR_NoInterrupt;
+
+	if (UseGameState == none)
+    {
+        if (NewGameState.GetNumGameStateObjects() > 0)
+        {
+            UnitState.ValidateLoadout(NewGameState);
+            `XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+        }
+        else
+        {
+            `XCOMHISTORY.CleanupPendingGameState(NewGameState);
+        }
+    }
 }
 //	Random Classes END
