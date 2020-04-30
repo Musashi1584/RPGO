@@ -1068,7 +1068,7 @@ static function PatchKillZone()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('KillZone');
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_killzone";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_killzone";
 }
 
 

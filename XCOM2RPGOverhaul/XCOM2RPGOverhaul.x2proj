@@ -138,7 +138,7 @@
     <Content Include="Content\UILibrary_LW_PerkPack.upk">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Content\UILibrary_RPG.upk">
+    <Content Include="Content\UILibrary_RPGO.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\XPerkIconPack.upk">

@@ -92,7 +92,7 @@ static function X2AbilityTemplate BlueMoveSlash()
 	
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'BlueMoveSlash');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_Kenjutsu";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_Kenjutsu";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -123,7 +123,7 @@ static function X2AbilityTemplate BlueMoveSlash()
 //	local XMBEffect_ConditionalStatChange Effect;
 //	local XMBCondition_SourceAbilities	SourceAbilitiesCondition;
 //
-//	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+//	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPGO.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 //
 //	SourceAbilitiesCondition = new class'XMBCondition_SourceAbilities';
 //	SourceAbilitiesCondition.AddExcludeAbility('SyntheticLegMuscles', 'AA_AbilityNotAllowed');
@@ -158,7 +158,7 @@ static function X2AbilityTemplate HeavyWeaponMobilityPenalty()
 	local EquipmentStatCap EquipmentCap;
 	local int Index;
 
-	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPGO.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
 	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
 	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
@@ -306,7 +306,7 @@ static function X2AbilityTemplate SawedOffShotgunDamageModifierRange(name Templa
 //	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
 //
 //	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('AutoFireShot');
-//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonShot";
+//	//Template.IconImage = "img:///UILibrary_RPGO.UIPerk_CannonShot";
 //
 //	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
 //	WorldDamage.bUseWeaponDamageType = true;
@@ -332,7 +332,7 @@ static function X2AbilityTemplate SawedOffShotgunDamageModifierRange(name Templa
 //	local X2AbilityTemplate Template;
 //
 //	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
-//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
+//	//Template.IconImage = "img:///UILibrary_RPGO.UIPerk_CannonOverwatch";
 //
 //	GetAbilityCostActionPoints(Template).iNumPoints = 2;
 //	Template.OverrideAbilities.AddItem('Overwatch');

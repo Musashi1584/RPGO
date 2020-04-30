@@ -562,8 +562,8 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	SPValue.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(string(class'StatUpgradeUI.StatUIHelper'.static.GetSoldierSP(Unit)), eUIState_Normal));
 	SPValue.Show();
 
-	PrimaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetPrimaryWeapon().GetMyTemplate()).WeaponCat);
-	SecondaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetSecondaryWeapon().GetMyTemplate()).WeaponCat);
+	PrimaryLoadoutImage = "img:///UILibrary_RPGO.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetPrimaryWeapon().GetMyTemplate()).WeaponCat);
+	SecondaryLoadoutImage = "img:///UILibrary_RPGO.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetSecondaryWeapon().GetMyTemplate()).WeaponCat);
 	
 	if (PrimaryWeaponIcon == none)
 	{
