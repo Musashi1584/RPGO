@@ -17,7 +17,7 @@ function RegisterForEvents(XComGameState_Effect EffectGameState)
 function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStateContext_Ability AbilityContext, XComGameState_Ability kAbility, XComGameState_Unit SourceUnit, XComGameState_Item AffectWeapon, XComGameState NewGameState, const array<name> PreCostActionPoints, const array<name> PreCostReservePoints)
 {
 	local XComGameStateHistory History;
-	local XComGameState_Unit TargetUnit, PrevTargetUnit;
+	local XComGameState_Unit TargetUnit;//, PrevTargetUnit;
 	local X2EventManager EventMgr;
 	local XComGameState_Ability AbilityState;
 
@@ -39,7 +39,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 			{
 				`LOG("SUCCESS: X2Condition_UnitAffectedByImpairingEffect: TargetUnit " @ TargetUnit.GetFullName() @ "is disoriented or otherwise impaired.", true, 'Ruthless');
 				
-				PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID)); // get the most recent version from the history rather than our modified (attacked) version
+				// PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID)); // get the most recent version from the history rather than our modified (attacked) version
 				if (TargetUnit.IsDead())
 				{				
 					AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
