@@ -66,6 +66,11 @@ ClassSpecializationSummary="Our Purifiers are trained to use the gauntlet's flam
 ClassSpecializationTitle=Enforcer
 ClassSpecializationSummary="The Enforcer utilizes his arcthrower to disable and lock down the enemy, either to give the team time to breathe, or to make sure their target doesn't move a muscle while the Enforcer's allies take aim."
 
+[Marauder X2UniversalSoldierClassInfo]
+ClassSpecializationTitle=Marauder
+ClassSpecializationSummary="Untrained, unstable and unleashed! The marauder, a specialist with the Sawed-Off Shotgun. Lethal in close quarters, where every shot counts."
+
+
 [UIPersonnel_SoldierListItemDetailed]
 m_strServeredHead="<font color='#bf1e2e'><b>Needs Head Augmentation</b></font>"
 m_strServeredTorso="<font color='#bf1e2e'><b>Needs Torso Augmentation</b></font>"
@@ -238,8 +243,11 @@ PATCH_PISTOLS_TOOLTIP="Apply RPGO changes to pistols"
 PATCH_AUTO_PISTOLS_LABEL="Change Auto Pistols"
 PATCH_AUTO_PISTOLS_TOOLTIP="Apply RPGO changes to auto pistols"
 
-PATCH_VECTOR_RIFLES_LABEL="Change Vector Rifles"
-PATCH_VECTOR_RIFLES_TOOLTIP="Apply RPGO changes to vector rifles"
+PATCH_SAWEDOFF_SHOTGUN_LABEL="Change Sawed-Off Shotguns"
+PATCH_SAWEDOFF_SHOTGUN_TOOLTIP="Apply RPGO changes to Sawed-Off Shotguns"
+
+PATCH_VECTOR_RIFLES_LABEL="Change Vektor Rifles"
+PATCH_VECTOR_RIFLES_TOOLTIP="Apply RPGO changes to vektor rifles"
 
 PATCH_DEFAULTWEAPON_UPGRADESLOTS_LABEL="Change default upgrade slots"
 PATCH_DEFAULTWEAPON_UPGRADESLOTS_TOOLTIP="Set all upgrade slots to 3"

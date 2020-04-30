@@ -226,36 +226,6 @@ static function bool DoSpecializationsUseTheSameWeapons(X2UniversalSoldierClassI
 }
 //	END OF Random Classes
 
-//	Weapon Restrictions
-/*	Debugging code.
-static function array<name> GetAllowedPrimaryWeaponCategories(XComGameState_Unit UnitState)
-{	
-	local array<name> ReturnArray;
-	
-	ReturnArray.AddItem('shotgun');
-	ReturnArray.AddItem('cannon');
-
-	return ReturnArray;
-}
-
-static function array<name> GetAllowedSecondaryWeaponCategories(XComGameState_Unit UnitState)
-{	
-	local array<name> ReturnArray;
-	
-	ReturnArray.AddItem('empty');
-	ReturnArray.AddItem('gremlin');
-
-	return ReturnArray;
-}
-
-static function bool IsSecondaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
-{
-    return WeaponCat == 'empty' || WeaponCat == 'gremlin';
-}
-static function bool IsPrimaryWeaponCategoryAllowed(const XComGameState_Unit UnitState, const name WeaponCat)
-{
-    return WeaponCat == 'cannon' || WeaponCat == 'shotgun';
-}*/
 
 static function array<name> GetAllowedPrimaryWeaponCategories(XComGameState_Unit UnitState)
 {	

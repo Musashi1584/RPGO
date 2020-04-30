@@ -351,6 +351,9 @@
     <Content Include="Src\RPGO\Classes\X2Condition_NotVisibeToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Condition_RequiredWeaponTech.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_StatValue.uc">
       <SubType>Content</SubType>
     </Content>
@@ -358,6 +361,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_UnitAffectedByAcidBurn.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Condition_UnitEffectExtended.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_WeaponCategory.uc">
@@ -388,6 +394,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_DamageModifierCoverType.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_DamageModifierRangePercentage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_DangerousGame.uc">
@@ -465,7 +474,13 @@
     <Content Include="Src\RPGO\Classes\X2Effect_ReducedRecoveryTime.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_ReloadSecondaryWeapon.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_RevealUnit.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_Ruthless.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_Scope.uc">

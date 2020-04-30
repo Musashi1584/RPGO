@@ -6,6 +6,7 @@ var config array<MutuallyExclusiveAbilityPool> MutuallyExclusiveAbilities;
 var config array<UniqueItemCategories> LoadoutUniqueItemCategories;
 var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
+var config array<int> SAWEDOFF_RANGE;
 var config array<SoldierSpecialization> Specializations;
 var config array<name> ValidLightEmUpAbilities;
 var config array<name> IgnoreWeaponTemplatesForPatch;
@@ -437,6 +438,37 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 					);
 				}
 				break;
+			case 'SawedOffShotgun':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SAWEDOFF_SHOTGUN"))
+				{
+					WeaponTemplate.RangeAccuracy = default.SAWEDOFF_RANGE;
+					
+					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_CV_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_CV', false);
+					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_MG_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_MG', false);
+					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_BM_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_BM', false);
+				}
+				else
+				{
+					WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
+					WeaponTemplate.BaseDamage = UnpatchedTemplate.BaseDamage;
+					
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_CV');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_CV');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_MG');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_MG');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_BM');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_BM');
+				}
+				break;
 			case 'sword':
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
 				break;
@@ -447,6 +479,11 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
 				break;
 			case 'claymore':
+
+				// Added Claymore Archetype and animation for granade throw
+				WeaponTemplate.GameArchetype = "WP_Claymore.WP_Claymore";
+				WeaponTemplate.SetAnimationNameForAbility('Throw', 'FF_Grenade');
+
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
 				break;
 			case 'holotargeter':
