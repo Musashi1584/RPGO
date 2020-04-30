@@ -110,7 +110,7 @@ function bool OnAllSpecSelected()
 	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
 		`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
-		class'X2EventListener_RPG_StrategyListener'.static.WeaponResticitions_EquipNewWeaponsOnSoldier(UnitState.ObjectID, NewGameState);
+		class'X2EventListener_RPG_StrategyListener'.static.WeaponRestrictions_EquipNewWeaponsOnSoldier(UnitState.ObjectID, NewGameState);
 	}
 	
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);

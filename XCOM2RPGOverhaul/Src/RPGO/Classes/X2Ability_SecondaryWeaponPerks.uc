@@ -53,7 +53,7 @@ static function X2AbilityTemplate RapidStun()
 	Effect.VisualizationFn = EffectFlyOver_Visualization;
 
 	// Create activated ability that adds the refund effect
-	Template = SelfTargetActivated('RpgRapidStun', "img:///UILibrary_RPG.UIPerk_RapidStun", true, Effect,, eCost_Free);
+	Template = SelfTargetActivated('RpgRapidStun', "img:///UILibrary_RPGO.UIPerk_RapidStun", true, Effect,, eCost_Free);
 	AddCooldown(Template, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RAPID_STUN_COOLDOWN"));
 
 	// Cannot be used while burning, etc.
@@ -72,7 +72,7 @@ static function X2AbilityTemplate ThatsCloseEnough()
 	// Create a stun effect that removes 2 actions and has a 100% chance of success if the attack hits.
 	StunnedEffect = class'X2StatusEffects'.static.CreateStunnedStatusEffect(2, 100, false);
 
-	Template = Attack('RpgThatsCloseEnough', "img:///Texture2D'UILibrary_RPG.UIPerk_ThatsCloseEnough'", false, StunnedEffect, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
+	Template = Attack('RpgThatsCloseEnough', "img:///Texture2D'UILibrary_RPGO.UIPerk_ThatsCloseEnough'", false, StunnedEffect, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
 	
 	HidePerkIcon(Template);
 	AddIconPassive(Template);
@@ -97,7 +97,7 @@ static function X2AbilityTemplate SpareBattery()
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgSpareBattery');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_SpareBattery";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_SpareBattery";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
 	Template.Hostility = eHostility_Neutral;
@@ -181,7 +181,7 @@ static function X2AbilityTemplate SawnOffReload()
 	
 	Template.AbilitySourceName = 'eAbilitySource_Standard';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_ShowIfAvailable;
-	Template.IconImage = "img:///'UILibrary_RPG.UIPerk_ReloadSawedOff'";
+	Template.IconImage = "img:///'UILibrary_RPGO.UIPerk_ReloadSawedOff'";
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.RELOAD_PRIORITY;
 	Template.bNoConfirmationWithHotKey = true;
 	Template.bDisplayInUITooltip = false;
@@ -495,7 +495,7 @@ static function X2AbilityTemplate RpgDeepPockets()
 	local XMBEffect_AddAbilityCharges 		ChargesEffectCV, ChargesEffectMG, ChargesEffectBM;
 	local X2Condition_RequiredWeaponTech	WeaponConditionCV, WeaponConditionMG, WeaponConditionBM;
 	
-	Template = Passive('RpgDeepPockets', "img:///UILibrary_RPG.UIPerk_DeepPockets", false);
+	Template = Passive('RpgDeepPockets', "img:///UILibrary_RPGO.UIPerk_DeepPockets", false);
 	
 	// conventional
 	ChargesEffectCV = new class'XMBEffect_AddAbilityCharges';
@@ -539,7 +539,7 @@ static function X2AbilityTemplate SawedOffOverwatch()
 	local X2AbilityTemplate 				Template;
 	local X2AbilityToHitCalc_StandardAim 	ToHit;
 
-	Template = Attack('RpgSawedOffOverwatch', "img:///'UILibrary_RPG.UIPerk_SawedOffOverwatch'", false, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
+	Template = Attack('RpgSawedOffOverwatch', "img:///'UILibrary_RPGO.UIPerk_SawedOffOverwatch'", false, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
 	
 	HidePerkIcon(Template);
 	AddIconPassive(Template);
@@ -576,7 +576,7 @@ static function X2AbilityTemplate ScrapMetal()
 	UnitPropertyCondition.ExcludeHostileToSource = false;
 	PierceEffect.AbilityTargetConditions.AddItem(UnitPropertyCondition);
 	
-	Template = Passive('RpgScrapMetal', "img:///'UILibrary_RPG.UIPerk_ScrapMetal'", false, PierceEffect);
+	Template = Passive('RpgScrapMetal', "img:///'UILibrary_RPGO.UIPerk_ScrapMetal'", false, PierceEffect);
 	Template.AdditionalAbilities.AddItem('RpgScrapMetalTrigger');
 	
 	return Template;
@@ -592,7 +592,7 @@ static function X2AbilityTemplate ScrapMetalTrigger()
 	ChargesEffect.AbilityNames.AddItem('RpgSawnOffReload');
 	ChargesEffect.BonusCharges = 1;// make configurable 
 	
-	Template = SelfTargetTrigger('RpgScrapMetalTrigger', "img:///'UILibrary_RPG.UIPerk_ScrapMetal'", false, ChargesEffect, 'KillMail');
+	Template = SelfTargetTrigger('RpgScrapMetalTrigger', "img:///'UILibrary_RPGO.UIPerk_ScrapMetal'", false, ChargesEffect, 'KillMail');
 	    
 	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
 
@@ -620,7 +620,7 @@ static function X2AbilityTemplate Brutality()
 	//local X2AbilityTarget_Single 			PrimaryTarget;
 	local X2Condition_UnitProperty 			TargetCondition, UnitPropertyCondition;
 
-	Template = TargetedDebuff('RpgBrutality', "img:///'UILibrary_RPG.UIPerk_Brutality'", false, none,, eCost_None);
+	Template = TargetedDebuff('RpgBrutality', "img:///'UILibrary_RPGO.UIPerk_Brutality'", false, none,, eCost_None);
 	Template.bSkipFireAction = true;
 	Template.SourceMissSpeech = '';
 	Template.SourceHitSpeech = '';
@@ -691,7 +691,7 @@ static function X2AbilityTemplate Ruthless()
 	local X2Effect_Ruthless               		ActionPointEffect;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgRuthless');
-	Template.IconImage = "img:///'UILibrary_RPG.UIPerk_Ruthless'";
+	Template.IconImage = "img:///'UILibrary_RPGO.UIPerk_Ruthless'";
 
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;

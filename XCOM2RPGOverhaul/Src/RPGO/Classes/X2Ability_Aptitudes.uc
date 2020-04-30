@@ -852,7 +852,7 @@ static function X2AbilityTemplate Toxicologist()
 	Effect.DamageBonus = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("TOXICOLOGIST_DAMAGE_BONUS");
 
 	// Create the template using a helper function
-	Template = Passive('RpgToxicologist', "img:///UILibrary_RPG.UIPerk_Toxicologist_Aptitude", true, Effect);
+	Template = Passive('RpgToxicologist', "img:///UILibrary_RPGO.UIPerk_Toxicologist_Aptitude", true, Effect);
 
 	// Add another effect that grants a free gas grenade during each mission
 	ItemEffect = new class 'XMBEffect_AddUtilityItem';
@@ -885,7 +885,7 @@ static function X2AbilityTemplate Electrician()
 	Effect.DamageBonus = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("ELECTRICIAN_DAMAGE_BONUS");
 
 	// Create the template using a helper function
-	Template = Passive('RpgElectrician', "img:///UILibrary_RPG.UIPerk_Electrician_Aptitude", true, Effect);
+	Template = Passive('RpgElectrician', "img:///UILibrary_RPGO.UIPerk_Electrician_Aptitude", true, Effect);
 
 	// Add another effect that grants a free EMP grenade during each mission
 	ItemEffect = new class 'XMBEffect_AddUtilityItem';
@@ -930,7 +930,7 @@ static function X2AbilityTemplate Chemist()
 	Effect2.AbilityTargetConditions.AddItem(Condition);
 
 	// Create the template using a helper function
-	Template = Passive('RpgChemist', "img:///UILibrary_RPG.UIPerk_Chemist_Aptitude", true, Effect);
+	Template = Passive('RpgChemist', "img:///UILibrary_RPGO.UIPerk_Chemist_Aptitude", true, Effect);
 
 	// Add another effect that grants a free acid grenade during each mission
 	ItemEffect = new class 'XMBEffect_AddUtilityItem';
@@ -965,7 +965,7 @@ static function X2AbilityTemplate Pyromaniac()
 	Effect.DamageBonus = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PYROMANIAC_DAMAGE_BONUS");
 
 	// Create the template using a helper function
-	Template = Passive('RpgPyromaniac', "img:///UILibrary_RPG.UIPerk_Pyromaniac_Aptitude", true, Effect);
+	Template = Passive('RpgPyromaniac', "img:///UILibrary_RPGO.UIPerk_Pyromaniac_Aptitude", true, Effect);
 
 	// Add another effect that grants a free incendiary grenade during each mission
 	ItemEffect = new class 'XMBEffect_AddUtilityItem';
