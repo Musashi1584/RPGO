@@ -11,6 +11,11 @@ var config array<SoldierClassAbilityType> AdditionalRandomAptitudes;
 // in default rpgo mode you still have all enabled specs available
 var config array<name> RequiredAbilities;
 
+// These abilities get added as squaddie abilities if the spec is added by random or cc
+// see class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations()
+// and class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities()
+var config array<name> AdditionalSquaddieAbilities;
+
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 

@@ -11,6 +11,7 @@ static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
+	Templates.AddItem(CreateListenerTemplate_OnRPGOSpecializationsAssigned());
 	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
 	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
@@ -21,6 +22,21 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CreateListenerTemplate_WeaponRestrictionsLoadout());
 
 	return Templates;
+}
+
+static function CHEventListenerTemplate CreateListenerTemplate_OnRPGOSpecializationsAssigned()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'RPGOSpecializationsAssigned');
+
+	Template.RegisterInStrategy = true;
+
+	Template.AddCHEvent('RPGOSpecializationsAssigned', OnRPGOSpecializationsAssigned, ELD_Immediate);
+
+	`LOG(default.class @ "Register Event OnRPGOSpecializationsAssigned",, 'RPG');
+
+	return Template;
 }
 
 static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
@@ -105,8 +121,32 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnSecondWaveChang
 	return Template;
 }
 
+static function EventListenerReturn OnRPGOSpecializationsAssigned(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
+{
+	local XComGameState_Unit UnitState;
 
-static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
+
+	if (!class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
+	{
+		return ELR_NoInterrupt;
+	}
+
+	UnitState = XComGameState_Unit(EventData);
+	
+	if (UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	{
+		`LOG(default.class @ GetFuncName() @ "AddAdditionalSquaddieAbilities to" @ UnitState.SummaryString(),, 'RPG');
+
+		UnitState = XComGameState_Unit(GameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+
+		class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities(GameState, UnitState);
+	}
+
+	return ELR_NoInterrupt;
+}
+
+static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
@@ -115,7 +155,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 	local XComGameStateHistory History;
 	local bool bCreatedOwnGameState;
 
-	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
 
 	History = `XCOMHISTORY;
 
@@ -157,11 +197,11 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			{
 				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
 				bCreatedOwnGameState = true;
-				`LOG("Created my own state, I should submit it." @ getfuncname(),, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Created own state" @ NewGameState,, 'RPG');
 			}
 			else
 			{
-				`LOG("Using given state." @ getfuncname(),, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Using given state" @ GameState,, 'RPG');
 				NewGameState = GameState;
 			}
 
@@ -178,10 +218,14 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 
 			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
 
-			//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+			if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations())
+			{
+				`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+			}
+
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
 			{
-				`LOG("Submitting Game State" @ getfuncname(),, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
 				`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 			}
 		}
@@ -622,7 +666,10 @@ static function EventListenerReturn RandomClasses_PromotionEventListener(Object 
 	local XComGameState_Unit UnitState;
  
 	//	Do nothing if Commander's Choice is enabled; equipping new weapons on the soldier after their promotion is handled elsewhere.
-	if (`SecondWaveEnabled('RPGOCommandersChoice')) return ELR_NoInterrupt;
+	if (`SecondWaveEnabled('RPGOCommandersChoice'))
+	{
+		return ELR_NoInterrupt;
+	}
 
 	UnitState = XComGameState_Unit(EventData);
 	//`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
@@ -679,7 +726,8 @@ public static function WeaponRestrictions_EquipNewWeaponsOnSoldier(int UnitObjec
 	XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
  
 	// try to fix weird behavior caused by CanAddItemToInventory_WeaponRestrictions
-	UnitState.bIgnoreItemEquipRestrictions = true;
+	// Commented out for now (06.06.2020)
+	//UnitState.bIgnoreItemEquipRestrictions = true;
 
 	OldWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
 	if (OldWeaponState != none)
@@ -791,7 +839,8 @@ public static function WeaponRestrictions_EquipNewWeaponsOnSoldier(int UnitObjec
 		}
 	}
 
-	UnitState.bIgnoreItemEquipRestrictions = false;
+	// Commented out for now (06.06.2020)
+	//UnitState.bIgnoreItemEquipRestrictions = false;
 
 	if (UseGameState == none)
 	{

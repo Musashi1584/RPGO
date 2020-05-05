@@ -134,7 +134,7 @@ static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out a
 static function bool CanAddItemToInventory_CH(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
 	//	Weapon restrictions
-	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
 	{
 		return class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory_WeaponRestrictions(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 	}

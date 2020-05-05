@@ -112,6 +112,8 @@ function bool OnAllSpecSelected()
 		`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
 		class'X2EventListener_RPG_StrategyListener'.static.WeaponRestrictions_EquipNewWeaponsOnSoldier(UnitState.ObjectID, NewGameState);
 	}
+
+	`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
 	
 	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
 
