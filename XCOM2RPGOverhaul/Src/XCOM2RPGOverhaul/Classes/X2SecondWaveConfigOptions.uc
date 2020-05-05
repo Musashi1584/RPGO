@@ -27,7 +27,19 @@ function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
 		 class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount() > 0);
 }
 
+function static bool HasLimitedSpecializations()
+{
+	return `SecondWaveEnabled('RPGOCommandersChoice') || 
+			`SecondWaveEnabled('RPGOSpecRoulette') || 
+			`SecondWaveEnabled('RPGO_SWO_RandomClasses');
+}
 
+function static bool HasPureRandomSpecializations()
+{
+	return !`SecondWaveEnabled('RPGOCommandersChoice') &&
+			(`SecondWaveEnabled('RPGOSpecRoulette') || 
+			`SecondWaveEnabled('RPGO_SWO_RandomClasses'));
+}
 
 static function int GetSpecRouletteCount()
 {

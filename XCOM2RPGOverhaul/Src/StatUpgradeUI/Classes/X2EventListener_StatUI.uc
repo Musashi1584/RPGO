@@ -70,8 +70,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 
 	UnitState = XComGameState_Unit(EventSource);
 
-	if (UnitState != none && IsClassEnabled(UnitState)
-	)
+	if (UnitState != none && IsClassEnabled(UnitState))
 	{
 		SpentSoldierSP = GetSpentSoldierSP(UnitState);
 		SoldierSP = GetSoldierSP(UnitState);
@@ -129,13 +128,13 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 	{
 		StatPointsPerPromotion = GetClassStatPointsPerPromition(UnitState);
 		BonusStatPointsNaturalAptitude = class'StatUIHelper'.static.GetBonusStatPointsFromNaturalAptitude(UnitState);
-		UnitState = XComGameState_Unit(GameState.CreateStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+		UnitState = XComGameState_Unit(GameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
 		
 		`LOG(default.Class @ GetFuncName() @ UnitState.GetSoldierClassTemplateName() @ "StatPointsValue" @ int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @ StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @ BonusStatPointsNaturalAptitude,, 'RPG');
 
 		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion + BonusStatPointsNaturalAptitude, eCleanup_Never);
-		GameState.AddStateObject(UnitState);
+		//GameState.AddStateObject(UnitState);
 	}
 
 	return ELR_NoInterrupt;

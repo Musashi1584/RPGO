@@ -5,6 +5,60 @@ class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate config (JustFo
 var config bool bHasProcessedSpecs;
 var config array<SoldierSpecialization> CachedSpecializations;
 
+
+static function AddAdditionalSquaddieAbilities(
+	XComGameState NewGameState,
+	XComGameState_Unit UnitState
+)
+{
+	local X2SoldierClassTemplate ClassTemplate;
+	local SoldierClassAbilityType AbilityType;
+	local array<X2UniversalSoldierClassInfo> SpecTemplates;
+	local X2UniversalSoldierClassInfo SpecTemplate;
+	local X2AbilityTemplate AbilityTemplate;
+	local SCATProgression	AbilityProgression;
+	local int iAbilityBranch;
+	local name AbilityName;
+	local array<name> AdditionalSquaddieAbilities;
+
+	ClassTemplate = UnitState.GetSoldierClassTemplate();
+
+	if(ClassTemplate != none && ClassTemplate.DataName == 'UniversalSoldier')
+	{
+		SpecTemplates = GetAssignedSpecializationTemplates(UnitState);
+		foreach SpecTemplates(SpecTemplate)
+		{
+			
+			foreach SpecTemplate.AdditionalSquaddieAbilities(AbilityName)
+			{
+				if (AdditionalSquaddieAbilities.Find(AbilityName) == INDEX_NONE)
+				{
+					AdditionalSquaddieAbilities.AddItem(AbilityName);
+				}
+			}
+		}
+
+		iAbilityBranch = UnitState.AbilityTree[0].Abilities.Length;
+		
+		foreach AdditionalSquaddieAbilities(AbilityName)
+		{
+			AbilityTemplate = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(AbilityName);
+			if (AbilityTemplate != none)
+			{
+				AbilityType.AbilityName = AbilityTemplate.DataName;
+				AbilityType.ApplyToWeaponSlot = AbilityTemplate.DefaultSourceItemSlot;
+				UnitState.AbilityTree[0].Abilities.AddItem(AbilityType);
+
+				AbilityProgression = UnitState.GetSCATProgressionForAbility(AbilityTemplate.DataName);
+				UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
+
+				`LOG(default.class @ GetFuncName() @ "adding" @ AbilityName @ `ShowVar(AbilityProgression.iRank) @ `ShowVar(AbilityProgression.iBranch),, 'RPG');
+				iAbilityBranch++;
+			}
+		}
+	}
+}
+
 static function array<X2AbilityTemplate> GetRandomStartingAbilities(XComGameState_Unit UnitState, int Count)
 {
 	local X2SoldierClassTemplate ClassTemplate;
@@ -546,7 +600,7 @@ static function SetupSpecialization(name SoldierClassTemplate)
 	}
 }
 
-// get all ability templates for a certain spec
+// get all ability template for a certain spec
 static function array<X2AbilityTemplate> GetAbilityTemplatesForSpecializations(SoldierSpecialization Spec)
 {
 	return GetSpecializationTemplate(Spec).GetAbilityTemplates();
@@ -945,6 +999,21 @@ static function array<SoldierSpecialization> GetAssignedSpecializations(XComGame
 	return Specs;
 }
 
+static function array<X2UniversalSoldierClassInfo> GetAssignedSpecializationTemplates(XComGameState_Unit UnitState)
+{
+	local array<X2UniversalSoldierClassInfo> Templates;
+	local array<SoldierSpecialization> Specs;
+	local SoldierSpecialization Spec;
+
+	Specs = GetAssignedSpecializations(UnitState);
+	foreach Specs(Spec)
+	{
+		Templates.AddItem(GetSpecializationTemplate(Spec));
+	}
+	return Templates;
+}
+
+
 static function bool GetSpecializationForSlotFromAssignedSpecs(XComGameState_Unit UnitState, int SlotIndex, out SoldierSpecialization Spec)
 {
 	local array<SoldierSpecialization> Specs;
@@ -958,12 +1027,15 @@ static function bool GetSpecializationForSlotFromAssignedSpecs(XComGameState_Uni
 	local bool bFound;
 
 	//`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @ UnitState.GetSoldierClassTemplateName(),, 'RPG');
-	
-	for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
+
+	if (SlotIndex != INDEX_NONE)
 	{
-		if (UnitState.AbilityTree.Length > Index && UnitState.AbilityTree[Index].Abilities.Length > SlotIndex)
+		for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
 		{
-			SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
+			if (UnitState.AbilityTree.Length > Index && UnitState.AbilityTree[Index].Abilities.Length > SlotIndex)
+			{
+				SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
+			}
 		}
 	}
 
