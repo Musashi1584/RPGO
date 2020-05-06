@@ -592,8 +592,9 @@ static function CHEventListenerTemplate CreateListenerTemplate_WeaponRestriction
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_OnStateSubmitted);
-	`LOG(default.class @ "Register Event OnBestGearLoadoutApplied",, 'RPG');
+	//Template.AddCHEvent('OnBestGearLoadoutApplied', OnBestGearLoadoutApplied_Listener, ELD_OnStateSubmitted);
+	Template.AddCHEvent('rjSquadSelect_UpdateData', OnBestGearLoadoutApplied_Listener, ELD_OnStateSubmitted);
+	`LOG(default.class @ "Register Event rjSquadSelect_UpdateData",, 'RPG');
 
 	Template.AddCHEvent('RPGOSpecializationsAssigned', RandomClasses_PromotionEventListener, ELD_OnStateSubmitted);	
 
@@ -610,52 +611,64 @@ static function EventListenerReturn OnBestGearLoadoutApplied_Listener(Object Eve
 	local XComGameState_Item	SecondaryWeaponState;
 	local XComGameState_HeadquartersXCom	XComHQ;
 	local array<name>						AllowedWeaponCategories;
+	local XComGameStateHistory	History;
+	local StateObjectReference	UnitRef;
 
-	UnitState = XComGameState_Unit(EventData);
-	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
+	//`LOG("OnBestGearLoadoutApplied running.",, 'RPG');
+
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
-		`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'RPG');
-
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Weapon Restrictions: re-equip new items");
-		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
-
+		History = `XCOMHISTORY;
 		XComHQ = `XCOMHQ;
 		XComHQ = XComGameState_HeadquartersXCom(NewGameState.ModifyStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
 
-		PrimaryWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
-		SecondaryWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
-
-		`LOG("Current Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
-		`LOG("Current Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
-
-		if (PrimaryWeaponState == none)
+		foreach XComHQ.Crew(UnitRef)
 		{
-			AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
-
-			PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
-
-			if (PrimaryWeaponState != none)
+			UnitState = XComGameState_Unit(History.GetGameStateForObjectID(UnitRef.ObjectID));
+			if (UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && UnitState.IsSoldier() && UnitState.IsAlive())
 			{
-				if (UnitState.AddItemToInventory(PrimaryWeaponState, eInvSlot_PrimaryWeapon, NewGameState))
+				//`LOG("OnBestGearLoadoutApplied for " @ UnitState.GetFullName(),, 'RPG');
+				PrimaryWeaponState = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
+				SecondaryWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
+
+				if (PrimaryWeaponState == none || SecondaryWeaponState == none)
 				{
-					bChangedSomething = true;
-					`LOG("New Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
-				}
-			}
-		}
+					UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
+					//`LOG("Current Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
+					//`LOG("Current Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
 
-		if (SecondaryWeaponState == none)
-		{
-			AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
+					if (PrimaryWeaponState == none)
+					{
+						AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
 
-			SecondaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
+						PrimaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_PrimaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
 
-			if (PrimaryWeaponState != none)
-			{
-				if (UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState))
-				{
-					bChangedSomething = true;
-					`LOG("New Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
+						if (PrimaryWeaponState != none)
+						{
+							if (UnitState.AddItemToInventory(PrimaryWeaponState, eInvSlot_PrimaryWeapon, NewGameState))
+							{
+								bChangedSomething = true;
+								//`LOG("New Primary Weapon " @ PrimaryWeaponState.GetMyTemplateName(),, 'RPG');
+							}
+						}
+					}
+
+					if (SecondaryWeaponState == none)
+					{
+						AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
+
+						SecondaryWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
+
+						if (PrimaryWeaponState != none)
+						{
+							if (UnitState.AddItemToInventory(SecondaryWeaponState, eInvSlot_SecondaryWeapon, NewGameState))
+							{
+								bChangedSomething = true;
+								//`LOG("New Secondary Weapon " @ SecondaryWeaponState.GetMyTemplateName(),, 'RPG');
+							}
+						}
+					}
 				}
 			}
 		}
@@ -677,7 +690,7 @@ static function EventListenerReturn RandomClasses_PromotionEventListener(Object 
 	local XComGameState_Unit UnitState;
 
 	UnitState = XComGameState_Unit(EventData);
-	`LOG("RPGO Soldier promotion event: " @ UnitState.GetFullName(),, 'RPG');
+	//`LOG("RPGO Soldier promotion event: " @ UnitState.GetFullName(),, 'RPG');
 
 	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
 	{
@@ -685,7 +698,7 @@ static function EventListenerReturn RandomClasses_PromotionEventListener(Object 
 		//	Proceed only if both Weapon Restrictions and Random Classes SWOs are enabled. 
 		if (UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
-			`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
+			//`LOG("Weapon Restrictions: equipping new weapons on soldier:" @ UnitState.GetFullname() @ getfuncname(),, 'RPG');
 			WeaponRestrictions_EquipNewWeaponsOnSoldier(UnitState.ObjectID);
 		}
 	}
