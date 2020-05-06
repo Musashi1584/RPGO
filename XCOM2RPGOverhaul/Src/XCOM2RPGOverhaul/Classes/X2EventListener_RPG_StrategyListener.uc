@@ -226,7 +226,8 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
 			{
 				`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
-				`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+				//`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+				`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 			}
 		}
 	}
