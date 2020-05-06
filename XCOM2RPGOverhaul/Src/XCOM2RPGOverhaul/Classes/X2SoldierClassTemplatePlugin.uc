@@ -28,11 +28,18 @@ static function AddAdditionalSquaddieAbilities(
 		SpecTemplates = GetAssignedSpecializationTemplates(UnitState);
 		foreach SpecTemplates(SpecTemplate)
 		{
-			
+			if (SpecTemplate.AdditionalSquaddieAbilities.Length == 0 ||
+				(!class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations() &&
+				GetNumSoldierAbilitiesFromSpecialization(UnitState, SpecTemplate.Name) == 0))
+			{
+				continue;
+			}
+
 			foreach SpecTemplate.AdditionalSquaddieAbilities(AbilityName)
 			{
-				if (AdditionalSquaddieAbilities.Find(AbilityName) == INDEX_NONE)
+				if (AdditionalSquaddieAbilities.Find(AbilityName) == INDEX_NONE && !UnitState.HasSoldierAbility(AbilityName))
 				{
+					`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @ "adding" @ AbilityName @ "from" @ SpecTemplate.Name,, 'RPG');
 					AdditionalSquaddieAbilities.AddItem(AbilityName);
 				}
 			}
@@ -52,7 +59,7 @@ static function AddAdditionalSquaddieAbilities(
 				AbilityProgression = UnitState.GetSCATProgressionForAbility(AbilityTemplate.DataName);
 				UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
 
-				`LOG(default.class @ GetFuncName() @ "adding" @ AbilityName @ `ShowVar(AbilityProgression.iRank) @ `ShowVar(AbilityProgression.iBranch),, 'RPG');
+				//`LOG(default.class @ GetFuncName() @ "adding" @ AbilityName @ `ShowVar(AbilityProgression.iRank) @ `ShowVar(AbilityProgression.iBranch),, 'RPG');
 				iAbilityBranch++;
 			}
 		}
@@ -866,6 +873,32 @@ static function bool HasSpecializationAssigned(XComGameState_Unit UnitState, nam
 	return (Index != INDEX_NONE);
 }
 
+static function int GetNumSoldierAbilitiesFromSpecialization(XComGameState_Unit UnitState, name TemplateName)
+{
+	local array<SoldierRankAbilities> AbilityTree;
+	local array<SoldierClassAbilityType> Abilities;
+	local int RankIndex, RowIndex, AbilityCount;
+	local SoldierClassAbilityType Ability;
+
+	AbilityTree = UnitState.AbilityTree;
+	RowIndex = GetSpecializationIndex(UnitState, TemplateName);
+
+	// Exclude squaddie rank so we start at index 1
+	for (RankIndex = 1; RankIndex < AbilityTree.Length; RankIndex++)
+	{
+		Abilities = AbilityTree[RankIndex].Abilities;
+		Ability = Abilities[RowIndex];
+
+		if (UnitState.HasSoldierAbility(Ability.AbilityName))
+		{
+			AbilityCount++;
+		}
+	}
+
+	return AbilityCount;
+}
+
+
 static function bool HasTrainedPrimaryWeaponSpecializations(XComGameState_Unit UnitState)
 {
 	local array<SoldierSpecialization> Specs;
@@ -1013,7 +1046,7 @@ static function array<X2UniversalSoldierClassInfo> GetAssignedSpecializationTemp
 	return Templates;
 }
 
-
+// Get Specialization by checking abilities in a specified row (SlotIndex)
 static function bool GetSpecializationForSlotFromAssignedSpecs(XComGameState_Unit UnitState, int SlotIndex, out SoldierSpecialization Spec)
 {
 	local array<SoldierSpecialization> Specs;
@@ -1028,16 +1061,19 @@ static function bool GetSpecializationForSlotFromAssignedSpecs(XComGameState_Uni
 
 	//`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @ UnitState.GetSoldierClassTemplateName(),, 'RPG');
 
-	if (SlotIndex != INDEX_NONE)
+	if (SlotIndex == INDEX_NONE)
 	{
-		for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
+		return false;
+	}
+
+	for (Index = 1; Index < UnitState.GetSoldierClassTemplate().GetMaxConfiguredRank(); Index++)
+	{
+		if (UnitState.AbilityTree.Length > Index && UnitState.AbilityTree[Index].Abilities.Length > SlotIndex)
 		{
-			if (UnitState.AbilityTree.Length > Index && UnitState.AbilityTree[Index].Abilities.Length > SlotIndex)
-			{
-				SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
-			}
+			SoldierAbilitiesForSlot.AddItem(UnitState.AbilityTree[Index].Abilities[SlotIndex].AbilityName);
 		}
 	}
+
 
 	Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
 

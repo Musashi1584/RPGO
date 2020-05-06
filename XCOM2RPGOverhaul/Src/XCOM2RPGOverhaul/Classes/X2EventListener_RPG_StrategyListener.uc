@@ -11,7 +11,7 @@ static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
-	Templates.AddItem(CreateListenerTemplate_OnRPGOSpecializationsAssigned());
+	Templates.AddItem(CreateListenerTemplate_AddAdditionialSquaddieAbilities());
 	Templates.AddItem(CreateListenerTemplate_OnUnitRankUp());
 	Templates.AddItem(CreateListenerTemplate_OnCompleteRespecSoldier());
 	Templates.AddItem(CreateListenerTemplate_OnSoldierInfo());
@@ -24,7 +24,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Templates;
 }
 
-static function CHEventListenerTemplate CreateListenerTemplate_OnRPGOSpecializationsAssigned()
+static function CHEventListenerTemplate CreateListenerTemplate_AddAdditionialSquaddieAbilities()
 {
 	local CHEventListenerTemplate Template;
 
@@ -32,9 +32,10 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnRPGOSpecializat
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('RPGOSpecializationsAssigned', OnRPGOSpecializationsAssigned, ELD_Immediate);
+	Template.AddCHEvent('RPGOSpecializationsAssigned', AddAdditionialSquaddieAbilities, ELD_OnStateSubmitted);
+	Template.AddCHEvent('PurchasedSoldierProgressionAbility', AddAdditionialSquaddieAbilities, ELD_OnStateSubmitted);
 
-	`LOG(default.class @ "Register Event OnRPGOSpecializationsAssigned",, 'RPG');
+	`LOG(default.class @ "Register Event AddAdditionialSquaddieAbilities",, 'RPG');
 
 	return Template;
 }
@@ -47,10 +48,10 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_OnStateSubmitted);
+	Template.AddCHEvent('UnitRankUp', AssignSoldierSpecializations, ELD_OnStateSubmitted);
 	// compatibility with Commanders Choice Wotc
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUpSecondWaveRoulette, ELD_Immediate);
-	`LOG(default.class @ "Register Event OnUnitRankUpSecondWaveRoulette",, 'RPG');
+	Template.AddCHEvent('UnitRankUp', AssignSoldierSpecializations, ELD_Immediate);
+	`LOG(default.class @ "Register Event AssignSoldierSpecializations",, 'RPG');
 
 	return Template;
 }
@@ -121,16 +122,17 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnSecondWaveChang
 	return Template;
 }
 
-static function EventListenerReturn OnRPGOSpecializationsAssigned(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
+static function EventListenerReturn AddAdditionialSquaddieAbilities(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
+	local XComGameState NewGameState;
 
 	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
 
-	if (!class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
-	{
-		return ELR_NoInterrupt;
-	}
+	//if (!class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
+	//{
+	//	return ELR_NoInterrupt;
+	//}
 
 	UnitState = XComGameState_Unit(EventData);
 	
@@ -138,15 +140,22 @@ static function EventListenerReturn OnRPGOSpecializationsAssigned(Object EventDa
 	{
 		`LOG(default.class @ GetFuncName() @ "AddAdditionalSquaddieAbilities to" @ UnitState.SummaryString(),, 'RPG');
 
-		UnitState = XComGameState_Unit(GameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("ADD_ADDITIONAL_SQUADDIE_ABILITIES");
+		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 
-		class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities(GameState, UnitState);
+		class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities(NewGameState, UnitState);
+
+		if (NewGameState.GetNumGameStateObjects() > 0)
+		{
+			`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
+			`GAMERULES.SubmitGameState(NewGameState);
+		}
 	}
 
 	return ELR_NoInterrupt;
 }
 
-static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
+static function EventListenerReturn AssignSoldierSpecializations(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
@@ -181,9 +190,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			,, 'RPG');
 
 		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-			AddedRandomSpecs.fValue != 1 &&
-			(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGOTrainingRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
-		)
+			AddedRandomSpecs.fValue != 1)
 		{
 			`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
 				"RPGOSpecRoulette Randomizing starting specs" @
@@ -215,6 +222,10 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
 			}
+			else
+			{
+				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, false);
+			}
 
 			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
 
@@ -226,7 +237,7 @@ static function EventListenerReturn OnUnitRankUpSecondWaveRoulette(Object EventD
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
 			{
 				`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
-				`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+				`GAMERULES.SubmitGameState(NewGameState);
 			}
 		}
 	}
@@ -438,7 +449,7 @@ static function EventListenerReturn OnSecondWaveChanged(Object EventData, Object
 	//		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
 	//			AddedRandomSpecs.fValue != 1)
 	//		{
-	//			OnUnitRankUpSecondWaveRoulette(UnitState, none, GameState, '', none);
+	//			AssignSoldierSpecializations(UnitState, none, GameState, '', none);
 	//		}
 	//	}
 	//
@@ -496,9 +507,6 @@ static function name GetSpecializationName(XComGameState_Unit UnitState)
 	local X2UniversalSoldierClassInfo Spec;
 	
 	RowIndex = GetSoldierSpecialization(UnitState);
-
-	//class'X2TemplateHelper_RPGOverhaul'.default.Specializations.Sort(SortSpecializations);
-	//Specs = class'X2TemplateHelper_RPGOverhaul'.default.Specializations;
 
 	Spec = class'X2SoldierClassTemplatePlugin'.static.GetSpecTemplateBySlotFromAssignedSpecs(UnitState, RowIndex);
 	

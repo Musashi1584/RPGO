@@ -14,6 +14,7 @@ var config array<name> RequiredAbilities;
 // These abilities get added as squaddie abilities if the spec is added by random or cc
 // see class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations()
 // and class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities()
+// or in default rpgo mode they are added as soon as any ability from the spec tree is purchased
 var config array<name> AdditionalSquaddieAbilities;
 
 var localized string ClassSpecializationSummary;

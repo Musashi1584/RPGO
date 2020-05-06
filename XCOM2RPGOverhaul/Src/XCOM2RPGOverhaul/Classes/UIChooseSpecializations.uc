@@ -115,7 +115,7 @@ function bool OnAllSpecSelected()
 
 	`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
 	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	`GAMERULES.SubmitGameState(NewGameState);
 
 	if (AcceptAbilities != none)
 	{

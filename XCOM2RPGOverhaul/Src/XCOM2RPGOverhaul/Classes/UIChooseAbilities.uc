@@ -76,7 +76,7 @@ function bool OnAllAbiltiesSelected()
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 1, eCleanup_Never);
 	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	`GAMERULES.SubmitGameState(NewGameState);
 	
 	if (AcceptAbilities != none)
 	{

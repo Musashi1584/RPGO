@@ -966,6 +966,40 @@ simulated function ConfirmAbilitySelection(int Rank, int Branch)
 	Movie.Pres.UIRaiseDialog(DialogData);
 }
 
+simulated function ComfirmAbilityCallback(Name Action)
+{
+	local XComGameStateHistory History;
+	local bool bSuccess;
+	local XComGameState UpdateState;
+	local XComGameState_Unit UpdatedUnit;
+	local XComGameStateContext_ChangeContainer ChangeContainer;
+
+	if (Action == 'eUIAction_Accept')
+	{
+		History = `XCOMHISTORY;
+		ChangeContainer = class'XComGameStateContext_ChangeContainer'.static.CreateEmptyChangeContainer("Resistance Hero Promotion");
+		UpdateState = History.CreateNewGameState(true, ChangeContainer);
+
+		UpdatedUnit = XComGameState_Unit(UpdateState.ModifyStateObject(class'XComGameState_Unit', GetUnit().ObjectID));
+		bSuccess = UpdatedUnit.BuySoldierProgressionAbility(UpdateState, PendingRank, PendingBranch, GetAbilityPointCost(PendingRank, PendingBranch));
+
+		if (bSuccess)
+		{
+			`XEVENTMGR.TriggerEvent('PurchasedSoldierProgressionAbility', UpdatedUnit, UpdatedUnit, UpdateState);
+			`GAMERULES.SubmitGameState(UpdateState);
+
+			Header.PopulateData();
+			PopulateData();
+		}
+		else
+			History.CleanupPendingGameState(UpdateState);
+
+		Movie.Pres.PlayUISound(eSUISound_SoldierPromotion);
+	}
+	else
+		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
+}
+
 //New functions
 simulated function string GetPromotionBlueprintTag(StateObjectReference UnitRef)
 {
