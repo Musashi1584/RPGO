@@ -96,6 +96,8 @@ static function ResetSoldierStats(XComGameState_Unit UnitState)
 	StatTypesToReset.AddItem(eStat_Defense);
 	StatTypesToReset.AddItem(eStat_Mobility);
 	StatTypesToReset.AddItem(eStat_SightRadius);
+	StatTypesToReset.AddItem(eStat_Dodge);
+	StatTypesToReset.AddItem(eStat_Hacking);
 	StatTypesToReset.AddItem(eStat_Will);
 	StatTypesToReset.AddItem(eStat_FlightFuel);
 	StatTypesToReset.AddItem(eStat_UtilityItems);
