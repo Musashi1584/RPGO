@@ -37,7 +37,7 @@ simulated function OnInit()
 {
 	super.OnInit();
 
-	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPGO-PromotionScreen');
 
 	if (HasBrigadierRank())
 	{
@@ -205,7 +205,7 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 {
 	local XComGameState_Unit Unit; // bsg-nlong (1.25.17): Used to determine which column we should start highlighting
 
-	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPGO-PromotionScreen');
 
 	Position = 0;
 	SelectedSpecs.Length = 0;
@@ -230,7 +230,7 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
 
-	`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPG-PromotionScreen');
+	`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPGO-PromotionScreen');
 
 	InitColumns();
 
@@ -271,13 +271,13 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	if (class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(Unit))
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOOrigins SpawnChooseAbilityScreen",, 'RPG-PromotionScreen');
+		`LOG(default.class @ GetFuncName() @ "RPGOOrigins SpawnChooseAbilityScreen",, 'RPGO-PromotionScreen');
 		SpawnChooseAbilityScreen(Unit);
 	}
 
 	if (class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(Unit))
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseSpecScreen",, 'RPG-PromotionScreen');
+		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseSpecScreen",, 'RPGO-PromotionScreen');
 		SpawnChooseSpecScreen(Unit);
 	}
 }
@@ -355,9 +355,12 @@ simulated function PopulateData()
 
 	AS_SetRank(rankIcon);
 	AS_SetClass(classIcon);
-	AS_SetFaction(FactionState.GetFactionIcon());
+	if (FactionState != none)
+	{
+		AS_SetFaction(FactionState.GetFactionIcon());
+	}
 
-	AS_SetHeaderData(Caps(FactionState.GetFactionTitle()), Caps(Unit.GetName(eNameType_FullNick)), HeaderString, m_strSharedAPLabel, m_strSoldierAPLabel);
+	AS_SetHeaderData(Caps((FactionState != none) ? FactionState.GetFactionTitle() : ""), Caps(Unit.GetName(eNameType_FullNick)), HeaderString, m_strSharedAPLabel, m_strSoldierAPLabel);
 	AS_SetAPData(GetSharedAbilityPoints(), Unit.AbilityPoints);
 	AS_SetCombatIntelData(Unit.GetCombatIntelligenceLabel());
 	
@@ -379,7 +382,7 @@ simulated function PopulateData()
 		bHasColumnAbility = UpdateAbilityIcons_Override(Column);
 		bHighlightColumn = (!bHasColumnAbility && (iRank+1) == Unit.GetRank());
 
-		//`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPG-PromotionScreen');
+		//`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPGO-PromotionScreen');
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
 	
@@ -410,7 +413,7 @@ function bool HasBrigadierRank()
 	
 	Unit = GetUnit();
 	
-	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'RPGO-PromotionScreen');
 
 	return Unit.AbilityTree.Length > 7;
 }
@@ -437,6 +440,11 @@ function bool UpdateAbilityIcons_Override(out RPGO_UIArmory_PromotionHeroColumn 
 
 	for (iAbility = Position; iAbility < Position + NUM_ABILITIES_PER_COLUMN; iAbility++)
 	{
+		if (iAbility >= AbilityTree.Length)
+		{
+			continue;
+		}
+
 		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityTree[iAbility].AbilityName);
 		
 		if (AbilityTemplate != none)
@@ -444,7 +452,7 @@ function bool UpdateAbilityIcons_Override(out RPGO_UIArmory_PromotionHeroColumn 
 			if (Column.AbilityNames.Find(AbilityTemplate.DataName) == INDEX_NONE)
 			{
 				Column.AbilityNames.AddItem(AbilityTemplate.DataName);
-				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'RPG-PromotionScreen');
+				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'RPGO-PromotionScreen');
 			}
 
 			// The unit is not yet at the rank needed for this column

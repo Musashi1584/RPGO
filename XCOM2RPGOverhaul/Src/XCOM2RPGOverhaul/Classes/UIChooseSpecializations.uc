@@ -105,11 +105,11 @@ function bool OnAllSpecSelected()
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
 
 	`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
 	
 	`GAMERULES.SubmitGameState(NewGameState);
-	`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 
 	if (AcceptAbilities != none)
 	{
@@ -164,8 +164,14 @@ simulated function string GetComplementarySpecializationInfo(X2UniversalSoldierC
 
 simulated function PopulateChosen()
 {
+	local UIPanel SelectedItem;
 	super.PopulateChosen();
-	UIInventory_SpecializationListItem(ChosenList.GetSelectedItem()).iUpdateColor = 6;
+
+	SelectedItem = ChosenList.GetSelectedItem();
+	if (SelectedItem != none)
+	{
+		UIInventory_SpecializationListItem(SelectedItem).iUpdateColor = 6;
+	}
 }
 
 simulated function AddToChosenList(int Index)

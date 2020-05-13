@@ -17,7 +17,7 @@ static function AddAdditionalSquaddieAbilities(
 	local X2UniversalSoldierClassInfo SpecTemplate;
 	local X2AbilityTemplate AbilityTemplate;
 	local SCATProgression	AbilityProgression;
-	local int iAbilityBranch;
+	//local int iAbilityBranch;
 	local name AbilityName;
 	local array<name> AdditionalSquaddieAbilities;
 
@@ -45,7 +45,7 @@ static function AddAdditionalSquaddieAbilities(
 			}
 		}
 
-		iAbilityBranch = UnitState.AbilityTree[0].Abilities.Length;
+		//iAbilityBranch = UnitState.AbilityTree[0].Abilities.Length;
 		
 		foreach AdditionalSquaddieAbilities(AbilityName)
 		{
@@ -60,7 +60,7 @@ static function AddAdditionalSquaddieAbilities(
 				UnitState.BuySoldierProgressionAbility(NewGameState, AbilityProgression.iRank, AbilityProgression.iBranch);
 
 				//`LOG(default.class @ GetFuncName() @ "adding" @ AbilityName @ `ShowVar(AbilityProgression.iRank) @ `ShowVar(AbilityProgression.iBranch),, 'RPG');
-				iAbilityBranch++;
+				//iAbilityBranch++;
 			}
 		}
 	}

@@ -23,7 +23,10 @@ simulated function RealizeSpecializationsIcons()
 	local UIPanel Dummy;
 	Templates = GetSpecializationAbilities();
 
-	ConfirmButton.SetY(InitPosY);
+	if (ConfirmButton != none)
+	{
+		ConfirmButton.SetY(InitPosY);
+	}
 	// We need a non-navigable "fire wall" between the list item and the icon row...
 	Dummy = Spawn(class'UIPanel', self);
 	Dummy.bIsNavigable = false;

@@ -41,8 +41,8 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnUnitRankUp()
 		
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('UnitRankUp', OnUnitRankUp, ELD_Immediate);
-	`LOG(default.Class @ "Register Event OnUnitRankUp",, 'RPG');
+	Template.AddCHEvent('UnitRankUp', OnUnitRankUpStats, ELD_Immediate);
+	`LOG(default.Class @ "Register Event OnUnitRankUpStats",, 'RPG');
 
 	return Template;
 }
@@ -61,12 +61,12 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 	return Template;
 }
 
-static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
 	local int SpentSoldierSP, SoldierSP;
 
-	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPGO-Promotion');
 
 	UnitState = XComGameState_Unit(EventSource);
 
@@ -78,7 +78,7 @@ static function EventListenerReturn OnCompleteRespecSoldier(Object EventData, Ob
 		ResetSoldierStats(UnitState);
 		UnitState.SetUnitFloatValue('StatPoints', SoldierSP + SpentSoldierSP, eCleanup_Never);
 		UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
-		`LOG(default.class @ GetFuncName() @ "new StatPoints" @ SoldierSP + SpentSoldierSP @ "SpentStatPoints 0",, 'RPG');
+		`LOG(default.class @ GetFuncName() @ "new StatPoints" @ SoldierSP + SpentSoldierSP @ "SpentStatPoints 0",, 'RPGO-Promotion');
 	}
 
 	return ELR_NoInterrupt;
@@ -116,13 +116,13 @@ static function ResetSoldierStats(XComGameState_Unit UnitState)
 	}
 }
 
-static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnUnitRankUpStats(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
 	local UnitValue StatPointsValue;
 	local int StatPointsPerPromotion, BonusStatPointsNaturalAptitude;
 
-	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPGO-Promotion');
 
 	UnitState = XComGameState_Unit(EventData);
 
@@ -133,7 +133,12 @@ static function EventListenerReturn OnUnitRankUp(Object EventData, Object EventS
 		UnitState = XComGameState_Unit(GameState.ModifyStateObject(class'XComGameState_Unit', UnitState.ObjectID));
 		UnitState.GetUnitValue('StatPoints', StatPointsValue);
 		
-		`LOG(default.Class @ GetFuncName() @ UnitState.GetSoldierClassTemplateName() @ "StatPointsValue" @ int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @ StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @ BonusStatPointsNaturalAptitude,, 'RPG');
+		`LOG(default.Class @ GetFuncName() @
+			UnitState.GetSoldierClassTemplateName() @ "StatPointsValue" @
+			int(StatPointsValue.fValue) @ "StatPointsPerPromotion" @
+			StatPointsPerPromotion @ "BonusStatPointsNaturalAptitude" @
+			BonusStatPointsNaturalAptitude
+		,, 'RPGO-Promotion');
 
 		UnitState.SetUnitFloatValue('StatPoints', StatPointsValue.fValue + StatPointsPerPromotion + BonusStatPointsNaturalAptitude, eCleanup_Never);
 		//GameState.AddStateObject(UnitState);

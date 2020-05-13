@@ -64,8 +64,8 @@ static function CHEventListenerTemplate CreateListenerTemplate_OnCompleteRespecS
 
 	Template.RegisterInStrategy = true;
 
-	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldierSWTR, ELD_OnStateSubmitted);
-	`LOG(default.class @ "Register Event OnCompleteRespecSoldierSWTR",, 'RPG');
+	Template.AddCHEvent('CompleteRespecSoldier', OnCompleteRespecSoldierSecondWave, ELD_OnStateSubmitted);
+	`LOG(default.class @ "Register Event OnCompleteRespecSoldierSecondWave",, 'RPG');
 
 	return Template;
 }
@@ -127,7 +127,7 @@ static function EventListenerReturn AddAdditionialSquaddieAbilities(Object Event
 	local XComGameState_Unit UnitState;
 	local XComGameState NewGameState;
 
-	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPGO-Promotion');
 
 	//if (!class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
 	//{
@@ -138,7 +138,7 @@ static function EventListenerReturn AddAdditionialSquaddieAbilities(Object Event
 	
 	if (UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	{
-		`LOG(default.class @ GetFuncName() @ "AddAdditionalSquaddieAbilities to" @ UnitState.SummaryString(),, 'RPG');
+		`LOG(default.class @ GetFuncName() @ "AddAdditionalSquaddieAbilities to" @ UnitState.SummaryString(),, 'RPGO-Promotion');
 
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("ADD_ADDITIONAL_SQUADDIE_ABILITIES");
 		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
@@ -147,7 +147,7 @@ static function EventListenerReturn AddAdditionialSquaddieAbilities(Object Event
 
 		if (NewGameState.GetNumGameStateObjects() > 0)
 		{
-			`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
+			`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPGO-Promotion');
 			`GAMERULES.SubmitGameState(NewGameState);
 		}
 	}
@@ -160,9 +160,9 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
 	local array<int> AllSpecs;
-	local UnitValue AddedRandomSpecs;
+	local UnitValue AddedRandomSpecs, AddedCommandersChoiceSpecs, SpecsAssigned;
 	local XComGameStateHistory History;
-	local bool bCreatedOwnGameState;
+	local bool bCreatedOwnGameState, bHasSpecsAssignend;
 
 	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
 
@@ -180,54 +180,81 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 	if (UnitState != none)
 	{
 		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
+		UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', AddedCommandersChoiceSpecs);
+		UnitState.GetUnitValue('SpecsAssigned', SpecsAssigned);
 
-		`LOG(default.class @ GetFuncName() @
-			UnitState.SummaryString() @
-			UnitState.GetMyTemplateName() @
-			UnitState.GetSoldierClassTemplateName() @
-			UnitState.GetSoldierRank() @ 
-			"AddedRandomSpecs" @ AddedRandomSpecs.fValue
-			,, 'RPG');
+		bHasSpecsAssignend = AddedRandomSpecs.fValue == 1 || AddedCommandersChoiceSpecs.fValue == 1 || SpecsAssigned.fValue == 1;
 
-		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' &&
-			AddedRandomSpecs.fValue != 1)
+		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ UnitState.SummaryString(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "X2CharacterTemplate:" @ UnitState.GetMyTemplateName(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "X2SoldierClassTemplate" @ UnitState.GetSoldierClassTemplateName(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "Unit Rank:" @ UnitState.GetSoldierRank(),, 'RPGO-Promotion');
+
+		`LOG(default.class @ GetFuncName() @ "SecondWave Specialization Roulette:" @ `SecondWaveEnabled('RPGOSpecRoulette'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Commanders Choice:" @ `SecondWaveEnabled('RPGOCommandersChoice'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Origins:" @ `SecondWaveEnabled('RPGOOrigins'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Random Classes:" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Weapon Restrictions:" @ `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Training Roulette:" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPGO-Promotion');
+
+		`LOG(default.class @ GetFuncName() @ "UnitVal AddedRandomSpecs" @ AddedRandomSpecs.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "UnitVal SecondWaveCommandersChoiceSpecChosen" @ AddedCommandersChoiceSpecs.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "UnitVal SpecsAssigned" @ SpecsAssigned.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ `ShowVar(bHasSpecsAssignend),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
+
+		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
 			`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
-				"RPGOSpecRoulette Randomizing starting specs" @
 				GameState @ GameState.GetNumGameStateObjects() @
 				`ShowVar(GameState.HistoryIndex) @
 				`ShowVar(History.GetCurrentHistoryIndex())
-			,, 'RPG');
+			,, 'RPGO-Promotion');
 
 			// Some special gamestate handling because some mods tend to submit unit rankup gamestates manually (looking at you commanders choice)
 			if (GameState.HistoryIndex < History.GetCurrentHistoryIndex() && GameState.HistoryIndex != INDEX_NONE)
 			{
-				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_SWO_ROULETTE");
+				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("RPGO_BUILDSPECTREE");
 				bCreatedOwnGameState = true;
-				`LOG(default.class @ GetFuncName() @ "Created own state" @ NewGameState,, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Created own state" @ NewGameState,, 'RPGO-Promotion');
 			}
 			else
 			{
-				`LOG(default.class @ GetFuncName() @ "Using given state" @ GameState,, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Using given state" @ GameState,, 'RPGO-Promotion');
 				NewGameState = GameState;
 			}
 
 			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 
-			if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+			if ((`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')) && !bHasSpecsAssignend)
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
+				UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
+				`LOG(default.class @ GetFuncName() @
+					UnitState.SummaryString() @
+					"Build random spec ability tree"
+				,, 'RPGO-Promotion');
 			}
-			else if (`SecondWaveEnabled('RPGOTrainingRoulette'))
+			else if (`SecondWaveEnabled('RPGOTrainingRoulette') && !bHasSpecsAssignend)
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
+				UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
+				`LOG(default.class @ GetFuncName() @
+					UnitState.SummaryString() @
+					"Build training roulette ability tree"
+				,, 'RPGO-Promotion');
+
 			}
-			else
+			else if (!bHasSpecsAssignend)
 			{
 				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, false);
+				UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
+				`LOG(default.class @ GetFuncName() @
+					UnitState.SummaryString() @
+					"Build soldier ability tree"
+				,, 'RPGO-Promotion');
 			}
-
-			UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
 
 			if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations())
 			{
@@ -236,7 +263,7 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)
 			{
-				`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPG');
+				`LOG(default.class @ GetFuncName() @ "Submitting Game State",, 'RPGO-Promotion');
 				`GAMERULES.SubmitGameState(NewGameState);
 			}
 		}
@@ -245,38 +272,57 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 	return ELR_NoInterrupt;
 }
 
-static function EventListenerReturn OnCompleteRespecSoldierSWTR(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+static function EventListenerReturn OnCompleteRespecSoldierSecondWave(Object EventData, Object EventSource, XComGameState GameState, Name EventNAme, Object CallbackData)
 {
 	local XComGameState_Unit UnitState;
-
-	`LOG("Eventlistener triggered:" @ GetFuncName(),, 'RPG');
+	local UnitValue PreserveSpecs, PreserveAbilities;
+	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPGO-Promotion');
 
 	UnitState = XComGameState_Unit(EventSource);
-
+	
 	if (UnitState != none)
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette" @
-			UnitState.GetMyTemplateName() @
-			UnitState.GetSoldierClassTemplateName() @
-			UnitState.GetSoldierRank() @
-			"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
-			"RPGO_SWO_RandomClasses" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses')
-		,, 'RPG');
+		// Refresh UnitState
+		UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitState.ObjectID));
 
 		if (UnitState.GetMyTemplateName() == 'Soldier' &&
 			UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
-			if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+			UnitState.GetUnitValue('RPGO_RebuildSelectedSoldierPreserveSpecs', PreserveSpecs);
+			UnitState.GetUnitValue('RPGO_RebuildSelectedSoldierPreserveAbilities', PreserveAbilities);
+
+			`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette" @
+				UnitState.GetMyTemplateName() @
+				UnitState.GetSoldierClassTemplateName() @
+				UnitState.GetSoldierRank() @
+				"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
+				"RPGO_SWO_RandomClasses" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses')
+			,, 'RPGO-Promotion');
+
+			if (PreserveSpecs.fValue != 1)
 			{
-				`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPG');
-				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
+				if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+				{
+					`LOG(default.class @ GetFuncName() @ "RPGOSpecRoulette Randomizing starting specs",, 'RPGO-Promotion');
+					class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState);
+				}
+				`LOG(default.class @ GetFuncName() @ "Resetting SecondWaveCommandersChoiceSpecChosen/SecondWaveSpecRouletteAddedRandomSpecs",, 'RPGO-Promotion');
+				UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
+				UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
+			}
+			else
+			{
+				UnitState.SetUnitFloatValue('RPGO_RebuildSelectedSoldierPreserveSpecs', 0, eCleanup_Never);
 			}
 
-			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 0, eCleanup_Never);
-			UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
-			//UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 0, eCleanup_Never);
-
-			//GameState.AddStateObject(UnitState);
+			if (PreserveAbilities.fValue != 1)
+			{
+				UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 0, eCleanup_Never);
+			}
+			else
+			{
+				UnitState.SetUnitFloatValue('RPGO_RebuildSelectedSoldierPreserveAbilities', 0, eCleanup_Never);
+			}
 		}
 	}
 
