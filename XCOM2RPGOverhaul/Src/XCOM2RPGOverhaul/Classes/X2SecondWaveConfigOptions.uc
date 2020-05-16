@@ -270,12 +270,22 @@ static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(cons
 	return ValidSpecTemplates;
 }
 
-static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
+static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(const XComGameState_Unit UnitState, const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
 {
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
 	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+	local array<name>							AllowedWeaponCategories;
+	local bool									bWeaponRestrictions;
 
+	//	If weapon restrictions are enabled, collect the weapon cats of weapons that can be used in primary and secondary slots.
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && AllSpecTemplates.Length > 0)
+	{
+		bWeaponRestrictions = true;
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryAndSecondaryWeaponCategories(UnitState);
+	}
+
+	//	Cycle through all specs
 	foreach AllSpecTemplates(SpecTemplate)
 	{	
 		//	Skip specialization if it was already selected
@@ -286,6 +296,12 @@ static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(
 
 		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
 		{
+			//	If weapon restrictions are enabled, and this spec does not conform to weapon restrictions
+			if (bWeaponRestrictions && !DoesSpecConformToWeaponRestrictions(SpecTemplate, AllowedWeaponCategories))
+			{	
+				//  Then we skip this spec.
+				continue;
+			}
 			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
 		}
 	}
@@ -294,6 +310,50 @@ static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(
 		return RequiredSpecTemplates;
 	}
 	return ValidSpecTemplates;
+}
+
+//	This function will check if ALL of the abilities in this spec can be used with the given weapon categories.
+static function bool DoesSpecConformToWeaponRestrictions(const X2UniversalSoldierClassInfo SpecTemplate, const array<name> AllowedWeaponCategories)
+{
+	local SoldierClassAbilitySlot				AbilitySlot;
+	local AbilityWeaponCategoryRestriction		Restriction;
+	local int									Index;
+
+	//	Cycle through all abilities granted by this spec.
+	foreach SpecTemplate.AbilitySlots(AbilitySlot)
+	{
+		//	See if it has any weapon restrictions associated with it.
+		Index = class'X2TemplateHelper_RPGOverhaul'.default.AbilityWeaponCategoryRestrictions.Find('AbilityName', AbilitySlot.AbilityType.AbilityName);
+		if (Index != INDEX_NONE)
+		{
+			Restriction = class'X2TemplateHelper_RPGOverhaul'.default.AbilityWeaponCategoryRestrictions[Index];
+
+			//	Fallback in case of incorrect config.
+			if (Restriction.WeaponCategories.Length == 0) continue;
+						
+			//	If this ability cannot be used by weapons that this soldier is allowed in either primary or secondary slots
+			if (!DoArraysHaveAtLeastOneMatchingMember(AllowedWeaponCategories, Restriction.WeaponCategories))
+			{
+				`LOG(SpecTemplate.Name @ "ability:" @ AbilitySlot.AbilityType.AbilityName @ "has unfitting weapon restrictions.",, 'RPG');
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+static function bool DoArraysHaveAtLeastOneMatchingMember(const array<name> FirstArray, const array<name> SecondArray)
+{
+	local name ArrayMember;
+
+	foreach FirstArray(ArrayMember)
+	{
+		if (SecondArray.Find(ArrayMember) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 //	Select specializations for the soldier to randomly create a soldier class.
@@ -368,7 +428,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	`LOG("## Selecting additional specializations." @ Count @ "specs left.",, 'RPG');
 	while (Count > 0)
 	{
-		ValidSpecTemplates = BuildValidComplementarySpecs(AllSpecTemplates, SelectedSpecTemplates);	
+		ValidSpecTemplates = BuildValidComplementarySpecs(UnitState, AllSpecTemplates, SelectedSpecTemplates);	
 
 		//	Exit function early if there are no valid specs anymore.
 		if (ValidSpecTemplates.Length == 0) 

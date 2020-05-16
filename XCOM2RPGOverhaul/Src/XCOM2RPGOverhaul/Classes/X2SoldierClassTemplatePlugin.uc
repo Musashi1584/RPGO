@@ -372,6 +372,22 @@ static function array<name> GetAllowedSecondaryWeaponCategories(XComGameState_Un
 	return ReturnArray;
 }
 
+static function array<name> GetAllowedPrimaryAndSecondaryWeaponCategories(XComGameState_Unit UnitState)
+{	
+	local array<name>	PrimaryCategories, SecondaryCategories;
+	local name			WeaponCat;
+
+	PrimaryCategories = GetAllowedPrimaryWeaponCategories(UnitState);
+	SecondaryCategories = GetAllowedSecondaryWeaponCategories(UnitState);
+
+	foreach SecondaryCategories(WeaponCat)
+	{
+		PrimaryCategories.AddItem(WeaponCat);
+	}	
+
+	return PrimaryCategories;
+}
+
 static function bool IsPrimaryWeaponCategoryAllowed(XComGameState_Unit UnitState, name WeaponCat)
 {	
 	local array<SoldierSpecialization>	PrimarySpecs;
