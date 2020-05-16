@@ -181,48 +181,26 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState, in
 
 //	Random Classes
 
-static function MaybeAddSpecAsRequired(const XComGameState_Unit UnitState, const X2UniversalSoldierClassInfo SpecTemplate, out array<X2UniversalSoldierClassInfo> RequiredSpecTemplates)
-{
-	local name AbilityName;
-	local X2UniversalSoldierClassInfo RequiredSpecTemplate;
-
-	//	If this spec doesn't have any Required Abilities specified, exit early.
-	if (SpecTemplate.RequiredAbilities.Length == 0)
-		return;
-
-	//	If this spec is already in the array of required specs, exit early.
-	if (RequiredSpecTemplates.Find(SpecTemplate) != INDEX_NONE)
-		return;
-
-	//	Cycle through all required abilities for this spec
-	foreach SpecTemplate.RequiredAbilities(AbilityName)
-	{
-		//	If the soldier doesn't have one of them, exit function.
-		if (!UnitState.HasSoldierAbility(AbilityName, false))
-		{
-			return;
-		}
-	}
-
-	//	If any of required specs list this spec as mutually exclusive, then exit function.
-	if (IsSpecMutuallyExclusive(SpecTemplate, RequiredSpecTemplates))
-	{	
-		return;
-	}
-	
-	//	All checks passed, add the spec into the array of required specs.
-	RequiredSpecTemplates.AddItem(SpecTemplate);
-}
-
-static function AddSpecAsValid(const X2UniversalSoldierClassInfo SpecTemplate, const int iWeight, out array<X2UniversalSoldierClassInfo> ValidSpecTemplates)
+static function AddSpecAsValid(const X2UniversalSoldierClassInfo SpecTemplate, const int iWeight, out array<X2UniversalSoldierClassInfo> ValidSpecTemplates, out array<X2UniversalSoldierClassInfo> RequiredSpecTemplates)
 {
 	local int i;
 
-	`LOG("Valid spec: " @ SpecTemplate.Name @ "Weight:" @ iWeight,, 'RPG');
-
-	for (i = 0; i < iWeight; i++)
+	//	If this spec lists any required abilities, then we add it into a different array.
+	if (SpecTemplate.RequiredAbilities.Length > 0)
 	{
-		ValidSpecTemplates.AddItem(SpecTemplate);
+		`LOG("Valid required spec: " @ SpecTemplate.Name @ "Weight:" @ iWeight,, 'RPG');
+		for (i = 0; i < iWeight; i++)
+		{
+			RequiredSpecTemplates.AddItem(SpecTemplate);
+		}
+	}
+	else if (RequiredSpecTemplates.Length == 0)	//	If we've already listed at least one Require Spec, then we don't care about non-required specs.
+	{	
+		`LOG("Valid spec: " @ SpecTemplate.Name @ "Weight:" @ iWeight,, 'RPG');
+		for (i = 0; i < iWeight; i++)
+		{
+			ValidSpecTemplates.AddItem(SpecTemplate);
+		}
 	}
 }
 
@@ -243,10 +221,34 @@ static function bool IsSpecMutuallyExclusive(const X2UniversalSoldierClassInfo S
 	return false;
 }
 
+static function array<X2UniversalSoldierClassInfo> BuildValidPrimarySpecs(const array<X2UniversalSoldierClassInfo> AllSpecTemplates)
+{
+	local X2UniversalSoldierClassInfo			SpecTemplate;
+	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+
+	//	Define two arrays. If the spec can be used, it is added to the first array.
+	//	If the spec is required to be used, then we add it into the second array, and basically disregard the first one.
+
+	foreach AllSpecTemplates(SpecTemplate)
+	{	
+		if (SpecTemplate.IsPrimaryWeaponSpecialization())
+		{
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightPrimary, ValidSpecTemplates, RequiredSpecTemplates);
+		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
+	}
+	return ValidSpecTemplates;
+}
+
 static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
 {
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
 
 	foreach AllSpecTemplates(SpecTemplate)
 	{	
@@ -258,8 +260,12 @@ static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(cons
 
 		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate))
 		{
-			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates);
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
 		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
 	}
 	return ValidSpecTemplates;
 }
@@ -268,6 +274,7 @@ static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(
 {
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
 
 	foreach AllSpecTemplates(SpecTemplate)
 	{	
@@ -279,8 +286,12 @@ static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(
 
 		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
 		{
-			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates);
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
 		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
 	}
 	return ValidSpecTemplates;
 }
@@ -290,18 +301,11 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 {
 	local array<X2UniversalSoldierClassInfo>	AllSpecTemplates;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
-	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
 	local X2UniversalSoldierClassInfo			SpecTemplate;
-
-	local X2UniversalSoldierClassInfo			SelectedPrimarySpec, SelectedSecondarySpec;
-	local array<name>							RequiredSpecSelectionArray;
-	local bool									PrimarySpecIsRequired, SecondarySpecIsRequired;
 
 	//	These two arrays should both contain references to same specs.
 	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
 	local array<int>							ReturnArray;
-	local bool									bSkipSpec;
-	local int i;
 
 	`LOG(default.class @ GetFuncName() @ "Start profiling with Random Class SWO",, 'RPG');
 
@@ -313,45 +317,27 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	//	########################################################
 	//	Select random specialization for primary weapon:
 	`LOG("## Selecting primary specialization." @ Count @ "specs left.",, 'RPG');
-	foreach AllSpecTemplates(SpecTemplate)
-	{
-		//	Fill the array with all specs that are *required* for this soldier
-		//	A spec counts as required if the soldier has all abilities listed in the spec's RequiredAbilities array.
-		//	We fill this array only once when cycling through all specs for the first time.
-		MaybeAddSpecAsRequired(UnitState, SpecTemplate, RequiredSpecTemplates);
-		
-		if (SpecTemplate.IsPrimaryWeaponSpecialization())
-		{
-			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightPrimary, ValidSpecTemplates);
-		}
-	}
+
+	ValidSpecTemplates = BuildValidPrimarySpecs(AllSpecTemplates);
+
 	if (ValidSpecTemplates.Length > 0)
 	{
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
-		SelectedPrimarySpec = SpecTemplate;
 		SelectedSpecTemplates.AddItem(SpecTemplate);
-		if (RequiredSpecTemplates.Find(SelectedPrimarySpec) != INDEX_NONE)
-		{	
-			PrimarySpecIsRequired = true;
-			RequiredSpecTemplates.RemoveItem(SpecTemplate);
-		}
+		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
+		//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory.
+		UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
+		`LOG("ASSIGNED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
 		Count--;
 
-		//	Add complementary specializations, if necessary
+		//	Add forced complementary specializations, if necessary.
 		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 	else `LOG("There were no valid primary specs to choose from.",, 'RPG');
 
 	//	Exit function early if necessary
-	if (Count <= 0) 
-	{
-		//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory
-		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedPrimarySpec.Name));
-		UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedPrimarySpec.Name), eCleanup_Never);
-		`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name $ ". No more specs left, exiting.",, 'RPG');
-		return ReturnArray;
-	}
+	if (Count <= 0) return ReturnArray;
 
 	//	########################################################
 	//	Select random specialization for secondary weapon
@@ -363,73 +349,19 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	{
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
-		SelectedSecondarySpec = SpecTemplate;
 		SelectedSpecTemplates.AddItem(SpecTemplate);
-		if (RequiredSpecTemplates.Find(SelectedSecondarySpec) != INDEX_NONE)
-		{	
-			SecondarySpecIsRequired = true;
-			RequiredSpecTemplates.RemoveItem(SpecTemplate);
-		}
+		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
+		UnitState.SetUnitFloatValue('SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
+		`LOG("ASSIGNED Secondary specialization: " @ SpecTemplate.Name,, 'RPG');
 		Count--;
 
-		//	Add complementary specializations, if necessary
+		//	Add forced complementary specializations, if necessary
 		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 	else `LOG("There were no valid secondary specs to choose from.",, 'RPG');
 
-	//	########################################################
-	//	Assign Required Specs to the soldier during this step.
-	foreach RequiredSpecTemplates(SpecTemplate)
-	{
-		RequiredSpecSelectionArray.Length = 0;
-
-		if (!PrimarySpecIsRequired && SpecTemplate.IsPrimaryWeaponSpecialization()) RequiredSpecSelectionArray.AddItem('ValidPrimarySpec');
-		if (!SecondarySpecIsRequired && class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate)) RequiredSpecSelectionArray.AddItem('ValidSecondarySpec');
-		if (Count > 0 && class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate)) RequiredSpecSelectionArray.AddItem('ValidComplementarySpec');
-
-		//	If this required spec cannot be currently added to the soldier in any capacity, skip it.
-		if (RequiredSpecSelectionArray.Length == 0) continue;
-
-		//	Randomly assign this required spec to be primary, secondary or complementary, as long as those are actually valid positions for it.
-		i = `SYNC_RAND_STATIC(RequiredSpecSelectionArray.Length);
-
-		switch (RequiredSpecSelectionArray[i])
-		{
-			case 'ValidPrimarySpec':
-				SelectedSpecTemplates.RemoveItem(SelectedPrimarySpec);
-				SelectedPrimarySpec = SpecTemplate;
-				SelectedSpecTemplates.AddItem(SpecTemplate);
-				PrimarySpecIsRequired = true;
-				break;
-			case 'ValidSecondarySpec':
-				SelectedSpecTemplates.RemoveItem(SelectedSecondarySpec);
-				SelectedSecondarySpec = SpecTemplate;
-				SelectedSpecTemplates.AddItem(SpecTemplate);
-				SecondarySpecIsRequired = true;
-				break;
-			case 'ValidComplementarySpec':
-				SelectedSpecTemplates.AddItem(SpecTemplate);
-				ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
-				Count--;
-				break;
-			default:
-				break;				
-		}		
-	}
-
-	//	########################################################
-	//	Assign Primary and Secondary specs that were selected up to this point.
-	ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedPrimarySpec.Name));
-	UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedPrimarySpec.Name), eCleanup_Never);
-	`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name $ ". No more specs left, exiting.",, 'RPG');
-
-	ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedSecondarySpec.Name));
-	UnitState.SetUnitFloatValue('SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SelectedSecondarySpec.Name), eCleanup_Never);
-	`LOG("SELECTED Secondary specialization: " @ SelectedSecondarySpec.Name,, 'RPG');
-
 	//	Exit function early if necessary
 	if (Count <= 0) return ReturnArray;
-
 
 	//	########################################################
 	//	Select several additional specializations that either complement already selected specializations, or are weapon agnostic.
@@ -450,7 +382,10 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
 		Count--;
 
-		`LOG("SELECTED Additional specialization: " @ SpecTemplate.Name,, 'RPG');
+		`LOG("ASSIGNED Complementary specialization: " @ SpecTemplate.Name,, 'RPG');
+
+		//	Add forced complementary specializations, if necessary
+		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 	return ReturnArray;
 }
