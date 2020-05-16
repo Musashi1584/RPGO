@@ -244,11 +244,20 @@ static function array<X2UniversalSoldierClassInfo> BuildValidPrimarySpecs(const 
 	return ValidSpecTemplates;
 }
 
-static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
+static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(const XComGameState_Unit UnitState, const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
 {
 	local X2UniversalSoldierClassInfo			SpecTemplate;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
 	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+	local array<name>							AllowedWeaponCategories;
+	local bool									bWeaponRestrictions;
+
+	//	If weapon restrictions are enabled, collect the weapon cats of weapons that can be used in the primary slot.
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && AllSpecTemplates.Length > 0)
+	{
+		bWeaponRestrictions = true;
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
+	}
 
 	foreach AllSpecTemplates(SpecTemplate)
 	{	
@@ -260,6 +269,12 @@ static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(cons
 
 		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate))
 		{
+			//	If weapon restrictions are enabled
+			if (bWeaponRestrictions)
+			{
+				//	Skip the spec if it requires a weapon category that cannot be used by this soldier in the primary weapon slot.
+				if (!IsRequiredWeaponCatAllowed(SpecTemplate, AllowedWeaponCategories)) continue;
+			}
 			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
 		}
 	}
@@ -295,12 +310,14 @@ static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(
 		if (IsSpecMutuallyExclusive(SpecTemplate, SelectedSpecTemplates)) continue;
 
 		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
-		{
-			//	If weapon restrictions are enabled, and this spec does not conform to weapon restrictions
-			if (bWeaponRestrictions && !DoesSpecConformToWeaponRestrictions(SpecTemplate, AllowedWeaponCategories))
-			{	
-				//  Then we skip this spec.
-				continue;
+		{	
+			//	If weapon restrictions are enabled
+			if (bWeaponRestrictions)
+			{
+				//	Skip the spec if it requires a weapon category that cannot be used by this soldier in either primary or secondary slots.
+				if (!IsRequiredWeaponCatAllowed(SpecTemplate, AllowedWeaponCategories)) continue;
+				//	Skip the spec if one of its abilities requires a weapon category that cannot be used by this soldier.
+				if (!DoesSpecConformToWeaponRestrictions(SpecTemplate, AllowedWeaponCategories)) continue;
 			}
 			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
 		}
@@ -340,6 +357,26 @@ static function bool DoesSpecConformToWeaponRestrictions(const X2UniversalSoldie
 		}
 	}
 	return true;
+}
+
+static function bool IsRequiredWeaponCatAllowed(const X2UniversalSoldierClassInfo SpecTemplate, const array<name> AllowedWeaponCategories)
+{
+	local name	WeaponCat;
+
+	//	Auto succeed if there are no required weapon cats listed.
+	if (SpecTemplate.SpecializationMetaInfo.RequiredWeaponCategories.Length == 0)
+	{
+		return true;
+	}
+
+	foreach SpecTemplate.SpecializationMetaInfo.RequiredWeaponCategories(WeaponCat)
+	{
+		if (AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 static function bool DoArraysHaveAtLeastOneMatchingMember(const array<name> FirstArray, const array<name> SecondArray)
@@ -403,7 +440,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 	//	Select random specialization for secondary weapon
 	`LOG("## Selecting secondary specialization." @ Count @ "specs left.",, 'RPG');
 
-	ValidSpecTemplates = BuildValidSecondarySpecs(AllSpecTemplates, SelectedSpecTemplates);
+	ValidSpecTemplates = BuildValidSecondarySpecs(UnitState, AllSpecTemplates, SelectedSpecTemplates);
 
 	if (ValidSpecTemplates.Length > 0)
 	{
