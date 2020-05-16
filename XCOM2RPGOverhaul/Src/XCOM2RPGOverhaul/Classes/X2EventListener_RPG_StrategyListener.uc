@@ -857,7 +857,8 @@ public static function WeaponRestrictions_EquipNewWeaponsOnSoldier(int UnitObjec
 			}
 		}
 	}
- 
+	//	Hard reset local var before using it again - just in case.
+	OldWeaponState = none;
 	OldWeaponState = UnitState.GetItemInSlot(eInvSlot_SecondaryWeapon);
 	if (OldWeaponState != none)
 	{
@@ -874,10 +875,10 @@ public static function WeaponRestrictions_EquipNewWeaponsOnSoldier(int UnitObjec
 			if (UnitState.RemoveItemFromInventory(OldWeaponState, NewGameState))
 			{
 				NewWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
-				NewWeaponState = XComGameState_Item(NewGameState.ModifyStateObject(class'XComGameState_Item', NewWeaponState.ObjectID));
-
+				
 				if (NewWeaponState != none)
 				{
+					NewWeaponState = XComGameState_Item(NewGameState.ModifyStateObject(class'XComGameState_Item', NewWeaponState.ObjectID));
 					if (UnitState.AddItemToInventory(NewWeaponState, eInvSlot_SecondaryWeapon, NewGameState))
 					{
 						//`LOG("New Secondary Weapon " @ NewWeaponState.GetMyTemplateName(),, 'RPG');
@@ -897,10 +898,10 @@ public static function WeaponRestrictions_EquipNewWeaponsOnSoldier(int UnitObjec
 	{
 		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedSecondaryWeaponCategories(UnitState);
 		NewWeaponState = FindBestInfiniteWeaponForUnit(UnitState, eInvSlot_SecondaryWeapon, AllowedWeaponCategories, XComHQ, NewGameState);
-		NewWeaponState = XComGameState_Item(NewGameState.ModifyStateObject(class'XComGameState_Item', NewWeaponState.ObjectID));
-
+		
 		if (NewWeaponState != none)
 		{
+			NewWeaponState = XComGameState_Item(NewGameState.ModifyStateObject(class'XComGameState_Item', NewWeaponState.ObjectID));
 			if (UnitState.AddItemToInventory(NewWeaponState, eInvSlot_SecondaryWeapon, NewGameState))
 			{
 				//`LOG("New Secondary Weapon " @ NewWeaponState.GetMyTemplateName(),, 'RPG');
