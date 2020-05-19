@@ -49,27 +49,24 @@ static function AssignSpecializations(out XComGameState_Unit UnitState, out XCom
 	{
 		class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
 		UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
+
 		`LOG(default.class @ GetFuncName() @
 			UnitState.SummaryString() @
 			"Build random spec ability tree"
 		,, 'RPGO-Promotion');
+		DebugAssignedTemplates(UnitState);
+
 		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
-		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+
+		if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations())
+		{
+			// we trigger the event here if no more specs are added by commanders choice
+			`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+		}
 	}
-	else if (`SecondWaveEnabled('RPGOTrainingRoulette') && !bHasSpecsAssignend)
+	else if (class'X2SecondWaveConfigOptions'.static.HasNoSpecSecondWaveOptionsActive() && !bHasSpecsAssignend)
 	{
-		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
-		UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
-		`LOG(default.class @ GetFuncName() @
-			UnitState.SummaryString() @
-			"Build training roulette ability tree"
-		,, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
-		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
-	}
-	else if (!bHasSpecsAssignend)
-	{
-		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, false);
+		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, `SecondWaveEnabled('RPGOTrainingRoulette'));
 		UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
 		`LOG(default.class @ GetFuncName() @
 			UnitState.SummaryString() @
@@ -78,6 +75,21 @@ static function AssignSpecializations(out XComGameState_Unit UnitState, out XCom
 		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
 		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
 	}
+}
+
+static function DebugAssignedTemplates(XComGameState_Unit UnitState)
+{
+	local array<X2UniversalSoldierClassInfo> Templates;
+	local X2UniversalSoldierClassInfo Template;
+
+	Templates = GetAssignedSpecializationTemplates(UnitState);
+
+	`LOG(default.class @ GetFuncName() @ "=======================================",, 'RPGO-Promotion');
+	foreach Templates(Template)
+	{
+		`LOG(default.class @ GetFuncName() @ Template.Name,, 'RPGO-Promotion');
+	}
+	`LOG(default.class @ GetFuncName() @ "=======================================",, 'RPGO-Promotion');
 }
 
 static function AddAdditionalSquaddieAbilities(

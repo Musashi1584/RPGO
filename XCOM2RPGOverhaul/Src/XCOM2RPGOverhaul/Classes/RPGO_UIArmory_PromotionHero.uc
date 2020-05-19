@@ -1419,6 +1419,7 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 	if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
 		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetAssignedSpecializations(UnitState);
+		class'X2SoldierClassTemplatePlugin'.static.DebugAssignedTemplates(UnitState);
 	}
 
 	if (class'X2SecondWaveConfigOptions'.static.IsCommandersChoiceRandomPoolEnabled())
@@ -1476,7 +1477,6 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 		);
 		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllStartingAbilities(UnitState);
 	}
-	
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
 	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());

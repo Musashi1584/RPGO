@@ -102,6 +102,8 @@ function bool OnAllSpecSelected()
 		true,
 		`SecondWaveEnabled('RPGOTrainingRoulette')
 	);
+
+	class'X2SoldierClassTemplatePlugin'.static.DebugAssignedTemplates(UnitState);
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);

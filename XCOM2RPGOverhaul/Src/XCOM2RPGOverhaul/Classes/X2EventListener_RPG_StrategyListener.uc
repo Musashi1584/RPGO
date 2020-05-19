@@ -201,8 +201,7 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 
 			// if origins is enabled we assign the specs after the origin perks are assigned in UIChooseAbilities of CC is not enabled
 			// if commanders choice is enabled we will trigger it after the specs are assigned in UIChooseSpecializations
-			if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations() &&
-				!`SecondWaveEnabled('RPGOOrigins'))
+			if (!`SecondWaveEnabled('RPGOOrigins'))
 			{
 				class'X2SoldierClassTemplatePlugin'.static.AssignSpecializations(UnitState, NewGameState);
 			}

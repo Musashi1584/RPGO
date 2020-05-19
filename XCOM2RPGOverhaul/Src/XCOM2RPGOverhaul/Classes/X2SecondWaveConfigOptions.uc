@@ -1,6 +1,6 @@
 class X2SecondWaveConfigOptions extends Object config (SecondWaveOptions);
 
-function static bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
+static function bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 {
 	local UnitValue AbilityChosen, SpecChosen;
 
@@ -13,7 +13,7 @@ function static bool ShowChooseSpecScreen(XComGameState_Unit UnitState)
 		!ShowChooseAbilityScreen(UnitState);
 }
 
-function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
+static function bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
 {
 	local UnitValue AbilityChosen, SpecChosen;
 
@@ -27,18 +27,30 @@ function static bool ShowChooseAbilityScreen(XComGameState_Unit UnitState)
 		 class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount() > 0);
 }
 
-function static bool HasLimitedSpecializations()
+static function bool HasLimitedSpecializations()
 {
 	return `SecondWaveEnabled('RPGOCommandersChoice') || 
 			`SecondWaveEnabled('RPGOSpecRoulette') || 
 			`SecondWaveEnabled('RPGO_SWO_RandomClasses');
 }
 
-function static bool HasPureRandomSpecializations()
+static function bool HasPureRandomSpecializations()
 {
 	return !`SecondWaveEnabled('RPGOCommandersChoice') &&
 			(`SecondWaveEnabled('RPGOSpecRoulette') || 
 			`SecondWaveEnabled('RPGO_SWO_RandomClasses'));
+}
+
+static function bool HasNoSpecSecondWaveOptionsActive()
+{
+	return !`SecondWaveEnabled('RPGOCommandersChoice') &&
+		   !`SecondWaveEnabled('RPGO_SWO_RandomClasses') &&
+		   !`SecondWaveEnabled('RPGOSpecRoulette');
+}
+
+static function bool HasPureRandomClassesActive()
+{
+	return `SecondWaveEnabled('RPGO_SWO_RandomClasses') && !`SecondWaveEnabled('RPGOCommandersChoice');
 }
 
 static function int GetSpecRouletteCount()
@@ -574,7 +586,7 @@ static function BuildSpecAbilityTree(
 		{
 			RankAbilities = EmptyRankAbilities;
 
-			if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+			if (HasPureRandomClassesActive())
 			{
 				AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetRandomClassesSlotsForRank(UnitState, RankIndex, AddSpecializationIndices);
 			}
@@ -588,7 +600,7 @@ static function BuildSpecAbilityTree(
 			{
 				if (AddSpecializationIndices.Length > 0 &&
 					AddSpecializationIndices.Find(SlotIndex) == INDEX_NONE &&
-					!`SecondWaveEnabled('RPGO_SWO_RandomClasses') // We already handle AddSpecializationIndices in GetRandomClassesSlotsForRank so we add all we get from that function here
+					!HasPureRandomClassesActive() // We already handle AddSpecializationIndices in GetRandomClassesSlotsForRank so we add all we get from that function here
 				)
 				{
 					continue;
