@@ -180,16 +180,229 @@ static function array<int> GetRandomSpecIndices(XComGameState_Unit UnitState, in
 }
 
 //	Random Classes
+
+static function AddSpecAsValid(const X2UniversalSoldierClassInfo SpecTemplate, const int iWeight, out array<X2UniversalSoldierClassInfo> ValidSpecTemplates, out array<X2UniversalSoldierClassInfo> RequiredSpecTemplates)
+{
+	local int i;
+
+	//	If this spec lists any required abilities, then we add it into a different array.
+	if (SpecTemplate.RequiredAbilities.Length > 0)
+	{
+		`LOG("Valid required spec: " @ SpecTemplate.Name @ "Weight:" @ iWeight,, 'RPG');
+		for (i = 0; i < iWeight; i++)
+		{
+			RequiredSpecTemplates.AddItem(SpecTemplate);
+		}
+	}
+	else if (RequiredSpecTemplates.Length == 0)	//	If we've already listed at least one Require Spec, then we don't care about non-required specs.
+	{	
+		`LOG("Valid spec: " @ SpecTemplate.Name @ "Weight:" @ iWeight,, 'RPG');
+		for (i = 0; i < iWeight; i++)
+		{
+			ValidSpecTemplates.AddItem(SpecTemplate);
+		}
+	}
+}
+
+static function bool IsSpecMutuallyExclusive(const X2UniversalSoldierClassInfo SpecTemplate, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
+{
+	local X2UniversalSoldierClassInfo SelectedSpecTemplate;
+
+	//	Cycle through all specs that have been selected so far
+	foreach SelectedSpecTemplates(SelectedSpecTemplate)
+	{
+		//	If at least one of them marks this spec as mutually exclusive
+		if (SelectedSpecTemplate.SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
+		{
+			//	Return true, signaling that the spec is mutually exclusive.
+			return true;
+		}
+	}
+	return false;
+}
+
+static function array<X2UniversalSoldierClassInfo> BuildValidPrimarySpecs(const array<X2UniversalSoldierClassInfo> AllSpecTemplates)
+{
+	local X2UniversalSoldierClassInfo			SpecTemplate;
+	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+
+	//	Define two arrays. If the spec can be used, it is added to the first array.
+	//	If the spec is required to be used, then we add it into the second array, and basically disregard the first one.
+
+	foreach AllSpecTemplates(SpecTemplate)
+	{	
+		if (SpecTemplate.IsPrimaryWeaponSpecialization())
+		{
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightPrimary, ValidSpecTemplates, RequiredSpecTemplates);
+		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
+	}
+	return ValidSpecTemplates;
+}
+
+static function array<X2UniversalSoldierClassInfo> BuildValidSecondarySpecs(const XComGameState_Unit UnitState, const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
+{
+	local X2UniversalSoldierClassInfo			SpecTemplate;
+	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+	local array<name>							AllowedWeaponCategories;
+	local bool									bWeaponRestrictions;
+
+	//	If weapon restrictions are enabled, collect the weapon cats of weapons that can be used in the primary slot.
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && AllSpecTemplates.Length > 0)
+	{
+		bWeaponRestrictions = true;
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryWeaponCategories(UnitState);
+	}
+
+	foreach AllSpecTemplates(SpecTemplate)
+	{	
+		//	Skip specialization if it was already selected
+		if (SelectedSpecTemplates.Find(SpecTemplate) != INDEX_NONE) continue;
+		
+		//	Skip specialization if it's mutually exclusive with one of the selected ones.
+		if (IsSpecMutuallyExclusive(SpecTemplate, SelectedSpecTemplates)) continue;
+
+		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate))
+		{
+			//	If weapon restrictions are enabled
+			if (bWeaponRestrictions)
+			{
+				//	Skip the spec if it requires a weapon category that cannot be used by this soldier in the primary weapon slot.
+				if (!IsRequiredWeaponCatAllowed(SpecTemplate, AllowedWeaponCategories)) continue;
+			}
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
+		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
+	}
+	return ValidSpecTemplates;
+}
+
+static function array<X2UniversalSoldierClassInfo> BuildValidComplementarySpecs(const XComGameState_Unit UnitState, const array<X2UniversalSoldierClassInfo> AllSpecTemplates, const array<X2UniversalSoldierClassInfo> SelectedSpecTemplates)
+{
+	local X2UniversalSoldierClassInfo			SpecTemplate;
+	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
+	local array<X2UniversalSoldierClassInfo>	RequiredSpecTemplates;
+	local array<name>							AllowedWeaponCategories;
+	local bool									bWeaponRestrictions;
+
+	//	If weapon restrictions are enabled, collect the weapon cats of weapons that can be used in primary and secondary slots.
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && AllSpecTemplates.Length > 0)
+	{
+		bWeaponRestrictions = true;
+		AllowedWeaponCategories = class'X2SoldierClassTemplatePlugin'.static.GetAllowedPrimaryAndSecondaryWeaponCategories(UnitState);
+	}
+
+	//	Cycle through all specs
+	foreach AllSpecTemplates(SpecTemplate)
+	{	
+		//	Skip specialization if it was already selected
+		if (SelectedSpecTemplates.Find(SpecTemplate) != INDEX_NONE) continue;
+		
+		//	Skip specialization if it's mutually exclusive with one of the selected ones.
+		if (IsSpecMutuallyExclusive(SpecTemplate, SelectedSpecTemplates)) continue;
+
+		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
+		{	
+			//	If weapon restrictions are enabled
+			if (bWeaponRestrictions)
+			{
+				//	Skip the spec if it requires a weapon category that cannot be used by this soldier in either primary or secondary slots.
+				if (!IsRequiredWeaponCatAllowed(SpecTemplate, AllowedWeaponCategories)) continue;
+				//	Skip the spec if one of its abilities requires a weapon category that cannot be used by this soldier.
+				if (!DoesSpecConformToWeaponRestrictions(SpecTemplate, AllowedWeaponCategories)) continue;
+			}
+			AddSpecAsValid(SpecTemplate, SpecTemplate.SpecializationMetaInfo.iWeightSecondary, ValidSpecTemplates, RequiredSpecTemplates);
+		}
+	}
+	if (RequiredSpecTemplates.Length > 0)
+	{
+		return RequiredSpecTemplates;
+	}
+	return ValidSpecTemplates;
+}
+
+//	This function will check if ALL of the abilities in this spec can be used with the given weapon categories.
+static function bool DoesSpecConformToWeaponRestrictions(const X2UniversalSoldierClassInfo SpecTemplate, const array<name> AllowedWeaponCategories)
+{
+	local SoldierClassAbilitySlot				AbilitySlot;
+	local AbilityWeaponCategoryRestriction		Restriction;
+	local int									Index;
+
+	//	Cycle through all abilities granted by this spec.
+	foreach SpecTemplate.AbilitySlots(AbilitySlot)
+	{
+		//	See if it has any weapon restrictions associated with it.
+		Index = class'X2TemplateHelper_RPGOverhaul'.default.AbilityWeaponCategoryRestrictions.Find('AbilityName', AbilitySlot.AbilityType.AbilityName);
+		if (Index != INDEX_NONE)
+		{
+			Restriction = class'X2TemplateHelper_RPGOverhaul'.default.AbilityWeaponCategoryRestrictions[Index];
+
+			//	Fallback in case of incorrect config.
+			if (Restriction.WeaponCategories.Length == 0) continue;
+						
+			//	If this ability cannot be used by weapons that this soldier is allowed in either primary or secondary slots
+			if (!DoArraysHaveAtLeastOneMatchingMember(AllowedWeaponCategories, Restriction.WeaponCategories))
+			{
+				`LOG(SpecTemplate.Name @ "ability:" @ AbilitySlot.AbilityType.AbilityName @ "has unfitting weapon restrictions.",, 'RPG');
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+static function bool IsRequiredWeaponCatAllowed(const X2UniversalSoldierClassInfo SpecTemplate, const array<name> AllowedWeaponCategories)
+{
+	local name	WeaponCat;
+
+	//	Auto succeed if there are no required weapon cats listed.
+	if (SpecTemplate.SpecializationMetaInfo.RequiredWeaponCategories.Length == 0)
+	{
+		return true;
+	}
+
+	foreach SpecTemplate.SpecializationMetaInfo.RequiredWeaponCategories(WeaponCat)
+	{
+		if (AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static function bool DoArraysHaveAtLeastOneMatchingMember(const array<name> FirstArray, const array<name> SecondArray)
+{
+	local name ArrayMember;
+
+	foreach FirstArray(ArrayMember)
+	{
+		if (SecondArray.Find(ArrayMember) != INDEX_NONE)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 //	Select specializations for the soldier to randomly create a soldier class.
 static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit UnitState, int Count)
 {
 	local array<X2UniversalSoldierClassInfo>	AllSpecTemplates;
 	local array<X2UniversalSoldierClassInfo>	ValidSpecTemplates;
-	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
 	local X2UniversalSoldierClassInfo			SpecTemplate;
+
+	//	These two arrays should both contain references to same specs.
+	local array<X2UniversalSoldierClassInfo>	SelectedSpecTemplates;
 	local array<int>							ReturnArray;
-	local bool									bSkipSpec;
-	local int i;
 
 	`LOG(default.class @ GetFuncName() @ "Start profiling with Random Class SWO",, 'RPG');
 
@@ -200,130 +413,76 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 
 	//	########################################################
 	//	Select random specialization for primary weapon:
-	`LOG("## Selecting primary specialization:" @ Count,, 'RPG');
-	foreach AllSpecTemplates(SpecTemplate)
-	{
-		if (SpecTemplate.IsPrimaryWeaponSpecialization())
-		{
-			for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightPrimary; i++)
-			{
-				`LOG("Valid spec: " @ SpecTemplate.Name,, 'RPG');
-				ValidSpecTemplates.AddItem(SpecTemplate);
-			}
-		}
-	}
+	`LOG("## Selecting primary specialization." @ Count @ "specs left.",, 'RPG');
+
+	ValidSpecTemplates = BuildValidPrimarySpecs(AllSpecTemplates);
+
 	if (ValidSpecTemplates.Length > 0)
 	{
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
 		SelectedSpecTemplates.AddItem(SpecTemplate);
 		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
+		//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory.
+		UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
+		`LOG("ASSIGNED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
 		Count--;
 
-		//	Record specialization index as a unit value so it can be looked at in class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory
-		UnitState.SetUnitFloatValue('PrimarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
-		`LOG("SELECTED Primary specialization: " @ SpecTemplate.Name,, 'RPG');
-
-		//	Add complementary specializations, if necessary
-		AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
-
-		//	Exit function early if necessary
-		if (Count <= 0) return ReturnArray;
+		//	Add forced complementary specializations, if necessary.
+		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 	else `LOG("There were no valid primary specs to choose from.",, 'RPG');
 
+	//	Exit function early if necessary
+	if (Count <= 0) return ReturnArray;
+
 	//	########################################################
 	//	Select random specialization for secondary weapon
-	`LOG("## Selecting secondary specialization: " @ Count,, 'RPG');
-	ValidSpecTemplates.Length = 0;
-	foreach AllSpecTemplates(SpecTemplate)
-	{	
-		//	Skip specialization if it was already selected
-		if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
+	`LOG("## Selecting secondary specialization." @ Count @ "specs left.",, 'RPG');
 
-		//	Skip specialization if it's mutually exclusive with one of the selected ones.
-		bSkipSpec = false;
-		for (i = 0; i < SelectedSpecTemplates.Length; i++)
-		{
-			if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
-			{
-				bSkipSpec = true;
-				break;
-			}
-		}
-		if (bSkipSpec) continue;
+	ValidSpecTemplates = BuildValidSecondarySpecs(UnitState, AllSpecTemplates, SelectedSpecTemplates);
 
-		if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeSecondary(SelectedSpecTemplates, SpecTemplate))
-		{
-			for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightSecondary; i++)
-			{
-				`LOG("Valid spec: " @ SpecTemplate.Name,, 'RPG');
-				ValidSpecTemplates.AddItem(SpecTemplate);
-			}
-		}
-	}
 	if (ValidSpecTemplates.Length > 0)
 	{
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 
 		SelectedSpecTemplates.AddItem(SpecTemplate);
 		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
+		UnitState.SetUnitFloatValue('SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
+		`LOG("ASSIGNED Secondary specialization: " @ SpecTemplate.Name,, 'RPG');
 		Count--;
 
-		UnitState.SetUnitFloatValue('SecondarySpecialization_Value', class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name), eCleanup_Never);
-		`LOG("SELECTED Secondary specialization: " @ SpecTemplate.Name,, 'RPG');
-
-		//	Add complementary specializations, if necessary
-		AddComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
-
-		//	Exit function early if necessary
-		if (Count <= 0) return ReturnArray;
+		//	Add forced complementary specializations, if necessary
+		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 	else `LOG("There were no valid secondary specs to choose from.",, 'RPG');
 
+	//	Exit function early if necessary
+	if (Count <= 0) return ReturnArray;
+
 	//	########################################################
 	//	Select several additional specializations that either complement already selected specializations, or are weapon agnostic.
-	`LOG("## Selecting additional specializations: " @ Count,, 'RPG');
+	`LOG("## Selecting additional specializations." @ Count @ "specs left.",, 'RPG');
 	while (Count > 0)
 	{
-		ValidSpecTemplates.Length = 0;
-
-		foreach AllSpecTemplates(SpecTemplate)
-		{
-			//	Skip specialization if it was already selected
-			if (ReturnArray.Find(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name)) != INDEX_NONE) continue;
-
-			//	Skip specialization if it's mutually exclusive with one of the selected ones.
-			bSkipSpec = false;
-			for (i = 0; i < SelectedSpecTemplates.Length; i++)
-			{
-				if (SelectedSpecTemplates[i].SpecializationMetaInfo.MutuallyExclusiveSpecs.Find(SpecTemplate.Name) != INDEX_NONE) 
-				{
-					bSkipSpec = true;
-					break;
-				}
-			}
-			if (bSkipSpec) continue;
-
-			if (class'X2SoldierClassTemplatePlugin'.static.IsSpecializationValidToBeComplementary(SelectedSpecTemplates, SpecTemplate))
-			{
-				for (i = 0; i < SpecTemplate.SpecializationMetaInfo.iWeightComplementary; i++)
-				{
-					`LOG("Valid spec: " @ SpecTemplate.Name,, 'RPG');
-					ValidSpecTemplates.AddItem(SpecTemplate);
-				}
-			}
-		}
+		ValidSpecTemplates = BuildValidComplementarySpecs(UnitState, AllSpecTemplates, SelectedSpecTemplates);	
 
 		//	Exit function early if there are no valid specs anymore.
-		if (ValidSpecTemplates.Length == 0) return ReturnArray;
+		if (ValidSpecTemplates.Length == 0) 
+		{
+			`LOG("There were no more valid complementary specs to choose from, exiting.",, 'RPG');
+			return ReturnArray;
+		}
 
 		SpecTemplate = ValidSpecTemplates[`SYNC_RAND_STATIC(ValidSpecTemplates.Length)];
 		SelectedSpecTemplates.AddItem(SpecTemplate);
 		ReturnArray.AddItem(class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, SpecTemplate.Name));
 		Count--;
 
-		`LOG("SELECTED Additional specialization: " @ SpecTemplate.Name,, 'RPG');
+		`LOG("ASSIGNED Complementary specialization: " @ SpecTemplate.Name,, 'RPG');
+
+		//	Add forced complementary specializations, if necessary
+		AddForcedComplementarySpecializations(UnitState, SpecTemplate, ReturnArray, SelectedSpecTemplates, Count);
 	}
 
 	return ReturnArray;
@@ -331,7 +490,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 
 //	Random Classes
 //	Moved this code into a separate function, since it's getting called multiple times.
-static function AddComplementarySpecializations(
+static function AddForcedComplementarySpecializations(
 	XComGameState_Unit UnitState,
 	X2UniversalSoldierClassInfo SpecTemplate,
 	out array<int> ReturnArray,

@@ -47,6 +47,12 @@ struct SpecializationMetaInfoStruct
 	// This are the weapon categories provided when the Weapon Restriction SWO is enabled
 	var array<name> AllowedWeaponCategories;
 
+	// If weapon restrictions are enabled, Random Classes will allow this spec to be picked as secondary or complementary
+	// only if the soldier can use one of the weapon categories specified in this array. 
+	// Useful for a potential Ballistic Shield spec, or Mitzruti's Chemtrhower Canister specs.
+	// This array is not used when the spec is considered to be primary.
+	var array<name> RequiredWeaponCategories;
+
 	// The weapon categories are supplied to these inventory slots. This is also used by the Random Classes SWO algorithm
 	var array<EInventorySlot> InventorySlots;
 
@@ -78,6 +84,7 @@ struct SpecializationMetaInfoStruct
 	var bool bPsionic;
 
 	//	this spec can be used only as primary or secondary, but cannot complement other specs. "Skirmisher" spec is a good example, as it pretty much requires a ripjack to function. 
+	//	Exception: Dual Wield specs can become complementary even if bCantBeComplementary = true
 	var bool bCantBeComplementary;
 
 	// Weights used by the Random Classes SWO algorithm
