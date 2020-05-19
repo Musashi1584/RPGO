@@ -138,7 +138,7 @@ static function EventListenerReturn AddAdditionialSquaddieAbilities(Object Event
 	
 	if (UnitState != none && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 	{
-		`LOG(default.class @ GetFuncName() @ "AddAdditionalSquaddieAbilities to" @ UnitState.SummaryString(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "to" @ UnitState.SummaryString(),, 'RPGO-Promotion');
 
 		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("ADD_ADDITIONAL_SQUADDIE_ABILITIES");
 		UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
@@ -152,24 +152,22 @@ static function EventListenerReturn AddAdditionialSquaddieAbilities(Object Event
 		}
 	}
 
-	return ELR_NoInterrupt;
+	return ELR_InterruptListeners;
 }
 
 static function EventListenerReturn AssignSoldierSpecializations(Object EventData, Object EventSource, XComGameState GameState, Name EventName, Object CallbackData)
 {
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
-	local array<int> AllSpecs;
-	local UnitValue AddedRandomSpecs, AddedCommandersChoiceSpecs, SpecsAssigned;
+	
 	local XComGameStateHistory History;
-	local bool bCreatedOwnGameState, bHasSpecsAssignend;
+	local bool bCreatedOwnGameState;
 
 	`LOG(default.class @ GetFuncName() @ "Eventlistener triggered:" @ EventName,, 'RPG');
 
 	History = `XCOMHISTORY;
 
 	UnitState = XComGameState_Unit(EventData);
-	AllSpecs.Length = 0; // get rid if unused var warning
 
 	//`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
 	//	"RPGOSpecRoulette" @ `SecondWaveEnabled('RPGOSpecRoulette') @
@@ -179,31 +177,6 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 
 	if (UnitState != none)
 	{
-		UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
-		UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', AddedCommandersChoiceSpecs);
-		UnitState.GetUnitValue('SpecsAssigned', SpecsAssigned);
-
-		bHasSpecsAssignend = AddedRandomSpecs.fValue == 1 || AddedCommandersChoiceSpecs.fValue == 1 || SpecsAssigned.fValue == 1;
-
-		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ UnitState.SummaryString(),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "X2CharacterTemplate:" @ UnitState.GetMyTemplateName(),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "X2SoldierClassTemplate" @ UnitState.GetSoldierClassTemplateName(),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "Unit Rank:" @ UnitState.GetSoldierRank(),, 'RPGO-Promotion');
-
-		`LOG(default.class @ GetFuncName() @ "SecondWave Specialization Roulette:" @ `SecondWaveEnabled('RPGOSpecRoulette'),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "SecondWave Commanders Choice:" @ `SecondWaveEnabled('RPGOCommandersChoice'),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "SecondWave Origins:" @ `SecondWaveEnabled('RPGOOrigins'),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "SecondWave Random Classes:" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses'),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "SecondWave Weapon Restrictions:" @ `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "SecondWave Training Roulette:" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPGO-Promotion');
-
-		`LOG(default.class @ GetFuncName() @ "UnitVal AddedRandomSpecs" @ AddedRandomSpecs.fValue,, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "UnitVal SecondWaveCommandersChoiceSpecChosen" @ AddedCommandersChoiceSpecs.fValue,, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "UnitVal SpecsAssigned" @ SpecsAssigned.fValue,, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ `ShowVar(bHasSpecsAssignend),, 'RPGO-Promotion');
-		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
-
 		if (UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier')
 		{
 			`LOG(default.class @ GetFuncName() @ UnitState.SummaryString() @
@@ -224,41 +197,14 @@ static function EventListenerReturn AssignSoldierSpecializations(Object EventDat
 				`LOG(default.class @ GetFuncName() @ "Using given state" @ GameState,, 'RPGO-Promotion');
 				NewGameState = GameState;
 			}
+			
 
-			UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
-
-			if ((`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')) && !bHasSpecsAssignend)
+			// if origins is enabled we assign the specs after the origin perks are assigned in UIChooseAbilities of CC is not enabled
+			// if commanders choice is enabled we will trigger it after the specs are assigned in UIChooseSpecializations
+			if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations() &&
+				!`SecondWaveEnabled('RPGOOrigins'))
 			{
-				class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
-				UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
-				`LOG(default.class @ GetFuncName() @
-					UnitState.SummaryString() @
-					"Build random spec ability tree"
-				,, 'RPGO-Promotion');
-			}
-			else if (`SecondWaveEnabled('RPGOTrainingRoulette') && !bHasSpecsAssignend)
-			{
-				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
-				UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
-				`LOG(default.class @ GetFuncName() @
-					UnitState.SummaryString() @
-					"Build training roulette ability tree"
-				,, 'RPGO-Promotion');
-
-			}
-			else if (!bHasSpecsAssignend)
-			{
-				class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, false);
-				UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
-				`LOG(default.class @ GetFuncName() @
-					UnitState.SummaryString() @
-					"Build soldier ability tree"
-				,, 'RPGO-Promotion');
-			}
-
-			if (class'X2SecondWaveConfigOptions'.static.HasPureRandomSpecializations())
-			{
-				`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+				class'X2SoldierClassTemplatePlugin'.static.AssignSpecializations(UnitState, NewGameState);
 			}
 
 			if (NewGameState.GetNumGameStateObjects() > 0 && bCreatedOwnGameState)

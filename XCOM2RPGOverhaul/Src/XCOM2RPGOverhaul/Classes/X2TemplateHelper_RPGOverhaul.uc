@@ -553,6 +553,19 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 	}
 }
 
+static function RemoveJediClassSoldierInfoEventistenerTemplate()
+{
+	local X2EventListenerTemplateManager EventListenerTemplateManager;
+	local CHEventListenerTemplate ListenerTemplate;
+
+	EventListenerTemplateManager = class'X2EventListenerTemplateManager'.static.GetEventListenerTemplateManager();
+	ListenerTemplate = CHEventListenerTemplate(EventListenerTemplateManager.FindEventListenerTemplate('JediClassSoldierInfo'));
+	ListenerTemplate.RemoveEvent('SoldierClassDisplayName');
+	ListenerTemplate.RemoveEvent('SoldierClassSummary');
+	ListenerTemplate.RemoveEvent('SoldierClassIcon');
+
+}
+
 static function PatchAbilitiesWeaponCondition()
 {
 	local X2AbilityTemplateManager		TemplateManager;

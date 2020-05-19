@@ -325,6 +325,7 @@ static function array<int> GetSpecIndices_ForRandomClass(XComGameState_Unit Unit
 
 		`LOG("SELECTED Additional specialization: " @ SpecTemplate.Name,, 'RPG');
 	}
+
 	return ReturnArray;
 }
 
@@ -413,13 +414,23 @@ static function BuildSpecAbilityTree(
 		for(RankIndex = 1; RankIndex < ClassTemplate.GetMaxConfiguredRank(); RankIndex++)
 		{
 			RankAbilities = EmptyRankAbilities;
-			AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetAllAbilitySlotsForRank(UnitState, RankIndex);
+
+			if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+			{
+				AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetRandomClassesSlotsForRank(UnitState, RankIndex, AddSpecializationIndices);
+			}
+			else
+			{
+				AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetAllAbilitySlotsForRank(UnitState, RankIndex);
+			}
 
 			// Determine ability (or lack thereof) from each slot
 			for(SlotIndex = 0; SlotIndex < AllAbilitySlots.Length; SlotIndex++)
 			{
-				
-				if (AddSpecializationIndices.Length > 0 && AddSpecializationIndices.Find(SlotIndex) == INDEX_NONE)
+				if (AddSpecializationIndices.Length > 0 &&
+					AddSpecializationIndices.Find(SlotIndex) == INDEX_NONE &&
+					!`SecondWaveEnabled('RPGO_SWO_RandomClasses') // We already handle AddSpecializationIndices in GetRandomClassesSlotsForRank so we add all we get from that function here
+				)
 				{
 					continue;
 				}

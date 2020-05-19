@@ -5,6 +5,80 @@ class X2SoldierClassTemplatePlugin extends X2SoldierClassTemplate config (JustFo
 var config bool bHasProcessedSpecs;
 var config array<SoldierSpecialization> CachedSpecializations;
 
+static function AssignSpecializations(out XComGameState_Unit UnitState, out XComGameState NewGameState)
+{
+	local UnitValue AddedRandomSpecs, AddedCommandersChoiceSpecs, SpecsAssigned, PreserveSpecs;
+	local bool bHasSpecsAssignend;
+	local array<int> AllSpecs;
+
+	AllSpecs.Length = 0; // get rid if unused var warning
+
+	UnitState.GetUnitValue('SecondWaveSpecRouletteAddedRandomSpecs', AddedRandomSpecs);
+	UnitState.GetUnitValue('SecondWaveCommandersChoiceSpecChosen', AddedCommandersChoiceSpecs);
+	UnitState.GetUnitValue('SpecsAssigned', SpecsAssigned);
+	UnitState.GetUnitValue('RPGO_RebuildSelectedSoldierPreserveSpecs', PreserveSpecs);
+
+	bHasSpecsAssignend = AddedRandomSpecs.fValue == 1 || AddedCommandersChoiceSpecs.fValue == 1 || SpecsAssigned.fValue == 1 || PreserveSpecs.fValue == 1;
+
+	if (!bHasSpecsAssignend)
+	{
+		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ UnitState.SummaryString(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "X2CharacterTemplate:" @ UnitState.GetMyTemplateName(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "X2SoldierClassTemplate" @ UnitState.GetSoldierClassTemplateName(),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "Unit Rank:" @ UnitState.GetSoldierRank(),, 'RPGO-Promotion');
+
+		`LOG(default.class @ GetFuncName() @ "SecondWave Specialization Roulette:" @ `SecondWaveEnabled('RPGOSpecRoulette'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Commanders Choice:" @ `SecondWaveEnabled('RPGOCommandersChoice'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Origins:" @ `SecondWaveEnabled('RPGOOrigins'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Random Classes:" @ `SecondWaveEnabled('RPGO_SWO_RandomClasses'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Weapon Restrictions:" @ `SecondWaveEnabled('RPGO_SWO_WeaponRestriction'),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "SecondWave Training Roulette:" @ `SecondWaveEnabled('RPGOTrainingRoulette'),, 'RPGO-Promotion');
+
+		`LOG(default.class @ GetFuncName() @ "UnitVal AddedRandomSpecs" @ AddedRandomSpecs.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "UnitVal SecondWaveCommandersChoiceSpecChosen" @ AddedCommandersChoiceSpecs.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "UnitVal SpecsAssigned" @ SpecsAssigned.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "UnitVal PreserveSpecs" @ PreserveSpecs.fValue,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ `ShowVar(bHasSpecsAssignend),, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ "---------------------------------------",, 'RPGO-Promotion');
+	}
+
+	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
+
+	if ((`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')) && !bHasSpecsAssignend)
+	{
+		class'X2SecondWaveConfigOptions'.static.BuildRandomSpecAbilityTree(UnitState, `SecondWaveEnabled('RPGOTrainingRoulette'));
+		UnitState.SetUnitFloatValue('SecondWaveSpecRouletteAddedRandomSpecs', 1, eCleanup_Never);
+		`LOG(default.class @ GetFuncName() @
+			UnitState.SummaryString() @
+			"Build random spec ability tree"
+		,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
+		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+	}
+	else if (`SecondWaveEnabled('RPGOTrainingRoulette') && !bHasSpecsAssignend)
+	{
+		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, true);
+		UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
+		`LOG(default.class @ GetFuncName() @
+			UnitState.SummaryString() @
+			"Build training roulette ability tree"
+		,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
+		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+	}
+	else if (!bHasSpecsAssignend)
+	{
+		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, AllSpecs, true, false);
+		UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
+		`LOG(default.class @ GetFuncName() @
+			UnitState.SummaryString() @
+			"Build soldier ability tree"
+		,, 'RPGO-Promotion');
+		`LOG(default.class @ GetFuncName() @ GetScriptTrace(),, 'RPGO-Promotion');
+		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+	}
+}
 
 static function AddAdditionalSquaddieAbilities(
 	XComGameState NewGameState,
@@ -1004,12 +1078,57 @@ static function array<SoldierClassAbilitySlot> GetAllAbilitySlotsForRank(XComGam
 	local X2UniversalSoldierClassInfo Template;
 
 	Specs = GetSpecializationsAvailableToSoldier(UnitState);
+	
 	foreach Specs(Spec)
 	{
 		Template = GetSpecializationTemplate(Spec);
 		AbilitySlots.AddItem(Template.AbilitySlots[RankIndex - 1]);
 	}
 	return AbilitySlots;
+}
+
+static function array<SoldierClassAbilitySlot> GetRandomClassesSlotsForRank(
+	XComGameState_Unit UnitState,
+	int RankIndex,
+	array<int> AssignedSpecIndices
+)
+{
+	local array<SoldierSpecialization> Specs;
+	local SoldierSpecialization Spec;
+	local array<SoldierClassAbilitySlot> AbilitySlots;
+	local X2UniversalSoldierClassInfo Template;
+
+	// Sort by P/S/C
+	Specs = GetTrainedPrimaryWeaponSpecializations(UnitState);
+	Specs = MergeSpecializationArray(Specs, GetTrainedSecondaryWeaponSpecializations(UnitState));
+	Specs = MergeSpecializationArray(Specs, GetSpecializationsByIndex(UnitState, AssignedSpecIndices));
+
+	foreach Specs(Spec)
+	{
+		Template = GetSpecializationTemplate(Spec);
+		AbilitySlots.AddItem(Template.AbilitySlots[RankIndex - 1]);
+	}
+
+	return AbilitySlots;
+}
+
+static function array<SoldierSpecialization> MergeSpecializationArray(
+	array<SoldierSpecialization> Arr1, array<SoldierSpecialization> Arr2
+)
+{
+	local array<SoldierSpecialization> ReturnArray;
+	local SoldierSpecialization Spec;
+
+	ReturnArray = Arr1;
+
+	foreach Arr2(Spec)
+	{
+		if (ReturnArray.Find('TemplateName', Spec.TemplateName) == INDEX_NONE)
+		{
+			ReturnArray.AddItem(Spec);
+		}
+	}
+	return ReturnArray;
 }
 
 static function array<SoldierSpecialization> GetAssignedSpecializations(XComGameState_Unit UnitState)

@@ -75,6 +75,8 @@ function bool OnAllAbiltiesSelected()
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceAbilityChosen', 1, eCleanup_Never);
+
+	class'X2SoldierClassTemplatePlugin'.static.AssignSpecializations(UnitState, NewGameState);
 	
 	`GAMERULES.SubmitGameState(NewGameState);
 	

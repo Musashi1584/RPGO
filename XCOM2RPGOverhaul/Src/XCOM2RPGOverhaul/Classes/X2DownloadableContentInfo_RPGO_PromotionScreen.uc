@@ -379,7 +379,6 @@ exec function RPGO_RebuildSelectedSoldier(
 		}
 	}
 
-
 	UnitState.SetUnitFloatValue('StatPoints', 0, eCleanup_Never);
 	UnitState.SetUnitFloatValue('SpentStatPoints', 0, eCleanup_Never);
 	
@@ -436,8 +435,8 @@ exec function RPGO_RebuildSelectedSoldier(
 		SoldierProgressionAbilties = UnitState.m_SoldierProgressionAbilties;
 		for (i = SoldierProgressionAbilties.Length; i >= 0; i--)
 		{
-			`LOG(GetFuncName() @ "Rank:" @ SoldierProgressionAbilties[i].iRank @ "Branch:" @ SoldierProgressionAbilties[i].iBranch,, 'RPG');
-			`LOG(GetFuncName() @ "------------------------------------------------------------------------------------------",, 'RPG');
+			`LOG(GetFuncName() @ "Remove Rank:" @ SoldierProgressionAbilties[i].iRank @ "Branch:" @ SoldierProgressionAbilties[i].iBranch,, 'RPGO-Promotion');
+			`LOG(GetFuncName() @ "------------------------------------------------------------------------------------------",, 'RPGO-Promotion');
 			if (SoldierProgressionAbilties[i].iRank == 0)
 			{
 				SoldierProgressionAbilties.Remove(i, 1);
@@ -445,6 +444,7 @@ exec function RPGO_RebuildSelectedSoldier(
 		}
 		UnitState.SetSoldierProgression(SoldierProgressionAbilties);
 	}
+
 	UnitState.ApplySquaddieLoadout(NewGameState, XComHQ);
 
 	// Reapply Stat Modifiers (Beta Strike HP, etc.)
@@ -471,6 +471,7 @@ exec function RPGO_RebuildSelectedSoldier(
 	if (OPTIONAL_PreserveSpecializations)
 	{
 		class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(UnitState, PreviousSpecs, true, `SecondWaveEnabled('RPGOTrainingRoulette'));
+		`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
 	}
 
 	`XEVENTMGR.TriggerEvent('CompleteRespecSoldier', none, UnitState, NewGameState);

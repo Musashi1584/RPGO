@@ -41,6 +41,7 @@ static event OnPostTemplatesCreated()
 {
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
+	class'X2TemplateHelper_RPGOverhaul'.static.RemoveJediClassSoldierInfoEventistenerTemplate();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
