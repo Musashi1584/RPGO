@@ -1068,7 +1068,7 @@ static function PatchKillZone()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('KillZone');
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_killzone";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_killzone";
 }
 
 
@@ -1114,7 +1114,8 @@ static function PatchSniperStandardFire()
 	}
 }
 
-static function PatchLongWatch()
+// This whole patch isn't needed anymore because the soldier will retain Squadsight through the enemy turn if they haven't moved.
+/* static function PatchLongWatch()
 {
 	local X2AbilityTemplateManager		TemplateManager;
 	local X2AbilityTemplate				Template;
@@ -1129,7 +1130,9 @@ static function PatchLongWatch()
 		// Readd squad sight in case it was removed on movement on playerturn
 		Squadsight = new class'X2Effect_Squadsight';
 		Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnEnd);
-		Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+
+		Squadsight.DuplicateResponse = eDupe_Refresh;
+		Squadsight.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 		Template.AddTargetEffect(Squadsight);
 	}
 	else
@@ -1144,7 +1147,7 @@ static function PatchLongWatch()
 		}
 	}
 }
-
+*/
 
 static function PatchSuppression()
 {
@@ -1184,7 +1187,8 @@ static function PatchSquadSight()
 		Template.AbilityTriggers.AddItem(EventTrigger);
 
 		Squadsight = new class'X2Effect_Squadsight';
-		Squadsight.BuildPersistentEffect(1, false, true, true, eGameRule_PlayerTurnBegin);
+		Squadsight.BuildPersistentEffect(1, true, true, true, eGameRule_PlayerTurnBegin);
+		Squadsight.DuplicateResponse = eDupe_Refresh;
 		Squadsight.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 		Template.AddTargetEffect(Squadsight);
 

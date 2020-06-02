@@ -67,7 +67,8 @@ static function X2AbilityTemplate XenoBiologist()
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("XENO_BIOLOGIST_DMG_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
-
+	Effect.bDisplayInUI = false;
+	
 	return Passive('XenoBiologist', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
 }
 
@@ -107,7 +108,8 @@ static function X2AbilityTemplate Panoptic()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_SightRadius, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PANOPTIC_SIGHTRANGE_BONUS"));
-
+	Effect.bDisplayInUI = false;
+	
 	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPG.UIPerk_Panoptic'", false, Effect);
 }
 
@@ -187,9 +189,11 @@ static function X2AbilityTemplate Bulletproof()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
+	Effect.bDisplayInUI = false;
+	
 	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPG.UIPerk_Bulletproof'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
-
+	
 	return Template;
 }
 
@@ -201,6 +205,7 @@ static function X2AbilityTemplate Juggernaut()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
+	Effect.bDisplayInUI = false;
 	
 	Template = Passive('Juggernaut', "img:///Texture2D'UILibrary_RPG.UIPerk_Juggernaught'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
@@ -214,7 +219,8 @@ static function X2AbilityTemplate Stalker()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("STALKER_BONUS"));
-	
+	Effect.bDisplayInUI = false;
+		
 	return Passive('Stalker', "img:///Texture2D'UILibrary_RPG.UIPerk_Stalker'", true, Effect);
 }
 
@@ -225,6 +231,8 @@ static function X2AbilityTemplate IronWill()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
+	Effect.bDisplayInUI = false;
+	
 	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPG.UIPerk_IronWill'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 
@@ -238,6 +246,8 @@ static function X2AbilityTemplate CyberAdept()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
+	Effect.bDisplayInUI = false;
+	
 	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPG.UIPerk_CyberAdept'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 
@@ -251,6 +261,8 @@ static function X2AbilityTemplate MovingTarget()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
+	Effect.bDisplayInUI = false;
+	
 	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPG.UIPerk_MovingTarget'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 
@@ -264,7 +276,8 @@ static function X2AbilityTemplate Praetorian()
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PREATORIAN_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.MeleeCondition);
-
+	BonusEffect.bDisplayInUI = false;
+	
 	return Passive('Praetorian', "img:///Texture2D'UILibrary_RPG.UIPerk_Praetorian'", false, BonusEffect);
 }
 
@@ -276,14 +289,15 @@ static function X2AbilityTemplate Runner()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
-
+	Effect.bDisplayInUI = false;
+	
 	Template = Passive('Runner', "img:///UILibrary_RPG.UIPerk_Runner", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
 
 	return Template;
 }
 
-static function X2AbilityTemplate EagleEye()
+/* static function X2AbilityTemplate EagleEye()
 {
 	local X2AbilityTemplate Template;
 	local XMBEffect_ConditionalBonus BonusEffect;
@@ -291,11 +305,12 @@ static function X2AbilityTemplate EagleEye()
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("EAGLEEYE_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(new class'X2Condition_NoReactionFire');
-
+	BonusEffect.bDisplayInUI = false;
+	
 	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPG.UIPerk_EagleEye'", false, BonusEffect);
 
 	return Template;
-}
+} */
 
 static function X2AbilityTemplate HotShot()
 {
@@ -305,7 +320,8 @@ static function X2AbilityTemplate HotShot()
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HOTSHOT_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
-
+	BonusEffect.bDisplayInUI = false;
+	
 	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPG.UIPerk_Hotshot'", false, BonusEffect);
 
 	return Template;
