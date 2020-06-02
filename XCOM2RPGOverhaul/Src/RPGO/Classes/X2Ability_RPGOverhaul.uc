@@ -297,7 +297,7 @@ static function X2AbilityTemplate Runner()
 	return Template;
 }
 
-/* static function X2AbilityTemplate EagleEye()
+/static function X2AbilityTemplate EagleEye()
 {
 	local X2AbilityTemplate Template;
 	local XMBEffect_ConditionalBonus BonusEffect;
@@ -310,7 +310,7 @@ static function X2AbilityTemplate Runner()
 	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPG.UIPerk_EagleEye'", false, BonusEffect);
 
 	return Template;
-} */
+}
 
 static function X2AbilityTemplate HotShot()
 {
