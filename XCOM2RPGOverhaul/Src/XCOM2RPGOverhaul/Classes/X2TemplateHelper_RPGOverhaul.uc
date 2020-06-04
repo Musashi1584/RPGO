@@ -973,8 +973,12 @@ static function PatchClaymoreCharges()
 	Template = TemplateManager.FindAbilityTemplate('ThrowClaymore');
 	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
 
+	Template = TemplateManager.FindAbilityTemplate('ThrowShrapnel');
+	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
+
 	Template = TemplateManager.FindAbilityTemplate('HomingMine');
 	Template.AbilityCharges.AddBonusCharge('Overkill', 1);
+	
 }
 
 
