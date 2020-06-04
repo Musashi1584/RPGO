@@ -8,6 +8,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CreateListenerTemplateOnCleanupTacticalMission());
 	Templates.AddItem(CreateListenerTemplateGetItemRange());
 	Templates.AddItem(CreateListenerTemplateFailsafe());
+	Templates.AddItem(CreateListenerTemplateOnKilledByExplosion());
 
 	return Templates;
 }
@@ -71,6 +72,21 @@ static function CHEventListenerTemplate CreateListenerTemplateFailsafe()
 
 	Template.AddCHEvent('PreAcquiredHackReward', OnPreAcquiredHackReward, ELD_OnStateSubmitted);
 	`LOG(default.class @ "Register Event PreAcquiredHackReward",, 'RPG');
+
+	return Template;
+}
+
+static function CHEventListenerTemplate CreateListenerTemplateOnKilledByExplosion()
+{
+	local CHEventListenerTemplate Template;
+
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'KilledByExplosion');
+
+	Template.RegisterInTactical = true;
+	Template.RegisterInStrategy = false;
+
+	Template.AddCHEvent('KilledByExplosion', OnKilledByExplosion, ELD_Immediate);
+	//`LOG("Register Event OnKilledByExplosion");
 
 	return Template;
 }
@@ -329,6 +345,43 @@ static function EventListenerReturn OnPreAcquiredHackReward(Object EventData, Ob
 				`XEVENTMGR.TriggerEvent('FailsafeTriggered', AbilityState, Hacker, GameState);
 			}
 		}
+	}
+
+	return ELR_NoInterrupt;
+}
+
+
+
+// EventData is XComLWTuple with expected format:
+//      Id        : 'OverrideKilledByExplosion'
+//      Data[0].b : whether or not the target was killed by an explosion
+//      Data[1].i : ObjectId of the killer
+static function EventListenerReturn OnKilledByExplosion(Object EventData, Object EventSource, XComGameState GameState, Name Event, Object CallbackData)
+{
+    local XComLWTuple				OverrideTuple;
+	local XComGameState_Unit		Killer, Target;
+
+    //`LOG("Needle Grenades: Triggered");
+
+	OverrideTuple = XComLWTuple(EventData);
+	if(OverrideTuple == none)
+	{
+		`REDSCREEN("OnKilledByExplosion event triggered with invalid event data.");
+		return ELR_NoInterrupt;
+	}
+
+	Target = XComGameState_Unit(EventSource);
+	if(Target == none)
+		return ELR_NoInterrupt;
+
+	if(OverrideTuple.Id != 'OverrideKilledByExplosion')
+		return ELR_NoInterrupt;
+
+	Killer = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(OverrideTuple.Data[1].i));
+
+	if (OverrideTuple.Data[0].b && Killer.HasSoldierAbility('RpgNeedleGrenades', true))
+	{
+		OverrideTuple.Data[0].b = false;
 	}
 
 	return ELR_NoInterrupt;

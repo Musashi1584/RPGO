@@ -23,6 +23,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(TacticalSense());
 	Templates.AddItem(AddRescueProtocol());
 	Templates.AddItem(HitAndRun());
+	Templates.AddItem(NeedleGrenades());
 
 	return Templates;
 }
@@ -43,6 +44,20 @@ static function X2AbilityTemplate Sentinel()
 	// Create the template using a helper function
 	Template = Passive('LW2WotC_Sentinel', "img:///UILibrary_LW_PerkPack.LW_AbilitySentinel", false, PersistentEffect);
 	Template.bIsPassive = false;
+
+	return Template;
+}
+
+// Perk name:		Needle Grenades
+// Perk effect:		Your explosives do not destroy loot when they kill enemies.
+// Localized text:	"Your explosives do not destroy loot when they kill enemies."
+// Config:			(AbilityName="RpgNeedleGrenades")
+static function X2AbilityTemplate NeedleGrenades()
+{
+	local X2AbilityTemplate			Template;
+    
+	// Event listener defined in X2EventListener_Sapper will check for this ability to override the boolean denoting that an enemy was killed by an explosion
+	Template = PurePassive('RpgNeedleGrenades', "img:///UILibrary_LW_PerkPack.LW_AbilityNeedleGrenades");
 
 	return Template;
 }
