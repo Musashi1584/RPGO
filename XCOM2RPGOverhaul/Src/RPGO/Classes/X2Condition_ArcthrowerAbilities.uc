@@ -9,7 +9,7 @@ event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameSta
 	if(kAbility == none)
 		return 'AA_InvalidAbilityName';
 
-	ValidArcthrowerAbilities = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("ARCTHROWER_ABILITIES");
+	ValidArcthrowerAbilities = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigNameArray("ARCTHROWER_ABILITIES");
 
 	SourceWeapon = kAbility.GetSourceWeapon();
 	AbilityName = kAbility.GetMyTemplateName();

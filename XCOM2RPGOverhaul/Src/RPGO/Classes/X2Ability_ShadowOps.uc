@@ -106,7 +106,7 @@ static function X2AbilityTemplate Airstrike()
 	Template.AbilityMultiTargetStyle = MultiTarget;
 	
 	Effect = new class'X2Effect_ApplyWeaponDamage';
-	Effect.EffectDamageValue = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("AIRSTRIKEDAMAGE");
+	Effect.EffectDamageValue = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigDamageValue("AIRSTRIKEDAMAGE");
 	Effect.bExplosiveDamage = true;
 	Effect.bIgnoreBaseDamage = true;
 	Effect.EnvironmentalDamageAmount = 40;
@@ -134,7 +134,7 @@ static function X2AbilityTemplate Airstrike()
 
 	Template.bCrossClassEligible = false;
 
-	AddCharges(Template, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AIRSTRIKECHARGES"));
+	AddCharges(Template, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AIRSTRIKECHARGES"));
 
 	return Template;	
 }

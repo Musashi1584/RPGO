@@ -65,7 +65,7 @@ static function X2AbilityTemplate XenoBiologist()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("XENO_BIOLOGIST_DMG_BONUS"));
+	Effect.AddDamageModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("XENO_BIOLOGIST_DMG_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
 
 	return Passive('XenoBiologist', "img:///UILibrary_RPGO.LW_AbilityVitalPointTargeting", false, Effect);
@@ -89,8 +89,8 @@ static function X2AbilityTemplate DamnGoodGround()
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.EffectName = 'DamnGoodGround';
 
-	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DAMN_GOOD_GROUND_AIM_BONUS"));
-	Effect.AddToHitAsTargetModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DAMN_GOOD_GROUND_DEFENSE_BONUS") * -1);
+	Effect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DAMN_GOOD_GROUND_AIM_BONUS"));
+	Effect.AddToHitAsTargetModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DAMN_GOOD_GROUND_DEFENSE_BONUS") * -1);
 
 	Effect.AbilityTargetConditions.AddItem(default.HeightDisadvantageCondition);
 	Effect.AbilityTargetConditionsAsTarget.AddItem(default.HeightAdvantageCondition);
@@ -106,7 +106,7 @@ static function X2AbilityTemplate Panoptic()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_SightRadius, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PANOPTIC_SIGHTRANGE_BONUS"));
+	Effect.AddPersistentStatChange(eStat_SightRadius, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("PANOPTIC_SIGHTRANGE_BONUS"));
 
 	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPGO.UIPerk_Panoptic'", false, Effect);
 }
@@ -116,7 +116,7 @@ static function X2AbilityTemplate Hitman()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HITMAN_BONUS"), eHit_Crit);
+	BonusEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("HITMAN_BONUS"), eHit_Crit);
 	BonusEffect.AbilityTargetConditions.AddItem(default.FlankedCondition);
 
 	return Passive('Hitman', "img:///Texture2D'UILibrary_RPGO.UIPerk_Hitman'", false, BonusEffect);
@@ -186,9 +186,9 @@ static function X2AbilityTemplate Bulletproof()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
+	Effect.AddPersistentStatChange(eStat_Defense, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("BULLETPROOF_BONUS"));
 	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPGO.UIPerk_Bulletproof'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("BULLETPROOF_BONUS"));
 
 	return Template;
 }
@@ -200,10 +200,10 @@ static function X2AbilityTemplate Juggernaut()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
+	Effect.AddPersistentStatChange(eStat_HP, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("JUGGERNAUT_BONUS"));
 	
 	Template = Passive('Juggernaut', "img:///Texture2D'UILibrary_RPGO.UIPerk_Juggernaught'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("JUGGERNAUT_BONUS"));
 
 	return Template;
 }
@@ -213,7 +213,7 @@ static function X2AbilityTemplate Stalker()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("STALKER_BONUS"));
+	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigFloatValue("STALKER_BONUS"));
 	
 	return Passive('Stalker', "img:///Texture2D'UILibrary_RPGO.UIPerk_Stalker'", true, Effect);
 }
@@ -224,9 +224,9 @@ static function X2AbilityTemplate IronWill()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
+	Effect.AddPersistentStatChange(eStat_Will, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("IRONWILL_BONUS"));
 	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPGO.UIPerk_IronWill'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("IRONWILL_BONUS"));
 
 	return Template;
 }
@@ -237,9 +237,9 @@ static function X2AbilityTemplate CyberAdept()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
+	Effect.AddPersistentStatChange(eStat_Hacking, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("CYBERADEPT_BONUS"));
 	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPGO.UIPerk_CyberAdept'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("CYBERADEPT_BONUS"));
 
 	return Template;
 }
@@ -250,9 +250,9 @@ static function X2AbilityTemplate MovingTarget()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
+	Effect.AddPersistentStatChange(eStat_Dodge, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("MOVINGTARGET_BONUS"));
 	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPGO.UIPerk_MovingTarget'", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("MOVINGTARGET_BONUS"));
 
 	return Template;
 }
@@ -262,7 +262,7 @@ static function X2AbilityTemplate Praetorian()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PREATORIAN_BONUS"), eHit_Success);
+	BonusEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("PREATORIAN_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.MeleeCondition);
 
 	return Passive('Praetorian', "img:///Texture2D'UILibrary_RPGO.UIPerk_Praetorian'", false, BonusEffect);
@@ -275,10 +275,10 @@ static function X2AbilityTemplate Runner()
 	local XMBEffect_ConditionalStatChange Effect;
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
-	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
+	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RUNNER_BONUS"));
 
 	Template = Passive('Runner', "img:///UILibrary_RPGO.UIPerk_Runner", true, Effect);
-	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
+	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RUNNER_BONUS"));
 
 	return Template;
 }
@@ -289,7 +289,7 @@ static function X2AbilityTemplate EagleEye()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("EAGLEEYE_BONUS"), eHit_Success);
+	BonusEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("EAGLEEYE_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(new class'X2Condition_NoReactionFire');
 
 	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPGO.UIPerk_EagleEye'", false, BonusEffect);
@@ -303,7 +303,7 @@ static function X2AbilityTemplate HotShot()
 	local XMBEffect_ConditionalBonus BonusEffect;
 
 	BonusEffect = new class'XMBEffect_ConditionalBonus';
-	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HOTSHOT_BONUS"), eHit_Success);
+	BonusEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("HOTSHOT_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
 
 	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPGO.UIPerk_Hotshot'", false, BonusEffect);
@@ -331,7 +331,7 @@ static function X2AbilityTemplate Spray()
 	Template.AbilityCosts.AddItem(default.WeaponActionTurnEnding);
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_COOLDOWN");
+	Cooldown.iNumTurns = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPRAY_COOLDOWN");
 	Template.AbilityCooldown = Cooldown;
 	
 	StandardAim = new class'X2AbilityToHitCalc_StandardAim';
@@ -353,7 +353,7 @@ static function X2AbilityTemplate Spray()
 	WorldDamage.bHitAdjacentDestructibles = true;
 	WorldDamage.PlusNumZTiles = 1;
 	WorldDamage.bHitTargetTile = true;
-	WorldDamage.ApplyChance = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_DESTRUCTION_CHANCE");
+	WorldDamage.ApplyChance = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPRAY_DESTRUCTION_CHANCE");
 	Template.AddMultiTargetEffect(WorldDamage);
 	
 	CursorTarget = new class'X2AbilityTarget_Cursor';
@@ -361,9 +361,9 @@ static function X2AbilityTemplate Spray()
 
 	ConeMultiTarget = new class'X2AbilityMultiTarget_Cone';
 	ConeMultiTarget.bExcludeSelfAsTargetIfWithinRadius = true;
-	ConeMultiTarget.ConeEndDiameter = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_TILE_WIDTH", "TagValueTilesToUnits");
+	ConeMultiTarget.ConeEndDiameter = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPRAY_TILE_WIDTH", "TagValueTilesToUnits");
 	ConeMultiTarget.bUseWeaponRadius = true;
-	ConeMultiTarget.ConeLength = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPRAY_TILE_LENGTH", "TagValueTilesToUnits");
+	ConeMultiTarget.ConeLength = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPRAY_TILE_LENGTH", "TagValueTilesToUnits");
 	ConeMultiTarget.bIgnoreBlockingCover = true;
 	Template.AbilityMultiTargetStyle = ConeMultiTarget;
 
@@ -440,7 +440,7 @@ static function X2AbilityTemplate ZoneOfControlReturnFire()
 	Template = class'X2Ability_DefaultAbilitySet'.static.PistolReturnFire('ZoneOfControlReturnFire');
 	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.LW_AbilityDangerZone'";
 	// Restrict the shot to units within 7 tiles
-	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("ZONE_OF_CONTROL_TARGET_WITHIN_TILES")));
+	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("ZONE_OF_CONTROL_TARGET_WITHIN_TILES")));
 
 	return Template;
 }
@@ -484,7 +484,7 @@ static function X2AbilityTemplate DangerSenseTrigger()
 	Template.AbilityTargetStyle = default.SelfTarget;
 
 	RadiusMultiTarget = new class'X2AbilityMultiTarget_Radius';
-	RadiusMultiTarget.fTargetRadius = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("DANGERSENSE_RADIUS");
+	RadiusMultiTarget.fTargetRadius = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigFloatValue("DANGERSENSE_RADIUS");
 	RadiusMultiTarget.bIgnoreBlockingCover = true;
 	Template.AbilityMultiTargetStyle = RadiusMultiTarget;
 
@@ -555,7 +555,7 @@ static function X2AbilityTemplate DangerSenseSpawnTrigger()
 	TargetProperty.FailOnNonUnits = true;
 	TargetProperty.ExcludeFriendlyToSource = false;
 	TargetProperty.RequireWithinRange = true;
-	TargetProperty.WithinRange = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DANGERSENSE_RADIUS") * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER;
+	TargetProperty.WithinRange = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DANGERSENSE_RADIUS") * class'XComWorldData'.const.WORLD_METERS_TO_UNITS_MULTIPLIER;
 	Template.AbilityTargetConditions.AddItem(TargetProperty);
 
 	TrackingEffect = new class'X2Effect_RevealUnit';
@@ -670,7 +670,7 @@ static function X2AbilityTemplate Sabotage()
 	// Create a conditional bonus
 	Effect = new class'XMBEffect_ConditionalBonus';
 
-	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SABOTAGE_DAMAGE_BONUS"));
+	Effect.AddDamageModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SABOTAGE_DAMAGE_BONUS"));
 
 	// The bonus only applies to attacks with the weapon associated with this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
@@ -731,21 +731,21 @@ static function X2AbilityTemplate FullAutoFire()
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_SHOT_PRIORITY + 10;
 	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.UIPerk_AssaultAutoRifle'";
 
-	GetAbilityCostActionPoints(Template).iNumPoints = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_ACTIONPOINTS");
+	GetAbilityCostActionPoints(Template).iNumPoints = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_ACTIONPOINTS");
 	AmmoCost = X2AbilityCost_Ammo(GetAbilityCostByClassName(Template, 'X2AbilityCost_Ammo'));
-	AmmoCost.iAmmo += class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_MIN_AMMO");
+	AmmoCost.iAmmo += class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_MIN_AMMO");
 	AmmoCost.bConsumeAllAmmo = true;
 
 	WorldDamage = new class'X2Effect_MaybeApplyDirectionalWorldDamage';
 	WorldDamage.bUseWeaponDamageType = true;
 	WorldDamage.bUseWeaponEnvironmentalDamage = false;
-	WorldDamage.EnvironmentalDamageAmount = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_ENVIRONMENTAL_DAMAGE");
-	WorldDamage.ApplyChance = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_DESTRUCTION_CHANCE");
-	WorldDamage.bApplyOnHit =  class'RPGOAbilityConfigManager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_HIT");
-	WorldDamage.bApplyOnMiss = class'RPGOAbilityConfigManager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_MISS");
+	WorldDamage.EnvironmentalDamageAmount = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_ENVIRONMENTAL_DAMAGE");
+	WorldDamage.ApplyChance = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_DESTRUCTION_CHANCE");
+	WorldDamage.bApplyOnHit =  class'RPGO_Helper'.static.GetAbilityConfig().GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_HIT");
+	WorldDamage.bApplyOnMiss = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigBoolValue("AUTOFIRE_DESTRUCTION_APPLY_ON_MISS");
 	WorldDamage.bApplyToWorldOnHit = true;
 	WorldDamage.bApplyToWorldOnMiss = true;
-	WorldDamage.bHitAdjacentDestructibles = class'RPGOAbilityConfigManager'.static.GetConfigBoolValue("AUTOFIRE_DESTRUCTION_HIT_ADJACENT_DESTRUCTIBLES");
+	WorldDamage.bHitAdjacentDestructibles = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigBoolValue("AUTOFIRE_DESTRUCTION_HIT_ADJACENT_DESTRUCTIBLES");
 	WorldDamage.PlusNumZTiles = 1;
 	WorldDamage.bHitTargetTile = true;
 	Template.AddTargetEffect(WorldDamage);
@@ -768,7 +768,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPGO.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
 
 	WeaponCondition = new class'X2Condition_WeaponCategory';
-	WeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
+	WeaponCategories = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
 	foreach WeaponCategories(WeaponCategory)
 	{
 		`LOG(default.class @ GetFuncName() @ "adding WeaponCategory" @ WeaponCategory,, 'RPG');
@@ -779,7 +779,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	AbilityCondition.IncludeAbilityNames.AddItem('FullAutoFire');
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_TARGET_DODGE_PENALTY"), eHit_Graze);
+	HitEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_TARGET_DODGE_PENALTY"), eHit_Graze);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -789,7 +789,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_FULLCOVER_MALUS"), eHit_Success);
+	HitEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_FULLCOVER_MALUS"), eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -800,7 +800,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	Template.AddTargetEffect(HitEffect);
 
 	HitEffect = new class'XMBEffect_ConditionalBonus';
-	HitEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_HALFCOVER_MALUS"), eHit_Success);
+	HitEffect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_HALFCOVER_MALUS"), eHit_Success);
 	HitEffect.BuildPersistentEffect(1, false, false, false);
 	HitEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	HitEffect.bHideWhenNotRelevant = true;
@@ -813,7 +813,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	DamageBonus = new class'XMBEffect_ConditionalBonus';
 	DamageBonus.BuildPersistentEffect(1, false, false, false);
 	DamageBonus.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
-	DamageBonus.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_DAMAGE_PER_AMMO"));
+	DamageBonus.AddDamageModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AUTOFIRE_DAMAGE_PER_AMMO"));
 	DamageBonus.ScaleValue = new class'XMBValue_Ammo';
 	DamageBonus.ScaleMax = 5;
 	DamageBonus.AbilityTargetConditions.AddItem(WeaponCondition);
@@ -950,8 +950,8 @@ static function X2AbilityTemplate DeadeyeAbility()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEADEYE_CRIT_BONUS"), eHit_Crit);
-	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEADEYE_HIT_BONUS"), eHit_Success);
+	Effect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DEADEYE_CRIT_BONUS"), eHit_Crit);
+	Effect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DEADEYE_HIT_BONUS"), eHit_Success);
 	Effect.AbilityTargetConditions.AddItem(new class'X2Condition_NotFlankable');
 
 	return Passive('Deadeye', "img:///UILibrary_RPGO.UIPerk_deadeye", true, Effect);
@@ -976,7 +976,7 @@ static function X2AbilityTemplate KillEmAll()
 	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("KILLEMALL_COOLDOWN");
+	Cooldown.iNumTurns = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("KILLEMALL_COOLDOWN");
 	Template.AbilityCooldown = Cooldown;
 
 	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
@@ -997,7 +997,7 @@ static function X2AbilityTemplate KillEmAll()
 
 	ConeMultiTarget = new class'X2AbilityMultiTarget_Cone';
 	ConeMultiTarget.bExcludeSelfAsTargetIfWithinRadius = true;
-	ConeMultiTarget.ConeEndDiameter = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("KILLEMALL_TILE_WIDTH", "TagValueTilesToUnits");
+	ConeMultiTarget.ConeEndDiameter = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("KILLEMALL_TILE_WIDTH", "TagValueTilesToUnits");
 	ConeMultiTarget.bUseWeaponRangeForLength = true;
 	ConeMultiTarget.fTargetRadius = 99;     //  large number to handle weapon range - targets will get filtered according to cone constraints
 	ConeMultiTarget.bIgnoreBlockingCover = true;
@@ -1344,10 +1344,10 @@ static function X2AbilityTemplate SpotWeakness()
 
 	// Create an effect that adds +15 to crit and +1/2/3 armor piercing
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_CV"), eHit_Success, 'conventional');
-	Effect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_MG"), eHit_Success, 'magnetic');
-	Effect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPOT_WEAKNESS_PIERCE_BM"), eHit_Success, 'beam');
-	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPOT_WEAKNESS_CRIT"), eHit_Crit);
+	Effect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPOT_WEAKNESS_PIERCE_CV"), eHit_Success, 'conventional');
+	Effect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPOT_WEAKNESS_PIERCE_MG"), eHit_Success, 'magnetic');
+	Effect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPOT_WEAKNESS_PIERCE_BM"), eHit_Success, 'beam');
+	Effect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPOT_WEAKNESS_CRIT"), eHit_Crit);
 
 	// Restrict to the weapon matching this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);

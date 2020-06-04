@@ -41,14 +41,14 @@ static function X2AbilityTemplate DrivenByVengeance()
 	Template.AbilityShooterConditions.AddItem(UnitPropertyCondition);
 
 	Effect = new class'XMBEffect_PermanentStatChange';
-	Effect.AddStatChange(eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DRIVEN_BY_VENGEANCE_WILL"));
+	Effect.AddStatChange(eStat_Will, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DRIVEN_BY_VENGEANCE_WILL"));
 	
 	Effect2 = new class'X2Effect_PersistentStatChange';
 	Effect2.EffectName = 'Vengeant';
 	Effect2.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnEnd);
 	Effect2.DuplicateResponse = eDupe_Refresh;
-	Effect2.AddPersistentStatChange(eStat_Offense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DRIVEN_BY_VENGEANCE_AIM"));
-	Effect2.AddPersistentStatChange(eStat_CritChance, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DRIVEN_BY_VENGEANCE_CRIT"));
+	Effect2.AddPersistentStatChange(eStat_Offense, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DRIVEN_BY_VENGEANCE_AIM"));
+	Effect2.AddPersistentStatChange(eStat_CritChance, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DRIVEN_BY_VENGEANCE_CRIT"));
 	Effect2.TargetConditions.AddItem(default.LivingFriendlyTargetProperty);
 	Effect2.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
 	

@@ -57,8 +57,8 @@ static function X2AbilityTemplate HEATWarheads()
 
 	// Effect granting bonus pierce and shred to grenades
 	HEATEffect = new class 'X2Effect_LW2WotC_HEATGrenades';
-	HEATEffect.Pierce = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAT_WARHEADS_PIERCE");
-	HEATEffect.Shred = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HEAT_WARHEADS_SHRED");
+	HEATEffect.Pierce = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("HEAT_WARHEADS_PIERCE");
+	HEATEffect.Shred = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("HEAT_WARHEADS_SHRED");
 
 	// Create the template using a helper function
 	return Passive('LW2WotC_HEATWarheads', "img:///UILibrary_LW_PerkPack.LW_AbilityHEATWarheads", false, HEATEffect);
@@ -140,7 +140,7 @@ static function X2AbilityTemplate Lethal()
 	local XMBEffect_ConditionalBonus Effect;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("LETHAL_DAMAGE_BONUS"));
+	Effect.AddDamageModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("LETHAL_DAMAGE_BONUS"));
 
 	return Passive('Lethal', "img:///Texture2D'UILibrary_RPGO.LW_AbilityKinetic'", true, Effect);
 }
@@ -177,9 +177,9 @@ static function X2AbilityTemplate BringEmOn()
 
 	Effect = new class'XMBEffect_ConditionalBonus';
 	
-	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("BRING_EM_ON_CRIT_DAMAGE"), eHit_Crit);
+	Effect.AddDamageModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigFloatValue("BRING_EM_ON_CRIT_DAMAGE"), eHit_Crit);
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BRING_EM_ON_CRIT_SCALE_MAX");
+	Effect.ScaleMax = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("BRING_EM_ON_CRIT_SCALE_MAX");
 
 	return Passive('BringEmOn', "img:///Texture2D'UILibrary_RPGO.LW_AbilityBringEmOn'", true, Effect);
 }
@@ -256,9 +256,9 @@ static function X2AbilityTemplate AddInterferenceAbility()
 	Template.bCrossClassEligible = false;
 
 	Charges = new class 'X2AbilityCharges_Interference';
-	Charges.CV_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("INTERFERENCE_CV_CHARGES");
-	Charges.MG_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("INTERFERENCE_MG_CHARGES");
-	Charges.BM_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("INTERFERENCE_BM_CHARGES");
+	Charges.CV_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("INTERFERENCE_CV_CHARGES");
+	Charges.MG_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("INTERFERENCE_MG_CHARGES");
+	Charges.BM_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("INTERFERENCE_BM_CHARGES");
 	Template.AbilityCharges = Charges;
 
 	ChargeCost = new class'X2AbilityCost_Charges';
@@ -270,7 +270,7 @@ static function X2AbilityTemplate AddInterferenceAbility()
 	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
 
 	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("INTERFERENCE_ACTION_POINTS");
+	ActionPointCost.iNumPoints = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("INTERFERENCE_ACTION_POINTS");
 	ActionPointCost.bConsumeAllPoints = false;
 	Template.AbilityCosts.AddItem(ActionPointCost);
 
@@ -308,9 +308,9 @@ static function X2AbilityTemplate Aggression()
 	Value.bCountEnemies = true;
 
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AGRESSION_CRIT_CHANCE"), eHit_Crit);
+	Effect.AddToHitModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AGRESSION_CRIT_CHANCE"), eHit_Crit);
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AGRESSION_SCALE_MAX");
+	Effect.ScaleMax = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("AGRESSION_SCALE_MAX");
 	
 	return Passive('RpgAggression', "img:///UILibrary_RPGO.LW_AbilityAggression", true, Effect);
 }
@@ -328,11 +328,11 @@ static function X2AbilityTemplate TacticalSense()
 	Effect = new class'XMBEffect_ConditionalBonus';
 
 	// The effect adds x defense per enemy unit
-	Effect.AddToHitAsTargetModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("TACTICAL_SENSE_DEFENSE") * -1, eHit_Success);
+	Effect.AddToHitAsTargetModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("TACTICAL_SENSE_DEFENSE") * -1, eHit_Success);
 
 	// The effect scales with the number of visible enemy units, to a maximum of 5 (for +15 Defense).
 	Effect.ScaleValue = Value;
-	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("TACTICAL_SENSE_SCALE_MAX");
+	Effect.ScaleMax = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("TACTICAL_SENSE_SCALE_MAX");
 
 	// Create the template using a helper function
 	return Passive('RpgTacticalSense', "img:///UILibrary_RPGO.LW_AbilityTacticalSense", true, Effect);
@@ -356,8 +356,8 @@ static function X2AbilityTemplate AddCutthroatAbility()
 	Template.bCrossClassEligible = false;
 	ArmorPiercingBonus = new class 'X2Effect_Cutthroat';
 	ArmorPiercingBonus.BuildPersistentEffect (1, true, false);
-	ArmorPiercingBonus.Bonus_Crit_Chance = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CUTTHROAT_BONUS_CRIT_CHANCE");
-	ArmorPiercingBonus.Bonus_Crit_Damage = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CUTTHROAT_BONUS_CRIT_DAMAGE");
+	ArmorPiercingBonus.Bonus_Crit_Chance = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("CUTTHROAT_BONUS_CRIT_CHANCE");
+	ArmorPiercingBonus.Bonus_Crit_Damage = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("CUTTHROAT_BONUS_CRIT_DAMAGE");
 	ArmorPiercingBonus.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,,Template.AbilitySourceName);
 	Template.AddTargetEffect (ArmorPiercingBonus);
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;	
@@ -451,9 +451,9 @@ static function X2AbilityTemplate AddRescueProtocol()
 	Template.bCrossClassEligible = false;
 
 	Charges = new class 'X2AbilityCharges_RescueProtocol';
-	Charges.CV_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RESCUE_CV_CHARGES");
-	Charges.MG_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RESCUE_MG_CHARGES");
-	Charges.BM_Charges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RESCUE_BM_CHARGES");
+	Charges.CV_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RESCUE_CV_CHARGES");
+	Charges.MG_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RESCUE_MG_CHARGES");
+	Charges.BM_Charges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RESCUE_BM_CHARGES");
 	Template.AbilityCharges = Charges;
 
 	ChargeCost = new class'X2AbilityCost_Charges';

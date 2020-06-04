@@ -298,8 +298,8 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 
 	if (WeaponTemplate != none)
 	{
-		AutofireWeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
-		PatchUpgradeSlotWeaponCategories = class'RPGODefaultSettingsConfigManager'.static.GetConfigStringArray("PATCH_UPGRADESLOT_WEAPON_CATEGORIES");
+		AutofireWeaponCategories = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
+		PatchUpgradeSlotWeaponCategories = class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigStringArray("PATCH_UPGRADESLOT_WEAPON_CATEGORIES");
 
 		class'RPGOTemplateCache'.static.AddWeaponTemplate(WeaponTemplate);
 		UnpatchedTemplate = class'RPGOTemplateCache'.static.GetWeaponTemplate(WeaponTemplate.DataName);
@@ -327,7 +327,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 			case 'sparkrifle':
 				break;
 			case 'bullpup':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_BULLPUPS"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_BULLPUPS"))
 				{
 					WeaponTemplate.iClipSize = UnpatchedTemplate.iClipSize + 1;
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'BullpupDesign', true);
@@ -344,7 +344,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 
 				break;
 			case 'sniper_rifle':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'Squadsight', true);
 				}
@@ -355,7 +355,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				break;
 			case 'vektor_rifle':
 				
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
 				}
@@ -365,7 +365,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'shotgun':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SHOTGUNS"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SHOTGUNS"))
 				{					
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierCoverType', false);
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'ShotgunDamageModifierRange', false);
@@ -383,7 +383,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'cannon':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_CANNONS"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_CANNONS"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'Suppression', true);
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'HeavyWeaponMobilityPenalty', true);
@@ -401,7 +401,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 			case 'pistol':
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolStandardShot', true);
 						
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_PISTOLS"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_PISTOLS"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'ReturnFire', true);
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'PistolDamageModifierRange', false);
@@ -413,7 +413,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'sidearm':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_AUTO_PISTOLS"))
 				{
 					WeaponTemplate.RangeAccuracy = default.VERY_SHORT_RANGE;
 					WeaponTemplate.CritChance = UnpatchedTemplate.CritChance + default.AutoPistolCritChanceBonus;
@@ -439,20 +439,20 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'SawedOffShotgun':
-				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SAWEDOFF_SHOTGUN"))
+				if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SAWEDOFF_SHOTGUN"))
 				{
 					WeaponTemplate.RangeAccuracy = default.SAWEDOFF_RANGE;
 					
 					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
-						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_CV_BASEDAMAGE");
+						WeaponTemplate.BaseDamage = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigDamageValue("SAWEDOFF_SHOTGUN_CV_BASEDAMAGE");
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_CV', false);
 					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
-						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_MG_BASEDAMAGE");
+						WeaponTemplate.BaseDamage = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigDamageValue("SAWEDOFF_SHOTGUN_MG_BASEDAMAGE");
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_MG', false);
 					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
-						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_BM_BASEDAMAGE");
+						WeaponTemplate.BaseDamage = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigDamageValue("SAWEDOFF_SHOTGUN_BM_BASEDAMAGE");
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
 						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_BM', false);
 				}
@@ -495,7 +495,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 		}
 
 		if (InStr(WeaponTemplate.DataName, "SMG", false, true) == INDEX_NONE &&
-			class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
+			class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_FULLAUTOFIRE") &&
 			AutofireWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
 		{
 			AddAbilityToWeaponTemplate(WeaponTemplate, 'FullAutoFire', true);
@@ -527,7 +527,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 
 		if (PatchUpgradeSlotWeaponCategories.Find(string(WeaponTemplate.WeaponCat)) != INDEX_NONE)
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_DEFAULTWEAPON_UPGRADESLOTS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_DEFAULTWEAPON_UPGRADESLOTS"))
 			{
 				WeaponTemplate.NumUpgradeSlots = default.DefaultWeaponUpgradeSlots;
 			}
@@ -1117,7 +1117,7 @@ static function PatchSniperStandardFire()
 
 	Template = TemplateManager.FindAbilityTemplate('SniperStandardFire');
 	
-	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
 	{
 		GetAbilityCostActionPoints(Template).bAddWeaponTypicalCost = false;
 	}
@@ -1137,7 +1137,7 @@ static function PatchLongWatch()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 	Template = TemplateManager.FindAbilityTemplate('LongWatch');
 
-	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
 	{
 		// Readd squad sight in case it was removed on movement on playerturn
 		Squadsight = new class'X2Effect_Squadsight';
@@ -1183,7 +1183,7 @@ static function PatchSquadSight()
 	class'RPGOTemplateCache'.static.AddAbilityTemplate(Template);
 	UnpatchedTemplate = class'RPGOTemplateCache'.static.GetAbilityTemplate(Template.DataName);
 
-	if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
+	if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SNIPER_RIFLES"))
 	{
 		Template.AbilityTriggers.Length = 0;
 		Template.AbilityTargetEffects.Length = 0;

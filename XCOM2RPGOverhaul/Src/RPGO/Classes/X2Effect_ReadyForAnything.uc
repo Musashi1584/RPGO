@@ -31,7 +31,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 	if (AbilityState != none)
 	{
-		ValidAbilities = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("READ_FOR_ANYTHING_ABILITYNAMES");
+		ValidAbilities = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigNameArray("READ_FOR_ANYTHING_ABILITYNAMES");
 		if (ValidAbilities.Find(kAbility.GetMyTemplateName()) != INDEX_NONE)
 		{
 			//	Is this intended? Localization does not mention this restriction! Can create unexpected interactions with Close Encounters.

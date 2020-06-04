@@ -5,6 +5,11 @@
 //-----------------------------------------------------------
 class RPGO_Helper extends Object;
 
+static function JsonConfig_ManagerInterface GetAbilityConfig()
+{
+	return class'ConfigFactory'.static.GetConfigManager("RPGOAbilityConfigManager");
+}
+
 static function bool HasAnyOfTheAbilitiesFromAnySource(XComGameState_Unit UnitState, array<name> AbilitiesToCheck)
 {
 	local bool bHasAbility;

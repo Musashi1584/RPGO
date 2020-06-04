@@ -1462,6 +1462,11 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 	local array<X2AbilityTemplate> RandomTemplates;
 	local array<X2AbilityTemplate> AvailableTemplates;
 
+	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
+		UnitState,
+		class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount()
+	);
+
 	if (class'X2SecondWaveConfigOptions'.static.IsOriginsRandomPoolEnabled())
 	{
 		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
@@ -1471,10 +1476,7 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 	}
 	else
 	{
-		RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
-			UnitState,
-			class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount()
-		);
+		
 		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllStartingAbilities(UnitState);
 	}
 

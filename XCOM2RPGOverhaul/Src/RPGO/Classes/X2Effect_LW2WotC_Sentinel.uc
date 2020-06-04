@@ -23,11 +23,11 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local UnitValue								SentinelCounterValue;
 	local array<name>							SentinelAbilityNames;
 
-	SentinelAbilityNames = class'RPGOAbilityConfigManager'.static.GetConfigNameArray("SENTINEL_LW_ABILITYNAMES");
+	SentinelAbilityNames = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigNameArray("SENTINEL_LW_ABILITYNAMES");
 	
 	// To make sure Sentinel only activates a set number of times
 	SourceUnit.GetUnitValue('LW2WotC_Sentinel_Counter', SentinelCounterValue);
-	if(SentinelCounterValue.fValue >= class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SENTINEL_LW_USES_PER_TURN"))
+	if(SentinelCounterValue.fValue >= class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SENTINEL_LW_USES_PER_TURN"))
 	{
 		return false;
 	}

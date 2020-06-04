@@ -54,7 +54,7 @@ static function X2AbilityTemplate RapidStun()
 
 	// Create activated ability that adds the refund effect
 	Template = SelfTargetActivated('RpgRapidStun', "img:///UILibrary_RPGO.UIPerk_RapidStun", true, Effect,, eCost_Free);
-	AddCooldown(Template, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RAPID_STUN_COOLDOWN"));
+	AddCooldown(Template, class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("RAPID_STUN_COOLDOWN"));
 
 	// Cannot be used while burning, etc.
 	Template.AddShooterEffectExclusions();
@@ -107,7 +107,7 @@ static function X2AbilityTemplate SpareBattery()
 	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SPARE_BATTERY_COOLDOWN");
+	Cooldown.iNumTurns = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SPARE_BATTERY_COOLDOWN");
 	Template.AbilityCooldown = Cooldown;
 
 	ActionPointCost = new class'X2AbilityCost_ActionPoints';
@@ -155,7 +155,7 @@ static function X2AbilityTemplate SawnOffReload()
 
 	// Charges
 	Charges = new class 'X2AbilityCharges';
-	Charges.InitialCharges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SAWNOFFRELOAD_CHARGES");
+	Charges.InitialCharges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SAWNOFFRELOAD_CHARGES");
 	Template.AbilityCharges = Charges;
 
 	ChargeCost = new class'X2AbilityCost_Charges';
@@ -500,7 +500,7 @@ static function X2AbilityTemplate RpgDeepPockets()
 	// conventional
 	ChargesEffectCV = new class'XMBEffect_AddAbilityCharges';
 	ChargesEffectCV.AbilityNames.AddItem('RpgSawnOffReload');
-	ChargesEffectCV.BonusCharges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEEP_POCKETS_CHARGES_CV");
+	ChargesEffectCV.BonusCharges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DEEP_POCKETS_CHARGES_CV");
 	WeaponConditionCV = new class'X2Condition_RequiredWeaponTech';
 	WeaponConditionCV.RelevantSlot = eInvSlot_SecondaryWeapon;
 	WeaponConditionCV.RequireWeaponTech = 'conventional';
@@ -509,7 +509,7 @@ static function X2AbilityTemplate RpgDeepPockets()
 	// magnetic
 	ChargesEffectMG = new class'XMBEffect_AddAbilityCharges';
 	ChargesEffectMG.AbilityNames.AddItem('RpgSawnOffReload');
-	ChargesEffectMG.BonusCharges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEEP_POCKETS_CHARGES_MG");
+	ChargesEffectMG.BonusCharges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DEEP_POCKETS_CHARGES_MG");
 	WeaponConditionMG = new class'X2Condition_RequiredWeaponTech';
 	WeaponConditionMG.RelevantSlot = eInvSlot_SecondaryWeapon;
 	WeaponConditionMG.RequireWeaponTech = 'magnetic';
@@ -518,7 +518,7 @@ static function X2AbilityTemplate RpgDeepPockets()
 	// beam
 	ChargesEffectBM = new class'XMBEffect_AddAbilityCharges';
 	ChargesEffectBM.AbilityNames.AddItem('RpgSawnOffReload');
-	ChargesEffectBM.BonusCharges = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEEP_POCKETS_CHARGES_BM");
+	ChargesEffectBM.BonusCharges = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("DEEP_POCKETS_CHARGES_BM");
 	WeaponConditionBM = new class'X2Condition_RequiredWeaponTech';
 	WeaponConditionBM.RelevantSlot = eInvSlot_SecondaryWeapon;
 	WeaponConditionBM.RequireWeaponTech = 'beam';
@@ -565,9 +565,9 @@ static function X2AbilityTemplate ScrapMetal()
 	local X2Condition_UnitProperty		UnitPropertyCondition;
 	
 	PierceEffect = new class'XMBEffect_ConditionalBonus';
-	PierceEffect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SCRAP_METAL_PIERCE_CV"), eHit_Success, 'conventional');
-	PierceEffect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SCRAP_METAL_PIERCE_MG"), eHit_Success, 'magnetic');
-	PierceEffect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("SCRAP_METAL_PIERCE_BM"), eHit_Success, 'beam');
+	PierceEffect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SCRAP_METAL_PIERCE_CV"), eHit_Success, 'conventional');
+	PierceEffect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SCRAP_METAL_PIERCE_MG"), eHit_Success, 'magnetic');
+	PierceEffect.AddArmorPiercingModifier(class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("SCRAP_METAL_PIERCE_BM"), eHit_Success, 'beam');
 
 	UnitPropertyCondition = new class'X2Condition_UnitProperty';
 	UnitPropertyCondition.ExcludeOrganic = true;
@@ -659,7 +659,7 @@ static function X2AbilityTemplate Brutality()
 	Template.AbilityMultiTargetConditions.AddItem(default.LivingHostileUnitOnlyProperty);
 	
 	Radius = new class'X2AbilityMultiTarget_Radius';
-	Radius.fTargetRadius = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("BRUTALITY_TILE_RADIUS");
+	Radius.fTargetRadius = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigFloatValue("BRUTALITY_TILE_RADIUS");
 	Radius.bIgnoreBlockingCover = true;
 	Template.AbilityMultiTargetStyle = Radius;
 		
@@ -675,7 +675,7 @@ static function X2AbilityTemplate Brutality()
 	AddIconPassive(Template);
 
 	ToHitCalc = new class'X2AbilityToHitCalc_PercentChance';
-	ToHitCalc.PercentToHit = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BRUTALITY_PANIC_CHANCE");
+	ToHitCalc.PercentToHit = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigIntValue("BRUTALITY_PANIC_CHANCE");
 	Template.AbilityToHitCalc = ToHitCalc;
 
 	Template.bShowActivation = true;

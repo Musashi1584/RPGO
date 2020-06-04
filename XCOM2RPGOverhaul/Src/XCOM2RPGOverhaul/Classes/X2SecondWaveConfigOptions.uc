@@ -57,51 +57,51 @@ static function int GetSpecRouletteCount()
 {
 	return (`SecondWaveEnabled('RPGOCommandersChoice') &&
 		(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')))?
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI") :
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT");
+		class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT_COMBI") :
+		class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("SPEC_ROULETTE_RANDOM_SPEC_COUNT");
 }
 
 static function int GetCommandersChoiceCount()
 {
 	return  (`SecondWaveEnabled('RPGOCommandersChoice') &&
 		(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))) ?
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT_COMBI") :
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT");
+		class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT_COMBI") :
+		class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("COMMANDERS_CHOICE_SPEC_COUNT");
 }
 
 static function int GetOriginsAbiltiesCount()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_CHOICE_ABILITY_COUNT");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("ORIGINS_CHOICE_ABILITY_COUNT");
 }
 
 static function int GetOriginsRandomAbiltiesCount()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES");
 }
 
 static function int GetOriginsRandomPoolCount()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_RANDOM_POOL_COUNT");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("ORIGINS_RANDOM_POOL_COUNT");
 }
 
 static function bool IsOriginsRandomPoolEnabled()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigBoolValue("ORIGINS_RANDOM_POOL_ENABLED");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigBoolValue("ORIGINS_RANDOM_POOL_ENABLED");
 }
 
 static function int GetCommandersChoiceRandomPoolCount()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("COMMANDERS_CHOICE_RANDOM_POOL_COUNT");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("COMMANDERS_CHOICE_RANDOM_POOL_COUNT");
 }
 
 static function bool IsCommandersChoiceRandomPoolEnabled()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigBoolValue("COMMANDERS_CHOICE_RANDOM_POOL_ENABLED");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigBoolValue("COMMANDERS_CHOICE_RANDOM_POOL_ENABLED");
 }
 
 static function bool AlwaysAllowAssaultRifles()
 {
-	return class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigBoolValue("WEAPON_RESTRICTIONS_ALWAYS_ALLOW_ASSAULT_RIFLES");
+	return class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigBoolValue("WEAPON_RESTRICTIONS_ALWAYS_ALLOW_ASSAULT_RIFLES");
 }
 
 static function AddStartingAbilities(
@@ -609,8 +609,8 @@ static function BuildSpecAbilityTree(
 				AbilitySlot = AllAbilitySlots[SlotIndex];
 
 				if (bRandomizePerkOrder &&
-					RankIndex >= Max(1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")) &&
-					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")) &&
+					RankIndex >= Max(1, class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")) &&
+					RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")) &&
 					!class'X2TemplateHelper_RPGOverhaul'.static.IsPrerequisiteAbility(AbilitySlot.AbilityType.AbilityName)
 				)
 				{
@@ -675,7 +675,7 @@ static function AddSWORandomizedAbilityDecks(
 	local SoldierClassRandomAbilityDeck SWORandomDeck;
 	local int RankIndex, SlotIndex, DeckIndex;
 	
-	for(RankIndex = Max(1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")); RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")); RankIndex++)
+	for(RankIndex = Max(1, class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("TRAINING_ROULETTE_MIN_RANK")); RankIndex <= Min(ClassTemplate.GetMaxConfiguredRank() - 1, class'SWO_Helper'.static.GetUserSettingsSWOConfig().GetConfigIntValue("TRAINING_ROULETTE_MAX_RANK")); RankIndex++)
 	{
 		AllAbilitySlots = class'X2SoldierClassTemplatePlugin'.static.GetAllAbilitySlotsForRank(UnitState, RankIndex);
 

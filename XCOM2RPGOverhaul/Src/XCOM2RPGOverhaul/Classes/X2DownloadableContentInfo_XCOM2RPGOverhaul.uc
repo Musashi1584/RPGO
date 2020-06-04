@@ -151,7 +151,7 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 {
 	local string PossibleValue;
 
-	PossibleValue = class'RPGOAbilityConfigManager'.static.GetConfigTagValue(InString);
+	PossibleValue = class'RPGO_Helper'.static.GetAbilityConfig().GetConfigTagValue(InString);
 	if (PossibleValue != "")
 	{
 		OutString = PossibleValue;

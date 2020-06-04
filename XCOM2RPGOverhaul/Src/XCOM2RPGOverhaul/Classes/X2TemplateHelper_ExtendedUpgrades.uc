@@ -74,7 +74,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		//specific alterations
 		if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Bsc')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_LASER_SIGHTS"))
 			{
 				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.BasicLaserSightAbilityName);
 				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);
@@ -88,7 +88,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Adv')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_LASER_SIGHTS"))
 			{
 				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.AdvancedLaserSightAbilityName);
 				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);
@@ -105,7 +105,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'CritUpgrade_Sup')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_LASER_SIGHTS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_LASER_SIGHTS"))
 			{
 				WeaponUpgradeTemplate.BonusAbilities.AddItem (class'X2Ability_UpgradeAbilitySet'.default.SuperiorLaserSightAbilityName);
 				SetLocalization(WeaponUpgradeTemplate, UnpatchedTemplate, true);
@@ -119,7 +119,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		
 		if (WeaponUpgradeTemplate.DataName == 'AimUpgrade_Bsc')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SCOPES"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SCOPES"))
 			{
 				WeaponUpgradeTemplate.AimBonus = 0;
 				WeaponUpgradeTemplate.AddHitChanceModifierFn = none;
@@ -139,7 +139,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		}
 		if (WeaponUpgradeTemplate.DataName == 'AimUpgrade_Adv')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SCOPES"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SCOPES"))
 			{
 				WeaponUpgradeTemplate.AimBonus = 0;
 				WeaponUpgradeTemplate.AddHitChanceModifierFn = none;
@@ -159,7 +159,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		}
 		if (WeaponUpgradeTemplate.DataName == 'AimUpgrade_Sup')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SCOPES"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_SCOPES"))
 			{
 				WeaponUpgradeTemplate.AimBonus = 0;
 				WeaponUpgradeTemplate.AddHitChanceModifierFn = none;
@@ -180,7 +180,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'MissDamageUpgrade_Bsc')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_STOCKS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_STOCKS"))
 			{
 				WeaponUpgradeTemplate.BonusDamage.Damage = 0;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
@@ -198,7 +198,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		}
 		if (WeaponUpgradeTemplate.DataName == 'MissDamageUpgrade_Adv')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_STOCKS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_STOCKS"))
 			{
 				WeaponUpgradeTemplate.BonusDamage.Damage = 0;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
@@ -216,7 +216,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 		}
 		if (WeaponUpgradeTemplate.DataName == 'MissDamageUpgrade_Sup')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_STOCKS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_STOCKS"))
 			{
 				WeaponUpgradeTemplate.BonusDamage.Damage = 0;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
@@ -235,7 +235,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 			
 		if (WeaponUpgradeTemplate.DataName == 'FreeFireUpgrade_Bsc')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
 			{
 				WeaponUpgradeTemplate.FreeFireCostFn = none;
 				WeaponUpgradeTemplate.FreeFireChance = 0;
@@ -256,7 +256,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'FreeFireUpgrade_Adv')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
 			{
 				WeaponUpgradeTemplate.FreeFireCostFn = none;
 				WeaponUpgradeTemplate.FreeFireChance = 0;
@@ -277,7 +277,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'FreeFireUpgrade_Sup')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_HAIR_TRIGGERS"))
 			{
 				WeaponUpgradeTemplate.FreeFireCostFn = none;
 				WeaponUpgradeTemplate.FreeFireChance = 0;
@@ -298,7 +298,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'ReloadUpgrade_Bsc')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTOLOADERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_AUTOLOADERS"))
 			{
 				WeaponUpgradeTemplate.FreeReloadCostFn = none;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
@@ -319,7 +319,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'ReloadUpgrade_Adv')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTOLOADERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_AUTOLOADERS"))
 			{
 				WeaponUpgradeTemplate.FreeReloadCostFn = none;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
@@ -340,7 +340,7 @@ static function ReconfigAttachment(X2WeaponUpgradeTemplate WeaponUpgradeTemplate
 
 		if (WeaponUpgradeTemplate.DataName == 'ReloadUpgrade_Sup')
 		{
-			if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_AUTOLOADERS"))
+			if (class'SWO_Helper'.static.GetUserSettingsConfig().GetConfigBoolValue("PATCH_AUTOLOADERS"))
 			{
 				WeaponUpgradeTemplate.FreeReloadCostFn = none;
 				WeaponUpgradeTemplate.GetBonusAmountFn = none;
