@@ -227,6 +227,7 @@ static function X2AbilityTemplate OldGuard()
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("OLD_GUARD_DAMAGE_BONUS"), eHit_Success, 'conventional');
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("OLD_GUARD_CRIT_DAMAGE_BONUS"), eHit_Crit, 'conventional');
 	Effect.AddArmorPiercingModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("OLD_GUARD_ARMOR_PIERCE"), eHit_Success, 'conventional');
+	Effect.AbilityTargetConditions.AddItem(default.RangedCondition);
 
 	return Passive('APT_OldGuard', "img:///UILibrary_PerkIcons.UIPerk_Timeshift", true, Effect);
 }
@@ -511,7 +512,8 @@ static function X2AbilityTemplate Anarchist()
 	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("ANARCHIST_CRIT_MAX");
 
 	AddSecondaryEffect(Template, Effect);
-
+	Effect.bDisplayInUI = false;
+	
 	return Template;
 }
 
@@ -670,7 +672,8 @@ static function X2AbilityTemplate Pioneer()
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PIONEER_DAMAGE_MG"), eHit_Success, 'magnetic');
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PIONEER_DAMAGE_COIL"), eHit_Success, 'coil');
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PIONEER_DAMAGE_BM"), eHit_Success, 'beam');
-
+	Effect.bDisplayInUI = false;
+	
 	// The bonus only applies to attacks with the weapon associated with this ability
 	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
@@ -688,8 +691,9 @@ static function X2AbilityTemplate Professional()
 	// Create a conditional bonus
 	ReactionFire = new class'XMBEffect_ConditionalBonus';
 	ReactionFire.AddPercentDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PROFESSIONAL_DAMAGE_BONUS"), eHit_Success);
-	ReactionFire.AbilityShooterConditions.AddItem(default.ReactionFireCondition);
-
+	ReactionFire.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
+	ReactionFire.bDisplayInUI = false;
+	
 	return Passive('APT_Professional', "img:///XPerkIconPack.UIPerk_overwatch_plus", true, ReactionFire);
 }
 

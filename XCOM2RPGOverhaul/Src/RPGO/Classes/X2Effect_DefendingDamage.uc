@@ -1,3 +1,4 @@
+// Modifies damage taken of all types and from all sources. 
 class X2Effect_DefendingDamage extends X2Effect_Persistent;
 
 var bool PercentDamage;

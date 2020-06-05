@@ -52,7 +52,7 @@ static event OnPostTemplatesCreated()
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSniperStandardFire();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchStandardShot();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchRemoteStart();
-	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
+//	class'X2TemplateHelper_RPGOverhaul'.static.PatchLongWatch();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSuppression();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchKillZone();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchSkirmisherGrapple();
