@@ -36,7 +36,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(DangerSenseSpawnTrigger());
 	Templates.AddItem(StealthTactics());
 	Templates.AddItem(Relocation());
-	Templates.AddItem(PurePassive('Grenadier', "img:///UILibrary_RPG.LW_AbilityFullKit"));
+	Templates.AddItem(PurePassive('Grenadier', "img:///UILibrary_RPGO.LW_AbilityFullKit"));
 	Templates.AddItem(HighNoon());
 	Templates.AddItem(Sabotage());
 	Templates.AddItem(Overkill());
@@ -44,15 +44,15 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(FullAutoFire());
 	Templates.AddItem(AutoFireModifications());
 	Templates.AddItem(SurgicalPrecision());
-	Templates.AddItem(PurePassive('Gunner', "img:///UILibrary_RPG.UIPerk_Gunner"));
+	Templates.AddItem(PurePassive('Gunner', "img:///UILibrary_RPGO.UIPerk_Gunner"));
 	Templates.AddItem(ReadyForAnything());
 	Templates.AddItem(ReadyForAnythingFlyover());
 	Templates.AddItem(DeadeyeAbility());
 	Templates.AddItem(KillEmAll());
 	Templates.AddItem(SniperElite());
-	Templates.AddItem(PurePassive('PermanentTracking', "img:///UILibrary_RPG.UIPerk_PermanentTracking"));
-	Templates.AddItem(PurePassive('Kenjutsu', "img:///UILibrary_RPG.UIPerk_Kenjutsu"));
-	Templates.AddItem(PurePassive('EmergencyProtocol', "img:///UILibrary_RPG.UIPerk_EmergencyProtocol"));
+	Templates.AddItem(PurePassive('PermanentTracking', "img:///UILibrary_RPGO.UIPerk_PermanentTracking"));
+	Templates.AddItem(PurePassive('Kenjutsu', "img:///UILibrary_RPGO.UIPerk_Kenjutsu"));
+	Templates.AddItem(PurePassive('EmergencyProtocol', "img:///UILibrary_RPGO.UIPerk_EmergencyProtocol"));
 	Templates.AddItem(TriggerHappy());
 	Templates.AddItem(TriggerHappyScamperShot());
 	Templates.AddItem(SpotWeakness());
@@ -68,7 +68,7 @@ static function X2AbilityTemplate XenoBiologist()
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("XENO_BIOLOGIST_DMG_BONUS"));
 	Effect.AbilityTargetConditions.AddItem(new class 'X2Condition_TargetAutopsy');
 
-	return Passive('XenoBiologist', "img:///UILibrary_RPG.LW_AbilityVitalPointTargeting", false, Effect);
+	return Passive('XenoBiologist', "img:///UILibrary_RPGO.LW_AbilityVitalPointTargeting", false, Effect);
 }
 
 static function X2AbilityTemplate Scout()
@@ -78,7 +78,7 @@ static function X2AbilityTemplate Scout()
 	Effect = new class'XMBEffect_AddUtilityItem';
 	Effect.DataName = 'BattleScanner';
 
-	return Passive('Scout', "img:///UILibrary_RPG.UIPerk_Scout", false, Effect);
+	return Passive('Scout', "img:///UILibrary_RPGO.UIPerk_Scout", false, Effect);
 }
 
 static function X2AbilityTemplate DamnGoodGround()
@@ -95,7 +95,7 @@ static function X2AbilityTemplate DamnGoodGround()
 	Effect.AbilityTargetConditions.AddItem(default.HeightDisadvantageCondition);
 	Effect.AbilityTargetConditionsAsTarget.AddItem(default.HeightAdvantageCondition);
 
-	Template = Passive('DamnGoodGround', "img:///UILibrary_RPG.UIPerk_damngoodground", false, Effect);
+	Template = Passive('DamnGoodGround', "img:///UILibrary_RPGO.UIPerk_damngoodground", false, Effect);
 
 	return Template;
 }
@@ -108,7 +108,7 @@ static function X2AbilityTemplate Panoptic()
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_SightRadius, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PANOPTIC_SIGHTRANGE_BONUS"));
 
-	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPG.UIPerk_Panoptic'", false, Effect);
+	return Passive('Panoptic', "img:///Texture2D'UILibrary_RPGO.UIPerk_Panoptic'", false, Effect);
 }
 
 static function X2AbilityTemplate Hitman()
@@ -119,14 +119,14 @@ static function X2AbilityTemplate Hitman()
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HITMAN_BONUS"), eHit_Crit);
 	BonusEffect.AbilityTargetConditions.AddItem(default.FlankedCondition);
 
-	return Passive('Hitman', "img:///Texture2D'UILibrary_RPG.UIPerk_Hitman'", false, BonusEffect);
+	return Passive('Hitman', "img:///Texture2D'UILibrary_RPGO.UIPerk_Hitman'", false, BonusEffect);
 }
 
 static function X2AbilityTemplate Prodigy()
 {
 	local X2AbilityTemplate Template;
 	
-	Template = PurePassive('Prodigy', "img:///Texture2D'UILibrary_RPG.UIPerk_Savant'");
+	Template = PurePassive('Prodigy', "img:///Texture2D'UILibrary_RPGO.UIPerk_Savant'");
 	Template.SoldierAbilityPurchasedFn = ProdigyPurchased;
 
 	return Template;
@@ -149,7 +149,7 @@ static function X2AbilityTemplate SyntheticGenes()
 {
 	local X2AbilityTemplate Template;
 	
-	Template = PurePassive('SyntheticGenes', "img:///Texture2D'UILibrary_RPG.UIPerk_SyntheticGenes'");
+	Template = PurePassive('SyntheticGenes', "img:///Texture2D'UILibrary_RPGO.UIPerk_SyntheticGenes'");
 	Template.SoldierAbilityPurchasedFn = SyntheticGenesPurchased;
 
 	return Template;
@@ -187,7 +187,7 @@ static function X2AbilityTemplate Bulletproof()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
-	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPG.UIPerk_Bulletproof'", true, Effect);
+	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPGO.UIPerk_Bulletproof'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
 
 	return Template;
@@ -202,7 +202,7 @@ static function X2AbilityTemplate Juggernaut()
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
 	
-	Template = Passive('Juggernaut', "img:///Texture2D'UILibrary_RPG.UIPerk_Juggernaught'", true, Effect);
+	Template = Passive('Juggernaut', "img:///Texture2D'UILibrary_RPGO.UIPerk_Juggernaught'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HealthLabel, eStat_HP, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("JUGGERNAUT_BONUS"));
 
 	return Template;
@@ -215,7 +215,7 @@ static function X2AbilityTemplate Stalker()
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_DetectionModifier, class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("STALKER_BONUS"));
 	
-	return Passive('Stalker', "img:///Texture2D'UILibrary_RPG.UIPerk_Stalker'", true, Effect);
+	return Passive('Stalker', "img:///Texture2D'UILibrary_RPGO.UIPerk_Stalker'", true, Effect);
 }
 
 static function X2AbilityTemplate IronWill()
@@ -225,7 +225,7 @@ static function X2AbilityTemplate IronWill()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
-	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPG.UIPerk_IronWill'", true, Effect);
+	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPGO.UIPerk_IronWill'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 
 	return Template;
@@ -238,7 +238,7 @@ static function X2AbilityTemplate CyberAdept()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
-	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPG.UIPerk_CyberAdept'", true, Effect);
+	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPGO.UIPerk_CyberAdept'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 
 	return Template;
@@ -251,7 +251,7 @@ static function X2AbilityTemplate MovingTarget()
 
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
-	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPG.UIPerk_MovingTarget'", true, Effect);
+	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPGO.UIPerk_MovingTarget'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 
 	return Template;
@@ -265,7 +265,7 @@ static function X2AbilityTemplate Praetorian()
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("PREATORIAN_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.MeleeCondition);
 
-	return Passive('Praetorian', "img:///Texture2D'UILibrary_RPG.UIPerk_Praetorian'", false, BonusEffect);
+	return Passive('Praetorian', "img:///Texture2D'UILibrary_RPGO.UIPerk_Praetorian'", false, BonusEffect);
 }
 
 
@@ -277,7 +277,7 @@ static function X2AbilityTemplate Runner()
 	Effect = new class'XMBEffect_ConditionalStatChange';
 	Effect.AddPersistentStatChange(eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
 
-	Template = Passive('Runner', "img:///UILibrary_RPG.UIPerk_Runner", true, Effect);
+	Template = Passive('Runner', "img:///UILibrary_RPGO.UIPerk_Runner", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.MobilityLabel, eStat_Mobility, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("RUNNER_BONUS"));
 
 	return Template;
@@ -292,7 +292,7 @@ static function X2AbilityTemplate EagleEye()
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("EAGLEEYE_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(new class'X2Condition_NoReactionFire');
 
-	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPG.UIPerk_EagleEye'", false, BonusEffect);
+	Template = Passive('EagleEye', "img:///Texture2D'UILibrary_RPGO.UIPerk_EagleEye'", false, BonusEffect);
 
 	return Template;
 }
@@ -306,7 +306,7 @@ static function X2AbilityTemplate HotShot()
 	BonusEffect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("HOTSHOT_BONUS"), eHit_Success);
 	BonusEffect.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
 
-	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPG.UIPerk_Hotshot'", false, BonusEffect);
+	Template = Passive('HotShot', "img:///Texture2D'UILibrary_RPGO.UIPerk_Hotshot'", false, BonusEffect);
 
 	return Template;
 }
@@ -408,7 +408,7 @@ static function X2AbilityTemplate Quartermaster()
 	BonusItemEffect.PerItemBonus = 1;
 	BonusItemEffect.ApplyToSlots.AddItem(eInvSlot_Utility);
 
-	Template = Passive('Quartermaster', "img:///Texture2D'UILibrary_RPG.UIPerk_Packmaster'", false, BonusItemEffect);
+	Template = Passive('Quartermaster', "img:///Texture2D'UILibrary_RPGO.UIPerk_Packmaster'", false, BonusItemEffect);
 
 	return Template;
 }
@@ -418,7 +418,7 @@ static function X2AbilityTemplate RpgZoneOfControl()
 	local X2AbilityTemplate Template;
 
 	Template = class'X2Ability_SharpshooterAbilitySet'.static.ReturnFire('RpgZoneOfControl');
-	Template.IconImage = "img:///Texture2D'UILibrary_RPG.LW_AbilityDangerZone'";
+	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.LW_AbilityDangerZone'";
 
 	X2Effect_ReturnFire(Template.AbilityTargetEffects[0]).SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 	X2Effect_ReturnFire(Template.AbilityTargetEffects[0]).bPreEmptiveFire = true;
@@ -438,7 +438,7 @@ static function X2AbilityTemplate ZoneOfControlReturnFire()
 	local X2AbilityTemplate Template;
 	
 	Template = class'X2Ability_DefaultAbilitySet'.static.PistolReturnFire('ZoneOfControlReturnFire');
-	Template.IconImage = "img:///Texture2D'UILibrary_RPG.LW_AbilityDangerZone'";
+	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.LW_AbilityDangerZone'";
 	// Restrict the shot to units within 7 tiles
 	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("ZONE_OF_CONTROL_TARGET_WITHIN_TILES")));
 
@@ -449,7 +449,7 @@ static function X2AbilityTemplate ZoneOfControlReturnFire()
 static function X2AbilityTemplate DangerSense()
 {
 	local X2AbilityTemplate						Template;
-	Template = PurePassive('RpgDangerSense', "img:///UILibrary_RPG.UIPerk_DangerSense", true);
+	Template = PurePassive('RpgDangerSense', "img:///UILibrary_RPGO.UIPerk_DangerSense", true);
 	Template.AdditionalAbilities.AddItem('DangerSenseTrigger');
 	Template.AdditionalAbilities.AddItem('DangerSenseSpawnTrigger');
 
@@ -467,7 +467,7 @@ static function X2AbilityTemplate DangerSenseTrigger()
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'DangerSenseTrigger');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_DangerSense";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_DangerSense";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -538,7 +538,7 @@ static function X2AbilityTemplate DangerSenseSpawnTrigger()
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'DangerSenseSpawnTrigger');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_DangerSense";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_DangerSense";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -591,7 +591,7 @@ static function X2AbilityTemplate StealthTactics()
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityTradecraft";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityTradecraft";
 
 	NotVisibleToEnemiesCondition = new class'X2Condition_NotVisibeToEnemies';
 	Template.AbilityTargetConditions.AddItem(NotVisibleToEnemiesCondition);
@@ -632,7 +632,7 @@ static function X2AbilityTemplate Relocation()
 	local X2AbilityTemplate						Template;
 	local X2Effect_QuickFeet					QuickFeetEffect;
 	
-	Template = PurePassive('Relocation', "img:///UILibrary_RPG.UIPerk_Relocation", false);
+	Template = PurePassive('Relocation', "img:///UILibrary_RPGO.UIPerk_Relocation", false);
 
 	// Quick Feet Effect
 	QuickFeetEffect = new class'X2Effect_QuickFeet';
@@ -650,7 +650,7 @@ static function X2AbilityTemplate HighNoon()
 	local X2AbilityTemplate Template;
 
 	Template = class'X2Ability_SharpshooterAbilitySet'.static.ReturnFire('HighNoon');
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_HighNoon";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_HighNoon";
 
 	X2Effect_ReturnFire(Template.AbilityTargetEffects[0]).SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 	X2Effect_ReturnFire(Template.AbilityTargetEffects[0]).bPreEmptiveFire = true;
@@ -683,7 +683,7 @@ static function X2AbilityTemplate Sabotage()
 	WeaponCondition.IncludeWeaponNames.AddItem('TacticalE4');
 	Effect.AbilityTargetConditions.AddItem(WeaponCondition);
 	// Create the template using a helper function
-	return Passive('Sabotage', "img:///Texture2D'UILibrary_RPG.UIPerk_Sabotage'", true, Effect);
+	return Passive('Sabotage', "img:///Texture2D'UILibrary_RPGO.UIPerk_Sabotage'", true, Effect);
 }
 
 static function X2AbilityTemplate Overkill()
@@ -698,7 +698,7 @@ static function X2AbilityTemplate Overkill()
 	Effect.ApplyToNames.AddItem('TacticalX4');
 	Effect.ApplyToNames.AddItem('TacticalE4');
 
-	return Passive('Overkill', "img:///Texture2D'UILibrary_RPG.UIPerk_Overkill'", false, Effect);
+	return Passive('Overkill', "img:///Texture2D'UILibrary_RPGO.UIPerk_Overkill'", false, Effect);
 }
 
 static function X2AbilityTemplate Rocketeer()
@@ -713,7 +713,7 @@ static function X2AbilityTemplate Rocketeer()
 
 	// The effect isn't an X2Effect_Persistent, so we can't use it as the effect for Passive(). Let
 	// Passive() create its own effect.
-	Template = Passive('Rocketeer', "img:///Texture2D'UILibrary_RPG.UIPerk_rocketeer'", false);
+	Template = Passive('Rocketeer', "img:///Texture2D'UILibrary_RPGO.UIPerk_rocketeer'", false);
 
 	// Add the XMBEffect_AddItemCharges as an extra effect.
 	AddSecondaryEffect(Template, Effect);
@@ -729,7 +729,7 @@ static function X2AbilityTemplate FullAutoFire()
 	local X2AbilityCost_Ammo AmmoCost;
 	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('FullAutoFire');
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.STANDARD_SHOT_PRIORITY + 10;
-	Template.IconImage = "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'";
+	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.UIPerk_AssaultAutoRifle'";
 
 	GetAbilityCostActionPoints(Template).iNumPoints = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AUTOFIRE_ACTIONPOINTS");
 	AmmoCost = X2AbilityCost_Ammo(GetAbilityCostByClassName(Template, 'X2AbilityCost_Ammo'));
@@ -765,7 +765,7 @@ static function X2AbilityTemplate AutoFireModifications()
 	local array<string>					WeaponCategories;
 	local string						WeaponCategory;
 
-	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPG.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
+	Template = PurePassive('AutoFireModifications', "img:///Texture2D'UILibrary_RPGO.UIPerk_AssaultAutoRifle'", false, 'eAbilitySource_Perk', false);
 
 	WeaponCondition = new class'X2Condition_WeaponCategory';
 	WeaponCategories = class'RPGOAbilityConfigManager'.static.GetConfigStringArray("AUTOFIRE_WEAPON_CATEGORIES");
@@ -833,7 +833,7 @@ static function X2AbilityTemplate SurgicalPrecision()
 	Effect.AbilityTargetConditions.AddItem(default.FullCoverCondition);
 	Effect.AddToHitModifier(class'X2AbilityToHitCalc_StandardAim'.default.HIGH_COVER_BONUS / 2);
 
-	Template = Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPG.UIPerk_SurgicalPrecision'", true, Effect);
+	Template = Passive('SurgicalPrecision', "img:///Texture2D'UILibrary_RPGO.UIPerk_SurgicalPrecision'", true, Effect);
 	
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AbilityTargetConditions.AddItem(default.HalfCoverCondition);
@@ -851,7 +851,7 @@ static function X2DataTemplate ReadyForAnything()
 
 	`CREATE_X2ABILITY_TEMPLATE (Template, 'ReadyForAnything');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_ReadyForAnything";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_ReadyForAnything";
 
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.Hostility = eHostility_Neutral;
@@ -891,7 +891,7 @@ static function X2DataTemplate ReadyForAnythingFlyover()
 	Template.bShowActivation = false; // Flyover is already displayed by Custom Build Viz
 	Template.bSkipFireAction = true;
 	Template.bDontDisplayInAbilitySummary = true;
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_ReadyForAnything";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_ReadyForAnything";
 
 	EventListener = new class'X2AbilityTrigger_EventListener';
 	EventListener.ListenerData.EventID = 'ReadyForAnythingTriggered';
@@ -954,7 +954,7 @@ static function X2AbilityTemplate DeadeyeAbility()
 	Effect.AddToHitModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("DEADEYE_HIT_BONUS"), eHit_Success);
 	Effect.AbilityTargetConditions.AddItem(new class'X2Condition_NotFlankable');
 
-	return Passive('Deadeye', "img:///UILibrary_RPG.UIPerk_deadeye", true, Effect);
+	return Passive('Deadeye', "img:///UILibrary_RPGO.UIPerk_deadeye", true, Effect);
 }
 
 static function X2AbilityTemplate KillEmAll()
@@ -968,7 +968,7 @@ static function X2AbilityTemplate KillEmAll()
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'KillEmAll');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_KillEmAll";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_KillEmAll";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
 	Template.Hostility = eHostility_Offensive;
@@ -1239,13 +1239,13 @@ static function X2AbilityTemplate SniperElite()
 
 	Effect = new class'X2Effect_NoSquadsightPenalities';
 
-	return Passive('SniperElite', "img:///UILibrary_RPG.UIPerk_SniperElite", true, Effect);
+	return Passive('SniperElite', "img:///UILibrary_RPGO.UIPerk_SniperElite", true, Effect);
 }
 
 static function X2AbilityTemplate TriggerHappy()
 {
 	local X2AbilityTemplate						Template;
-	Template = PurePassive('TriggerHappy', "img:///UILibrary_RPG.UIPerk_TiggerHappy", true);
+	Template = PurePassive('TriggerHappy', "img:///UILibrary_RPGO.UIPerk_TiggerHappy", true);
 	Template.AdditionalAbilities.AddItem('TriggerHappyScamperShot');
 
 	return Template;
@@ -1256,7 +1256,6 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	//local X2AbilityTrigger_EventListener		EventListener;
 	local X2AbilityTemplate                 Template;	
 	local X2AbilityCost_Ammo                AmmoCost;
-	local X2AbilityCost						FreeCost;
 	local X2AbilityToHitCalc_StandardAim    StandardAim;
 	local X2Condition_UnitProperty          ShooterCondition;
 	local X2AbilityTarget_Single            SingleTarget;
@@ -1272,14 +1271,12 @@ static function X2AbilityTemplate TriggerHappyScamperShot()
 	AmmoCost.iAmmo = 1;	
 	Template.AbilityCosts.AddItem(AmmoCost);
 	
-	FreeCost = new class'X2AbilityCost';
-	FreeCost.bFreeCost = true;
-	Template.AbilityCosts.AddItem(FreeCost);
-	
 	StandardAim = new class'X2AbilityToHitCalc_StandardAim';
 	//StandardAim.bReactionFire = true;
 	Template.AbilityToHitCalc = StandardAim;
 	Template.AbilityToHitOwnerOnMissCalc = StandardAim;
+
+	Template.AbilityTriggers.AddItem(new class'X2AbilityTrigger_Placeholder');
 
 	Template.AbilityTargetConditions.AddItem(default.LivingHostileUnitDisallowMindControlProperty);
 	

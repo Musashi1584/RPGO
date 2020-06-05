@@ -1,34 +1,47 @@
 class X2DownloadableContentInfo_XCOM2RPGOverhaul extends X2DownloadableContentInfo config(RPG);
 
+var config array<ModClassOverrideEntry> ModClassOverrides;
 var config array<string> IncompatibleMods;
 var config array<string> RequiredMods;
 var config string DisplayName;
 
-// Double tactical ability points
-static event InstallNewCampaign(XComGameState StartState)
+static function OnPreCreateTemplates()
 {
-	//local XComGameState_HeadquartersXCom XComHQ;
-
-	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
-
-	//XComHQ.BonusAbilityPointScalar *= 2.0;
-	
+	PatchModClassOverrides();
 }
 
-static event OnLoadedSavedGameToStrategy()
+static function PatchModClassOverrides()
 {
-	class'X2TemplateHelper_RPGOverhaul'.static.UpdateStorage();
+	local Engine LocalEngine;
+	local ModClassOverrideEntry MCO;
+	local int Index;
+
+	LocalEngine = class'Engine'.static.GetEngine();
+	foreach default.ModClassOverrides(MCO)
+	{
+		LocalEngine.ModClassOverrides.AddItem(MCO);
+		`LOG(GetFuncName() @ "Adding" @ MCO.BaseGameClass @ MCO.ModClass,, 'RPG');
+	}
+
+	for (Index =  LocalEngine.ModClassOverrides.Length - 1; Index >= 0; Index--)
+	{
+		MCO =  LocalEngine.ModClassOverrides[Index];
+
+		if (default.ModClassOverrides.Find('BaseGameClass', MCO.BaseGameClass) != INDEX_NONE &&
+			default.ModClassOverrides.Find('ModClass', MCO.ModClass) == INDEX_NONE)
+		{
+			`LOG(GetFuncName() @ "Found incompatible MCO. Removing" @ MCO.BaseGameClass @ MCO.ModClass @ Index,, 'RPG');
+				LocalEngine.ModClassOverrides.Remove(Index, 1);
+		}
+	}
 }
 
-static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
-{
-	class'X2TemplateHelper_RPGOverhaul'.static.FinalizeUnitAbilities(UnitState, SetupData, StartState, PlayerState, bMultiplayerDisplay);
-}
 
 static event OnPostTemplatesCreated()
 {
 	class'X2SoldierClassTemplatePlugin'.static.SetupSpecialization('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.AddSecondWaveOptions();
+	class'X2TemplateHelper_RPGOverhaul'.static.RemoveJediClassSoldierInfoEventistenerTemplate();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAcademyUnlocks('UniversalSoldier');
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilityPrerequisites();
 	class'X2TemplateHelper_RPGOverhaul'.static.PatchAbilitiesWeaponCondition();
@@ -64,6 +77,56 @@ static event OnPostTemplatesCreated()
 	}
 }
 
+// Double tactical ability points
+static event InstallNewCampaign(XComGameState StartState)
+{
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(StartState);
+
+	//local XComGameState_HeadquartersXCom XComHQ;
+
+	//XComHQ = class'X2TemplateHelper_RPGOverhaul'.static.GetNewXComHQState(StartState);
+
+	//XComHQ.BonusAbilityPointScalar *= 2.0;
+	
+}
+
+static event OnLoadedSavedGame()
+{
+	InitializeClassInsiginiaGameState();
+}
+
+
+static event OnLoadedSavedGameToStrategy()
+{
+	InitializeClassInsiginiaGameState();
+	class'X2TemplateHelper_RPGOverhaul'.static.UpdateStorage();
+}
+
+static function InitializeClassInsiginiaGameState()
+{
+
+	local XComGameStateHistory History;
+	local XComGameState NewGameState;
+
+	History = `XCOMHISTORY;
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Create ClassInsignia State");
+	class'XComGameState_CustomClassInsignia'.static.CreateGameState(NewGameState);
+	
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		History.AddGameStateToHistory(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+}
+
+static function FinalizeUnitAbilitiesForInit(XComGameState_Unit UnitState, out array<AbilitySetupData> SetupData, optional XComGameState StartState, optional XComGameState_Player PlayerState, optional bool bMultiplayerDisplay)
+{
+	class'X2TemplateHelper_RPGOverhaul'.static.FinalizeUnitAbilities(UnitState, SetupData, StartState, PlayerState, bMultiplayerDisplay);
+}
+
 // <summary>
 // Called from XComGameState_Unit:CanAddItemToInventory & UIArmory_Loadout:GetDisabledReason
 // defaults to using the wrapper function below for calls from XCGS_U. Return false with a non-empty string in this function to show the disabled reason in UIArmory_Loadout
@@ -72,7 +135,7 @@ static event OnPostTemplatesCreated()
 static function bool CanAddItemToInventory_CH(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
 	//	Weapon restrictions
-	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction'))
+	if (`SecondWaveEnabled('RPGO_SWO_WeaponRestriction') && class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations())
 	{
 		return class'X2TemplateHelper_RPGOverhaul'.static.CanAddItemToInventory_WeaponRestrictions(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 	}

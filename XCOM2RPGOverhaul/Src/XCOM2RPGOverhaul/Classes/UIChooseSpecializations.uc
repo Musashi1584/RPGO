@@ -7,10 +7,14 @@ var array<int> SelectedItems;
 
 var localized string m_strComplementarySpecializationInfo;
 
-simulated function InitChooseSpecialization(StateObjectReference UnitRef, int MaxSpecs, array<SoldierSpecialization> OwnedSpecs, optional delegate<AcceptAbilities> OnAccept)
+simulated function InitChooseSpecialization(
+	StateObjectReference UnitRef,
+	int MaxSpecs,
+	array<SoldierSpecialization> AvailableSpecs,
+	array<SoldierSpecialization> OwnedSpecs,
+	optional delegate<AcceptAbilities> OnAccept
+)
 {
-	local XComGameState_Unit UnitState;
-
 	super.InitChooseCommoditiesScreen(
 		UnitRef,
 		MaxSpecs,
@@ -18,10 +22,8 @@ simulated function InitChooseSpecialization(StateObjectReference UnitRef, int Ma
 		OnAccept
 	);
 
-	UnitState = GetUnit();
-
 	SpecializationsPool.Length = 0;
-	SpecializationsPool = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
+	SpecializationsPool = AvailableSpecs;
 	CommodityPool = ConvertToCommodities(SpecializationsPool);
 
 	SpecializationsChosen.Length = 0;
@@ -81,21 +83,35 @@ function bool OnAllSpecSelected()
 {
 	local XComGameState NewGameState;
 	local XComGameState_Unit UnitState;
+	local array<int> SpecIndices;
+	local int SpecIndex;
+	local SoldierSpecialization Spec;
 	
 	UnitState = GetUnit();
 
 	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Ranking up Unit in chosen specs");
 
+	foreach SpecializationsChosen(Spec)
+	{
+		SpecIndex = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationIndex(UnitState, Spec.TemplateName);
+		SpecIndices.AddItem(SpecIndex);
+	}
+
 	class'X2SecondWaveConfigOptions'.static.BuildSpecAbilityTree(
-		UnitState, SelectedItems,
-		!(`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses')),
+		UnitState, SpecIndices,
+		true,
 		`SecondWaveEnabled('RPGOTrainingRoulette')
 	);
+
+	class'X2SoldierClassTemplatePlugin'.static.DebugAssignedTemplates(UnitState);
 	
 	UnitState = XComGameState_Unit(NewGameState.ModifyStateObject(UnitState.Class, UnitState.ObjectID));
 	UnitState.SetUnitFloatValue('SecondWaveCommandersChoiceSpecChosen', 1, eCleanup_Never);
+	UnitState.SetUnitFloatValue('SpecsAssigned', 1, eCleanup_Never);
 	
-	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	`XEVENTMGR.TriggerEvent('RPGOSpecializationsAssigned', UnitState, UnitState, NewGameState);
+	
+	`GAMERULES.SubmitGameState(NewGameState);
 
 	if (AcceptAbilities != none)
 	{
@@ -150,8 +166,14 @@ simulated function string GetComplementarySpecializationInfo(X2UniversalSoldierC
 
 simulated function PopulateChosen()
 {
+	local UIPanel SelectedItem;
 	super.PopulateChosen();
-	UIInventory_SpecializationListItem(ChosenList.GetSelectedItem()).iUpdateColor = 6;
+
+	SelectedItem = ChosenList.GetSelectedItem();
+	if (SelectedItem != none)
+	{
+		UIInventory_SpecializationListItem(SelectedItem).iUpdateColor = 6;
+	}
 }
 
 simulated function AddToChosenList(int Index)

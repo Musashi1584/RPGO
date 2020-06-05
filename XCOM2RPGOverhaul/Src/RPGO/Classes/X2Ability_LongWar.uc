@@ -71,7 +71,7 @@ static function X2AbilityTemplate FieldSurgeon()
 	local X2Effect_ReducedRecoveryTime			FieldSurgeonEffect;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'FieldSurgeon');
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityFieldSurgeon";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityFieldSurgeon";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -95,7 +95,7 @@ static function X2AbilityTemplate Bombard()
 	local X2AbilityTemplate				Template;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgBombard');
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityBombard"; 
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityBombard"; 
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -116,7 +116,7 @@ static function X2AbilityTemplate Failsafe()
 	local X2Effect_Failsafe			FailsafeEffect;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'Failsafe');
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityFailsafe";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityFailsafe";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -142,7 +142,7 @@ static function X2AbilityTemplate Lethal()
 	Effect = new class'XMBEffect_ConditionalBonus';
 	Effect.AddDamageModifier(class'RPGOAbilityConfigManager'.static.GetConfigIntValue("LETHAL_DAMAGE_BONUS"));
 
-	return Passive('Lethal', "img:///Texture2D'UILibrary_RPG.LW_AbilityKinetic'", true, Effect);
+	return Passive('Lethal', "img:///Texture2D'UILibrary_RPGO.LW_AbilityKinetic'", true, Effect);
 }
 
 static function X2AbilityTemplate CloseCombatSpecialist()
@@ -150,7 +150,7 @@ static function X2AbilityTemplate CloseCombatSpecialist()
 	local X2AbilityTemplate Template;
 	local X2AbilityToHitCalc_StandardAim ToHit;
 
-	Template = Attack('CloseCombatSpecialist', "img:///Texture2D'UILibrary_RPG.LW_AbilityCloseCombatSpecialist'", false, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
+	Template = Attack('CloseCombatSpecialist', "img:///Texture2D'UILibrary_RPGO.LW_AbilityCloseCombatSpecialist'", false, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
 	
 	HidePerkIcon(Template);
 	AddIconPassive(Template);
@@ -181,7 +181,7 @@ static function X2AbilityTemplate BringEmOn()
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BRING_EM_ON_CRIT_SCALE_MAX");
 
-	return Passive('BringEmOn', "img:///Texture2D'UILibrary_RPG.LW_AbilityBringEmOn'", true, Effect);
+	return Passive('BringEmOn', "img:///Texture2D'UILibrary_RPGO.LW_AbilityBringEmOn'", true, Effect);
 }
 
 static function X2AbilityTemplate AddCloseEncountersAbility()
@@ -190,7 +190,7 @@ static function X2AbilityTemplate AddCloseEncountersAbility()
 	local X2Effect_CloseEncounters					ActionEffect;
 	
 	`CREATE_X2ABILITY_TEMPLATE (Template, 'CloseEncounters');
-	Template.IconImage = "img:///Texture2D'UILibrary_RPG.LW_AbilityCloseEncounters'";
+	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.LW_AbilityCloseEncounters'";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -214,7 +214,7 @@ static function X2AbilityTemplate AddCloseandPersonalAbility()
 	local X2Effect_CloseandPersonal				CritModifier;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'CloseandPersonal');
-	Template.IconImage = "img:///Texture2D'UILibrary_RPG.LW_AbilityCloseAndPersonal'";
+	Template.IconImage = "img:///Texture2D'UILibrary_RPGO.LW_AbilityCloseAndPersonal'";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -244,7 +244,7 @@ static function X2AbilityTemplate AddInterferenceAbility()
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'Interference');
 
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityInterference";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityInterference";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.Hostility = eHostility_Offensive;
 	Template.bLimitTargetIcons = true;
@@ -312,7 +312,7 @@ static function X2AbilityTemplate Aggression()
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("AGRESSION_SCALE_MAX");
 	
-	return Passive('RpgAggression', "img:///UILibrary_RPG.LW_AbilityAggression", true, Effect);
+	return Passive('RpgAggression', "img:///UILibrary_RPGO.LW_AbilityAggression", true, Effect);
 }
 
 static function X2AbilityTemplate TacticalSense()
@@ -335,7 +335,7 @@ static function X2AbilityTemplate TacticalSense()
 	Effect.ScaleMax = class'RPGOAbilityConfigManager'.static.GetConfigIntValue("TACTICAL_SENSE_SCALE_MAX");
 
 	// Create the template using a helper function
-	return Passive('RpgTacticalSense', "img:///UILibrary_RPG.LW_AbilityTacticalSense", true, Effect);
+	return Passive('RpgTacticalSense', "img:///UILibrary_RPGO.LW_AbilityTacticalSense", true, Effect);
 }
 
 
@@ -345,7 +345,7 @@ static function X2AbilityTemplate AddCutthroatAbility()
 	local X2Effect_Cutthroat				ArmorPiercingBonus;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'RpgCutthroat');
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityCutthroat";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityCutthroat";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -371,7 +371,7 @@ static function X2AbilityTemplate AddLightEmUpAbility()
 	
 	Effect = new class'X2Effect_LightEmUp';
 
-	return Passive('RPGO_LightEmUp', "img:///UILibrary_RPG.LW_AbilityLightEmUp", true, Effect);
+	return Passive('RPGO_LightEmUp', "img:///UILibrary_RPGO.LW_AbilityLightEmUp", true, Effect);
 }
 
 
@@ -381,7 +381,7 @@ static function X2AbilityTemplate AddLightEmUpAbility()
 //	local X2Condition_WeaponCategory		WeaponCondition;
 //
 //	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('LightEmUp');
-//	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityLightEmUp";
+//	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityLightEmUp";
 //	X2AbilityCost_ActionPoints(Template.AbilityCosts[0]).bConsumeAllPoints = false;
 //
 //	WeaponCondition = new class'X2Condition_WeaponCategory';
@@ -397,7 +397,7 @@ static function X2AbilityTemplate AddLockdownAbility()
 {
 	local X2AbilityTemplate                 Template;	
 
-	Template = PurePassive('Lockdown', "img:///UILibrary_RPG.LW_AbilityLockdown", false, 'eAbilitySource_Perk');
+	Template = PurePassive('Lockdown', "img:///UILibrary_RPGO.LW_AbilityLockdown", false, 'eAbilitySource_Perk');
 	Template.bCrossClassEligible = false;
 
 	return Template;
@@ -562,7 +562,7 @@ static function X2AbilityTemplate HitandRun()
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
-	Template.IconImage = "img:///UILibrary_RPG.LW_AbilityHitandRun";
+	Template.IconImage = "img:///UILibrary_RPGO.LW_AbilityHitandRun";
 	Template.AbilityToHitCalc = default.DeadEye;
 	Template.AbilityTargetStyle = default.SelfTarget;
 	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);

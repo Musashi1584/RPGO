@@ -16,6 +16,10 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(PistolDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierRange());
 	Templates.AddItem(ShotgunDamageModifierCoverType());
+	Templates.AddItem(SawedOffShotgunDamageModifierCovertype());
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_CV', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_CV")));
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_MG', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_MG")));
+	Templates.AddItem(SawedOffShotgunDamageModifierRange ('SawedOffShotgunDamageModifierRange_BM', class'RPGOAbilityConfigManager'.static.GetConfigFloatArray("SAWEDOFF_SHOTGUN_DAMAGE_FALLOFF_BM")));
 	//Templates.AddItem(DamageModifierCoverType());
 	//Templates.AddItem(AutoFireOverwatch());
 	//Templates.AddItem(AutoFireShot());
@@ -88,7 +92,7 @@ static function X2AbilityTemplate BlueMoveSlash()
 	
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'BlueMoveSlash');
 
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_Kenjutsu";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_Kenjutsu";
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
@@ -114,13 +118,14 @@ static function X2AbilityTemplate BlueMoveSlash()
 }
 
 static function X2AbilityTemplate HeavyWeaponMobilityCap()
+//	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_EquipmentStatCaps CapStatEffect;
 	local EquipmentStatCap EquipmentCap;
 	local int Index;
 
-	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPG.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
+	Template = PurePassive('HeavyWeaponMobilityPenalty', "Texture2D'UILibrary_RPGO.UIPerk_HeavyWeapon'", false, 'eAbilitySource_Perk', false);
 
 	CapStatEffect = new class'X2Effect_EquipmentStatCaps';
 	CapStatEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
@@ -224,6 +229,110 @@ static function X2AbilityTemplate ShotgunDamageModifierCoverType()
 
 	return Template;
 }
+
+static function X2AbilityTemplate SawedOffShotgunDamageModifierCovertype()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_DamageModifierCoverType CoverTypeEffect;
+	
+	Template = PurePassive('SawedOffShotgunDamageModifierCovertype', "", false, 'eAbilitySource_Perk', false);
+
+	CoverTypeEffect = new class'X2Effect_DamageModifierCoverType';
+	CoverTypeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	CoverTypeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	CoverTypeEffect.HalfCovertModifier = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("SAWEDOFF_SHOTGUN_DAMAGE_HALFCOVERTMODIFIER");
+	CoverTypeEffect.FullCovertModifier = class'RPGOAbilityConfigManager'.static.GetConfigFloatValue("SAWEDOFF_SHOTGUN_DAMAGE_FULLCOVERTMODIFIER");
+
+	Template.AddTargetEffect(CoverTypeEffect);
+
+	Template.bDisplayInUITacticalText = false;
+	Template.bDisplayInUITooltip = false;
+
+	return Template;
+}
+
+static function X2AbilityTemplate SawedOffShotgunDamageModifierRange(name TemplateName, array<float> DamageFalloff)
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_DamageModifierRangePercentage RangeEffect;
+	
+	Template = PurePassive(TemplateName, "", false, 'eAbilitySource_Perk', false);
+
+	RangeEffect = new class'X2Effect_DamageModifierRangePercentage';
+	RangeEffect.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+	RangeEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+	RangeEffect.DamageFalloff = DamageFalloff;
+
+	Template.AddTargetEffect(RangeEffect);
+
+	Template.bDisplayInUITacticalText = false;
+	Template.bDisplayInUITooltip = false;
+
+	return Template;
+}
+
+
+//static function X2AbilityTemplate DamageModifierCoverType()
+//{
+//	local X2AbilityTemplate Template;
+//	local X2Effect_DamageModifierCoverType DamageModifierCoverType;
+//	
+//	Template = PurePassive('DamageModifierCoverType', "", false, 'eAbilitySource_Perk', false);
+//
+//	DamageModifierCoverType = new class'X2Effect_DamageModifierCoverType';
+//	DamageModifierCoverType.BuildPersistentEffect(1, true, true, false, eGameRule_TacticalGameStart);
+//	DamageModifierCoverType.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, false,, Template.AbilitySourceName);
+//
+//	Template.AddTargetEffect(DamageModifierCoverType);
+//
+//	Template.bDisplayInUITacticalText = false;
+//	Template.bDisplayInUITooltip = false;
+//	Template.bUniqueSource = true;
+//
+//	return Template;
+//}
+
+//static function X2AbilityTemplate AutoFireShot()
+//{
+//	local X2AbilityTemplate Template;
+//	local X2Effect_ApplyDirectionalWorldDamage  WorldDamage;
+//
+//	Template = class'X2Ability_WeaponCommon'.static.Add_StandardShot('AutoFireShot');
+//	//Template.IconImage = "img:///UILibrary_RPGO.UIPerk_CannonShot";
+//
+//	WorldDamage = new class'X2Effect_ApplyDirectionalWorldDamage';
+//	WorldDamage.bUseWeaponDamageType = true;
+//	WorldDamage.bUseWeaponEnvironmentalDamage = false;
+//	WorldDamage.EnvironmentalDamageAmount = 30;
+//	WorldDamage.bApplyOnHit = true;
+//	WorldDamage.bApplyOnMiss = true;
+//	WorldDamage.bApplyToWorldOnHit = true;
+//	WorldDamage.bApplyToWorldOnMiss = true;
+//	WorldDamage.bHitAdjacentDestructibles = true;
+//	WorldDamage.PlusNumZTiles = 1;
+//	WorldDamage.bHitTargetTile = true;
+//	Template.AddTargetEffect(WorldDamage);
+//
+//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
+//	Template.OverrideAbilities.AddItem('StandardShot');
+//
+//	return Template;
+//}
+//
+//static function X2AbilityTemplate AutoFireOverwatch()
+//{
+//	local X2AbilityTemplate Template;
+//
+//	Template = class'X2Ability_DefaultAbilitySet'.static.AddOverwatchAbility('AutoFireOverwatch');
+//	//Template.IconImage = "img:///UILibrary_RPG.UIPerk_CannonOverwatch";
+//
+//	GetAbilityCostActionPoints(Template).iNumPoints = 2;
+//	Template.OverrideAbilities.AddItem('Overwatch');
+//
+//	return Template;
+//}
+
+
 
 static function X2AbilityTemplate RemoveSquadSightOnMove()
 {

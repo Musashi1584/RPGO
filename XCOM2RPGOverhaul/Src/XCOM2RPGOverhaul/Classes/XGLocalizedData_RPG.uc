@@ -1,5 +1,15 @@
 class XGLocalizedData_RPG extends Object;
 
+var localized string SelectClassTitle;
+var localized string SelectClassIcon;
+var localized string SelectClassDescription;
+var localized string ResetClassInsignia;
+
+var localized string SelectClassTitleTooltip;
+var localized string SelectClassIconTooltip;
+var localized string SelectClassDescriptionTooltip;
+var localized string ResetClassInsigniaTooltip;
+
 var localized string SpecializationPrimaryShort;
 var localized string SpecializationSecondaryShort;
 var localized string SpecializationComplementaryShort;

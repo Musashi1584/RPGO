@@ -6,6 +6,7 @@ var config array<MutuallyExclusiveAbilityPool> MutuallyExclusiveAbilities;
 var config array<UniqueItemCategories> LoadoutUniqueItemCategories;
 var config array<WeaponProficiency> WeaponProficiencies;
 var config array<int> VERY_SHORT_RANGE;
+var config array<int> SAWEDOFF_RANGE;
 var config array<SoldierSpecialization> Specializations;
 var config array<name> ValidLightEmUpAbilities;
 var config array<name> IgnoreWeaponTemplatesForPatch;
@@ -32,8 +33,6 @@ static function bool IsPrerequisiteAbility(name AbiliityName)
 	}
 	return false;
 }
-
-
 
 static function AddSecondWaveOptions()
 {
@@ -354,6 +353,7 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				}
 				break;
 			case 'vektor_rifle':
+				
 				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_VECTOR_RIFLES"))
 				{
 					AddAbilityToWeaponTemplate(WeaponTemplate, 'SilentKillPassive');
@@ -439,6 +439,37 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 					);
 				}
 				break;
+			case 'SawedOffShotgun':
+				if (class'RPGOUserSettingsConfigManager'.static.GetConfigBoolValue("PATCH_SAWEDOFF_SHOTGUN"))
+				{
+					WeaponTemplate.RangeAccuracy = default.SAWEDOFF_RANGE;
+					
+					if (InStr(string(WeaponTemplate.DataName), "CV",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_CV_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_CV', false);
+					if (InStr(string(WeaponTemplate.DataName), "MG",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_MG_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_MG', false);
+					if (InStr(string(WeaponTemplate.DataName), "BM",, true) != INDEX_NONE)
+						WeaponTemplate.BaseDamage = class'RPGOAbilityConfigManager'.static.GetConfigDamageValue("SAWEDOFF_SHOTGUN_BM_BASEDAMAGE");
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype', false);
+						AddAbilityToWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_BM', false);
+				}
+				else
+				{
+					WeaponTemplate.RangeAccuracy = UnpatchedTemplate.RangeAccuracy;
+					WeaponTemplate.BaseDamage = UnpatchedTemplate.BaseDamage;
+					
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_CV');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_CV');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_MG');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_MG');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierCovertype_BM');
+					RemoveAbilityFromWeaponTemplate(WeaponTemplate, 'SawedOffShotgunDamageModifierRange_BM');
+				}
+				break;
 			case 'sword':
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'SwordSlice', true);
 				break;
@@ -449,6 +480,11 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'SkirmisherGrapple', true);
 				break;
 			case 'claymore':
+
+				// Added Claymore Archetype and animation for granade throw
+				WeaponTemplate.GameArchetype = "WP_Claymore.WP_Claymore";
+				WeaponTemplate.SetAnimationNameForAbility('Throw', 'FF_Grenade');
+
 				AddAbilityToWeaponTemplate(WeaponTemplate, 'ThrowClaymore', true);
 				break;
 			case 'holotargeter':
@@ -518,6 +554,19 @@ static function PatchWeaponTemplate(X2WeaponTemplate WeaponTemplate)
 	}
 }
 
+static function RemoveJediClassSoldierInfoEventistenerTemplate()
+{
+	local X2EventListenerTemplateManager EventListenerTemplateManager;
+	local CHEventListenerTemplate ListenerTemplate;
+
+	EventListenerTemplateManager = class'X2EventListenerTemplateManager'.static.GetEventListenerTemplateManager();
+	ListenerTemplate = CHEventListenerTemplate(EventListenerTemplateManager.FindEventListenerTemplate('JediClassSoldierInfo'));
+	ListenerTemplate.RemoveEvent('SoldierClassDisplayName');
+	ListenerTemplate.RemoveEvent('SoldierClassSummary');
+	ListenerTemplate.RemoveEvent('SoldierClassIcon');
+
+}
+
 static function PatchAbilitiesWeaponCondition()
 {
 	local X2AbilityTemplateManager		TemplateManager;
@@ -531,23 +580,27 @@ static function PatchAbilitiesWeaponCondition()
 	foreach default.AbilityWeaponCategoryRestrictions(Restriction)
 	{
 		Template = TemplateManager.FindAbilityTemplate(Restriction.AbilityName);
-		bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
-		if (Template != none && !bMeleeReaction)
+		
+		if (Template != none)
 		{
-			WeaponCondition = new class'X2Condition_WeaponCategory';
-			WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
-			Template.AbilityTargetConditions.AddItem(WeaponCondition);
-
-			// Hide active abilities if no weapon matches
-			if (
-				(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
-				 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
-				!Template.bIsPassive &&
-				Template.HasTrigger('X2AbilityTrigger_PlayerInput')
-			)
+			bMeleeReaction = X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc) != none && X2AbilityToHitCalc_StandardMelee(Template.AbilityToHitCalc).bReactionFire;
+			if (!bMeleeReaction)
 			{
-				Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-				Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				WeaponCondition = new class'X2Condition_WeaponCategory';
+				WeaponCondition.IncludeWeaponCategories = Restriction.WeaponCategories;
+				Template.AbilityTargetConditions.AddItem(WeaponCondition);
+
+				// Hide active abilities if no weapon matches
+				if (
+					(Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_AlwaysShow ||
+					 Template.eAbilityIconBehaviorHUD == eAbilityIconBehavior_HideSpecificErrors) &&
+					!Template.bIsPassive &&
+					Template.HasTrigger('X2AbilityTrigger_PlayerInput')
+				)
+				{
+					Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
+					Template.HideErrors.AddItem('AA_WeaponIncompatible');
+				}
 			}
 		}
 	}
@@ -720,8 +773,11 @@ static function PatchAbilityPrerequisites()
 		for (Index = 1; Index < Prerequisite.PrerequisiteTree.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Prerequisite.PrerequisiteTree[Index]);
-			Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
-			`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			if (Template != none)
+			{
+				Template.PrerequisiteAbilities.AddItem(Prerequisite.PrerequisiteTree[Index - 1]);
+				`LOG(GetFuncName() @ Template.DataName @ "adding" @ Prerequisite.PrerequisiteTree[Index - 1] @ "to PrerequisiteAbilities",, 'RPG');
+			}
 		}
 	}
 
@@ -730,12 +786,15 @@ static function PatchAbilityPrerequisites()
 		for (Index = 0; Index < Exclusive.Abilities.Length; Index++)
 		{
 			Template = TemplateManager.FindAbilityTemplate(Exclusive.Abilities[Index]);
-			foreach Exclusive.Abilities(Ability)
+			if (Template != none)
 			{
-				if (Template.DataName != Ability)
+				foreach Exclusive.Abilities(Ability)
 				{
-					Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
-					`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					if (Template.DataName != Ability)
+					{
+						Template.PrerequisiteAbilities.AddItem(name("NOT_" $ Ability));
+						`LOG(GetFuncName() @ Template.DataName @ "adding" @ name("NOT_" $ Ability) @ "to PrerequisiteAbilities",, 'RPG');
+					}
 				}
 			}
 		}
@@ -1023,7 +1082,7 @@ static function PatchKillZone()
 	TemplateManager = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager();
 
 	Template = TemplateManager.FindAbilityTemplate('KillZone');
-	Template.IconImage = "img:///UILibrary_RPG.UIPerk_killzone";
+	Template.IconImage = "img:///UILibrary_RPGO.UIPerk_killzone";
 }
 
 
@@ -1155,52 +1214,38 @@ static function PatchSquadSight()
 
 static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddItem, const EInventorySlot Slot, const X2ItemTemplate ItemTemplate, int Quantity, XComGameState_Unit UnitState, optional XComGameState CheckGameState, optional out string DisabledReason)
 {
-    local X2WeaponTemplate				WeaponTemplate;
-    local XGParamTag					LocTag;
-	local array<SoldierSpecialization>	PrimarySpecs;
-	local SoldierSpecialization			PrimarySpec;
-	local X2UniversalSoldierClassInfo	PrimarySpecTemplate;
-	local array<SoldierSpecialization>	SecondarySpecs;
-	local SoldierSpecialization			SecondarySpec;
-	local X2UniversalSoldierClassInfo	SecondarySpecTemplate;
-	local bool							bAllowed;
+    local X2WeaponTemplate	WeaponTemplate;
+    local XGParamTag		LocTag;
+	local bool				bAllowed;
 
 	WeaponTemplate = X2WeaponTemplate(ItemTemplate);
 
-	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon
-	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none && (Slot == eInvSlot_PrimaryWeapon || Slot == eInvSlot_SecondaryWeapon))
+	//	No idea why this is necessary, but without this line equipping a primary weapon "lags behind".
+	UnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitState.ObjectID));
+
+	//	Perform the check ONLY if the item has not been forbidden by another mod already, if the soldier is an RPGO soldier, and only if we're looking at a weapon.
+	if (DisabledReason == "" && UnitState.GetSoldierClassTemplateName() == 'UniversalSoldier' && WeaponTemplate != none)
 	{
-		PrimarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedPrimaryWeaponSpecializations(UnitState);
-		foreach PrimarySpecs(PrimarySpec)
+		//`LOG("Begin check for unit:" @ UnitState.GetFullName() @ "slot:" @ Slot @ "weapon:" @ WeaponTemplate.DataName,, 'IRITEST');
+
+		switch (Slot)
 		{
-			PrimarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(PrimarySpec);
-			//	If soldier's primary specialization is a Dual Wield one, then look only at primary specialization for both Primary and Secondary weapons.
-			if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield || Slot == eInvSlot_PrimaryWeapon)
-			{
-				bAllowed = PrimarySpecTemplate != none && PrimarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
-				if (bAllowed)
-				{
-					break;
-				}
-			}
+			case eInvSlot_PrimaryWeapon:
+				bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsPrimaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+				//`LOG("This is a primary weapon, allowed:" @ bAllowed,, 'IRITEST');
+				break;
+			case eInvSlot_SecondaryWeapon:
+				bAllowed = class'X2SoldierClassTemplatePlugin'.static.IsSecondaryWeaponCategoryAllowed(UnitState, WeaponTemplate.WeaponCat);
+				//`LOG("This is a secondary weapon, allowed:" @ bAllowed,, 'IRITEST');
+				break;
+			default:
+				//`LOG("This is neither a primary nor a secondary weapon, defaulting.",, 'IRITEST');
+				return CanAddItemToInventory(bCanAddItem, Slot, ItemTemplate, Quantity, UnitState, CheckGameState, DisabledReason);
 		}
 
-		if (!bAllowed)
-		{
-			SecondarySpecs = class'X2SoldierClassTemplatePlugin'.static.GetTrainedSecondaryWeaponSpecializations(UnitState);
-			foreach SecondarySpecs(SecondarySpec)
-			{
-				SecondarySpecTemplate = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationTemplate(SecondarySpec);
-				bAllowed = SecondarySpecTemplate != none && SecondarySpecTemplate.IsWeaponAllowed(WeaponTemplate.InventorySlot, WeaponTemplate.WeaponCat);
-				if (bAllowed)
-				{
-					break;
-				}
-			}
-		}
-		
 		if (bAllowed)
 		{
+			//`LOG("Weapon allowed.",, 'IRITEST');
 			//	Weapon allowed
 			DisabledReason = "";
 			bCanAddItem = 1;
@@ -1210,6 +1255,7 @@ static function bool CanAddItemToInventory_WeaponRestrictions(out int bCanAddIte
 		}
 		else
 		{
+			//`LOG("Weapon NOT allowed.",, 'IRITEST');
 			//	Weapon NOT Allowed
 			LocTag = XGParamTag(`XEXPANDCONTEXT.FindTag("XGParam"));
 			LocTag.StrValue0 = UnitState.GetSoldierClassTemplate().DisplayName;
@@ -1329,7 +1375,7 @@ static function UpdateAnimations(out array<AnimSet> CustomAnimSets, XComGameStat
 
 	PrimaryWeaponTemplate = X2WeaponTemplate(UnitState.GetPrimaryWeapon().GetMyTemplate());
 
-	if (InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_SkirmisherGauntlet") != INDEX_NONE)
+	if (Pawn.Weapon != none && InStr(string(XComWeapon(Pawn.Weapon).ObjectArchetype), "WP_SkirmisherGauntlet") != INDEX_NONE)
 	{
 		AddAnimSet(Pawn, AnimSet(`CONTENT.RequestGameArchetype("skirmisher.Anims.AS_Skirmisher")));
 	}
@@ -1420,12 +1466,15 @@ static function RemoveAbilityFromWeaponTemplate(out X2WeaponTemplate Template, n
 
 static function AddAbilityToWeaponTemplate(out X2WeaponTemplate Template, name Ability, bool bShowInTactical = false)
 {
-	if (Template.Abilities.Find(Ability) == INDEX_NONE)
+	if (class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(Ability) != none)
 	{
-		//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
-		Template.Abilities.AddItem(Ability);
-		if (bShowInTactical)
-			ShowInTacticalText(Ability);
+		if (Template.Abilities.Find(Ability) == INDEX_NONE)
+		{
+			//`LOG(GetFuncName() @ Template.DataName @ Ability,, 'RPG');
+			Template.Abilities.AddItem(Ability);
+			if (bShowInTactical)
+				ShowInTacticalText(Ability);
+		}
 	}
 }
 

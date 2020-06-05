@@ -11,18 +11,20 @@ var config array<SoldierClassAbilityType> AdditionalRandomAptitudes;
 // in default rpgo mode you still have all enabled specs available
 var config array<name> RequiredAbilities;
 
+// These abilities get added as squaddie abilities if the spec is added by random or cc
+// see class'X2SecondWaveConfigOptions'.static.HasLimitedSpecializations()
+// and class'X2SoldierClassTemplatePlugin'.static.AddAdditionalSquaddieAbilities()
+// or in default rpgo mode they are added as soon as any ability from the spec tree is purchased
+var config array<name> AdditionalSquaddieAbilities;
+
 var localized string ClassSpecializationSummary;
 var localized string ClassSpecializationTitle;
 
 var config SpecializationMetaInfoStruct SpecializationMetaInfo;
 
-function bool IsWeaponAllowed(EInventorySlot Slot, name WeaponCat)
+function bool IsWeaponAllowed(name WeaponCat)
 {
-	if (SpecializationMetaInfo.bDualWield)
-	{
-		return SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
-	}
-	else return SpecializationMetaInfo.InventorySlots.Find(Slot) != INDEX_NONE && SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
+	return SpecializationMetaInfo.AllowedWeaponCategories.Find(WeaponCat) != INDEX_NONE;
 }
 
 function string GetClassSpecializationTitleWithMetaData()
@@ -106,35 +108,19 @@ function array<String> GetLocalizedWeaponCategories()
 function bool IsPrimaryWeaponSpecialization()
 {
 	//	Specialization is valid to be soldier's Primary specialization only if has meta information set up, if it is valid for Primry Weapon slot, and only if it specifies some weapon categories it can unlock.
-	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
+	return SpecializationMetaInfo.iWeightPrimary > 0 && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_PrimaryWeapon) != INDEX_NONE;
 }
 
 function bool IsSecondaryWeaponSpecialization()
 {
-	return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
+	//	Spec is valid to be secondary if it allows using specific weapons in the secondary slot
+	return SpecializationMetaInfo.iWeightSecondary > 0 && SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
 }
 
 function bool IsComplemtarySpecialization()
 {
-	return (!SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal);
+	return SpecializationMetaInfo.iWeightComplementary > 0 && !SpecializationMetaInfo.bCantBeComplementary && SpecializationMetaInfo.bUniversal;
 }
-/*
-{
-	if (SpecializationMetaInfo.bUseForRandomClasses)
-	{
-		//	If both the Primary Specailization and this Specialization are Dual Wielding, then just compare their weapon categories.
-		if (PrimarySpecTemplate.SpecializationMetaInfo.bDualWield && SpecializationMetaInfo.bDualWield) //-- No need to check if the Secondary Specialization is for Dual Wielding, it's enough for it to just use the same weapons.
-		{
-			return class'X2SoldierClassTemplatePlugin'.static.DoSpecializationsUseTheSameWeapons(PrimarySpecTemplate, self);
-		}
-
-		return SpecializationMetaInfo.AllowedWeaponCategories.Length > 0 && SpecializationMetaInfo.InventorySlots.Find(eInvSlot_SecondaryWeapon) != INDEX_NONE;
-	}
-	//	Can't be Secondary Speci if no meta info is set up.
-	return false;
-}
-*/
-
 //	END OF Random Classes
 
 function bool HasAnyAbilitiesInDeck()

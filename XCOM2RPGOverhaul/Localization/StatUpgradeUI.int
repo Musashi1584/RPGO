@@ -17,19 +17,3 @@ NaturalAptitudeLabel[1]="Good Genes"
 NaturalAptitudeLabel[2]="Peak Human"
 NaturalAptitudeLabel[3]="Super Human"
 NaturalAptitudeLabel[4]="Godlike"
-
-[X2DownloadableContentInfo_StatUpgradeUI]
-strNoUnitSelected =	":>> ERROR: No Unit Selected - Enter this command from a unit's armory screen."
-strClassNotFound = ":>> ERROR: Soldier Class defined, but '<ClassName/>' does not exist."
-strIncorrectCharacterTemplate = ":>> ERROR: Soldier Class defined, but selected soldier is not a required character template for the '<ClassName/>' class."
-strIncorrectRankValue = ":>> ERROR: Invalid Rank value entered."
-strCantRespecRookie = ":>> ERROR: Cannot Rebuild a Rookie - Level up the unit or specify a class."
-strInvalidCombatInt = ":>> ERROR: Invalid Combat Intelligence value entered."
-strNoValidUnit = ":>> ERROR: No valid unit selected."
-
-strCappingRank = ":>> NOTE: Requested level exceeds the maximum level - capping level at max."
-
-strRankSet = ":>> SUCCESS: Unit Rank successfully set to level <RankLevel/>."
-strClassSet = ":>> SUCCESS: Soldier Class successfully set to '<ClassName/>' class."
-strComIntSet = ":>> SUCCESS: Soldier Combat Intelligence successfully set to '<RankLevel/>'."
-strWeaponReloaded = ":>> SUCCESS: Selected unit's primary weapon reloaded."

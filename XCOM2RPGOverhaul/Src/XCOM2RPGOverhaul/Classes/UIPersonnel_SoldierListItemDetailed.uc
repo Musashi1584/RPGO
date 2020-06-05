@@ -267,7 +267,7 @@ simulated function UpdateData()
 	GetPersonnelStatusSeparate(Unit, status, statusTimeLabel, statusTimeValue);
 	mentalStatus = "";
 
-	if(Unit.IsActive())
+	if(Unit != none && Unit.IsActive())
 	{
 		GetUnitMentalState(Unit, mentalStatus, statusTimeLabel, iTimeNum);
 		statusTimeLabel = class'UIUtilities_Text'.static.GetColoredText(statusTimeLabel, Unit.GetMentalStateUIState());
@@ -351,8 +351,12 @@ simulated function UpdateData()
 					false, // psi soldiers can't rank up via missions
 					mentalStatus,
 					BondLevel);
+	
+	if (FactionState != none)
+	{
+		AS_SetFactionIcon(FactionState.GetFactionIcon());
+	}
 
-	AS_SetFactionIcon(FactionState.GetFactionIcon());
 	traitsTooltip = "";
 	AddAdditionalItems(self, traitsTooltip);
 
@@ -411,6 +415,11 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	local X2EventListenerTemplateManager EventTemplateManager;
 	local X2TraitTemplate TraitTemplate;
 	local int i;
+
+	if (Unit == none)
+	{
+		return;
+	}
 
 	IconXPos = 174;
 
@@ -562,8 +571,8 @@ function AddNameColumnIcons(XComGameState_Unit Unit, out string traitToolTip)
 	SPValue.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(string(class'StatUpgradeUI.StatUIHelper'.static.GetSoldierSP(Unit)), eUIState_Normal));
 	SPValue.Show();
 
-	PrimaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetPrimaryWeapon().GetMyTemplate()).WeaponCat);
-	SecondaryLoadoutImage = "img:///UILibrary_RPG.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetSecondaryWeapon().GetMyTemplate()).WeaponCat);
+	PrimaryLoadoutImage = "img:///UILibrary_RPGO.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetPrimaryWeapon().GetMyTemplate()).WeaponCat);
+	SecondaryLoadoutImage = "img:///UILibrary_RPGO.loadout_icon_"  $ string(X2WeaponTemplate(Unit.GetSecondaryWeapon().GetMyTemplate()).WeaponCat);
 	
 	if (PrimaryWeaponIcon == none)
 	{
@@ -720,7 +729,7 @@ simulated function UpdateDisabled()
 		return;
 
 	AimIcon.SetAlpha(UpdateAlpha);
-	DefenseIcon.SetAlpha(UpdateAlpha);
+	//DefenseIcon.SetAlpha(UpdateAlpha);
 	HealthIcon.SetAlpha(UpdateAlpha);
 	MobilityIcon.SetAlpha(UpdateAlpha);
 	WillIcon.SetAlpha(UpdateAlpha);

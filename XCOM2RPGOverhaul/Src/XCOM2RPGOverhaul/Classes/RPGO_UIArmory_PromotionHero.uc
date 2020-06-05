@@ -32,11 +32,12 @@ var int Position, MaxPosition;
 
 var int AdjustXOffset;
 
+
 simulated function OnInit()
 {
 	super.OnInit();
 
-	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPGO-PromotionScreen');
 
 	if (HasBrigadierRank())
 	{
@@ -55,13 +56,156 @@ simulated function OnInit()
 	}
 }
 
+simulated function UpdateNavHelp()
+{
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+
+	super.UpdateNavHelp();
+
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassIcon),
+		"",
+		OnSelectClassIconButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassIconTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+	
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassTitle),
+		"",
+		OnSelectClassTitleButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassTitleTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+
+	NavHelp.AddLeftHelp(
+		Caps(class'XGLocalizedData_RPG'.default.SelectClassDescription),
+		"",
+		OnSelectClassDescriptionButtonClicked,
+		false,
+		class'XGLocalizedData_RPG'.default.SelectClassDescriptionTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+
+	NavHelp.AddRightHelp(
+		Caps(class'XGLocalizedData_RPG'.default.ResetClassInsignia),
+		"",
+		OnResetClassInsigniaButtonClicked,
+		!CustomClassInsigniaGameState.HasClassInsignia(UnitReference.ObjectID),
+		class'XGLocalizedData_RPG'.default.ResetClassInsigniaTooltip,
+		class'UIUtilities'.const.ANCHOR_BOTTOM_CENTER
+	);
+}
+
+function OnResetClassInsigniaButtonClicked()
+{
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+
+	CustomClassInsigniaGameState.ResetClassInsignia(UnitReference.ObjectID);
+
+	PopulateData();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
+}
+
+function OnSelectClassTitleButtonClicked()
+{
+	local TInputDialogData kData;
+	local XComGameState_Unit Unit;
+
+	Unit = GetUnit();
+
+	kData.strTitle = Caps(class'XGLocalizedData_RPG'.default.SelectClassTitle);
+	kData.iMaxChars = 200; //SQUAD_MAX_NAME_LENGTH;
+	kData.strInputBoxText = GetClassDisplayName(Unit);
+	kData.fnCallback = OnClassTitleInputBoxClosed;
+
+	`HQPRES.UIInputDialog(kData);
+}
+
+function OnClassTitleInputBoxClosed(string Text)
+{
+	local XComGameState NewGameState;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+	
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Change Class ImagePath");
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	CustomClassInsigniaGameState = XComGameState_CustomClassInsignia(NewGameState.ModifyStateObject(CustomClassInsigniaGameState.Class, CustomClassInsigniaGameState.ObjectID));
+	CustomClassInsigniaGameState.SetClassTitleForUnit(Text, UnitReference.ObjectID);
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	
+	PopulateData();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
+}
+
+function OnSelectClassDescriptionButtonClicked()
+{
+	local TInputDialogData kData;
+	local XComGameState_Unit Unit;
+
+	Unit = GetUnit();
+
+	kData.strTitle = Caps(class'XGLocalizedData_RPG'.default.SelectClassDescription);
+	kData.DialogType = eDialogType_MultiLine;
+	kData.iMaxChars = 1000; //SQUAD_MAX_NAME_LENGTH;
+	kData.strInputBoxText = GetClassSummary(Unit);
+	kData.fnCallback = OnClassDescriptionInputBoxClosed;
+
+	`HQPRES.UIInputDialog(kData);
+}
+
+function OnClassDescriptionInputBoxClosed(string Text)
+{
+	local XComGameState NewGameState;
+	local XComGameState_CustomClassInsignia CustomClassInsigniaGameState;
+	
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Change Class ImagePath");
+	CustomClassInsigniaGameState = class'XComGameState_CustomClassInsignia'.static.GetGameState();
+	CustomClassInsigniaGameState = XComGameState_CustomClassInsignia(NewGameState.ModifyStateObject(CustomClassInsigniaGameState.Class, CustomClassInsigniaGameState.ObjectID));
+	CustomClassInsigniaGameState.SetClassDescriptionForUnit(Text, UnitReference.ObjectID);
+	`XCOMHISTORY.AddGameStateToHistory(NewGameState);
+	
+	PopulateData();
+	UIArmory(`SCREENSTACK.GetFirstInstanceOf(class'UIArmory')).CycleToSoldier(UnitReference);
+}
+
+function OnSelectClassIconButtonClicked()
+{
+	local RPGO_UIClassIconSelectionScreen TempScreen;
+	local XComPresentationLayerBase Pres;
+	local string CurrentIcon;
+	local array<string> AllIcons;
+	
+
+	// `PRES is tactical (strategy is `HQPRES, generic is `PRESBASE)
+	Pres = `HQPRES;
+
+	if (Pres != none && Pres.ScreenStack.IsNotInStack(class'RPGO_UIClassIconSelectionScreen'))
+	{
+		CurrentIcon = GetClassIcon(GetUnit());
+		CurrentIcon = Repl(CurrentIcon, "img:///", "");
+
+		TempScreen = Pres.Spawn(class'RPGO_UIClassIconSelectionScreen', Pres);
+
+		AllIcons = TempScreen.GetAllClassIcons();
+
+		TempScreen.UnitStateObjectId = UnitReference.ObjectID;
+		TempScreen.SelectedIndex = AllIcons.Find(CurrentIcon);
+		Pres.ScreenStack.Push(TempScreen, Pres.Get2DMovie());
+	}
+}
 
 //Override functions
 simulated function InitPromotion(StateObjectReference UnitRef, optional bool bInstantTransition)
 {
 	local XComGameState_Unit Unit; // bsg-nlong (1.25.17): Used to determine which column we should start highlighting
 
-	`LOG(self.Class.name @ GetFuncName(),, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName(),, 'RPGO-PromotionScreen');
 
 	Position = 0;
 	SelectedSpecs.Length = 0;
@@ -86,7 +230,7 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	super.InitArmory(UnitRef, , , , , , bInstantTransition);
 
-	`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPG-PromotionScreen');
+	`LOG(default.class @ GetFuncName() @ "Inititalizing data",, 'RPGO-PromotionScreen');
 
 	InitColumns();
 
@@ -127,13 +271,13 @@ simulated function InitPromotion(StateObjectReference UnitRef, optional bool bIn
 
 	if (class'X2SecondWaveConfigOptions'.static.ShowChooseAbilityScreen(Unit))
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOOrigins SpawnChooseAbilityScreen",, 'RPG-PromotionScreen');
+		`LOG(default.class @ GetFuncName() @ "RPGOOrigins SpawnChooseAbilityScreen",, 'RPGO-PromotionScreen');
 		SpawnChooseAbilityScreen(Unit);
 	}
 
 	if (class'X2SecondWaveConfigOptions'.static.ShowChooseSpecScreen(Unit))
 	{
-		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseSpecScreen",, 'RPG-PromotionScreen');
+		`LOG(default.class @ GetFuncName() @ "RPGOCommandersChoice SpawnChooseSpecScreen",, 'RPGO-PromotionScreen');
 		SpawnChooseSpecScreen(Unit);
 	}
 }
@@ -211,9 +355,12 @@ simulated function PopulateData()
 
 	AS_SetRank(rankIcon);
 	AS_SetClass(classIcon);
-	AS_SetFaction(FactionState.GetFactionIcon());
+	if (FactionState != none)
+	{
+		AS_SetFaction(FactionState.GetFactionIcon());
+	}
 
-	AS_SetHeaderData(Caps(FactionState.GetFactionTitle()), Caps(Unit.GetName(eNameType_FullNick)), HeaderString, m_strSharedAPLabel, m_strSoldierAPLabel);
+	AS_SetHeaderData(Caps((FactionState != none) ? FactionState.GetFactionTitle() : ""), Caps(Unit.GetName(eNameType_FullNick)), HeaderString, m_strSharedAPLabel, m_strSoldierAPLabel);
 	AS_SetAPData(GetSharedAbilityPoints(), Unit.AbilityPoints);
 	AS_SetCombatIntelData(Unit.GetCombatIntelligenceLabel());
 	
@@ -235,7 +382,7 @@ simulated function PopulateData()
 		bHasColumnAbility = UpdateAbilityIcons_Override(Column);
 		bHighlightColumn = (!bHasColumnAbility && (iRank+1) == Unit.GetRank());
 
-		//`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPG-PromotionScreen');
+		//`LOG(default.Class @ GetFuncName() @ "AS_SetData" @ iRank,, 'RPGO-PromotionScreen');
 		Column.AS_SetData(bHighlightColumn, m_strNewRank, class'UIUtilities_Image'.static.GetRankIcon(iRank+1, ClassTemplate.DataName), Caps(class'X2ExperienceConfig'.static.GetRankName(iRank+1, ClassTemplate.DataName)));
 	}
 	
@@ -266,7 +413,7 @@ function bool HasBrigadierRank()
 	
 	Unit = GetUnit();
 	
-	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'RPG-PromotionScreen');
+	`LOG(self.Class.name @ GetFuncName() @ Unit.GetFullName() @ Unit.AbilityTree.Length,, 'RPGO-PromotionScreen');
 
 	return Unit.AbilityTree.Length > 7;
 }
@@ -293,6 +440,11 @@ function bool UpdateAbilityIcons_Override(out RPGO_UIArmory_PromotionHeroColumn 
 
 	for (iAbility = Position; iAbility < Position + NUM_ABILITIES_PER_COLUMN; iAbility++)
 	{
+		if (iAbility >= AbilityTree.Length)
+		{
+			continue;
+		}
+
 		AbilityTemplate = AbilityTemplateManager.FindAbilityTemplate(AbilityTree[iAbility].AbilityName);
 		
 		if (AbilityTemplate != none)
@@ -300,7 +452,7 @@ function bool UpdateAbilityIcons_Override(out RPGO_UIArmory_PromotionHeroColumn 
 			if (Column.AbilityNames.Find(AbilityTemplate.DataName) == INDEX_NONE)
 			{
 				Column.AbilityNames.AddItem(AbilityTemplate.DataName);
-				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'RPG-PromotionScreen');
+				//`LOG(iAbility @ "Column.AbilityNames Add" @ AbilityTemplate.DataName @ Column.AbilityNames.Length,, 'RPGO-PromotionScreen');
 			}
 
 			// The unit is not yet at the rank needed for this column
@@ -822,6 +974,40 @@ simulated function ConfirmAbilitySelection(int Rank, int Branch)
 	Movie.Pres.UIRaiseDialog(DialogData);
 }
 
+simulated function ComfirmAbilityCallback(Name Action)
+{
+	local XComGameStateHistory History;
+	local bool bSuccess;
+	local XComGameState UpdateState;
+	local XComGameState_Unit UpdatedUnit;
+	local XComGameStateContext_ChangeContainer ChangeContainer;
+
+	if (Action == 'eUIAction_Accept')
+	{
+		History = `XCOMHISTORY;
+		ChangeContainer = class'XComGameStateContext_ChangeContainer'.static.CreateEmptyChangeContainer("Resistance Hero Promotion");
+		UpdateState = History.CreateNewGameState(true, ChangeContainer);
+
+		UpdatedUnit = XComGameState_Unit(UpdateState.ModifyStateObject(class'XComGameState_Unit', GetUnit().ObjectID));
+		bSuccess = UpdatedUnit.BuySoldierProgressionAbility(UpdateState, PendingRank, PendingBranch, GetAbilityPointCost(PendingRank, PendingBranch));
+
+		if (bSuccess)
+		{
+			`XEVENTMGR.TriggerEvent('PurchasedSoldierProgressionAbility', UpdatedUnit, UpdatedUnit, UpdateState);
+			`GAMERULES.SubmitGameState(UpdateState);
+
+			Header.PopulateData();
+			PopulateData();
+		}
+		else
+			History.CleanupPendingGameState(UpdateState);
+
+		Movie.Pres.PlayUISound(eSUISound_SoldierPromotion);
+	}
+	else
+		Movie.Pres.PlayUISound(eSUISound_MenuClickNegative);
+}
+
 //New functions
 simulated function string GetPromotionBlueprintTag(StateObjectReference UnitRef)
 {
@@ -1227,11 +1413,37 @@ static function string GetClassSummary(XComGameState_Unit Unit)
 function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 {
 	local UIChooseSpecializations ChooseSpecScreen;
-	local array<SoldierSpecialization> TrainedSpecs;
+	local array<SoldierSpecialization> TrainedSpecs, AvailableSpecs;
+	local int RandomPoolSize;
 
 	if (`SecondWaveEnabled('RPGOSpecRoulette') || `SecondWaveEnabled('RPGO_SWO_RandomClasses'))
 	{
 		TrainedSpecs = class'X2SoldierClassTemplatePlugin'.static.GetAssignedSpecializations(UnitState);
+		class'X2SoldierClassTemplatePlugin'.static.DebugAssignedTemplates(UnitState);
+	}
+
+	if (class'X2SecondWaveConfigOptions'.static.IsCommandersChoiceRandomPoolEnabled())
+	{
+		RandomPoolSize = class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceRandomPoolCount();
+
+		if (`SecondWaveEnabled('RPGO_SWO_RandomClasses'))
+		{
+			AvailableSpecs =  class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsByIndex(
+				UnitState,
+				class'X2SecondWaveConfigOptions'.static.GetSpecIndices_ForRandomClass(UnitState, RandomPoolSize)
+			);
+		}
+		else
+		{
+			AvailableSpecs =  class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsByIndex(
+				UnitState,
+				class'X2SecondWaveConfigOptions'.static.GetRandomSpecIndices(UnitState, RandomPoolSize)
+			);
+		}
+	}
+	else
+	{
+		AvailableSpecs = class'X2SoldierClassTemplatePlugin'.static.GetSpecializationsAvailableToSoldier(UnitState);
 	}
 
 	ChooseSpecScreen = Spawn(class'UIChooseSpecializations', Movie.Pres);
@@ -1239,6 +1451,7 @@ function SpawnChooseSpecScreen(XComGameState_Unit UnitState)
 	ChooseSpecScreen.InitChooseSpecialization(
 		UnitState.GetReference(),
 		class'X2SecondWaveConfigOptions'.static.GetCommandersChoiceCount(),
+		AvailableSpecs,
 		TrainedSpecs
 	);
 }
@@ -1247,18 +1460,31 @@ function SpawnChooseAbilityScreen(XComGameState_Unit UnitState)
 {
 	local UIChooseAbilities ChooseAbilityScreen;
 	local array<X2AbilityTemplate> RandomTemplates;
-
+	local array<X2AbilityTemplate> AvailableTemplates;
 
 	RandomTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
 		UnitState,
-		class'RPGO_SWO_UserSettingsConfigManager'.static.GetConfigIntValue("ORIGINS_ADDITIONAL_RANDOM_ABILTIES")
+		class'X2SecondWaveConfigOptions'.static.GetOriginsRandomAbiltiesCount()
 	);
+
+	if (class'X2SecondWaveConfigOptions'.static.IsOriginsRandomPoolEnabled())
+	{
+		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetRandomStartingAbilities(
+			UnitState,
+			class'X2SecondWaveConfigOptions'.static.GetOriginsRandomPoolCount()
+		);
+	}
+	else
+	{
+		AvailableTemplates = class'X2SoldierClassTemplatePlugin'.static.GetAllStartingAbilities(UnitState);
+	}
 
 	ChooseAbilityScreen = Spawn(class'UIChooseAbilities', Movie.Pres);
 	Movie.Stack.Push(ChooseAbilityScreen, Movie.Pres.Get3DMovie());
 	ChooseAbilityScreen.InitChooseAbiltites(
 		UnitState.GetReference(),
 		class'X2SecondWaveConfigOptions'.static.GetOriginsAbiltiesCount(),
+		AvailableTemplates,
 		RandomTemplates
 	);
 }

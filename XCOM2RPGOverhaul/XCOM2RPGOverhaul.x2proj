@@ -7,6 +7,7 @@
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>XCOM2RPGOverhaul</AssemblyName>
     <RootNamespace>XCOM2RPGOverhaul</RootNamespace>
+    <ProjectGuid>{a0694487-4ba1-429b-8005-f51b4db40a08}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -95,6 +96,9 @@
     <Content Include="Config\XComRPGODefaultSettings.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComRPGO_ClassIcons.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Config\XComRPGO_SoldierSkills.ini">
       <SubType>Content</SubType>
     </Content>
@@ -128,10 +132,13 @@
     <Content Include="Content\UILibrary_IconsMint.upk">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Content\UILibrary_KetarosPkg_Classes.upk">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\UILibrary_LW_PerkPack.upk">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Content\UILibrary_RPG.upk">
+    <Content Include="Content\UILibrary_RPGO.upk">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Content\XPerkIconPack.upk">
@@ -140,19 +147,34 @@
     <Content Include="Features.txt">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\ExtendedUpgrades\XComGame.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\ExtendedUpgrades\XComGame.int">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\NewPromotionScreenbyDefault.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\StatUpgradeUI.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\StatUpgradeUI.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\WOTC_LW2SecondaryWeapons.deu">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\WOTC_LW2SecondaryWeapons.int">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\XCOM2RPGOverhaul.deu">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\XCOM2RPGOverhaul.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\XComGame.deu">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Localization\XComGame.int">
@@ -329,6 +351,9 @@
     <Content Include="Src\RPGO\Classes\X2Condition_NotVisibeToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Condition_RequiredWeaponTech.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_StatValue.uc">
       <SubType>Content</SubType>
     </Content>
@@ -336,6 +361,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_UnitAffectedByAcidBurn.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Condition_UnitEffectExtended.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Condition_WeaponCategory.uc">
@@ -366,6 +394,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_DamageModifierCoverType.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_DamageModifierRangePercentage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_DangerousGame.uc">
@@ -443,10 +474,16 @@
     <Content Include="Src\RPGO\Classes\X2Effect_ReducedRecoveryTime.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_ReloadSecondaryWeapon.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_RemoveEffectAfterMove.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_RevealUnit.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\RPGO\Classes\X2Effect_Ruthless.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\RPGO\Classes\X2Effect_Scope.uc">
@@ -504,6 +541,15 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_Structs.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_UIClassIconSelectionScreen.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_UIImageSelector.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\RPGO_UIClassIcon.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2TemplateHelper_ExtendedUpgrades.uc">
@@ -603,6 +649,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\X2UniversalSoldierClassInfo.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\XCOM2RPGOverhaul\Classes\XComGameState_CustomClassInsignia.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\XCOM2RPGOverhaul\Classes\XGLocalizedData_RPG.uc">
