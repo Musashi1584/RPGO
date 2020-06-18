@@ -191,7 +191,7 @@ static function X2AbilityTemplate Bulletproof()
 	Effect.AddPersistentStatChange(eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
 	Effect.bDisplayInUI = false;
 	
-	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPG.UIPerk_Bulletproof'", true, Effect);
+	Template = Passive('Bulletproof', "img:///Texture2D'UILibrary_RPGO.UIPerk_Bulletproof'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DefenseStat, eStat_Defense, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("BULLETPROOF_BONUS"));
 	
 	return Template;
@@ -233,7 +233,7 @@ static function X2AbilityTemplate IronWill()
 	Effect.AddPersistentStatChange(eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 	Effect.bDisplayInUI = false;
 	
-	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPG.UIPerk_IronWill'", true, Effect);
+	Template = Passive('IronWill', "img:///Texture2D'UILibrary_RPGO.UIPerk_IronWill'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.WillLabel, eStat_Will, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("IRONWILL_BONUS"));
 
 	return Template;
@@ -248,7 +248,7 @@ static function X2AbilityTemplate CyberAdept()
 	Effect.AddPersistentStatChange(eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 	Effect.bDisplayInUI = false;
 	
-	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPG.UIPerk_CyberAdept'", true, Effect);
+	Template = Passive('CyberAdept', "img:///Texture2D'UILibrary_RPGO.UIPerk_CyberAdept'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.HackingSoldierLabel, eStat_Hacking, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("CYBERADEPT_BONUS"));
 
 	return Template;
@@ -263,7 +263,7 @@ static function X2AbilityTemplate MovingTarget()
 	Effect.AddPersistentStatChange(eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 	Effect.bDisplayInUI = false;
 	
-	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPG.UIPerk_MovingTarget'", true, Effect);
+	Template = Passive('MovingTarget', "img:///Texture2D'UILibrary_RPGO.UIPerk_MovingTarget'", true, Effect);
 	Template.SetUIStatMarkup(class'XLocalizedData'.default.DodgeStat, eStat_Dodge, class'RPGOAbilityConfigManager'.static.GetConfigIntValue("MOVINGTARGET_BONUS"));
 
 	return Template;
